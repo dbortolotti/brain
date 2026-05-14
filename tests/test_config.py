@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from memory_stack.config import Settings, normalize_path, runtime_env
+from memory_stack.cfg import Settings, normalize_path, runtime_env
 from memory_stack.model_selection import DEFAULT_LLM_MODEL
 
 
@@ -157,7 +157,7 @@ def test_cognee_uses_postgres_pgvector_by_default() -> None:
 
 def test_runtime_rejects_non_default_llm_or_embedding() -> None:
     with pytest.raises(ValueError, match="runtime LLM is fixed"):
-        Settings(llm_model="gpt-5.4-mini")
+        Settings(llm_model="gpt-5.5")
 
     with pytest.raises(ValueError, match="runtime embeddings are fixed"):
         Settings(

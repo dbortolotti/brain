@@ -7,7 +7,7 @@ from memory_stack.brain_service import ingest_source, remember
 from memory_stack.brain_store import BrainStore
 from memory_stack.cognee.projector import project_memory, project_source
 from memory_stack.cognee.sync_worker import sync_pending_cognee
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 class FakeProjectionAdapter:

@@ -10,7 +10,7 @@ from memory_stack.cognee.serializers import (
     serialize_source_for_cognee,
 )
 from memory_stack.cognee_adapter import remember_text, run_async
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 
 
 class ProjectionAdapter(Protocol):

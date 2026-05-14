@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from memory_stack.brain_models import RecallResponse
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.recall.evidence_builder import build_evidence, build_facts
 
 

@@ -2,9 +2,9 @@
 set -euo pipefail
 
 APP_NAME="brain"
-LABEL="com.brain.mcp"
-UI_LABEL="com.brain.ui"
-SLACK_LABEL="com.brain.slack-agent"
+LABEL="com.brain.prod.mcp"
+UI_LABEL="com.brain.prod.ui"
+SLACK_LABEL="com.brain.prod.slack-agent"
 PROD_ROOT="${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/config/deployment"
@@ -41,6 +41,7 @@ require_cmd git
 require_cmd rsync
 require_cmd uv
 require_cmd python3
+require_cmd docker
 
 ensure_env_var() {
   local key="$1"
@@ -49,6 +50,29 @@ ensure_env_var() {
   if ! grep -q "^${key}=" "$env_file"; then
     printf '%s=%s\n' "$key" "$value" >>"$env_file"
   fi
+}
+
+set_env_var() {
+  local key="$1"
+  local value="$2"
+  local env_file="$SECRETS_DIR/brain.env"
+  python3 - "$env_file" "$key" "$value" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+key = sys.argv[2]
+value = sys.argv[3]
+line = f"{key}={value}"
+lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+for index, existing in enumerate(lines):
+    if existing.startswith(f"{key}="):
+        lines[index] = line
+        break
+else:
+    lines.append(line)
+path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+PY
 }
 
 is_true() {
@@ -80,7 +104,7 @@ EMBEDDING_PROVIDER=openai
 EMBEDDING_MODEL=text-embedding-3-large
 EMBEDDING_DIMENSIONS=3072
 GRAPH_DATABASE_PROVIDER=neo4j
-GRAPH_DATABASE_URL=bolt://localhost:7687
+GRAPH_DATABASE_URL=bolt://127.0.0.1:17687
 GRAPH_DATABASE_NAME=neo4j
 GRAPH_DATABASE_USERNAME=neo4j
 GRAPH_DATABASE_PASSWORD=change-me
@@ -92,7 +116,7 @@ SYSTEM_ROOT_DIRECTORY=$DATA_DIR/system
 DATA_ROOT_DIRECTORY=$DATA_DIR/data
 BRAIN_DATABASE_URL=$DATABASE_URL
 BRAIN_MCP_HOST=127.0.0.1
-BRAIN_MCP_PORT=8000
+BRAIN_MCP_PORT=18000
 BRAIN_MCP_PATH=/mcp
 BRAIN_PUBLIC_BASE_URL=https://brain.dceb.net
 BRAIN_PUBLIC_MCP_PATH=/mcp
@@ -121,15 +145,15 @@ BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS=24
 ENABLE_BACKEND_ACCESS_CONTROL=false
 BRAIN_UI_ENABLED=true
 BRAIN_UI_HOST=127.0.0.1
-BRAIN_UI_PROXY_PORT=8002
-BRAIN_UI_FRONTEND_PORT=3000
-BRAIN_UI_BACKEND_PORT=8001
+BRAIN_UI_PROXY_PORT=18002
+BRAIN_UI_FRONTEND_PORT=13000
+BRAIN_UI_BACKEND_PORT=18001
 BRAIN_PUBLIC_UI_PATH=/ui
 BRAIN_PUBLIC_UI_API_PATH=/ui-api
 BRAIN_UI_SESSION_SECONDS=43200
 BRAIN_SLACK_AGENT_ENABLED=true
 BRAIN_SLACK_AGENT_HOST=127.0.0.1
-BRAIN_SLACK_AGENT_PORT=8003
+BRAIN_SLACK_AGENT_PORT=18003
 BRAIN_SLACK_SIGNING_SECRET=
 BRAIN_SLACK_BOT_TOKEN=
 BRAIN_SLACK_ALLOWED_TEAM_IDS=
@@ -157,6 +181,8 @@ ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
 ensure_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests.jsonl"
 ensure_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "0"
 ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"
+set_env_var "BRAIN_MCP_PORT" "18000"
+set_env_var "GRAPH_DATABASE_URL" "bolt://127.0.0.1:17687"
 ensure_env_var "BRAIN_TASTE_ENABLED" "true"
 ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"
 ensure_env_var "BRAIN_TASTE_AUTO_ENRICH_ENABLED" "true"
@@ -169,15 +195,15 @@ ensure_env_var "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS" "24"
 ensure_env_var "ENABLE_BACKEND_ACCESS_CONTROL" "false"
 ensure_env_var "BRAIN_UI_ENABLED" "true"
 ensure_env_var "BRAIN_UI_HOST" "127.0.0.1"
-ensure_env_var "BRAIN_UI_PROXY_PORT" "8002"
-ensure_env_var "BRAIN_UI_FRONTEND_PORT" "3000"
-ensure_env_var "BRAIN_UI_BACKEND_PORT" "8001"
+set_env_var "BRAIN_UI_PROXY_PORT" "18002"
+set_env_var "BRAIN_UI_FRONTEND_PORT" "13000"
+set_env_var "BRAIN_UI_BACKEND_PORT" "18001"
 ensure_env_var "BRAIN_PUBLIC_UI_PATH" "/ui"
 ensure_env_var "BRAIN_PUBLIC_UI_API_PATH" "/ui-api"
 ensure_env_var "BRAIN_UI_SESSION_SECONDS" "43200"
 ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"
 ensure_env_var "BRAIN_SLACK_AGENT_HOST" "127.0.0.1"
-ensure_env_var "BRAIN_SLACK_AGENT_PORT" "8003"
+set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"
 ensure_env_var "BRAIN_SLACK_SIGNING_SECRET" ""
 ensure_env_var "BRAIN_SLACK_BOT_TOKEN" ""
 ensure_env_var "BRAIN_SLACK_ALLOWED_TEAM_IDS" ""
@@ -226,6 +252,24 @@ mkdir -p "$RELEASE_DIR/.data"
 ln -sfn "$DATA_DIR" "$RELEASE_DIR/.data/shared"
 
 export ENV_FILE="$SECRETS_DIR/brain.env"
+set -a
+# shellcheck disable=SC1090
+source "$ENV_FILE"
+set +a
+
+if [[ -z "${GRAPH_DATABASE_PASSWORD:-}" || "$GRAPH_DATABASE_PASSWORD" == "change-me" || "$GRAPH_DATABASE_PASSWORD" == "replace-me" ]]; then
+  echo "GRAPH_DATABASE_PASSWORD must be set to a real secret before starting prod Neo4j" >&2
+  exit 1
+fi
+
+log "starting production Neo4j container"
+(
+  cd "$RELEASE_DIR"
+  GRAPH_DATABASE_PASSWORD="$GRAPH_DATABASE_PASSWORD" \
+    BRAIN_PROD_ROOT="$PROD_ROOT" \
+    docker compose -f config/deployment/docker-compose.prod.yml up -d neo4j
+)
+
 MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
 if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
   log "running pre-promotion live model smoke scope=$MODEL_SMOKE_SCOPE"
@@ -271,7 +315,7 @@ fi
 
 log "waiting for local health"
 for attempt in {1..30}; do
-  if curl -fsS "http://127.0.0.1:8000/healthz" >/dev/null 2>&1; then
+  if curl -fsS "http://${BRAIN_MCP_HOST:-127.0.0.1}:${BRAIN_MCP_PORT:-18000}/healthz" >/dev/null 2>&1; then
     break
   fi
   if [[ "$attempt" == "30" ]]; then
@@ -283,7 +327,7 @@ done
 
 log "waiting for local UI health"
 for attempt in {1..120}; do
-  if curl -fsS "http://127.0.0.1:8002/healthz" >/dev/null 2>&1; then
+  if curl -fsS "http://${BRAIN_UI_HOST:-127.0.0.1}:${BRAIN_UI_PROXY_PORT:-18002}/healthz" >/dev/null 2>&1; then
     break
   fi
   if [[ "$attempt" == "120" ]]; then
@@ -295,7 +339,7 @@ done
 
 log "waiting for local Slack agent health"
 for attempt in {1..30}; do
-  if curl -fsS "http://127.0.0.1:8003/slack/healthz" >/dev/null 2>&1; then
+  if curl -fsS "http://${BRAIN_SLACK_AGENT_HOST:-127.0.0.1}:${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" >/dev/null 2>&1; then
     break
   fi
   if [[ "$attempt" == "30" ]]; then

@@ -8,7 +8,7 @@ from typing import Any
 
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest
 from memory_stack.brain_service import ingest_source, recall
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 from memory_stack.taste.models import TasteDescribeRequest, TasteQueryRequest, TasteRememberRequest
 from memory_stack.taste.routing import taste_domain_router
 from memory_stack.taste.service import TasteService

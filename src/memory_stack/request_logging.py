@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 REDACTED = "[REDACTED]"

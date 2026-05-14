@@ -6,7 +6,7 @@ from typing import Any
 
 from memory_stack.brain_store import BrainStore
 from memory_stack.cognee_adapter import recall_text, run_async
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 MEMORY_ID_RE = re.compile(r"\bmem_[A-Za-z0-9]+\b")

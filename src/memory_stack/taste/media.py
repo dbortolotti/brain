@@ -294,32 +294,42 @@ def empty_restaurant_metadata() -> dict[str, Any]:
     return {"cuisine": {}}
 
 
-def normalize_media_metadata(metadata: dict[str, Any] | None) -> dict[str, Any]:
-    result = empty_media_metadata()
+def _normalize_path_metadata(
+    metadata: dict[str, Any] | None,
+    *,
+    empty: dict[str, Any],
+    paths: tuple[tuple[str, ...], ...],
+    value_normalizer: Any,
+) -> dict[str, Any]:
+    result = empty
     if not isinstance(metadata, dict):
         return result
 
-    for path in MEDIA_METADATA_PATHS:
+    for path in paths:
         raw = get_path(metadata, path)
         if raw is None:
             continue
-        set_path(result, path, normalize_media_value(path, raw))
+        set_path(result, path, value_normalizer(path, raw))
 
     return result
+
+
+def normalize_media_metadata(metadata: dict[str, Any] | None) -> dict[str, Any]:
+    return _normalize_path_metadata(
+        metadata,
+        empty=empty_media_metadata(),
+        paths=MEDIA_METADATA_PATHS,
+        value_normalizer=normalize_media_value,
+    )
 
 
 def normalize_music_metadata(metadata: dict[str, Any] | None) -> dict[str, Any]:
-    result = empty_music_metadata()
-    if not isinstance(metadata, dict):
-        return result
-
-    for path in MUSIC_METADATA_PATHS:
-        raw = get_path(metadata, path)
-        if raw is None:
-            continue
-        set_path(result, path, normalize_music_value(path, raw))
-
-    return result
+    return _normalize_path_metadata(
+        metadata,
+        empty=empty_music_metadata(),
+        paths=MUSIC_METADATA_PATHS,
+        value_normalizer=normalize_music_value,
+    )
 
 
 def normalize_restaurant_metadata(metadata: dict[str, Any] | None) -> dict[str, Any]:
@@ -391,18 +401,20 @@ def set_restaurant_field(
     return result
 
 
-def merge_media_metadata(
+def _merge_path_metadata(
     base: dict[str, Any] | None,
     incoming: dict[str, Any] | None,
     *,
+    paths: tuple[tuple[str, ...], ...],
+    normalizer: Any,
     overwrite: bool = False,
     protected_paths: set[tuple[str, ...]] | None = None,
 ) -> dict[str, Any]:
-    result = normalize_media_metadata(base)
-    source = normalize_media_metadata(incoming)
+    result = normalizer(base)
+    source = normalizer(incoming)
     protected_paths = protected_paths or set()
 
-    for path in MEDIA_METADATA_PATHS:
+    for path in paths:
         if path in protected_paths:
             continue
         value = get_path(source, path)
@@ -413,6 +425,23 @@ def merge_media_metadata(
             set_path(result, path, value)
 
     return result
+
+
+def merge_media_metadata(
+    base: dict[str, Any] | None,
+    incoming: dict[str, Any] | None,
+    *,
+    overwrite: bool = False,
+    protected_paths: set[tuple[str, ...]] | None = None,
+) -> dict[str, Any]:
+    return _merge_path_metadata(
+        base,
+        incoming,
+        paths=MEDIA_METADATA_PATHS,
+        normalizer=normalize_media_metadata,
+        overwrite=overwrite,
+        protected_paths=protected_paths,
+    )
 
 
 def merge_music_metadata(
@@ -422,21 +451,14 @@ def merge_music_metadata(
     overwrite: bool = False,
     protected_paths: set[tuple[str, ...]] | None = None,
 ) -> dict[str, Any]:
-    result = normalize_music_metadata(base)
-    source = normalize_music_metadata(incoming)
-    protected_paths = protected_paths or set()
-
-    for path in MUSIC_METADATA_PATHS:
-        if path in protected_paths:
-            continue
-        value = get_path(source, path)
-        if is_empty_metadata_value(value):
-            continue
-        current = get_path(result, path)
-        if overwrite or is_empty_metadata_value(current):
-            set_path(result, path, value)
-
-    return result
+    return _merge_path_metadata(
+        base,
+        incoming,
+        paths=MUSIC_METADATA_PATHS,
+        normalizer=normalize_music_metadata,
+        overwrite=overwrite,
+        protected_paths=protected_paths,
+    )
 
 
 def merge_restaurant_metadata(
@@ -446,21 +468,14 @@ def merge_restaurant_metadata(
     overwrite: bool = False,
     protected_paths: set[tuple[str, ...]] | None = None,
 ) -> dict[str, Any]:
-    result = normalize_restaurant_metadata(base)
-    source = normalize_restaurant_metadata(incoming)
-    protected_paths = protected_paths or set()
-
-    for path in RESTAURANT_METADATA_PATHS:
-        if path in protected_paths:
-            continue
-        value = get_path(source, path)
-        if is_empty_metadata_value(value):
-            continue
-        current = get_path(result, path)
-        if overwrite or is_empty_metadata_value(current):
-            set_path(result, path, value)
-
-    return result
+    return _merge_path_metadata(
+        base,
+        incoming,
+        paths=RESTAURANT_METADATA_PATHS,
+        normalizer=normalize_restaurant_metadata,
+        overwrite=overwrite,
+        protected_paths=protected_paths,
+    )
 
 
 def external_rating_tiebreak(metadata: dict[str, Any] | None) -> float:

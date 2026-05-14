@@ -5,7 +5,7 @@ from datetime import timedelta
 from memory_stack.brain_models import RememberRequest
 from memory_stack.brain_service import remember
 from memory_stack.brain_store import BrainStore, now_utc
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.workers.reminders import (
     find_relevant_open_loops,
     list_due_open_loops,

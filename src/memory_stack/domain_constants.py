@@ -39,6 +39,7 @@ CONFLICT_ACTIONS = (
 FORGET_OBJECT_TYPES = ("memory", "source", "entity", "relationship", "open_loop")
 ADMIN_COGNEE_OBJECT_TYPES = ("memory", "source", "data", "all")
 ADMIN_COGNEE_DATASETS = ("memory", "sources", "data", "all")
+COGNEE_IMPROVE_DATASETS = ("memory", "sources", "data", "palate", "agent_memory")
 
 SLACK_PROPOSAL_INPUT_TYPES = (
     "auto",

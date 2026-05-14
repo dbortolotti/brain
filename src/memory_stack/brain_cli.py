@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.table import Table
 import typer
 
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
 from memory_stack.evals.cli import app as eval_app
 from memory_stack.provider_auth import (
     OPENAI_CODEX_PROVIDER,

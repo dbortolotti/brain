@@ -3,7 +3,7 @@ from __future__ import annotations
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, list_open_loops, profile_entity, recall, remember
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 def test_family_fact_creates_single_card_entities_and_relationships(tmp_path) -> None:

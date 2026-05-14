@@ -5,7 +5,8 @@ import re
 from typing import Any
 
 from memory_stack.brain_store import content_hash, normalize_name, stable_id
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
+from memory_stack.llm.client import LLMClient, build_llm_client
 from memory_stack.resolution.entity_resolver import EntityResolver
 from memory_stack.taste.enrichment import TasteEnrichmentService
 from memory_stack.taste.models import (
@@ -18,15 +19,31 @@ from memory_stack.taste.models import (
 from memory_stack.taste.ranking import build_grounding, rank_candidates, retrieve_candidates
 from memory_stack.taste.routing import classify_taste_route, taste_domain_router
 from memory_stack.taste.schema import ENTITY_TYPES, INTENTS, attribute_keys_for_type
+from memory_stack.taste.cognee_store import CogneePalateStore
 from memory_stack.taste.store import TasteStore
 
 
+def canonical_taste_store(settings: Settings, sqlite_store: TasteStore) -> Any:
+    if settings.brain_taste_canonical_store == "cognee":
+        return CogneePalateStore(settings)
+    return sqlite_store
+
+
 class TasteService:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(
+        self,
+        settings: Settings,
+        llm_client: LLMClient | None = None,
+        canonical_store: Any | None = None,
+    ) -> None:
         self.settings = settings
         self.store = TasteStore(settings)
+        self.canonical_store = canonical_store or canonical_taste_store(settings, self.store)
         self.brain_store = self.store.brain_store
-        self.enrichment = TasteEnrichmentService(settings)
+        self.enrichment = TasteEnrichmentService(
+            settings,
+            llm_client=llm_client or build_llm_client(settings),
+        )
 
     def describe_item(self, request: TasteDescribeRequest) -> dict[str, Any]:
         existing = self._match_existing(request.canonical_name or request.item_text, request.entity_type)
@@ -78,7 +95,7 @@ class TasteService:
             "enriched": enriched,
             "suggested_remember_payload": self._suggest_remember_payload(enriched),
             "warnings": enriched["warnings"],
-            "server_llm_used": {"enrichment": False},
+            "server_llm_used": {"enrichment": bool(enriched.get("llm_used"))},
         }
 
     def remember(self, request: TasteRememberRequest) -> dict[str, Any]:
@@ -116,7 +133,10 @@ class TasteService:
                     "sources": enriched["sources"],
                     "warnings": enriched["warnings"],
                 },
-                "server_llm_used": {"routing": False, "enrichment": False},
+                "server_llm_used": {
+                    "routing": False,
+                    "enrichment": bool(enriched.get("llm_used")),
+                },
             }
         if request.dry_run:
             return {
@@ -138,7 +158,10 @@ class TasteService:
                     "sources": enriched["sources"],
                     "warnings": enriched["warnings"],
                 },
-                "server_llm_used": {"routing": False, "enrichment": False},
+                "server_llm_used": {
+                    "routing": False,
+                    "enrichment": bool(enriched.get("llm_used")),
+                },
             }
 
         entity, entity_created = self._resolve_taste_entity(
@@ -165,11 +188,15 @@ class TasteService:
             "attribute_intervals_95": enriched["attribute_intervals_95"],
             "signals": self._signals_for_request(request, projected),
         }
-        taste_item, created = self.store.upsert_item(item_payload)
+        taste_item, created = self.canonical_store.upsert_item(item_payload)
         self._attach_taste_metadata_to_memory(projected["memory_id"], taste_item["id"])
 
         return {
             "stored": True,
+            "canonical_store": self.settings.brain_taste_canonical_store,
+            "canonical_dataset": self.settings.brain_cognee_palate_dataset
+            if self.settings.brain_taste_canonical_store == "cognee"
+            else None,
             "taste_records_created": 1 if created else 0,
             "taste_records_updated": 0 if created else 1,
             "taste_records": [
@@ -203,7 +230,10 @@ class TasteService:
                 "sources": enriched["sources"],
                 "warnings": enriched["warnings"],
             },
-            "server_llm_used": {"routing": False, "enrichment": False},
+            "server_llm_used": {
+                "routing": False,
+                "enrichment": bool(enriched.get("llm_used")),
+            },
         }
 
     def query(self, request: TasteQueryRequest) -> dict[str, Any]:
@@ -214,14 +244,14 @@ class TasteService:
                 request.options_text,
                 intent.get("entity_type"),
             )
-        retrieval = retrieve_candidates(self.store, intent, extracted_entities or [])
-        feedback = self.store.decision_feedback(
+        retrieval = retrieve_candidates(self.canonical_store, intent, extracted_entities or [])
+        feedback = self.canonical_store.decision_feedback(
             request.query,
             [entity["id"] for entity in retrieval["candidates"]],
         )
         ranked = rank_candidates(retrieval["candidates"], intent, decision_feedback=feedback)
         grounding = build_grounding(ranked)
-        decision_id = self.store.log_decision(
+        decision_id = self.canonical_store.log_decision(
             query=request.query,
             context=request.context,
             options=extracted_entities or [],
@@ -229,6 +259,7 @@ class TasteService:
         )
         return {
             "decision_id": decision_id,
+            "canonical_store": self.settings.brain_taste_canonical_store,
             "intent": intent,
             "extracted_entities": extracted_entities or [],
             "retrieval": describe_retrieval(retrieval),
@@ -251,7 +282,7 @@ class TasteService:
 
     def log_decision(self, request: TasteLogDecisionRequest) -> dict[str, Any]:
         if request.decision_id:
-            changes = self.store.update_decision_choice(
+            changes = self.canonical_store.update_decision_choice(
                 request.decision_id,
                 request.chosen_taste_item_id,
             )
@@ -260,7 +291,7 @@ class TasteService:
             decision_id = request.decision_id
             updated = True
         else:
-            decision_id = self.store.log_decision(
+            decision_id = self.canonical_store.log_decision(
                 query=request.query,
                 context=request.context,
                 options=[],
@@ -271,6 +302,7 @@ class TasteService:
         return {
             "logged": True,
             "decision_id": decision_id,
+            "canonical_store": self.settings.brain_taste_canonical_store,
             "chosen_taste_item_id": request.chosen_taste_item_id,
             "updated_existing_decision": updated,
         }
@@ -463,7 +495,7 @@ class TasteService:
         return {"corrected": True, "proposal": updated}
 
     def refresh_enrichment(self, request: TasteRefreshRequest) -> dict[str, Any]:
-        item = self.store.get_item(request.taste_item_id)
+        item = self.canonical_store.get_item(request.taste_item_id)
         if item is None:
             return {"refreshed": False, "error": "Taste item not found."}
         previous = item.get("enrichment_metadata") or {}
@@ -492,7 +524,7 @@ class TasteService:
             item.get("metadata") or {},
             next_metadata,
         )
-        self.store.upsert_item(
+        self.canonical_store.upsert_item(
             {
                 **item,
                 "metadata_json": next_metadata,
@@ -530,6 +562,7 @@ class TasteService:
         return {
             "refreshed": True,
             "taste_record_id": item["id"],
+            "canonical_store": self.settings.brain_taste_canonical_store,
             "previous_enrichment_checked_at": previous.get("checked_at"),
             "new_enrichment_checked_at": enriched["enrichment_metadata"].get("checked_at"),
             "changed_fields": changed_fields,
@@ -793,17 +826,17 @@ class TasteService:
             )
 
     def _match_existing(self, name: str, entity_type: str) -> dict[str, Any]:
-        matches = self.store.match_entities_by_names([name])
+        matches = self.canonical_store.match_entities_by_names([name])
         typed = [
             match
             for match in matches.get("matches", [])
-            if self.store.get_item(match["matched_id"]) is not None
-            and self.store.get_item(match["matched_id"])["type"] == entity_type
+            if self.canonical_store.get_item(match["matched_id"]) is not None
+            and self.canonical_store.get_item(match["matched_id"])["type"] == entity_type
         ]
         if not typed:
             return {"record": None, "match": None, "needs_confirmation": []}
         best = max(typed, key=lambda match: float(match.get("confidence") or 0))
-        record = self.store.get_item(best["matched_id"])
+        record = self.canonical_store.get_item(best["matched_id"])
         if best.get("needs_confirmation"):
             return {"record": None, "match": None, "needs_confirmation": [best]}
         return {"record": record, "match": best, "needs_confirmation": []}

@@ -16,7 +16,7 @@ from tempfile import NamedTemporaryFile
 from threading import BoundedSemaphore, Lock
 from typing import Any, Protocol
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.model_fixtures import (
     FINE_GRAINED_ROLE_FIXTURE_SOURCES,
     ModelEvalFixture,

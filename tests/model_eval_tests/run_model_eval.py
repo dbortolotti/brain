@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import csv
+import hashlib
 import json
+import os
 import re
 import sys
 import time
@@ -19,7 +21,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from memory_stack.cognee_adapter import add_text, cognify_dataset, recall_text  # noqa: E402
-from memory_stack.config import Settings, load_settings  # noqa: E402
+from memory_stack.cfg import Settings, load_settings  # noqa: E402
 from memory_stack.evals.model_matrix import candidate_from_ref  # noqa: E402
 from memory_stack.evals.provider_client import LiveProviderClient  # noqa: E402
 
@@ -67,18 +69,33 @@ def now_id() -> str:
     return datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 
 
+def eval_storage_root(dataset: str) -> Path:
+    digest = hashlib.sha1(dataset.encode("utf-8")).hexdigest()[:12]
+    return Path(".data") / "model_eval_tests" / f"{slug(dataset)[:80]}_{digest}"
+
+
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def settings_for_model(model: str, dataset: str) -> Settings:
+    os.environ["LLM_PROVIDER"] = "openai"
+    os.environ["LLM_MODEL"] = "gpt-5.5"
     base = load_settings()
+    storage_root = (ROOT / eval_storage_root(dataset)).resolve()
     return base.model_copy(
         update={
             "brain_taste_enabled": False,
             "brain_cognee_memory_dataset": dataset,
             "llm_provider": "openai",
             "llm_model": model_arg(model),
+            "graph_database_provider": "ladybug",
+            "db_provider": "sqlite",
+            "vector_db_provider": "lancedb",
+            "vector_dataset_database_handler": "lancedb",
+            "vector_db_url": str(storage_root / "system" / "databases" / "cognee.lancedb"),
+            "system_root_directory": str(storage_root / "system"),
+            "data_root_directory": str(storage_root / "data"),
         }
     )
 
@@ -163,6 +180,16 @@ def append_jsonl(path: Path) -> Iterator[Any]:
 def write_jsonl(handle: Any, record: dict[str, Any]) -> None:
     handle.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
     handle.flush()
+
+
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            rows.append(json.loads(line))
+    return rows
 
 
 async def ingest_fixture_material(
@@ -382,7 +409,52 @@ Authoritative context:
 """
 
 
-def score_answers(
+def score_answer(
+    *,
+    settings: Settings,
+    candidate: Any,
+    answer: dict[str, Any],
+    question: EvalQuestion,
+    manetti_doc: str,
+    seeds_by_id: dict[str, dict[str, Any]],
+    timeout_s: float,
+) -> dict[str, Any]:
+    client = LiveProviderClient(settings, timeout_seconds=timeout_s, retry_attempts=1)
+    result = client.complete_json(
+        candidate,
+        prompt=judge_prompt(
+            answer_record=answer,
+            question=question,
+            manetti_doc=manetti_doc,
+            seeds_by_id=seeds_by_id,
+        ),
+        schema=JUDGE_SCHEMA,
+    )
+    payload = result.payload if result.status == "ok" and result.payload else {}
+    score = payload.get("score")
+    return {
+        "suite": answer["suite"],
+        "question_id": answer["question_id"],
+        "difficulty": answer["difficulty"],
+        "query": answer["query"],
+        "expected": answer["expected"],
+        "answer": answer["answer"],
+        "recall_model": answer["recall_model"],
+        "judge_model": candidate.ref,
+        "judge_reasoning_effort": candidate.reasoning_effort,
+        "score": score,
+        "judge_reason": payload.get("reason"),
+        "judge_status": result.status,
+        "judge_error": result.error,
+        "judge_latency_ms": result.latency_ms,
+        "judge_input_tokens_est": result.input_tokens,
+        "judge_output_tokens_est": result.output_tokens,
+        "judge_estimated_cost_usd": result.estimated_cost_usd,
+        "recall_seconds": answer["recall_seconds"],
+    }
+
+
+async def score_answers(
     *,
     judge_model: str,
     answers: list[dict[str, Any]],
@@ -392,53 +464,47 @@ def score_answers(
     output_dir: Path,
     timeout_s: float,
     reasoning_effort: str | None,
+    concurrency: int,
+    resume: bool,
 ) -> list[dict[str, Any]]:
+    os.environ["LLM_PROVIDER"] = "openai"
+    os.environ["LLM_MODEL"] = model_arg(judge_model)
     settings = load_settings()
     candidate = candidate_from_ref(model_ref(judge_model), roles={"judge"})
     if reasoning_effort:
         candidate = replace(candidate, reasoning_effort=reasoning_effort)
-    client = LiveProviderClient(settings, timeout_seconds=timeout_s, retry_attempts=1)
     question_by_key = {(q.suite, q.question_id): q for q in questions}
     seeds_by_id = {seed["id"]: seed for seed in organic_seeds}
-    scores: list[dict[str, Any]] = []
+    scores_path = output_dir / "scores.jsonl"
+    existing = read_jsonl(scores_path) if resume else []
+    scored_keys = {(row["suite"], row["question_id"]) for row in existing}
+    scores: list[dict[str, Any]] = list(existing)
+    semaphore = asyncio.Semaphore(max(1, concurrency))
 
-    with append_jsonl(output_dir / "scores.jsonl") as handle:
-        for index, answer in enumerate(answers, 1):
-            key = (answer["suite"], answer["question_id"])
-            question = question_by_key[key]
-            print(f"[{index}/{len(answers)}] judge {question.suite}:{question.question_id}", flush=True)
-            result = client.complete_json(
-                candidate,
-                prompt=judge_prompt(
-                    answer_record=answer,
-                    question=question,
-                    manetti_doc=manetti_doc,
-                    seeds_by_id=seeds_by_id,
-                ),
-                schema=JUDGE_SCHEMA,
+    async def run_one(index: int, answer: dict[str, Any]) -> dict[str, Any]:
+        key = (answer["suite"], answer["question_id"])
+        question = question_by_key[key]
+        print(f"[{index}/{len(answers)}] judge {question.suite}:{question.question_id}", flush=True)
+        async with semaphore:
+            return await asyncio.to_thread(
+                score_answer,
+                settings=settings,
+                candidate=candidate,
+                answer=answer,
+                question=question,
+                manetti_doc=manetti_doc,
+                seeds_by_id=seeds_by_id,
+                timeout_s=timeout_s,
             )
-            payload = result.payload if result.status == "ok" and result.payload else {}
-            score = payload.get("score")
-            record = {
-                "suite": answer["suite"],
-                "question_id": answer["question_id"],
-                "difficulty": answer["difficulty"],
-                "query": answer["query"],
-                "expected": answer["expected"],
-                "answer": answer["answer"],
-                "recall_model": answer["recall_model"],
-                "judge_model": candidate.ref,
-                "judge_reasoning_effort": candidate.reasoning_effort,
-                "score": score,
-                "judge_reason": payload.get("reason"),
-                "judge_status": result.status,
-                "judge_error": result.error,
-                "judge_latency_ms": result.latency_ms,
-                "judge_input_tokens_est": result.input_tokens,
-                "judge_output_tokens_est": result.output_tokens,
-                "judge_estimated_cost_usd": result.estimated_cost_usd,
-                "recall_seconds": answer["recall_seconds"],
-            }
+
+    tasks = [
+        asyncio.create_task(run_one(index, answer))
+        for index, answer in enumerate(answers, 1)
+        if (answer["suite"], answer["question_id"]) not in scored_keys
+    ]
+    with append_jsonl(scores_path) as handle:
+        for task in asyncio.as_completed(tasks):
+            record = await task
             scores.append(record)
             write_jsonl(handle, record)
     return scores
@@ -491,6 +557,8 @@ def markdown_report(
         "| Suite | Difficulty | Questions | Average score | Average recall seconds |",
         "|---|---:|---:|---:|---:|",
     ]
+    if ingestion.get("reused_from"):
+        lines.insert(10, f"- Reused ingestion from: `{ingestion['reused_from']}`")
     for suite in ("manetti", "organic"):
         for difficulty in range(1, 6):
             rows = [
@@ -540,6 +608,7 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         "dataset": dataset,
         "judge_model": model_ref(args.judge_model),
         "judge_reasoning_effort": args.judge_reasoning_effort,
+        "cognee_openai_reasoning_effort": os.environ.get("COGNEE_OPENAI_REASONING_EFFORT"),
         "remember_model": model_ref(args.remember_model),
         "recall_model": model_ref(args.recall_model),
         "search_type": args.search_type,
@@ -548,31 +617,55 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         "manetti_question_count": sum(1 for q in questions if q.suite == "manetti"),
         "organic_question_count": sum(1 for q in questions if q.suite == "organic"),
         "fixture_dir": str(FIXTURE_DIR),
+        "skip_ingestion": args.skip_ingestion,
+        "ingestion_source_run_dir": (
+            str(args.ingestion_source_run_dir) if args.ingestion_source_run_dir else None
+        ),
     }
     (output_dir / "config.json").write_text(
         json.dumps(config, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
-    ingestion = await ingest_fixture_material(
-        dataset=dataset,
-        remember_model=args.remember_model,
-        manetti_doc=manetti_doc,
-        organic_seeds=organic_seeds,
-        output_dir=output_dir,
-        add_timeout_s=args.add_timeout_s,
-        cognify_timeout_s=args.cognify_timeout_s,
-    )
-    answers = await recall_questions(
-        dataset=dataset,
-        recall_model=args.recall_model,
-        questions=questions,
-        output_dir=output_dir,
-        search_type=args.search_type,
-        top_k=args.top_k,
-        timeout_s=args.recall_timeout_s,
-    )
-    scores = score_answers(
+    ingestion_path = output_dir / "ingestion_timings.json"
+    if args.resume and ingestion_path.exists():
+        ingestion = json.loads(ingestion_path.read_text(encoding="utf-8"))
+    elif args.skip_ingestion:
+        if not args.ingestion_source_run_dir:
+            raise ValueError("--skip-ingestion requires --ingestion-source-run-dir")
+        source_path = args.ingestion_source_run_dir / "ingestion_timings.json"
+        ingestion = json.loads(source_path.read_text(encoding="utf-8"))
+        ingestion = {**ingestion, "reused_from": str(args.ingestion_source_run_dir)}
+        ingestion_path.write_text(
+            json.dumps(ingestion, indent=2, ensure_ascii=False, default=str),
+            encoding="utf-8",
+        )
+    else:
+        ingestion = await ingest_fixture_material(
+            dataset=dataset,
+            remember_model=args.remember_model,
+            manetti_doc=manetti_doc,
+            organic_seeds=organic_seeds,
+            output_dir=output_dir,
+            add_timeout_s=args.add_timeout_s,
+            cognify_timeout_s=args.cognify_timeout_s,
+        )
+
+    answers_path = output_dir / "answers.jsonl"
+    if args.resume and answers_path.exists():
+        answers = read_jsonl(answers_path)
+    else:
+        answers = await recall_questions(
+            dataset=dataset,
+            recall_model=args.recall_model,
+            questions=questions,
+            output_dir=output_dir,
+            search_type=args.search_type,
+            top_k=args.top_k,
+            timeout_s=args.recall_timeout_s,
+        )
+
+    scores = await score_answers(
         judge_model=args.judge_model,
         answers=answers,
         questions=questions,
@@ -581,6 +674,8 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         output_dir=output_dir,
         timeout_s=args.judge_timeout_s,
         reasoning_effort=args.judge_reasoning_effort,
+        concurrency=args.judge_concurrency,
+        resume=args.resume,
     )
     write_scores_csv(output_dir / "scores.csv", scores)
     report = markdown_report(config=config, ingestion=ingestion, scores=scores)
@@ -625,8 +720,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cognify-timeout-s", type=float, default=1800)
     parser.add_argument("--recall-timeout-s", type=float, default=180)
     parser.add_argument("--judge-timeout-s", type=float, default=240)
+    parser.add_argument("--judge-concurrency", type=int, default=1)
     parser.add_argument("--limit-manetti", type=int, help="Development-only question limit.")
     parser.add_argument("--limit-organic", type=int, help="Development-only question limit.")
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument(
+        "--skip-ingestion",
+        action="store_true",
+        help="Reuse an existing dataset instead of ingesting fixtures.",
+    )
+    parser.add_argument(
+        "--ingestion-source-run-dir",
+        type=Path,
+        help="Run directory containing ingestion_timings.json for a reused dataset.",
+    )
     return parser.parse_args()
 
 

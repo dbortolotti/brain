@@ -21,7 +21,7 @@ from memory_stack.brain_service import (
     undo_last,
 )
 from memory_stack.brain_store import BrainStore, row_dict
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.slack.formatter import format_review, format_undo
 from memory_stack.slack_guardrails import (
     ProposedMemory,

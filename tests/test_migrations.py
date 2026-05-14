@@ -7,7 +7,7 @@ from alembic.config import Config
 from sqlalchemy import create_engine, inspect
 
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:

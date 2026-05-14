@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 import certifi
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.taste.media import (
     RESTAURANT_GENRE_ALIASES,
     RESTAURANT_GENRES,

@@ -5,7 +5,7 @@ from typing import Any
 from memory_stack.brain_store import BrainStore, now_utc
 from memory_stack.cognee.projector import ProjectionAdapter, project_memory, project_source
 from memory_stack.cognee_adapter import ensure_datasources_ready, run_async
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 
 
 def sync_pending_cognee(

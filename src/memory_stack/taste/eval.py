@@ -158,7 +158,7 @@ def main() -> None:
     parser.add_argument("--top", type=int, default=10, help="Number of sweep rows to print.")
     args = parser.parse_args()
 
-    from memory_stack.config import Settings, load_settings
+    from memory_stack.cfg import Settings, load_settings
     from memory_stack.taste.store import TasteStore
 
     settings = load_settings()

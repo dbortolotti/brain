@@ -2,20 +2,25 @@
 from __future__ import annotations
 
 import sys
+import argparse
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from rich.console import Console
 
-from memory_stack.config import check_embedding_dimension_change, load_settings, repo_path
+from memory_stack.cfg import check_embedding_dimension_change, load_settings, repo_path
 
 
 console = Console()
 
 
 def main() -> int:
-    settings = load_settings()
+    parser = argparse.ArgumentParser(description="Check Brain runtime configuration.")
+    parser.add_argument("--env", choices=["dev", "prod"], default=None, help="Config profile to load.")
+    args = parser.parse_args()
+
+    settings = load_settings(config_env=args.env)
 
     console.print(f"[green][OK][/green] profile={settings.profile}")
     console.print(f"[green][OK][/green] llm={format_provider_model(settings.llm_provider, settings.llm_model)}")

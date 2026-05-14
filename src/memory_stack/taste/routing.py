@@ -243,7 +243,8 @@ def classify_taste_route(
             llm_client.complete_json(
                 taste_classification_prompt(text),
                 taste_classification_schema(),
-                model=getattr(settings, "llm_model", None),
+                model=getattr(settings, "brain_taste_llm_model", None),
+                reasoning_effort=getattr(settings, "brain_taste_llm_reasoning_effort", None),
                 temperature=0,
             )
         )

@@ -17,7 +17,7 @@ from memory_stack.brain_store import (
     row_dict,
     stable_id,
 )
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.taste.schema import SIGNAL_TYPES, attribute_keys_for_type
 
 

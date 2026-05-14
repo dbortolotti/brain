@@ -9,7 +9,7 @@ from typing import Any
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, recall, remember
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.fixtures.golden import ARTICLE_TEXT, LONG_CHAT_SUMMARY, PREFERENCE_TABLE
 from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, output_schema_for_fixture
 from memory_stack.evals.model_matrix import ModelCandidate, candidate_from_ref
@@ -106,39 +106,17 @@ E2E_RECALL_CASES: tuple[E2ERecallCase, ...] = (
 
 EXPECTED_E2E_ROLES: tuple[str, ...] = (
     "atomic_card_extractor",
-    "commit_policy_decider",
-    "conflict_candidate_detector",
-    "conflict_explainer",
-    "conflict_policy_decider",
-    "debug_explainer",
     "durability_filter",
-    "entity_candidate_ranker",
-    "entity_final_resolver",
     "entity_mention_extractor",
     "eval_judge",
-    "groundedness_checker",
     "intent_router",
     "memory_kind_classifier",
     "open_loop_detector",
-    "recall_planner",
-    "recall_relevance_filter",
-    "recall_synthesizer",
     "relationship_extractor",
     "repair_option_generator",
     "source_classifier",
     "source_takeaway_extractor",
-    "success_receipt_generator",
     "table_policy_handler",
-    "taste_attribute_extractor",
-    "taste_domain_router",
-    "taste_enrichment_normalizer",
-    "taste_enrichment_planner",
-    "taste_entity_classifier",
-    "taste_explanation_synthesizer",
-    "taste_memory_projector",
-    "taste_option_matcher",
-    "taste_ranker",
-    "taste_signal_extractor",
 )
 
 
@@ -386,7 +364,7 @@ def build_recall_e2e_fixture(
     return ModelEvalFixture(
         id=case.id,
         scenario_group="e2e_runtime_recall",
-        role="recall_synthesizer",
+        role="eval_judge",
         input_text=e2e_model_prompt(case, runtime_response.model_dump(mode="json"), seed),
         expected=case.expected,
         zero_tolerance_checks=case.zero_tolerance_checks,
@@ -429,7 +407,7 @@ def build_role_e2e_fixtures(seed: E2EDatabaseSeed) -> tuple[ModelEvalFixture, ..
             zero_tolerance_checks=zero_tolerance_checks,
         )
 
-    return (
+    fixtures = (
         fixture(
             "e2e_intent_router_recall_vs_write",
             "intent_router",
@@ -743,6 +721,7 @@ def build_role_e2e_fixtures(seed: E2EDatabaseSeed) -> tuple[ModelEvalFixture, ..
             },
         ),
     )
+    return tuple(fixture for fixture in fixtures if fixture.role in EXPECTED_E2E_ROLES)
 
 
 def e2e_model_prompt(

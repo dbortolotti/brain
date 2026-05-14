@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from rich.console import Console
 
-from memory_stack.config import PROJECT_ROOT, load_settings, record_embedding_dimension
+from memory_stack.cfg import PROJECT_ROOT, load_settings, record_embedding_dimension
 
 
 console = Console()

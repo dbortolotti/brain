@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from rich.console import Console
 
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
 
 
 console = Console()
@@ -437,7 +437,7 @@ def wait_for_neo4j_stopped(settings, attempts: int = 45) -> None:
     for _ in range(attempts):
         if (
             not neo4j_launchd_running(settings)
-            and not neo4j_bolt_listening()
+            and not neo4j_bolt_listening(settings)
             and not neo4j_process_running()
         ):
             return
@@ -445,11 +445,12 @@ def wait_for_neo4j_stopped(settings, attempts: int = 45) -> None:
     raise RuntimeError("Neo4j did not stop before the dump window.")
 
 
-def neo4j_bolt_listening() -> bool:
+def neo4j_bolt_listening(settings) -> bool:
     if not shutil.which("lsof"):
         return False
+    port = str(settings.graph_database_url).rsplit(":", maxsplit=1)[-1] or "7687"
     result = subprocess.run(
-        ["lsof", "-nP", "-iTCP:7687", "-sTCP:LISTEN"],
+        ["lsof", "-nP", f"-iTCP:{port}", "-sTCP:LISTEN"],
         text=True,
         capture_output=True,
         check=False,

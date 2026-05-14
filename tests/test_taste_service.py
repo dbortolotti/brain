@@ -8,7 +8,7 @@ from memory_stack import brain_schema as schema
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, recall, remember
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.llm.fake import FakeLLMClient
 from memory_stack.taste.models import (
     TasteDescribeRequest,

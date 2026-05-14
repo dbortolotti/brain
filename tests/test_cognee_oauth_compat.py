@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from memory_stack.cognee import oauth_compat
 from memory_stack.cognee_adapter import add_text, remember_text
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 class SampleResponse(BaseModel):
@@ -94,6 +94,88 @@ def test_cognee_oauth_adapter_calls_codex_responses_endpoint(tmp_path, monkeypat
     assert requests[0]["headers"]["Authorization"] == "Bearer oauth-token"
     assert requests[0]["json"]["stream"] is True
     assert "JSON schema:" in requests[0]["json"]["input"][0]["content"]
+
+
+def test_cognee_oauth_adapter_passes_responses_tool_options(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "oauth-token")
+    requests: list[dict[str, Any]] = []
+
+    class FakeAsyncClient:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            del args, kwargs
+
+        async def __aenter__(self) -> "FakeAsyncClient":
+            return self
+
+        async def __aexit__(self, *args: Any) -> None:
+            del args
+
+        async def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> httpx.Response:
+            del url, headers
+            requests.append(json)
+            event = {
+                "type": "response.output_text.delta",
+                "delta": '{"answer":"ok"}',
+            }
+            return httpx.Response(200, text=f"data: {json_dumps(event)}\n\ndata: [DONE]\n")
+
+    monkeypatch.setattr(oauth_compat.httpx, "AsyncClient", FakeAsyncClient)
+    adapter = oauth_compat.CogneeOAuthLLMAdapter(auth_settings(tmp_path))
+
+    asyncio.run(
+        adapter.acreate_structured_output(
+            text_input="question",
+            system_prompt="system",
+            response_model=SampleResponse,
+            tools=[{"type": "web_search"}],
+            tool_choice="auto",
+            include=["web_search_call.action.sources"],
+        )
+    )
+
+    assert requests[0]["tools"] == [{"type": "web_search"}]
+    assert requests[0]["tool_choice"] == "auto"
+    assert requests[0]["include"] == ["web_search_call.action.sources"]
+
+
+def test_cognee_oauth_adapter_honors_model_and_reasoning_overrides(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "oauth-token")
+    requests: list[dict[str, Any]] = []
+
+    class FakeAsyncClient:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            del args, kwargs
+
+        async def __aenter__(self) -> "FakeAsyncClient":
+            return self
+
+        async def __aexit__(self, *args: Any) -> None:
+            del args
+
+        async def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> httpx.Response:
+            del url, headers
+            requests.append(json)
+            event = {
+                "type": "response.output_text.delta",
+                "delta": '{"answer":"ok"}',
+            }
+            return httpx.Response(200, text=f"data: {json_dumps(event)}\n\ndata: [DONE]\n")
+
+    monkeypatch.setattr(oauth_compat.httpx, "AsyncClient", FakeAsyncClient)
+    adapter = oauth_compat.CogneeOAuthLLMAdapter(auth_settings(tmp_path))
+
+    asyncio.run(
+        adapter.acreate_structured_output(
+            text_input="question",
+            system_prompt="system",
+            response_model=SampleResponse,
+            model="gpt-5.5",
+            reasoning_effort="medium",
+        )
+    )
+
+    assert requests[0]["model"] == "gpt-5.5"
+    assert requests[0]["reasoning"] == {"effort": "medium"}
 
 
 def test_cognee_oauth_adapter_reads_completed_stream_item_text(

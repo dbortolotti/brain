@@ -19,7 +19,7 @@ from memory_stack.brain_service import (
     sync_cognee as brain_sync_cognee,
     undo_last as brain_undo_last,
 )
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
 from memory_stack.taste.models import (
     TasteDescribeRequest,
     TasteLogDecisionRequest,
@@ -39,7 +39,7 @@ def build_server():
     settings = load_settings()
     mcp = FastMCP("Brain")
 
-    @mcp.tool(name="brain.remember", structured_output=True)
+    @mcp.tool(name="brain_remember", structured_output=True)
     async def remember(
         input: str,
         input_type: str = "auto",
@@ -57,7 +57,7 @@ def build_server():
         )
         return brain_remember(request, settings).model_dump(mode="json")
 
-    @mcp.tool(name="brain.ingest_source", structured_output=True)
+    @mcp.tool(name="brain_ingest_source", structured_output=True)
     async def ingest_source(
         source: str,
         source_kind: str = "auto",
@@ -89,7 +89,7 @@ def build_server():
             "ingestion": receipt,
         }
 
-    @mcp.tool(name="brain.recall", structured_output=True)
+    @mcp.tool(name="brain_recall", structured_output=True)
     async def recall(
         query: str,
         mode: str = "auto",
@@ -109,7 +109,7 @@ def build_server():
         )
         return brain_recall(request, settings).model_dump(mode="json")
 
-    @mcp.tool(name="brain.profile_entity", structured_output=True)
+    @mcp.tool(name="brain_profile_entity", structured_output=True)
     async def profile_entity(
         name: str,
         entity_type: str = "auto",
@@ -129,7 +129,7 @@ def build_server():
             include_conflicts=include_conflicts,
         ).model_dump(mode="json")
 
-    @mcp.tool(name="brain.list_open_loops", structured_output=True)
+    @mcp.tool(name="brain_list_open_loops", structured_output=True)
     async def list_open_loops(
         topic: str | None = None,
         status: str = "open",
@@ -147,7 +147,7 @@ def build_server():
             )
         }
 
-    @mcp.tool(name="brain.get_memory", structured_output=True)
+    @mcp.tool(name="brain_get_memory", structured_output=True)
     async def get_memory(
         memory_id: str,
         include_links: bool = True,
@@ -158,7 +158,7 @@ def build_server():
         del include_links, include_entities, include_source
         return {"memory": brain_get_memory(memory_id, settings)}
 
-    @mcp.tool(name="brain.get_source", structured_output=True)
+    @mcp.tool(name="brain_get_source", structured_output=True)
     async def get_source(
         source_id: str,
         include_text: bool = False,
@@ -177,7 +177,7 @@ def build_server():
         )
         return {"source": source_without_text, "text": text}
 
-    @mcp.tool(name="brain.resolve_conflict", structured_output=True)
+    @mcp.tool(name="brain_resolve_conflict", structured_output=True)
     async def resolve_conflict(
         conflict_memory_id: str,
         target_memory_id: str,
@@ -193,7 +193,7 @@ def build_server():
             note=note,
         )
 
-    @mcp.tool(name="brain.forget", structured_output=True)
+    @mcp.tool(name="brain_forget", structured_output=True)
     async def forget(
         object_type: str,
         object_id: str,
@@ -203,7 +203,7 @@ def build_server():
     ) -> dict[str, Any]:
         """Soft delete a Brain object. Hard delete requires confirm=true."""
         if hard and not confirm:
-            raise ValueError("brain.forget requires confirm=true for hard deletes.")
+            raise ValueError("brain_forget requires confirm=true for hard deletes.")
         payload = brain_forget(
             settings,
             object_type=object_type,
@@ -217,7 +217,7 @@ def build_server():
             "cognee_sync_status": "stale",
         }
 
-    @mcp.tool(name="brain.review_recent", structured_output=True)
+    @mcp.tool(name="brain_review_recent", structured_output=True)
     async def review_recent(
         since: str | None = None,
         limit: int = 20,
@@ -236,12 +236,12 @@ def build_server():
             include_sources=include_sources,
         )
 
-    @mcp.tool(name="brain.undo_last", structured_output=True)
+    @mcp.tool(name="brain_undo_last", structured_output=True)
     async def undo_last(ingestion_run_id: str | None = None) -> dict[str, Any]:
         """Soft-delete objects created by one recent ingestion run."""
         return brain_undo_last(settings, ingestion_run_id=ingestion_run_id)
 
-    @mcp.tool(name="brain.sync_cognee", structured_output=True)
+    @mcp.tool(name="brain_sync_cognee", structured_output=True)
     async def sync_cognee(
         object_type: str = "all",
         object_id: str | None = None,
@@ -257,7 +257,7 @@ def build_server():
             force=force,
         )
 
-    @mcp.tool(name="brain.rebuild_cognee", structured_output=True)
+    @mcp.tool(name="brain_rebuild_cognee", structured_output=True)
     async def rebuild_cognee(
         dataset: str = "all",
         prune_first: bool = False,
@@ -271,7 +271,7 @@ def build_server():
             confirm=confirm,
         )
 
-    @mcp.tool(name="brain.merge_entities", structured_output=True)
+    @mcp.tool(name="brain_merge_entities", structured_output=True)
     async def merge_entities(
         primary_entity_id: str,
         duplicate_entity_id: str,
@@ -287,7 +287,7 @@ def build_server():
             confirm=confirm,
         )
 
-    @mcp.tool(name="brain.taste.describe_item", structured_output=True)
+    @mcp.tool(name="brain_palate_describe_item", structured_output=True)
     async def taste_describe_item(
         item_text: str,
         entity_type: str,
@@ -314,7 +314,7 @@ def build_server():
             )
         )
 
-    @mcp.tool(name="brain.taste.remember", structured_output=True)
+    @mcp.tool(name="brain_palate_remember", structured_output=True)
     async def taste_remember(
         type: str,
         canonical_name: str,
@@ -369,7 +369,7 @@ def build_server():
             )
         )
 
-    @mcp.tool(name="brain.taste.query", structured_output=True)
+    @mcp.tool(name="brain_palate_query", structured_output=True)
     async def taste_query(
         query: str,
         context: dict[str, Any] | None = None,
@@ -390,7 +390,7 @@ def build_server():
             )
         )
 
-    @mcp.tool(name="brain.taste.evaluate_options", structured_output=True)
+    @mcp.tool(name="brain_palate_evaluate_options", structured_output=True)
     async def taste_evaluate_options(
         query: str,
         options_text: str,
@@ -411,7 +411,7 @@ def build_server():
             )
         )
 
-    @mcp.tool(name="brain.taste.log_decision", structured_output=True)
+    @mcp.tool(name="brain_palate_log_decision", structured_output=True)
     async def taste_log_decision(
         chosen_taste_item_id: str,
         decision_id: str | None = None,
@@ -428,22 +428,22 @@ def build_server():
             )
         )
 
-    @mcp.tool(name="brain.taste.confirm", structured_output=True)
+    @mcp.tool(name="brain_palate_confirm", structured_output=True)
     async def taste_confirm(proposal_id: str) -> dict[str, Any]:
         """Confirm a pending taste proposal."""
         return TasteService(settings).confirm(proposal_id)
 
-    @mcp.tool(name="brain.taste.cancel", structured_output=True)
+    @mcp.tool(name="brain_palate_cancel", structured_output=True)
     async def taste_cancel(proposal_id: str) -> dict[str, Any]:
         """Cancel a pending taste proposal."""
         return TasteService(settings).cancel(proposal_id)
 
-    @mcp.tool(name="brain.taste.correct_proposal", structured_output=True)
+    @mcp.tool(name="brain_palate_correct_proposal", structured_output=True)
     async def taste_correct_proposal(proposal_id: str, correction: str) -> dict[str, Any]:
         """Apply a free-text correction to a pending taste proposal."""
         return TasteService(settings).correct_proposal(proposal_id, correction)
 
-    @mcp.tool(name="brain.taste.refresh_enrichment", structured_output=True)
+    @mcp.tool(name="brain_palate_refresh_enrichment", structured_output=True)
     async def taste_refresh_enrichment(taste_item_id: str) -> dict[str, Any]:
         """Refresh enrichment for a stored taste item."""
         return TasteService(settings).refresh_enrichment(

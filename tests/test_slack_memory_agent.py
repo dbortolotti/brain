@@ -6,7 +6,7 @@ from typing import Any
 from memory_stack.brain_models import RememberRequest
 from memory_stack.brain_service import remember
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent, receipt_text
 from memory_stack.taste.store import TasteStore
 

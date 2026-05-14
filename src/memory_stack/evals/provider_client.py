@@ -13,7 +13,7 @@ from urllib.parse import quote, urlparse
 
 import httpx
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
 from memory_stack.local_embeddings import fastembed_vector
 from memory_stack.provider_auth import ProviderAuthError, resolve_openai_text_bearer

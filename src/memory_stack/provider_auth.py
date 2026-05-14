@@ -18,7 +18,7 @@ from typing import Any, Iterator
 import fcntl
 import httpx
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 OPENAI_CODEX_PROVIDER = "openai-codex"

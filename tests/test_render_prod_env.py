@@ -78,7 +78,7 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "OPENAI_AUTH_MODE=oauth" in rendered
     assert "OPENAI_CODEX_AUTH_PROFILE=default" in rendered
     assert "LLM_PROVIDER=openai" in rendered
-    assert "LLM_MODEL=gpt-5.5" in rendered
+    assert "LLM_MODEL=gpt-5.4-mini" in rendered
     assert "EMBEDDING_PROVIDER=openai" in rendered
     assert "EMBEDDING_MODEL=text-embedding-3-large" in rendered
     assert "EMBEDDING_DIMENSIONS=3072" in rendered
@@ -86,6 +86,8 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "OPENROUTER_API_KEY=sk-prod-openrouter" in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
     assert "BRAIN_TASTE_ENABLED=true" in rendered
+    assert "BRAIN_TASTE_LLM_MODEL=gpt-5.5" in rendered
+    assert "BRAIN_TASTE_LLM_REASONING_EFFORT=medium" in rendered
     assert "BRAIN_TASTE_LLM_ROUTING_ENABLED=false" in rendered
     assert "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80" in rendered
     assert "BRAIN_TASTE_IMPORT_SOURCE_PATH" not in rendered

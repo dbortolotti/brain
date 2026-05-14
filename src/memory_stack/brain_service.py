@@ -21,7 +21,7 @@ from memory_stack.cognee.serializers import (
     serialize_source_for_cognee,
 )
 from memory_stack.cognee.sync_worker import sync_one, sync_pending_cognee
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.ingestion.classifier import input_type_for_source_kind
 from memory_stack.ingestion.memory_compiler import compile_memory
 from memory_stack.llm.client import LLMClient
@@ -34,7 +34,7 @@ from memory_stack.resolution.conflict_detector import detect_and_apply_memory_re
 from memory_stack.resolution.entity_resolver import EntityResolver
 from memory_stack.taste.models import TasteQueryRequest
 from memory_stack.taste.routing import classify_taste_route
-from memory_stack.taste.service import TasteService, remember_request_from_route
+from memory_stack.taste.service import TasteService, canonical_taste_store, remember_request_from_route
 from memory_stack.taste.store import TasteStore
 
 
@@ -47,7 +47,7 @@ def remember(
     if settings.brain_taste_enabled and not request.context.get("taste_skip"):
         route = classify_taste_route(request.input, settings=settings, llm_client=llm_client)
         if route.get("taste_intent") == "remember" and route.get("domain") in {"taste", "ambiguous"}:
-            taste_service = TasteService(settings)
+            taste_service = TasteService(settings, llm_client=llm_client)
             if (
                 route.get("domain") == "taste"
                 and float(route.get("confidence") or 0) >= settings.brain_taste_auto_write_threshold
@@ -311,7 +311,7 @@ def ingest_source(
     if settings.brain_taste_enabled:
         candidates = taste_source_candidates(request.source, settings=settings, llm_client=llm_client)
         if candidates:
-            taste_service = TasteService(settings)
+            taste_service = TasteService(settings, llm_client=llm_client)
             proposal_ids = []
             if len(candidates) <= 3 and not request.dry_run:
                 for candidate in candidates:
@@ -723,7 +723,7 @@ def merge_entities(
     confirm: bool = False,
 ) -> dict[str, Any]:
     if not confirm:
-        raise ValueError("brain.merge_entities requires confirm=true.")
+        raise ValueError("brain_merge_entities requires confirm=true.")
     store = BrainStore(settings)
     result = store.merge_entities(
         primary_entity_id=primary_entity_id,
@@ -782,7 +782,8 @@ def collect_taste_evidence(settings: Settings, memories: list[dict[str, Any]]) -
     ]
     if not taste_memory_ids:
         return {}
-    store = TasteStore(settings)
+    sqlite_store = TasteStore(settings)
+    store = canonical_taste_store(settings, sqlite_store)
     linked = []
     for memory in memories:
         taste_item_id = (memory.get("metadata_json") or {}).get("taste_item_id")

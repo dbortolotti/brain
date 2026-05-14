@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.taste.media import (
     normalize_media_metadata,
     normalize_music_metadata,

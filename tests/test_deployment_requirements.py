@@ -50,6 +50,7 @@ def test_validation_workflow_runs_without_production_secrets() -> None:
 def test_deployment_templates_live_under_config_deployment() -> None:
     expected = {
         Path("config/deployment/cloudflare/config.example.yml"),
+        Path("config/deployment/docker-compose.prod.yml"),
         Path("config/deployment/launchd/com.brain.mcp.plist.template"),
         Path("config/deployment/launchd/com.brain.ui.plist.template"),
         Path("config/deployment/launchd/com.brain.slack-agent.plist.template"),
@@ -65,14 +66,14 @@ def test_deployment_templates_live_under_config_deployment() -> None:
 def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     script = Path("scripts/deploy-local-production.sh").read_text(encoding="utf-8")
 
-    for label in ["com.brain.mcp", "com.brain.ui", "com.brain.slack-agent"]:
+    for label in ["com.brain.prod.mcp", "com.brain.prod.ui", "com.brain.prod.slack-agent"]:
         assert label in script
 
     assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/config/deployment"' in script
     assert "config/deployment" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
-    assert 'ensure_env_var "BRAIN_SLACK_AGENT_PORT" "8003"' in script
+    assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script
@@ -80,8 +81,10 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script
     assert 'ensure_env_var "BRAIN_TASTE_IMPORT_SOURCE_PATH"' not in script
-    assert "http://127.0.0.1:8003/slack/healthz" in script
+    assert "${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" in script
     assert "uv run python scripts/verify_slack_agent.py" in script
+    assert "docker compose -f config/deployment/docker-compose.prod.yml up -d neo4j" in script
+    assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert "uv run python scripts/live_model_smoke.py" in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script
     assert script.index("uv run python scripts/live_model_smoke.py") < script.index(
@@ -102,8 +105,8 @@ def test_cloudflare_routes_slack_to_agent_before_mcp_catchall() -> None:
     config = Path("config/deployment/cloudflare/config.example.yml").read_text(encoding="utf-8")
 
     slack_route = "path: /slack*"
-    slack_service = "service: http://127.0.0.1:8003"
-    mcp_catchall = "service: http://127.0.0.1:8000"
+    slack_service = "service: http://127.0.0.1:18003"
+    mcp_catchall = "service: http://127.0.0.1:18000"
 
     assert slack_route in config
     assert slack_service in config

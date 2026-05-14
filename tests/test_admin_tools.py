@@ -16,7 +16,7 @@ from memory_stack.brain_service import (
     undo_last,
 )
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 class FakeProjectionAdapter:

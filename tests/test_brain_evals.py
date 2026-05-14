@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.fixtures import GOLDEN_INGESTION_FIXTURES
 from memory_stack.evals.golden_queries import GOLDEN_RECALL_QUERIES
 from memory_stack.evals.metrics import duplicate_rate, precision_at_k, term_recall

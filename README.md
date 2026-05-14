@@ -56,20 +56,20 @@ HTTP endpoints include:
 
 The high-level MCP tools are:
 
-- `brain.remember`
-- `brain.ingest_source`
-- `brain.recall`
-- `brain.profile_entity`
-- `brain.list_open_loops`
-- `brain.get_memory`
-- `brain.get_source`
-- `brain.resolve_conflict`
-- `brain.forget`
-- `brain.review_recent`
-- `brain.undo_last`
-- `brain.sync_cognee`
-- `brain.rebuild_cognee`
-- `brain.merge_entities`
+- `brain_remember`
+- `brain_ingest_source`
+- `brain_recall`
+- `brain_profile_entity`
+- `brain_list_open_loops`
+- `brain_get_memory`
+- `brain_get_source`
+- `brain_resolve_conflict`
+- `brain_forget`
+- `brain_review_recent`
+- `brain_undo_last`
+- `brain_sync_cognee`
+- `brain_rebuild_cognee`
+- `brain_merge_entities`
 
 Low-level Cognee and SQL operations are intentionally not exposed as public MCP
 tools.
@@ -180,12 +180,18 @@ Core Brain settings:
 - `BRAIN_AUTH_TOKEN`
 
 LLM compiler settings, disabled by default. When enabled, it uses the same fixed
-runtime LLM as the rest of Brain: `openai:gpt-5.5`.
+runtime LLM as the rest of Brain/Cognee: `openai:gpt-5.4-mini`.
 
 - `BRAIN_LLM_ENABLED=false`
 - `LLM_PROVIDER`
 - `LLM_MODEL`
 - `LLM_API_KEY`
+
+Taste/palate input enrichment uses its own model setting so it can stay on a
+stronger model without changing Cognee projection defaults:
+
+- `BRAIN_TASTE_LLM_MODEL=gpt-5.5`
+- `BRAIN_TASTE_LLM_REASONING_EFFORT=medium`
 
 Cognee projection settings:
 
@@ -240,7 +246,7 @@ does not bypass Brain DB.
 ## Profiles
 
 Runtime uses one configured LLM and one configured embedding model. The default
-production values are OpenAI `gpt-5.5` for LLM calls and
+production values are OpenAI `gpt-5.4-mini` for runtime/Cognee LLM calls and
 `fastembed:intfloat/multilingual-e5-large` with 1024-dimensional vectors for
 local embeddings.
 

@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 import pytest
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals import provider_client
 from memory_stack.provider_auth import OpenAICodexCredential, upsert_openai_codex_profile
 

@@ -12,7 +12,7 @@ from typer.testing import CliRunner
 
 import memory_stack.brain_cli as brain_cli
 from memory_stack.brain_cli import app
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack import provider_auth
 from memory_stack.provider_auth import (
     OpenAICodexCredential,

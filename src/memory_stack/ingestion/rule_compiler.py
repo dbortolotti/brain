@@ -10,7 +10,7 @@ from memory_stack.brain_models import (
     RememberRequest,
     SourceCandidate,
 )
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.ingestion.article_loader import load_article
 from memory_stack.ingestion.classifier import source_kind_for_input_type
 from memory_stack.ingestion.table_parser import parse_table, table_summary

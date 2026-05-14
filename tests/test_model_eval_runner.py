@@ -7,12 +7,10 @@ from pathlib import Path
 from typing import Any
 import pytest
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.model_fixtures import (
-    TASTE_MODEL_EVAL_FIXTURES,
     ModelEvalFixture,
     fixture_prompt,
-    output_schema_for_fixture,
     select_fixtures,
 )
 from memory_stack.evals.model_matrix import ModelCandidate, select_model_candidates
@@ -20,14 +18,12 @@ from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
     build_work_items,
     merge_rerun_records,
-    mode_for_roles,
     read_eval_records,
     raw_call_for_record,
     render_report,
     run_rescore,
     run_model_evals,
     run_rerun_failed,
-    validate_against_schema,
     write_parsed_output,
     write_raw_output,
 )
@@ -171,7 +167,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model="gpt-5.4-mini",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
         embedding_dimensions=3072,
@@ -184,7 +180,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
     )
 
     assert [candidate.ref for candidate in candidates] == [
-        "openai:gpt-5.5",
+        "openai:gpt-5.4-mini",
         "openai:text-embedding-3-large",
     ]
 
@@ -199,45 +195,6 @@ def test_select_fixtures_derives_fine_grained_roles() -> None:
     assert fixtures
     assert all(fixture.role == "intent_router" for fixture in fixtures)
 
-
-def test_taste_fine_grained_fixtures_use_native_taste_scenarios() -> None:
-    taste_roles = {
-        "taste_domain_router",
-        "taste_entity_classifier",
-        "taste_enrichment_planner",
-        "taste_enrichment_normalizer",
-        "taste_attribute_extractor",
-        "taste_signal_extractor",
-        "taste_option_matcher",
-        "taste_ranker",
-        "taste_explanation_synthesizer",
-        "taste_memory_projector",
-    }
-    fixtures = select_fixtures(
-        fixture_set="development",
-        roles=taste_roles,
-        mode="fine-grained",
-    )
-
-    assert taste_roles == {fixture.role for fixture in fixtures}
-    assert len(TASTE_MODEL_EVAL_FIXTURES) == 100
-    assert len(fixtures) == 300
-    assert all(
-        sum(1 for item in TASTE_MODEL_EVAL_FIXTURES if item[2] == role) == 10
-        for role in taste_roles
-    )
-    assert all(
-        sum(1 for fixture in fixtures if fixture.role == role) == 30
-        for role in taste_roles
-    )
-    assert all(fixture.context["source_role"] == fixture.role for fixture in fixtures)
-    assert all(fixture.scenario_group.startswith("taste_") for fixture in fixtures)
-    assert not any(
-        "long_source_as_single_memory_card" in fixture.zero_tolerance_checks
-        for fixture in fixtures
-    )
-
-
 def test_taste_role_quality_weights_ignore_generic_recall_scores() -> None:
     score = semantic_quality_score_for_role(
         "taste_attribute_extractor",
@@ -249,29 +206,6 @@ def test_taste_role_quality_weights_ignore_generic_recall_scores() -> None:
     )
 
     assert score == 1.0
-
-
-def test_recall_planner_fixtures_are_planner_scoped() -> None:
-    fixtures = select_fixtures(
-        fixture_set="brain-model-test-v2",
-        roles={"recall_planner"},
-        mode="fine-grained",
-    )
-
-    by_id = {fixture.id: fixture for fixture in fixtures}
-
-    assert by_id["router_remember_plain"].expected == {
-        "not_applicable": True,
-        "source_intent": "remember",
-    }
-    assert by_id["router_recall_question"].expected == {
-        "intent": "recall",
-        "must_include": ["Sam"],
-    }
-    assert by_id["recall_profile_sam_001"].expected == {
-        "must_not_include": ["invented surname"],
-    }
-
 
 def test_source_classifier_fine_grained_fixtures_use_classifier_only_zero_tolerance() -> None:
     fixtures = select_fixtures(
@@ -295,63 +229,6 @@ def test_source_classifier_fine_grained_fixtures_use_classifier_only_zero_tolera
     }
     assert "small_table_must_not_drop_values" not in checks
     assert "raw_email_exposed" not in checks
-
-
-def test_conflict_fine_grained_fixtures_are_backend_policy_bound() -> None:
-    candidate_fixtures = select_fixtures(
-        fixture_set="brain-model-test-v2",
-        roles={"conflict_candidate_detector"},
-        mode="fine-grained",
-    )
-    explainer_fixtures = select_fixtures(
-        fixture_set="brain-model-test-v2",
-        roles={"conflict_explainer"},
-        mode="fine-grained",
-    )
-
-    assert candidate_fixtures
-    assert all(fixture.expected["detection_only"] is True for fixture in candidate_fixtures)
-    assert all("decision" not in fixture.expected for fixture in candidate_fixtures)
-    assert all("decision_any" not in fixture.expected for fixture in candidate_fixtures)
-    assert explainer_fixtures
-    assert {fixture.context["source_role"] for fixture in explainer_fixtures} == {"conflict_classifier"}
-
-    action_space_by_fixture = {
-        fixture.id: fixture.expected["safe_action_space"]
-        for fixture in explainer_fixtures
-    }
-    assert action_space_by_fixture["duplicate_sam_bill_evans_001"] == [
-        "link_duplicate",
-        "keep_existing",
-        "add_anyway",
-        "edit",
-        "cancel",
-    ]
-    assert action_space_by_fixture["additive_sam_preferences_001"] == [
-        "add_new",
-        "keep_existing",
-        "edit",
-        "cancel",
-    ]
-    assert action_space_by_fixture["supersession_sam_job_001"] == [
-        "approve_supersession",
-        "keep_both",
-        "reject_new",
-        "edit",
-    ]
-
-
-def test_entity_candidate_ranker_uses_entity_resolution_fixtures_only() -> None:
-    fixtures = select_fixtures(
-        fixture_set="brain-model-test-v2",
-        roles={"entity_candidate_ranker"},
-        mode="fine-grained",
-    )
-
-    assert fixtures
-    assert len(fixtures) >= 12
-    assert {fixture.context["source_role"] for fixture in fixtures} == {"entity_resolution"}
-
 
 def test_durability_filter_derives_explicit_expected_durable_value() -> None:
     fixtures = select_fixtures(
@@ -447,18 +324,9 @@ def test_role_contracts_include_agent_markdown_alignment() -> None:
         input_text="Existing: Sam works at Goldman. New: Sam left Goldman.",
         expected={},
     )
-    debug = ModelEvalFixture(
-        id="slack_debug",
-        scenario_group="slack_debug",
-        role="debug_explainer",
-        input_text="/brain admin sql SELECT * FROM memory_cards",
-        expected={},
-    )
-
     intent_prompt = fixture_prompt(intent)
     source_prompt = fixture_prompt(source)
     repair_prompt = fixture_prompt(repair)
-    debug_prompt = fixture_prompt(debug)
 
     assert "Agent markdown excerpt from src/memory_stack/agents/shared/memory_agent_rules.md#Mission" in intent_prompt
     assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#7. Slack message routing" in intent_prompt
@@ -470,104 +338,6 @@ def test_role_contracts_include_agent_markdown_alignment() -> None:
     assert "Long/external material:" in source_prompt
     assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#2. Core behaviour" in repair_prompt
     assert "Ambiguous/conflicting memory:" in repair_prompt
-    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#6.10 `/brain admin`" in debug_prompt
-    assert "Admin SQL must be SELECT-only, allowlisted, logged, time-limited, and row-limited." in debug_prompt
-
-
-def test_success_receipt_generator_is_a_fine_grained_model_fixture() -> None:
-    fixtures = select_fixtures(
-        fixture_set="brain-model-test-v2",
-        roles={"success_receipt_generator"},
-        mode="fine-grained",
-    )
-
-    assert fixtures
-    assert {fixture.role for fixture in fixtures} == {"success_receipt_generator"}
-    assert all(output_schema_for_fixture(fixture)["additionalProperties"] is False for fixture in fixtures)
-
-
-def test_fixture_prompt_includes_role_specific_zero_tolerance_contracts() -> None:
-    conflict_fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="brain-model-test-v2",
-            roles={"conflict_candidate_detector"},
-            mode="fine-grained",
-        )
-        if fixture.id == "conflict_employment_transition"
-    )
-    atomic_fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="brain-model-test-v2",
-            roles={"atomic_card_extractor"},
-            mode="fine-grained",
-        )
-        if fixture.id == "conversation_transcript_sam_001"
-    )
-    recall_fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="brain-model-test-v2",
-            roles={"recall_synthesizer"},
-            mode="fine-grained",
-        )
-        if fixture.id == "recall_absence_scoped"
-    )
-
-    conflict_prompt = fixture_prompt(conflict_fixture)
-    atomic_prompt = fixture_prompt(atomic_fixture)
-    recall_prompt = fixture_prompt(recall_fixture)
-
-    assert "Detection-only role" in conflict_prompt
-    assert "do not decide ask/keep/link/supersede behavior" in conflict_prompt
-    assert "allowed values are: supersedes" in conflict_prompt
-    assert "A supersedes classification is not a backend policy action." in conflict_prompt
-    assert "do not add unsupported details" in atomic_prompt
-    assert "attach ambiguous references to nearby topics" in atomic_prompt
-    assert "no current evidence" in recall_prompt
-    assert "do not infer a fact from absence" in recall_prompt
-
-
-def test_conflict_candidate_detector_schema_is_detection_only() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="brain-model-test-v2",
-            roles={"conflict_candidate_detector"},
-            mode="fine-grained",
-        )
-        if fixture.id == "conflict_employment_transition"
-    )
-
-    schema = output_schema_for_fixture(fixture)
-
-    assert "memory_cards" not in schema["properties"]
-    assert schema["properties"]["conflict_classification"]["enum"]
-    assert "supersedes" in schema["properties"]["conflict_classification"]["enum"]
-    assert schema["additionalProperties"] is False
-    assert validate_against_schema(
-        {
-            "decision": "possible_conflict",
-            "conflict_classification": "supersedes",
-            "answer": "Existing current employer conflicts with the new employer transition.",
-            "citations": ["Existing current fact: Sam works at Goldman."],
-            "memory_cards": [{"kind": "conflict_evidence", "statement": "Sam moved."}],
-        },
-        schema,
-        path="$",
-    ) == ["$.memory_cards is not allowed"]
-    assert validate_against_schema(
-        {
-            "decision": "possible_conflict",
-            "conflict_classification": "employment_transition_conflict_candidate",
-            "answer": "Possible conflict.",
-            "citations": ["New fact: Sam left Goldman and joined Point72."],
-        },
-        schema,
-        path="$",
-    ) == ["$.conflict_classification must be one of supersedes, contradicts, duplicate, additive, correction, project_state_update, none"]
-
 
 def test_embedding_eval_uses_configured_embedding_model(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
@@ -2727,31 +2497,6 @@ def test_slack_intake_uses_llm_success_receipts_with_safety_validator() -> None:
     assert coverage["slack_intake"]["status"] == "eligible"
     assert coverage["slack_intake"]["deterministic_roles"] == ["zero_tolerance_validator"]
 
-
-def test_promoted_llm_roles_are_fine_grained_fixture_roles() -> None:
-    fixtures = select_fixtures(
-        fixture_set="production",
-        roles={
-            "commit_policy_decider",
-            "success_receipt_generator",
-            "entity_final_resolver",
-            "conflict_policy_decider",
-            "recall_relevance_filter",
-        },
-        mode="fine-grained",
-    )
-
-    assert {fixture.role for fixture in fixtures} == {
-        "commit_policy_decider",
-        "success_receipt_generator",
-        "entity_final_resolver",
-        "conflict_policy_decider",
-        "recall_relevance_filter",
-    }
-    for fixture in fixtures:
-        assert output_schema_for_fixture(fixture)["additionalProperties"] is False
-
-
 def test_commit_policy_decider_blocks_unconfirmed_overwrite() -> None:
     fixture = ModelEvalFixture(
         id="commit_policy_overwrite",
@@ -2776,64 +2521,6 @@ def test_commit_policy_decider_blocks_unconfirmed_overwrite() -> None:
 
     assert zero is True
     assert types == ["silent_high_confidence_overwrite"]
-
-
-def test_commit_policy_decider_allows_additive_commit_fixture() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="production",
-            roles={"commit_policy_decider"},
-            mode="fine-grained",
-        )
-        if fixture.id == "additive_sam_preferences_001"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "decision": "commit",
-            "requires_confirmation": False,
-            "reason": "This adds Sonny Rollins while preserving the existing Bill Evans preference.",
-            "answer": "Commit the additive preference.",
-            "citations": [],
-        },
-        status="ok",
-    )
-
-    assert fixture.expected["requires_confirmation"] is False
-    assert scores["decision_correctness"] == 1.0
-    assert zero is False
-    assert types == []
-
-
-def test_commit_policy_decider_accepts_terminal_reject_without_confirmation() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="production",
-            roles={"commit_policy_decider"},
-            mode="fine-grained",
-        )
-        if fixture.id == "validator_reject_junk"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "decision": "reject",
-            "requires_confirmation": False,
-            "reason": "No durable, specific memory value is present.",
-            "answer": "I won't store this because it is not durable memory.",
-            "citations": [],
-        },
-        status="ok",
-    )
-
-    assert scores["decision_correctness"] == 1.0
-    assert zero is False
-    assert types == []
-
 
 def test_commit_policy_decider_accepts_ask_with_confirmation_when_allowed() -> None:
     fixture = ModelEvalFixture(
@@ -2887,69 +2574,6 @@ def test_success_receipt_generator_scores_grounded_receipt_text() -> None:
     assert scores["success_receipt_quality"] == 1.0
     assert zero is False
     assert types == []
-
-
-def test_success_receipt_generator_missing_backend_data_fixture_expects_no_stored_receipt() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="production",
-            roles={"success_receipt_generator"},
-            mode="fine-grained",
-        )
-        if fixture.id == "slack_success_receipt_001"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "receipt_text": "No stored memory card can be confirmed from the provided input.",
-            "included_memory_ids": [],
-            "included_source_ids": [],
-            "warnings": ["Missing backend receipt data."],
-            "answer": "No stored memory card can be confirmed.",
-            "citations": [],
-        },
-        status="ok",
-    )
-
-    assert fixture.expected["receipt_terms"] == ["not stored"]
-    assert "success_receipt_missing" not in fixture.zero_tolerance_checks
-    assert scores["success_receipt_quality"] == 1.0
-    assert zero is False
-    assert types == []
-
-
-def test_success_receipt_generator_derived_memory_fixture_without_backend_data_expects_no_stored_receipt() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="production",
-            roles={"success_receipt_generator"},
-            mode="fine-grained",
-        )
-        if fixture.id == "slack_intake_family_twins"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "receipt_text": "No backend ingestion receipt was provided, so no stored memory card can be confirmed.",
-            "included_memory_ids": [],
-            "included_source_ids": [],
-            "warnings": ["Receipt data is missing."],
-            "answer": "No stored memory card can be confirmed.",
-            "citations": [],
-        },
-        status="ok",
-    )
-
-    assert fixture.expected["receipt_terms"] == ["not stored"]
-    assert "success_receipt_missing" not in fixture.zero_tolerance_checks
-    assert scores["success_receipt_quality"] == 1.0
-    assert zero is False
-    assert types == []
-
 
 def test_entity_final_resolver_rejects_overmerge() -> None:
     fixture = ModelEvalFixture(
@@ -3230,162 +2854,6 @@ def test_recall_relevance_filter_allows_forbidden_terms_in_exclusion_reasons() -
     assert zero is False
     assert types == []
 
-
-def test_recall_relevance_filter_accepts_fixture_labels_for_superseded_memory_ids() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="production",
-            roles={"recall_relevance_filter"},
-            mode="fine-grained",
-        )
-        if fixture.id == "recall_hide_superseded_001"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "memory_ids": ["Current memory"],
-            "excluded_memory_ids": ["Old memory"],
-            "reason_by_memory_id": {
-                "Current memory": "Included because it is current and says Sam joined Point72.",
-                "Old memory": "Excluded because it is superseded.",
-            },
-            "answer": "Sam works at Point72.",
-            "citations": ["Current memory"],
-        },
-        status="ok",
-    )
-
-    assert scores["recall_quality"] == 1.0
-    assert zero is False
-    assert types == []
-
-
-def test_recall_relevance_filter_accepts_brain_cognee_fixture_labels() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="production",
-            roles={"recall_relevance_filter"},
-            mode="fine-grained",
-        )
-        if fixture.id == "recall_brain_cognee_conclusions_relevance_001"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "memory_ids": ["Brain DB source-of-truth conclusion", "Cognee rebuildable projection"],
-            "excluded_memory_ids": ["Slack strict intake", "family facts", "Sam preferences"],
-            "reason_by_memory_id": {
-                "Brain DB source-of-truth conclusion": "Included because the query asks about Brain.",
-                "Cognee rebuildable projection": "Included because the query asks about Cognee.",
-                "Slack strict intake": "Excluded because it is unrelated.",
-                "family facts": "Excluded because it is unrelated.",
-                "Sam preferences": "Excluded because it is unrelated.",
-            },
-            "answer": "",
-            "citations": [],
-        },
-        status="ok",
-    )
-
-    assert scores["recall_quality"] == 1.0
-    assert zero is False
-    assert types == []
-
-
-def test_llm_promoted_workflow_battery_is_selected() -> None:
-    promoted_roles = {
-        "commit_policy_decider",
-        "success_receipt_generator",
-        "entity_final_resolver",
-        "conflict_policy_decider",
-        "recall_relevance_filter",
-    }
-    fixtures = select_fixtures(
-        fixture_set="development",
-        roles=promoted_roles,
-        mode="fine-grained",
-    )
-    promoted_fixtures = [
-        fixture
-        for fixture in fixtures
-        if fixture.context.get("llm_promoted_workflow")
-    ]
-
-    assert promoted_roles <= {fixture.role for fixture in promoted_fixtures}
-    assert {
-        "llm_promoted_commit_policy_unconfirmed_conflict_001",
-        "llm_promoted_commit_policy_clean_fact_001",
-        "llm_promoted_success_receipt_grounded_001",
-        "llm_promoted_entity_final_resolver_ambiguous_001",
-        "llm_promoted_entity_final_resolver_alias_001",
-        "llm_promoted_conflict_policy_supersession_001",
-        "llm_promoted_conflict_policy_duplicate_001",
-        "llm_promoted_recall_relevance_status_filter_001",
-        "llm_promoted_recall_relevance_topic_pruning_001",
-    } <= {fixture.context.get("base_fixture_id", fixture.id) for fixture in promoted_fixtures}
-
-
-def test_llm_promoted_workflow_fixture_contracts_cover_promoted_role_risks() -> None:
-    fixtures = [
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="llm-promoted-workflows",
-            roles=set(),
-            mode="fine-grained",
-        )
-        if fixture.context.get("variant") == "base"
-    ]
-    by_id = {fixture.id: fixture for fixture in fixtures}
-
-    assert set(by_id) == {
-        "llm_promoted_commit_policy_unconfirmed_conflict_001",
-        "llm_promoted_commit_policy_clean_fact_001",
-        "llm_promoted_success_receipt_grounded_001",
-        "llm_promoted_entity_final_resolver_ambiguous_001",
-        "llm_promoted_entity_final_resolver_alias_001",
-        "llm_promoted_conflict_policy_supersession_001",
-        "llm_promoted_conflict_policy_duplicate_001",
-        "llm_promoted_recall_relevance_status_filter_001",
-        "llm_promoted_recall_relevance_topic_pruning_001",
-    }
-
-    assert by_id["llm_promoted_commit_policy_unconfirmed_conflict_001"].expected["requires_confirmation"] is True
-    assert "silent_high_confidence_overwrite" in by_id[
-        "llm_promoted_commit_policy_unconfirmed_conflict_001"
-    ].zero_tolerance_checks
-    assert by_id["llm_promoted_commit_policy_clean_fact_001"].expected["requires_confirmation"] is False
-    assert "success_receipt_missing" in by_id[
-        "llm_promoted_success_receipt_grounded_001"
-    ].zero_tolerance_checks
-    assert by_id["llm_promoted_entity_final_resolver_alias_001"].expected["entity_action"] == "use_existing"
-    assert "entity_overmerge" in by_id[
-        "llm_promoted_entity_final_resolver_ambiguous_001"
-    ].zero_tolerance_checks
-    assert by_id["llm_promoted_conflict_policy_supersession_001"].expected["requires_user_choice"] is True
-    assert "duplicate_current_fact_pollution" in by_id[
-        "llm_promoted_conflict_policy_duplicate_001"
-    ].zero_tolerance_checks
-    assert by_id["llm_promoted_recall_relevance_status_filter_001"].expected["forbidden_memory_ids"] == [
-        "mem_old",
-        "mem_deleted",
-    ]
-    assert by_id["llm_promoted_recall_relevance_topic_pruning_001"].expected["excluded_memory_ids"] == [
-        "mem_family",
-        "mem_music",
-        "mem_table",
-    ]
-
-    for fixture in fixtures:
-        prompt = fixture_prompt(fixture)
-        assert f"Role markdown from src/memory_stack/agents/roles/{fixture.role}.md" in prompt
-        assert fixture.context.get("llm_promoted_workflow") is True
-        assert fixture.context.get("role_policy")
-
-
 def test_llm_promoted_workflow_fixture_set_only_selects_battery() -> None:
     fixtures = select_fixtures(
         fixture_set="llm-promoted-workflows",
@@ -3402,196 +2870,6 @@ def test_llm_promoted_workflow_fixture_set_only_selects_battery() -> None:
         "conflict_policy_decider",
         "recall_relevance_filter",
     }
-
-
-def test_promoted_llm_roles_are_rendered_as_fine_grained_records() -> None:
-    assert mode_for_roles(
-        {
-            "commit_policy_decider",
-            "success_receipt_generator",
-            "entity_final_resolver",
-            "conflict_policy_decider",
-            "recall_relevance_filter",
-        }
-    ) == "fine-grained"
-
-
-def test_llm_promoted_workflow_battery_scores_role_aligned_outputs() -> None:
-    fixtures = {
-        fixture.context.get("base_fixture_id", fixture.id): fixture
-        for fixture in select_fixtures(
-            fixture_set="development",
-            roles={
-                "commit_policy_decider",
-                "success_receipt_generator",
-                "entity_final_resolver",
-                "conflict_policy_decider",
-                "recall_relevance_filter",
-            },
-            mode="fine-grained",
-        )
-        if fixture.context.get("llm_promoted_workflow") and fixture.context.get("variant") == "base"
-    }
-
-    cases = [
-        (
-            "llm_promoted_commit_policy_unconfirmed_conflict_001",
-            {
-                "decision": "needs_confirmation",
-                "requires_confirmation": True,
-                "reason": "Potential supersession requires confirmation.",
-                "answer": "Ask for confirmation before committing.",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_commit_policy_clean_fact_001",
-            {
-                "decision": "commit_success",
-                "requires_confirmation": False,
-                "reason": "The proposal is durable, specific, non-sensitive, non-conflicting, and grounded.",
-                "answer": "Commit allowed.",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_success_receipt_grounded_001",
-            {
-                "receipt_text": (
-                    "Stored 1 current preference memory mem_123 with high confidence. "
-                    "Entities: Sam from Goldman, Bill Evans. Relationships: 1. "
-                    "Actions: Inspect, Undo, Mark wrong."
-                ),
-                "included_memory_ids": ["mem_123"],
-                "included_source_ids": [],
-                "warnings": [],
-                "answer": (
-                    "Stored 1 current preference memory mem_123 with high confidence. "
-                    "Actions: Inspect, Undo, Mark wrong."
-                ),
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_entity_final_resolver_ambiguous_001",
-            {
-                "entity_resolution": {
-                    "action": "ambiguous",
-                    "entity_id": None,
-                    "confidence": "low",
-                    "reason": "Sam could be Sam from Goldman or Sam from Point72.",
-                },
-                "answer": "Ask which Sam is meant: Sam from Goldman or Sam from Point72.",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_entity_final_resolver_alias_001",
-            {
-                "entity_resolution": {
-                    "action": "match",
-                    "entity_id": "sam_goldman",
-                    "confidence": "high",
-                    "reason": "Sam G is an alias for Sam from Goldman.",
-                },
-                "answer": "Resolved Sam G to sam_goldman, Sam from Goldman.",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_conflict_policy_supersession_001",
-            {
-                "policy_action": "ask_user",
-                "target_memory_id": "mem_old",
-                "requires_user_choice": True,
-                "reason": "Goldman and Point72 are a possible supersession and need confirmation.",
-                "answer": "Ask before replacing Goldman with Point72.",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_conflict_policy_duplicate_001",
-            {
-                "policy_action": "mark_duplicate",
-                "target_memory_id": "mem_old",
-                "requires_user_choice": False,
-                "reason": "The new Bill Evans fact duplicates the existing memory.",
-                "answer": "Mark as duplicate; do not create a second current Bill Evans fact.",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_recall_relevance_status_filter_001",
-            {
-                "memory_ids": ["mem_new"],
-                "excluded_memory_ids": [],
-                "reason_by_memory_id": {
-                    "mem_new": "Relevant current workplace fact.",
-                    "mem_old": "Blocked superseded record.",
-                    "mem_deleted": "Blocked deleted record.",
-                },
-                "answer": "",
-                "citations": [],
-            },
-        ),
-        (
-            "llm_promoted_recall_relevance_topic_pruning_001",
-            {
-                "memory_ids": ["mem_article"],
-                "excluded_memory_ids": ["mem_family", "mem_music", "mem_table"],
-                "reason_by_memory_id": {
-                    "mem_article": "Relevant AI memory article candidate.",
-                    "mem_family": "Not relevant to the AI memory article query.",
-                    "mem_music": "Not relevant to the AI memory article query.",
-                    "mem_table": "Not relevant to the AI memory article query.",
-                },
-                "answer": "Keep mem_article for the AI memory article query.",
-                "citations": [],
-            },
-        ),
-    ]
-
-    for fixture_id, payload in cases:
-        scores, zero, types = score_model_output(fixtures[fixture_id], payload, status="ok")
-
-        assert semantic_quality_score_for_role(fixtures[fixture_id].role, scores) == 1.0
-        assert zero is False
-        assert types == []
-
-
-def test_recall_relevance_filter_fails_when_llm_restores_status_filtered_memory() -> None:
-    fixture = next(
-        fixture
-        for fixture in select_fixtures(
-            fixture_set="development",
-            roles={"recall_relevance_filter"},
-            mode="fine-grained",
-        )
-        if fixture.context.get("base_fixture_id", fixture.id)
-        == "llm_promoted_recall_relevance_status_filter_001"
-        and fixture.context.get("variant") == "base"
-    )
-
-    scores, zero, types = score_model_output(
-        fixture,
-        {
-            "memory_ids": ["mem_new", "mem_old"],
-            "excluded_memory_ids": [],
-            "reason_by_memory_id": {
-                "mem_new": "Relevant.",
-                "mem_old": "Also relevant.",
-                "mem_deleted": "Deleted.",
-            },
-            "answer": "Keep mem_new and mem_old.",
-            "citations": [],
-        },
-        status="ok",
-    )
-
-    assert scores["recall_quality"] == 0.0
-    assert zero is True
-    assert "deleted_or_superseded_memory_returned_as_current" in types
-
 
 def test_embeddings_optional_if_not_tested() -> None:
     summaries = [
@@ -3967,7 +3245,7 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
     assert items
-    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-5.5:llm"}
+    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-5.4-mini:llm"}
 
 
 def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:

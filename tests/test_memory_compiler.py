@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from memory_stack.brain_models import IngestSourceRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, remember
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.llm.fake import FakeLLMClient
 
 

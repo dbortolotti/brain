@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 from fastapi import HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 AUTH_REQUEST_SECONDS = 10 * 60

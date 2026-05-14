@@ -11,7 +11,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
 from memory_stack.oauth import ensure_auth_password, read_form
 
 settings = load_settings()

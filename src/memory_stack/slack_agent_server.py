@@ -12,7 +12,7 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 import httpx
 
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent
 
 

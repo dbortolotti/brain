@@ -4,7 +4,7 @@ import sys
 import importlib.util
 from pathlib import Path
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "check_provider_credit_status.py"

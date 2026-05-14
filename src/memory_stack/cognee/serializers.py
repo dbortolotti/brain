@@ -4,7 +4,7 @@ import json
 from typing import Any
 
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 
 
 def serialize_memory_for_cognee(

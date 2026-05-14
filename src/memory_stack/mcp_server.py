@@ -32,12 +32,15 @@ from memory_stack.cognee_adapter import (
     DatasourceNotFoundError,
     create_datasource as create_cognee_datasource,
     delete_datasource as delete_cognee_datasource,
+    improve_cognee,
     list_datasources as list_cognee_datasources,
+    recall_text,
 )
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 from memory_stack.domain_constants import (
     ADMIN_COGNEE_DATASETS,
     ADMIN_COGNEE_OBJECT_TYPES,
+    COGNEE_IMPROVE_DATASETS,
     CONFLICT_ACTIONS,
     ENTITY_TYPES,
     FORGET_OBJECT_TYPES,
@@ -59,6 +62,7 @@ from memory_stack.taste.models import (
 from memory_stack.taste.service import TasteService
 
 STARTED_AT = time.time()
+DEFAULT_AGENT_SESSION_ID = "portable_agent_session"
 settings = load_settings()
 oauth_provider = BrainOAuthProvider(settings) if settings.brain_auth_enabled else None
 
@@ -127,6 +131,28 @@ class RebuildCogneeRequest(BaseModel):
     confirm: bool = False
 
 
+class CogneeImproveRequest(BaseModel):
+    dataset: str = "memory"
+    node_name: list[str] | None = None
+    session_ids: list[str] | None = None
+    run_in_background: bool = False
+
+
+class BrainAgentMemoryRequest(BaseModel):
+    session_id: str
+    node_name: list[str] | None = None
+    run_in_background: bool = False
+
+
+class BrainAgentMemoryRecallRequest(BaseModel):
+    query: str
+    top_k: int = 10
+
+
+class BrainAgentMemoryClearRequest(BaseModel):
+    confirm: bool = False
+
+
 class MergeEntitiesRequest(BaseModel):
     primary_entity_id: str
     duplicate_entity_id: str
@@ -137,10 +163,10 @@ class MergeEntitiesRequest(BaseModel):
 def memory_tool_definitions() -> list[dict[str, Any]]:
     return [
         {
-            "name": "brain.remember",
+            "name": "brain_remember",
             "description": (
                 "Store a user-level memory, fact, thought, or short note in Brain. "
-                "High-confidence taste memories may route to Brain Taste automatically."
+                "High-confidence palate memories may route to Brain Palate automatically."
             ),
             "inputSchema": {
                 "type": "object",
@@ -161,11 +187,11 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.ingest_source",
+            "name": "brain_ingest_source",
             "description": (
                 "Store source material and optionally extract durable Brain memories. "
-                "Brain may detect taste mentions, but large source ingestion avoids "
-                "mass Taste enrichment/writes without confirmation."
+                "Brain may detect palate mentions, but large source ingestion avoids "
+                "mass palate enrichment/writes without confirmation."
             ),
             "inputSchema": {
                 "type": "object",
@@ -183,10 +209,10 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.recall",
+            "name": "brain_recall",
             "description": (
                 "Answer a user-level memory query with evidence. Recommendation-style "
-                "taste queries may use Brain Taste ranking."
+                "palate queries may use Brain Palate ranking."
             ),
             "inputSchema": {
                 "type": "object",
@@ -211,7 +237,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.profile_entity",
+            "name": "brain_profile_entity",
             "description": "Build an entity-centric Brain profile.",
             "inputSchema": {
                 "type": "object",
@@ -228,7 +254,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.list_open_loops",
+            "name": "brain_list_open_loops",
             "description": "List open questions, ideas, reminders, and parked research threads.",
             "inputSchema": {
                 "type": "object",
@@ -243,7 +269,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.get_memory",
+            "name": "brain_get_memory",
             "description": "Read one Brain memory card by id.",
             "inputSchema": {
                 "type": "object",
@@ -258,7 +284,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.get_source",
+            "name": "brain_get_source",
             "description": "Read Brain source metadata and optionally truncated source text.",
             "inputSchema": {
                 "type": "object",
@@ -272,7 +298,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.resolve_conflict",
+            "name": "brain_resolve_conflict",
             "description": "Resolve a contradiction or duplicate between two Brain memories.",
             "inputSchema": {
                 "type": "object",
@@ -287,7 +313,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.forget",
+            "name": "brain_forget",
             "description": "Soft delete a Brain object. Hard delete requires confirm=true.",
             "inputSchema": {
                 "type": "object",
@@ -307,7 +333,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.review_recent",
+            "name": "brain_review_recent",
             "description": "Review recent Brain ingestion runs, sources, memories, and conflict links.",
             "inputSchema": {
                 "type": "object",
@@ -320,7 +346,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.undo_last",
+            "name": "brain_undo_last",
             "description": "Soft-delete objects created by one recent ingestion run.",
             "inputSchema": {
                 "type": "object",
@@ -331,7 +357,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.sync_cognee",
+            "name": "brain_sync_cognee",
             "description": "Manually sync pending Brain projections to Cognee.",
             "inputSchema": {
                 "type": "object",
@@ -345,7 +371,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.rebuild_cognee",
+            "name": "brain_rebuild_cognee",
             "description": "Mark Cognee projections stale so they can be rebuilt from Brain DB.",
             "inputSchema": {
                 "type": "object",
@@ -362,7 +388,75 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.merge_entities",
+            "name": "cognee_improve",
+            "description": "Run Cognee native improve on a configured dataset, optionally bridging session feedback.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "dataset": {"type": "string", "enum": COGNEE_IMPROVE_DATASETS, "default": "memory"},
+                    "node_name": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional Cognee node-name filter.",
+                    },
+                    "session_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional Cognee session IDs to bridge feedback and Q&A into the graph.",
+                    },
+                    "run_in_background": {"type": "boolean", "default": False},
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_agent_memory",
+            "description": "Bridge one Cognee agent session into the dedicated, removable agent-memory dataset.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "session_id": {"type": "string"},
+                    "node_name": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional Cognee node-name filter for the improve run.",
+                    },
+                    "run_in_background": {"type": "boolean", "default": False},
+                },
+                "required": ["session_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_agent_memory_recall",
+            "description": "Recall directly from the dedicated Cognee agent-memory dataset.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "top_k": {"type": "integer", "minimum": 1, "maximum": 50, "default": 10},
+                },
+                "required": ["query"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_agent_memory_clear",
+            "description": "Clear the dedicated Cognee agent-memory dataset after explicit confirmation.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "confirm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true to clear agent-memory records.",
+                    }
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_merge_entities",
             "description": "Merge a duplicate entity into a primary entity after confirmation.",
             "inputSchema": {
                 "type": "object",
@@ -381,8 +475,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.describe_item",
-            "description": "Describe a taste item with strict-source enrichment without storing it.",
+            "name": "brain_palate_describe_item",
+            "description": "Normalize and enrich a palate item without storing it.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -401,8 +495,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.remember",
-            "description": "Store a structured taste item and project it into Brain evidence.",
+            "name": "brain_palate_remember",
+            "description": "Store an approved normalized palate item in the canonical palate store and project Brain evidence.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -435,8 +529,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.query",
-            "description": "Rank saved taste records for a recommendation or comparison query.",
+            "name": "brain_palate_query",
+            "description": "Rank canonical palate records for a recommendation or comparison query.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -455,8 +549,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.evaluate_options",
-            "description": "Rank only supplied options against saved taste records.",
+            "name": "brain_palate_evaluate_options",
+            "description": "Rank only supplied options against canonical palate records.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -475,8 +569,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.log_decision",
-            "description": "Record which taste item was chosen after a recommendation.",
+            "name": "brain_palate_log_decision",
+            "description": "Record which palate item was chosen after a recommendation.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -490,8 +584,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.confirm",
-            "description": "Confirm a pending taste proposal by proposal_id.",
+            "name": "brain_palate_confirm",
+            "description": "Confirm a pending palate proposal by proposal_id.",
             "inputSchema": {
                 "type": "object",
                 "properties": {"proposal_id": {"type": "string"}},
@@ -500,8 +594,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.cancel",
-            "description": "Cancel a pending taste proposal by proposal_id.",
+            "name": "brain_palate_cancel",
+            "description": "Cancel a pending palate proposal by proposal_id.",
             "inputSchema": {
                 "type": "object",
                 "properties": {"proposal_id": {"type": "string"}},
@@ -510,8 +604,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.correct_proposal",
-            "description": "Apply a free-text correction to a pending taste proposal.",
+            "name": "brain_palate_correct_proposal",
+            "description": "Apply a free-text correction to a pending palate proposal.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -523,8 +617,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.taste.refresh_enrichment",
-            "description": "Explicitly refresh enrichment for one stored taste item.",
+            "name": "brain_palate_refresh_enrichment",
+            "description": "Refresh enrichment for one canonical palate item.",
             "inputSchema": {
                 "type": "object",
                 "properties": {"taste_item_id": {"type": "string"}},
@@ -553,6 +647,140 @@ def resource_definitions() -> list[dict[str, str]]:
             "mimeType": "application/json",
         },
     ]
+
+
+def prompt_definitions() -> list[dict[str, Any]]:
+    return [
+        {
+            "name": "brain_agent_memory_protocol",
+            "description": (
+                "Insert operating instructions for using Cognee session memory "
+                "during an agent conversation."
+            ),
+            "arguments": [
+                {
+                    "name": "session_id",
+                    "description": (
+                        "Cognee session ID to use consistently. Defaults to "
+                        f"{DEFAULT_AGENT_SESSION_ID}."
+                    ),
+                    "required": False,
+                }
+            ],
+        },
+        {
+            "name": "brain_bias_protocol",
+            "description": (
+                "Insert operating instructions for loading and updating the user's "
+                "durable preferences, constraints, and response-style biases from Brain."
+            ),
+            "arguments": [
+                {
+                    "name": "profile_name",
+                    "description": "Preference owner name. Defaults to the configured Brain owner.",
+                    "required": False,
+                }
+            ],
+        },
+    ]
+
+
+def get_prompt(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    if name == "brain_agent_memory_protocol":
+        session_id = str(arguments.get("session_id") or DEFAULT_AGENT_SESSION_ID).strip()
+        if not session_id:
+            raise ValueError("session_id must not be blank.")
+        return prompt_response(
+            description=f"Cognee session-memory protocol for session_id={session_id}.",
+            text=agent_memory_protocol_prompt(session_id),
+        )
+    if name == "brain_bias_protocol":
+        profile_name = str(arguments.get("profile_name") or settings.brain_owner_name).strip()
+        if not profile_name:
+            raise ValueError("profile_name must not be blank.")
+        return prompt_response(
+            description=f"Brain bias/preference protocol for {profile_name}.",
+            text=brain_bias_protocol_prompt(profile_name),
+        )
+    raise ValueError(f"Unknown Brain prompt: {name}")
+
+
+def prompt_response(*, description: str, text: str) -> dict[str, Any]:
+    return {
+        "description": description,
+        "messages": [
+            {
+                "role": "user",
+                "content": {"type": "text", "text": text},
+            }
+        ],
+    }
+
+
+def agent_memory_protocol_prompt(session_id: str) -> str:
+    return f"""## Memory Protocol (Cognee)
+
+You have access to a Cognee MCP server with `remember`, `recall`, and `forget`.
+Use session_id="{session_id}" consistently across all calls.
+
+**On every conversation start:** call `recall` with a query derived from the user's first message before responding. Silently surface anything relevant.
+
+**During conversation, call `remember` immediately when:**
+- A decision is made (technical, architectural, personal)
+- A preference or constraint is stated
+- A project fact, name, number, or status is established
+- The user says "remember", "note", "keep in mind", or similar
+
+**At natural stopping points** (long pause, topic shift, explicit wrap-up): call `remember` with a concise summary of what was established.
+
+**Format for remember:** one declarative sentence per fact, not transcripts.
+Good: "Daniele prefers FastMCP over raw MCP SDK for Python servers."
+Bad: "User said they like FastMCP because it's simpler."
+
+**Don't narrate** the tool calls. No "I'm now storing this in memory..." — just do it and continue. If recall returns nothing useful, proceed silently.
+
+**On ambiguous references** ("the project", "last time", "what we decided"): call `recall` before asking for clarification.
+
+When the user asks to record or preserve the chat memory using Brain, use Brain's `brain_agent_memory` workflow with session_id="{session_id}" so this session can be improved into the dedicated, removable agent-memory dataset."""
+
+
+def brain_bias_protocol_prompt(profile_name: str) -> str:
+    return f"""## Bias and Preference Protocol (Brain)
+
+You have access to Brain MCP tools including `brain_recall` and `brain_remember`.
+Use them to maintain durable preferences, constraints, and communication biases for {profile_name}.
+
+**When the user says "load my preferences from Brain", "load my biases", "use Brain preferences", or similar:**
+- Call `brain_recall` before responding.
+- Use a query such as: "{profile_name} preferences constraints communication style response format coding preferences".
+- Apply relevant recalled preferences silently in the rest of the conversation.
+- If recall returns nothing useful, continue without narrating that no preferences were found.
+
+**At the start of a new chat, when this prompt is active:**
+- If the first user message implies preferences, prior context, communication style, or "how I like things", call `brain_recall` before responding.
+- Otherwise, wait until the user asks to load preferences or makes an ambiguous reference.
+
+**During conversation, call `brain_remember` immediately when the user states or revises a durable bias, preference, or constraint, including:**
+- Response style, length, tone, detail level, formatting, or examples
+- Engineering standards, architecture preferences, deployment constraints, tool preferences
+- Personal defaults, recurring workflows, naming conventions, or "always/never" instructions
+- Explicit phrases like "remember", "note", "keep in mind", "I prefer", "I don't like", "from now on"
+
+**Format for `brain_remember`:**
+- Store one declarative sentence per fact.
+- Include {profile_name}'s name when useful.
+- Prefer stable, reusable statements over transcripts.
+- Good: "{profile_name} prefers short answers unless a task requires implementation detail."
+- Good: "{profile_name} prefers MCP tool names to use underscores rather than dots."
+- Bad: "The user said maybe we should use underscores."
+
+**When preferences conflict:**
+- Use the newest explicit preference in the current conversation.
+- Store the revision with `brain_remember`.
+- Do not delete older memories unless the user explicitly asks to remove or forget them.
+
+**Don't narrate memory calls.**
+No "I'm saving that preference..." unless the user asks what you saved. Just apply the preference and continue."""
 
 
 def resource_template_definitions() -> list[dict[str, str]]:
@@ -709,8 +937,10 @@ async def brain_remember_endpoint(
     payload: RememberRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_remember(payload, settings).model_dump(mode="json")
+    return authenticated_model_response(
+        authorization,
+        lambda: brain_remember(payload, settings),
+    )
 
 
 @app.post("/memory/ingest_source")
@@ -718,8 +948,10 @@ async def brain_ingest_source_endpoint(
     payload: IngestSourceRequest | RememberRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_ingest_source(payload, settings).model_dump(mode="json")
+    return authenticated_model_response(
+        authorization,
+        lambda: brain_ingest_source(payload, settings),
+    )
 
 
 @app.post("/memory/recall")
@@ -727,8 +959,10 @@ async def brain_recall_endpoint(
     payload: RecallRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_recall(payload, settings).model_dump(mode="json")
+    return authenticated_model_response(
+        authorization,
+        lambda: brain_recall(payload, settings),
+    )
 
 
 @app.post("/memory/profile_entity")
@@ -736,14 +970,16 @@ async def brain_profile_entity_endpoint(
     payload: ProfileEntityRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_profile_entity(
-        settings,
-        name=payload.name,
-        entity_type=None if payload.entity_type == "auto" else payload.entity_type,
-        include_superseded=payload.include_superseded,
-        include_conflicts=payload.include_conflicts,
-    ).model_dump(mode="json")
+    return authenticated_model_response(
+        authorization,
+        lambda: brain_profile_entity(
+            settings,
+            name=payload.name,
+            entity_type=None if payload.entity_type == "auto" else payload.entity_type,
+            include_superseded=payload.include_superseded,
+            include_conflicts=payload.include_conflicts,
+        ),
+    )
 
 
 @app.get("/memory/open_loops")
@@ -753,8 +989,17 @@ async def brain_open_loops_endpoint(
     limit: int = 20,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return {"open_loops": brain_list_open_loops(settings, topic=topic, status=status, limit=limit)}
+    return authenticated_dict_response(
+        authorization,
+        lambda: {
+            "open_loops": brain_list_open_loops(
+                settings,
+                topic=topic,
+                status=status,
+                limit=limit,
+            )
+        },
+    )
 
 
 @app.get("/memory/{memory_id}")
@@ -774,13 +1019,15 @@ async def brain_forget_endpoint(
     payload: ForgetRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_forget(
-        settings,
-        object_type=payload.object_type,
-        object_id=payload.object_id,
-        hard=payload.hard,
-        reason=payload.reason,
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_forget(
+            settings,
+            object_type=payload.object_type,
+            object_id=payload.object_id,
+            hard=payload.hard,
+            reason=payload.reason,
+        ),
     )
 
 
@@ -789,13 +1036,15 @@ async def brain_resolve_conflict_endpoint(
     payload: ResolveConflictRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_resolve_conflict(
-        settings,
-        conflict_memory_id=payload.conflict_memory_id,
-        target_memory_id=payload.target_memory_id,
-        action=payload.action,
-        note=payload.note,
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_resolve_conflict(
+            settings,
+            conflict_memory_id=payload.conflict_memory_id,
+            target_memory_id=payload.target_memory_id,
+            action=payload.action,
+            note=payload.note,
+        ),
     )
 
 
@@ -804,12 +1053,14 @@ async def brain_review_recent_endpoint(
     payload: ReviewRecentRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_review_recent(
-        settings,
-        since=parse_optional_datetime(payload.since),
-        limit=payload.limit,
-        include_sources=payload.include_sources,
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_review_recent(
+            settings,
+            since=parse_optional_datetime(payload.since),
+            limit=payload.limit,
+            include_sources=payload.include_sources,
+        ),
     )
 
 
@@ -818,8 +1069,10 @@ async def brain_undo_last_endpoint(
     payload: UndoLastRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_undo_last(settings, ingestion_run_id=payload.ingestion_run_id)
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_undo_last(settings, ingestion_run_id=payload.ingestion_run_id),
+    )
 
 
 @app.post("/memory/sync_cognee")
@@ -827,13 +1080,15 @@ async def brain_sync_cognee_endpoint(
     payload: SyncCogneeRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_sync_cognee(
-        settings,
-        object_type=payload.object_type,
-        object_id=payload.object_id,
-        dataset=payload.dataset,
-        force=payload.force,
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_sync_cognee(
+            settings,
+            object_type=payload.object_type,
+            object_id=payload.object_id,
+            dataset=payload.dataset,
+            force=payload.force,
+        ),
     )
 
 
@@ -842,12 +1097,14 @@ async def brain_rebuild_cognee_endpoint(
     payload: RebuildCogneeRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_rebuild_cognee(
-        settings,
-        dataset=payload.dataset,
-        prune_first=payload.prune_first,
-        confirm=payload.confirm,
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_rebuild_cognee(
+            settings,
+            dataset=payload.dataset,
+            prune_first=payload.prune_first,
+            confirm=payload.confirm,
+        ),
     )
 
 
@@ -856,13 +1113,15 @@ async def brain_merge_entities_endpoint(
     payload: MergeEntitiesRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return brain_merge_entities(
-        settings,
-        primary_entity_id=payload.primary_entity_id,
-        duplicate_entity_id=payload.duplicate_entity_id,
-        reason=payload.reason,
-        confirm=payload.confirm,
+    return authenticated_dict_response(
+        authorization,
+        lambda: brain_merge_entities(
+            settings,
+            primary_entity_id=payload.primary_entity_id,
+            duplicate_entity_id=payload.duplicate_entity_id,
+            reason=payload.reason,
+            confirm=payload.confirm,
+        ),
     )
 
 
@@ -925,6 +1184,16 @@ def require_api_auth(header_value: str | None, active_settings: Settings) -> Non
         )
 
 
+def authenticated_model_response(authorization: str | None, factory: Any) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return factory().model_dump(mode="json")
+
+
+def authenticated_dict_response(authorization: str | None, factory: Any) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return factory()
+
+
 def authentication_required_payload(active_settings: Settings) -> dict[str, str]:
     return {"error": "authentication_required", "service": active_settings.brain_service_name}
 
@@ -958,11 +1227,18 @@ async def handle_json_rpc(payload: Any) -> Any:
         if method == "initialize":
             result = {
                 "protocolVersion": "2024-11-05",
-                "capabilities": {"tools": {}, "resources": {}},
+                "capabilities": {"tools": {}, "resources": {}, "prompts": {}},
                 "serverInfo": {"name": "brain", "version": "0.1.0"},
             }
         elif method == "tools/list":
             result = {"tools": memory_tool_definitions()}
+        elif method == "prompts/list":
+            result = {"prompts": prompt_definitions()}
+        elif method == "prompts/get":
+            result = get_prompt(
+                str(params.get("name", "")),
+                params.get("arguments") or {},
+            )
         elif method == "resources/list":
             result = {"resources": resource_definitions()}
         elif method == "resources/templates/list":
@@ -984,7 +1260,7 @@ async def handle_json_rpc(payload: Any) -> Any:
 async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
-    if name in {"brain.remember", "brain_remember"}:
+    if name == "brain_remember":
         request = RememberRequest.model_validate(
             {
                 "input": arguments.get("input", ""),
@@ -998,7 +1274,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = brain_remember(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=remember_summary(payload))
 
-    if name in {"brain.ingest_source", "brain_ingest_source"}:
+    if name == "brain_ingest_source":
         if "source" in arguments:
             request = IngestSourceRequest.model_validate(
                 {
@@ -1040,7 +1316,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name in {"brain.recall", "brain_recall"}:
+    if name == "brain_recall":
         request = RecallRequest.model_validate(
             {
                 "query": arguments["query"],
@@ -1054,7 +1330,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = brain_recall(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
 
-    if name in {"brain.profile_entity", "brain_profile_entity"}:
+    if name == "brain_profile_entity":
         entity_type = arguments.get("entity_type")
         if entity_type == "auto":
             entity_type = None
@@ -1067,7 +1343,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         ).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Profile complete."))
 
-    if name in {"brain.list_open_loops", "brain_list_open_loops"}:
+    if name == "brain_list_open_loops":
         payload = {
             "open_loops": brain_list_open_loops(
                 settings,
@@ -1081,14 +1357,14 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Found {len(payload['open_loops'])} open loops.",
         )
 
-    if name in {"brain.get_memory", "brain_get_memory"}:
+    if name == "brain_get_memory":
         memory = brain_get_memory(str(arguments["memory_id"]), settings)
         return json_tool_response(
             {"memory": memory},
             summary="Memory found." if memory else "Memory not found.",
         )
 
-    if name in {"brain.get_source", "brain_get_source"}:
+    if name == "brain_get_source":
         max_chars = bounded_int(arguments.get("max_chars", 10_000), minimum=1_000, maximum=100_000)
         source = brain_get_source(
             str(arguments["source_id"]),
@@ -1105,7 +1381,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary="Source found." if source else "Source not found.",
         )
 
-    if name in {"brain.resolve_conflict", "brain_resolve_conflict"}:
+    if name == "brain_resolve_conflict":
         payload = brain_resolve_conflict(
             settings,
             conflict_memory_id=str(arguments["conflict_memory_id"]),
@@ -1118,10 +1394,10 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Conflict action applied: {payload.get('action')}.",
         )
 
-    if name in {"brain.forget", "brain_forget"}:
+    if name == "brain_forget":
         hard = bool(arguments.get("hard", False))
         if hard and not bool(arguments.get("confirm", False)):
-            raise ValueError("brain.forget requires confirm=true for hard deletes.")
+            raise ValueError("brain_forget requires confirm=true for hard deletes.")
         payload = brain_forget(
             settings,
             object_type=str(arguments["object_type"]),
@@ -1133,7 +1409,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = {**payload, "mode": mode, "cognee_sync_status": "stale"}
         return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
 
-    if name in {"brain.review_recent", "brain_review_recent"}:
+    if name == "brain_review_recent":
         payload = brain_review_recent(
             settings,
             since=parse_optional_datetime(arguments.get("since")),
@@ -1148,7 +1424,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name in {"brain.undo_last", "brain_undo_last"}:
+    if name == "brain_undo_last":
         payload = brain_undo_last(
             settings,
             ingestion_run_id=arguments.get("ingestion_run_id"),
@@ -1158,7 +1434,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Undo result: {payload['status']}.",
         )
 
-    if name in {"brain.sync_cognee", "brain_sync_cognee"}:
+    if name == "brain_sync_cognee":
         payload = brain_sync_cognee(
             settings,
             object_type=str(arguments.get("object_type", "all")),
@@ -1171,7 +1447,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Cognee sync {payload.get('status', 'complete')}: {payload.get('processed', 0)} rows.",
         )
 
-    if name in {"brain.rebuild_cognee", "brain_rebuild_cognee"}:
+    if name == "brain_rebuild_cognee":
         payload = brain_rebuild_cognee(
             settings,
             dataset=str(arguments.get("dataset", "all")),
@@ -1187,7 +1463,84 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name in {"brain.merge_entities", "brain_merge_entities"}:
+    if name == "cognee_improve":
+        request = CogneeImproveRequest.model_validate(arguments)
+        dataset = configured_cognee_dataset(request.dataset, settings)
+        result = await improve_cognee(
+            dataset=dataset,
+            node_name=request.node_name,
+            session_ids=request.session_ids,
+            run_in_background=request.run_in_background,
+            settings=settings,
+        )
+        payload = {
+            "dataset": request.dataset,
+            "resolved_dataset": dataset,
+            "node_name": request.node_name or [],
+            "session_ids": request.session_ids or [],
+            "run_in_background": request.run_in_background,
+            "result": to_jsonable(result),
+        }
+        return json_tool_response(payload, summary=f"Cognee improve queued for {dataset}.")
+
+    if name == "brain_agent_memory":
+        request = BrainAgentMemoryRequest.model_validate(arguments)
+        session_id = request.session_id.strip()
+        if not session_id:
+            raise ValueError("session_id must not be blank.")
+        dataset = settings.brain_cognee_agent_memory_dataset
+        result = await improve_cognee(
+            dataset=dataset,
+            node_name=request.node_name,
+            session_ids=[session_id],
+            run_in_background=request.run_in_background,
+            settings=settings,
+        )
+        payload = {
+            "session_id": session_id,
+            "dataset": "agent_memory",
+            "resolved_dataset": dataset,
+            "node_name": request.node_name or [],
+            "run_in_background": request.run_in_background,
+            "result": to_jsonable(result),
+        }
+        return json_tool_response(
+            payload,
+            summary=f"Agent session memory improved into {dataset}.",
+        )
+
+    if name == "brain_agent_memory_recall":
+        request = BrainAgentMemoryRecallRequest.model_validate(arguments)
+        dataset = settings.brain_cognee_agent_memory_dataset
+        result = await recall_text(
+            query=request.query,
+            dataset=dataset,
+            search_type="GRAPH_COMPLETION",
+            top_k=bounded_int(request.top_k, minimum=1, maximum=50),
+            settings=settings,
+        )
+        payload = {
+            "query": request.query,
+            "dataset": "agent_memory",
+            "resolved_dataset": dataset,
+            "result": to_jsonable(result),
+        }
+        return json_tool_response(payload, summary="Agent memory recall complete.")
+
+    if name == "brain_agent_memory_clear":
+        request = BrainAgentMemoryClearRequest.model_validate(arguments)
+        if not request.confirm:
+            raise ValueError("brain_agent_memory_clear requires confirm=true.")
+        dataset = settings.brain_cognee_agent_memory_dataset
+        result = await delete_cognee_datasource(dataset, settings=settings)
+        payload = {
+            "dataset": "agent_memory",
+            "resolved_dataset": dataset,
+            "result": to_jsonable(result),
+        }
+        return json_tool_response(payload, summary=f"Agent memory dataset cleared: {dataset}.")
+
+    if name == "brain_merge_entities":
         payload = brain_merge_entities(
             settings,
             primary_entity_id=str(arguments["primary_entity_id"]),
@@ -1200,7 +1553,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Merged duplicate entity {payload['duplicate_entity_id']}.",
         )
 
-    if name == "brain.taste.describe_item":
+    if name == "brain_palate_describe_item":
         payload = TasteService(settings).describe_item(
             TasteDescribeRequest.model_validate(
                 {
@@ -1220,9 +1573,9 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                 }
             )
         )
-        return json_tool_response(payload, summary="Taste item described without storing.")
+        return json_tool_response(payload, summary="Palate item described without storing.")
 
-    if name == "brain.taste.remember":
+    if name == "brain_palate_remember":
         payload = TasteService(settings).remember(
             TasteRememberRequest.model_validate(
                 {
@@ -1259,65 +1612,79 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         return json_tool_response(
             payload,
             summary=(
-                f"Stored {len(payload.get('taste_records', []))} taste record(s)."
+                f"Stored {len(payload.get('taste_records', []))} palate record(s) in "
+                f"{payload.get('canonical_store', 'the canonical store')}."
                 if payload.get("stored")
-                else "Taste remember dry run complete."
+                else "Palate remember dry run complete."
             ),
         )
 
-    if name == "brain.taste.query":
+    if name == "brain_palate_query":
         payload = TasteService(settings).query(TasteQueryRequest.model_validate(arguments))
-        return json_tool_response(payload, summary=payload.get("answer", "Taste query complete."))
+        return json_tool_response(payload, summary=payload.get("answer", "Palate query complete."))
 
-    if name == "brain.taste.evaluate_options":
+    if name == "brain_palate_evaluate_options":
         payload = TasteService(settings).evaluate_options(
             TasteQueryRequest.model_validate(arguments)
         )
         return json_tool_response(
             payload,
-            summary=payload.get("answer", "Taste option evaluation complete."),
+            summary=payload.get("answer", "Palate option evaluation complete."),
         )
 
-    if name == "brain.taste.log_decision":
+    if name == "brain_palate_log_decision":
         payload = TasteService(settings).log_decision(
             TasteLogDecisionRequest.model_validate(arguments)
         )
         return json_tool_response(
             payload,
-            summary="Taste decision logged." if payload.get("logged") else "Taste decision not logged.",
+            summary="Palate decision logged." if payload.get("logged") else "Palate decision not logged.",
         )
 
-    if name == "brain.taste.confirm":
+    if name == "brain_palate_confirm":
         payload = TasteService(settings).confirm(str(arguments["proposal_id"]))
         return json_tool_response(
             payload,
-            summary="Taste proposal confirmed." if payload.get("confirmed") else "Taste proposal not confirmed.",
+            summary="Palate proposal confirmed." if payload.get("confirmed") else "Palate proposal not confirmed.",
         )
 
-    if name == "brain.taste.cancel":
+    if name == "brain_palate_cancel":
         payload = TasteService(settings).cancel(str(arguments["proposal_id"]))
         return json_tool_response(
             payload,
-            summary="Taste proposal cancelled." if payload.get("cancelled") else "Taste proposal not cancelled.",
+            summary="Palate proposal cancelled." if payload.get("cancelled") else "Palate proposal not cancelled.",
         )
 
-    if name == "brain.taste.correct_proposal":
+    if name == "brain_palate_correct_proposal":
         payload = TasteService(settings).correct_proposal(
             str(arguments["proposal_id"]),
             str(arguments["correction"]),
         )
-        return json_tool_response(payload, summary="Taste proposal corrected.")
+        return json_tool_response(payload, summary="Palate proposal corrected.")
 
-    if name == "brain.taste.refresh_enrichment":
+    if name == "brain_palate_refresh_enrichment":
         payload = TasteService(settings).refresh_enrichment(
             TasteRefreshRequest.model_validate(arguments)
         )
         return json_tool_response(
             payload,
-            summary="Taste enrichment refreshed." if payload.get("refreshed") else "Taste refresh failed.",
+            summary="Palate enrichment refreshed." if payload.get("refreshed") else "Palate refresh failed.",
         )
 
     raise ValueError(f"Unknown tool: {name}")
+
+
+def configured_cognee_dataset(dataset: str, active_settings: Settings) -> str:
+    mapping = {
+        "memory": active_settings.brain_cognee_memory_dataset,
+        "sources": active_settings.brain_cognee_sources_dataset,
+        "data": active_settings.brain_cognee_data_dataset,
+        "palate": active_settings.brain_cognee_palate_dataset,
+        "agent_memory": active_settings.brain_cognee_agent_memory_dataset,
+    }
+    if dataset not in mapping:
+        raise ValueError(f"dataset must be one of: {', '.join(COGNEE_IMPROVE_DATASETS)}")
+    return mapping[dataset]
 
 
 def source_summary_from_request(arguments: dict[str, Any]) -> str | None:

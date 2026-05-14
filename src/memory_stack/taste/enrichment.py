@@ -3,7 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 from memory_stack.brain_store import now_utc
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
+from memory_stack.llm.client import LLMClient
+from memory_stack.taste.llm_enrichment import (
+    normalize_enrichment_with_llm,
+    normalize_restaurant_enrichment_with_llm,
+)
 from memory_stack.taste.media import (
     is_empty_metadata_value,
     is_media_type,
@@ -26,8 +31,9 @@ from memory_stack.taste.store import attribute_value, clamp01, normalize_interva
 
 
 class TasteEnrichmentService:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, llm_client: LLMClient | None = None) -> None:
         self.settings = settings
+        self.llm_client = llm_client
 
     def describe_item(
         self,
@@ -51,22 +57,63 @@ class TasteEnrichmentService:
         if not name:
             raise ValueError("canonical_name must not be blank when provided.")
 
-        ignored_attribute_keys = invalid_attribute_keys(entity_type, attributes)
-        normalized_attributes = normalize_client_attributes(
+        client_attributes = normalize_client_attributes(
             entity_type,
             attributes,
             attribute_intervals_95,
         )
+        llm_payload: dict[str, Any] | None = None
+        llm_warnings: list[str] = []
+        if not client_attributes and self.llm_client is not None:
+            try:
+                if is_restaurant_type(entity_type) and fetch_external_ratings:
+                    llm_payload = normalize_restaurant_enrichment_with_llm(
+                        item_text=description,
+                        llm_client=self.llm_client,
+                        model=self.settings.brain_taste_llm_model,
+                        reasoning_effort=self.settings.brain_taste_llm_reasoning_effort,
+                    )
+                else:
+                    llm_payload = normalize_enrichment_with_llm(
+                        item_text=description,
+                        entity_type=entity_type,
+                        llm_client=self.llm_client,
+                        model=self.settings.brain_taste_llm_model,
+                        reasoning_effort=self.settings.brain_taste_llm_reasoning_effort,
+                    )
+            except Exception as exc:
+                llm_warnings.append(f"LLM enrichment failed: {exc}")
+
+        effective_attributes = attributes
+        if not client_attributes and llm_payload is not None:
+            effective_attributes = llm_payload.get("attributes")
+        effective_metadata = merge_llm_and_manual_metadata(
+            entity_type,
+            llm_payload.get("metadata") if llm_payload else {},
+            metadata or {},
+        )
+        effective_notes = notes
+        if effective_notes is None and llm_payload is not None:
+            effective_notes = llm_payload.get("notes")
+
+        ignored_attribute_keys = invalid_attribute_keys(entity_type, effective_attributes)
+        normalized_attributes = client_attributes
+        if llm_payload is not None:
+            normalized_attributes = normalize_client_attributes(
+                entity_type,
+                effective_attributes,
+                attribute_intervals_95,
+            )
         metadata_payload, metadata_warnings, sources, source_payloads = prepare_metadata(
             settings=self.settings,
             entity_type=entity_type,
             canonical_name=name,
-            metadata=metadata or {},
+            metadata=effective_metadata,
             fetch_external_ratings=fetch_external_ratings,
             allow_broader_web_search=allow_broader_web_search,
         )
         status = "success"
-        warnings = list(metadata_warnings)
+        warnings = [*llm_warnings, *metadata_warnings]
         if ignored_attribute_keys:
             warnings.append(
                 "Ignored attributes not valid for "
@@ -90,6 +137,11 @@ class TasteEnrichmentService:
                     )
         if allow_broader_web_search:
             warnings.append("Broader web search was explicitly approved for this enrichment request.")
+        normalized_fields_source = "user_input_only"
+        if sources:
+            normalized_fields_source = "strict_source"
+        elif llm_payload is not None:
+            normalized_fields_source = "llm"
 
         attribute_values = {
             key: attribute_value(value)
@@ -110,11 +162,10 @@ class TasteEnrichmentService:
             "attributes": attribute_values,
             "attribute_intervals_95": intervals,
             "enrichment_metadata": {
-                "normalized_fields_source": "strict_source"
-                if has_normalized_content
-                else "user_input_only",
+                "normalized_fields_source": normalized_fields_source,
                 "warnings": warnings,
                 "ignored_attribute_keys": ignored_attribute_keys,
+                "llm_used": llm_payload is not None,
                 "checked_at": now_utc().isoformat(),
                 "source_payloads": source_payloads,
             },
@@ -122,7 +173,8 @@ class TasteEnrichmentService:
             "warnings": warnings,
             "confidence": 1.0 if status == "success" else 0.6,
             "enrichment_status": status,
-            "notes": notes or description,
+            "llm_used": llm_payload is not None,
+            "notes": effective_notes or description,
         }
 
 
@@ -200,6 +252,22 @@ def prepare_metadata(
                 source_payloads["omdb"] = {"looked_up": True}
         return normalized, warnings, sources, source_payloads
     return metadata or {}, [], [], {}
+
+
+def merge_llm_and_manual_metadata(
+    entity_type: str,
+    llm_metadata: dict[str, Any] | None,
+    manual_metadata: dict[str, Any] | None,
+) -> dict[str, Any]:
+    llm_metadata = llm_metadata if isinstance(llm_metadata, dict) else {}
+    manual_metadata = manual_metadata if isinstance(manual_metadata, dict) else {}
+    if is_music_type(entity_type):
+        return merge_music_metadata(llm_metadata, manual_metadata, overwrite=True)
+    if is_restaurant_type(entity_type):
+        return merge_restaurant_metadata(llm_metadata, manual_metadata, overwrite=True)
+    if is_media_type(entity_type):
+        return merge_media_metadata(llm_metadata, manual_metadata, overwrite=True)
+    return {**llm_metadata, **manual_metadata}
 
 
 def metadata_has_content(metadata: dict[str, Any] | None) -> bool:

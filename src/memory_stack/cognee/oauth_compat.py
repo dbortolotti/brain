@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 from pydantic import BaseModel
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.provider_auth import resolve_openai_text_bearer
 
 
@@ -90,17 +90,25 @@ class CogneeOAuthLLMAdapter:
         response_model: type[BaseModel] | type[str],
         **kwargs: Any,
     ) -> BaseModel | str:
-        del kwargs
         prompt = _prompt_for_response_model(text_input, response_model)
+        model = str(kwargs.get("model") or self.model)
         payload: dict[str, Any] = {
-            "model": self.model,
+            "model": model,
             "instructions": system_prompt,
             "input": [{"role": "user", "content": prompt}],
             "store": False,
             "stream": True,
         }
-        if _openai_supports_reasoning(self.model):
-            payload["reasoning"] = {"effort": _openai_reasoning_effort(self.model)}
+        for key in ("tools", "tool_choice", "include"):
+            if key in kwargs:
+                payload[key] = kwargs[key]
+        if _openai_supports_reasoning(model):
+            payload["reasoning"] = {
+                "effort": _openai_reasoning_effort(
+                    model,
+                    configured=kwargs.get("reasoning_effort"),
+                )
+            }
         text = None
         last_transport_error: httpx.TransportError | None = None
         for attempt in range(3):
@@ -186,8 +194,8 @@ def _prompt_for_response_model(
     )
 
 
-def _openai_reasoning_effort(model: str) -> str:
-    configured = os.environ.get("COGNEE_OPENAI_REASONING_EFFORT")
+def _openai_reasoning_effort(model: str, configured: Any = None) -> str:
+    configured = configured or os.environ.get("COGNEE_OPENAI_REASONING_EFFORT")
     if configured in {"minimal", "low", "medium", "high"}:
         return configured
     if model.startswith(("gpt-5.4", "gpt-5.5")):

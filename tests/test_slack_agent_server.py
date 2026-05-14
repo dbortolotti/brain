@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 
 from fastapi.testclient import TestClient
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack import slack_agent_server
 from memory_stack.slack_agent_server import app, verify_slack_request
 
