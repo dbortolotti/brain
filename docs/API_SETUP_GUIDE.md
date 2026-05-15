@@ -152,14 +152,20 @@ brain_undo_last
 brain_profile_context_list
 brain_profile_context_remember
 brain_profile_context_forget
+brain_app_data_controls
 ```
 
 `brain_remember` is confirmation-first on `/app/mcp`. Without explicit
 confirmation it is forced to `dry_run=true`; after the user confirms, call it
-again with `context.confirmed_by_user=true` to save. Destructive app-surface
-calls such as `brain_undo_last` and `brain_profile_context_forget` require
-`confirmed_by_user=true`. Admin tools, raw Cognee projection tools,
-agent-memory clear, and Palate writes are not listed or callable on `/app/mcp`.
+again with `context.confirmed_by_user=true` to save. App-surface write tools
+accept either top-level `confirmed_by_user=true` or
+`context.confirmed_by_user=true`. Read-only app tools require
+`brain.memory.read`; write tools require `brain.memory.write` as well, are
+rate-limited, and append a redacted app write audit record. Destructive
+app-surface calls such as `brain_undo_last` and
+`brain_profile_context_forget` require confirmation. Admin tools, raw Cognee
+projection tools, agent-memory clear, and Palate writes are not listed or
+callable on `/app/mcp`.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 

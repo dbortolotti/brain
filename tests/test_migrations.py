@@ -33,6 +33,7 @@ def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:
         "taste_signals",
         "taste_decisions",
         "taste_proposals",
+        "app_write_audit",
     } <= tables
     proposal_columns = {
         column["name"]: column for column in inspector.get_columns("taste_proposals")

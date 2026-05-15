@@ -284,6 +284,8 @@ class Settings(BaseSettings):
     brain_request_log_path: str = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_PATH", "./.data/logs/requests.jsonl"))
     brain_request_log_max_body_bytes: int = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_MAX_BODY_BYTES", 1024 * 1024))
     brain_request_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_RETENTION_DAYS", 30))
+    brain_app_write_rate_limit_count: int = Field(default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_COUNT", 30))
+    brain_app_write_rate_limit_window_seconds: int = Field(default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS", 60))
     brain_routing_log_enabled: bool = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_ENABLED", False))
     brain_routing_log_path: str = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_PATH", "./.data/logs/routing/{date}.jsonl"))
     brain_routing_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_RETENTION_DAYS", 90))
@@ -659,6 +661,10 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_PATH": settings.brain_request_log_path,
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
         "BRAIN_REQUEST_LOG_RETENTION_DAYS": str(settings.brain_request_log_retention_days),
+        "BRAIN_APP_WRITE_RATE_LIMIT_COUNT": str(settings.brain_app_write_rate_limit_count),
+        "BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS": str(
+            settings.brain_app_write_rate_limit_window_seconds
+        ),
         "BRAIN_ROUTING_LOG_ENABLED": str(settings.brain_routing_log_enabled).lower(),
         "BRAIN_ROUTING_LOG_PATH": settings.brain_routing_log_path,
         "BRAIN_ROUTING_LOG_RETENTION_DAYS": str(settings.brain_routing_log_retention_days),

@@ -194,8 +194,15 @@ class BrainOAuthProvider:
         return Response(status_code=200)
 
     def validate_access_token(self, token: str, required_scopes: list[str]) -> bool:
+        return self.access_token_record(token, required_scopes) is not None
+
+    def access_token_record(
+        self,
+        token: str,
+        required_scopes: list[str] | None = None,
+    ) -> dict[str, Any] | None:
         if not token:
-            return False
+            return None
         with self._lock:
             state = self._load_state()
             stored = state["access_tokens"].get(token)
@@ -204,12 +211,18 @@ class BrainOAuthProvider:
                 self._save_state(state)
                 stored = None
         if not stored:
-            return False
+            return None
         token_scopes = stored.get("scopes") or []
-        if any(scope not in token_scopes for scope in required_scopes):
-            return False
+        if any(scope not in token_scopes for scope in required_scopes or []):
+            return None
         token_resource = stored.get("resource")
-        return token_resource in {None, self.resource_url}
+        if token_resource not in {None, self.resource_url}:
+            return None
+        return {
+            "client_id": stored.get("client_id"),
+            "scopes": token_scopes,
+            "resource": token_resource,
+        }
 
     def _client(self, client_id: str) -> dict[str, Any]:
         with self._lock:

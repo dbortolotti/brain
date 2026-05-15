@@ -749,6 +749,66 @@ class BrainStore:
             ).fetchall()
         return [row_dict(row) for row in rows]
 
+    def create_app_write_audit(
+        self,
+        *,
+        tool_name: str,
+        status: str,
+        confirmed_by_user: bool,
+        client_id: str | None = None,
+        subject: str | None = None,
+        request_id: str | None = None,
+        target_id: str | None = None,
+        summary: str | None = None,
+        metadata_json: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        audit_id = stable_id(
+            "awa",
+            tool_name,
+            status,
+            client_id,
+            request_id,
+            target_id,
+            now_utc().isoformat(),
+        )
+        values = {
+            "id": audit_id,
+            "tool_name": tool_name,
+            "client_id": client_id,
+            "subject": subject,
+            "request_id": request_id,
+            "target_id": target_id,
+            "status": status,
+            "confirmed_by_user": 1 if confirmed_by_user else 0,
+            "summary": (summary or "")[:500] if summary else None,
+            "metadata_json": metadata_json or {},
+        }
+        with self.engine.begin() as conn:
+            conn.execute(insert(schema.app_write_audit).values(**values))
+            row = conn.execute(
+                select(schema.app_write_audit).where(schema.app_write_audit.c.id == audit_id)
+            ).one()
+        return row_dict(row)
+
+    def list_app_write_audit(
+        self,
+        *,
+        since: datetime | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        if since is not None:
+            filters.append(schema.app_write_audit.c.created_at >= since)
+        where_clause = and_(*filters) if filters else True
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.app_write_audit)
+                .where(where_clause)
+                .order_by(schema.app_write_audit.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
     def list_memory_links(
         self,
         *,

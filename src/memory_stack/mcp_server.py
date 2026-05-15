@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict, deque
+from dataclasses import dataclass
 import json
 import time
 from datetime import datetime
@@ -95,7 +96,27 @@ CHATGPT_APP_TOOLS = {
     "brain_profile_context_list",
     "brain_profile_context_remember",
     "brain_profile_context_forget",
+    "brain_app_data_controls",
 }
+APP_READ_ONLY_TOOLS = {
+    "brain_session",
+    "brain_recall",
+    "brain_profile_entity",
+    "brain_list_open_loops",
+    "brain_get_memory",
+    "brain_review_recent",
+    "brain_profile_context_list",
+    "brain_app_data_controls",
+}
+APP_MUTATING_TOOLS = {
+    "brain_remember",
+    "brain_profile_context_remember",
+    "brain_profile_context_forget",
+    "brain_undo_last",
+}
+APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
+APP_TOOL_READ_SCOPE = "brain.memory.read"
+APP_TOOL_WRITE_SCOPE = "brain.memory.write"
 APP_STATIC_DIR = Path(__file__).resolve().parent / "static" / "brain_app"
 OAUTH_RATE_LIMITS = {
     "register": (20, 60),
@@ -117,6 +138,23 @@ class CreateDatasourceRequest(BaseModel):
 class DeleteDatasourceRequest(BaseModel):
     name: str | None = None
     id: str | None = None
+
+
+@dataclass(frozen=True)
+class McpAuthContext:
+    authenticated: bool = False
+    static_token: bool = False
+    token: str | None = None
+    client_id: str | None = None
+    scopes: tuple[str, ...] = ()
+    remote_addr: str | None = None
+
+
+@dataclass(frozen=True)
+class McpRequestContext:
+    auth: McpAuthContext
+    remote_addr: str | None = None
+    json_rpc_id: Any = None
 
 
 class ProfileEntityRequest(BaseModel):
@@ -272,6 +310,7 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
                         "default": False,
                         "description": "Required true on the ChatGPT App surface.",
                     },
+                    "context": {"type": "object", "additionalProperties": True},
                 },
                 "required": ["statement"],
                 "additionalProperties": False,
@@ -301,8 +340,24 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
                         "default": False,
                         "description": "Required true on the ChatGPT App surface.",
                     },
+                    "context": {"type": "object", "additionalProperties": True},
                 },
                 "required": ["context_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_app_data_controls",
+            "description": (
+                "Return user-visible Brain app data controls: recent app writes, "
+                "profile context, preprompt items, recent memories, and open loops."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+                    "include_recent_memories": {"type": "boolean", "default": True},
+                },
                 "additionalProperties": False,
             },
         },
@@ -845,33 +900,12 @@ def tool_descriptor_with_runtime_metadata(
 
 
 def app_tool_metadata(tool_name: str) -> dict[str, Any]:
-    security_schemes = [
-        {
-            "type": "oauth2",
-            "scopes": ["brain.memory.read", "brain.memory.write"],
-        }
-    ]
-    read_only_tools = {
-        "brain_session",
-        "brain_recall",
-        "brain_profile_entity",
-        "brain_list_open_loops",
-        "brain_get_memory",
-        "brain_review_recent",
-        "brain_profile_context_list",
-    }
-    destructive_tools = {"brain_undo_last", "brain_profile_context_forget"}
-    mutating_tools = {
-        "brain_remember",
-        "brain_profile_context_remember",
-        "brain_profile_context_forget",
-        "brain_undo_last",
-    }
+    security_schemes = [{"type": "oauth2", "scopes": app_tool_required_scopes(tool_name)}]
     return {
         "securitySchemes": security_schemes,
         "annotations": {
-            "readOnlyHint": tool_name in read_only_tools,
-            "destructiveHint": tool_name in destructive_tools,
+            "readOnlyHint": tool_name in APP_READ_ONLY_TOOLS,
+            "destructiveHint": tool_name in APP_DESTRUCTIVE_TOOLS,
             "openWorldHint": False,
         },
         "_meta": {
@@ -880,9 +914,15 @@ def app_tool_metadata(tool_name: str) -> dict[str, Any]:
             "openai/toolInvocation/invoking": tool_invocation_status(tool_name, done=False),
             "openai/toolInvocation/invoked": tool_invocation_status(tool_name, done=True),
             "openai/visibility": "public",
-            "brain/requiresUserConfirmation": tool_name in mutating_tools,
+            "brain/requiresUserConfirmation": tool_name in APP_MUTATING_TOOLS,
         },
     }
+
+
+def app_tool_required_scopes(tool_name: str) -> list[str]:
+    if tool_name in APP_MUTATING_TOOLS:
+        return [APP_TOOL_READ_SCOPE, APP_TOOL_WRITE_SCOPE]
+    return [APP_TOOL_READ_SCOPE]
 
 
 def tool_invocation_status(tool_name: str, *, done: bool) -> str:
@@ -898,6 +938,7 @@ def tool_invocation_status(tool_name: str, *, done: bool) -> str:
         "brain_profile_context_list": ("Loading profile context", "Profile context loaded"),
         "brain_profile_context_remember": ("Saving profile context", "Profile context saved"),
         "brain_profile_context_forget": ("Removing profile context", "Profile context removed"),
+        "brain_app_data_controls": ("Loading data controls", "Data controls loaded"),
     }
     invoking, invoked = statuses.get(tool_name, ("Calling Brain", "Brain call complete"))
     return invoked if done else invoking
@@ -1041,6 +1082,16 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
     ),
     "brain_profile_context_list": object_schema({"profile_context": OBJECT_ARRAY_SCHEMA}, required=["profile_context"]),
     "brain_profile_context_forget": object_schema({"context_id": {"type": "string"}, "status": {"type": "string"}}, required=["status"]),
+    "brain_app_data_controls": object_schema(
+        {
+            "app_write_audit": OBJECT_ARRAY_SCHEMA,
+            "profile_context": OBJECT_ARRAY_SCHEMA,
+            "preprompt_items": OBJECT_ARRAY_SCHEMA,
+            "recent_memory_cards": OBJECT_ARRAY_SCHEMA,
+            "open_loops": OBJECT_ARRAY_SCHEMA,
+        },
+        required=["app_write_audit", "profile_context", "preprompt_items"],
+    ),
     "brain_profile_context_sync": object_schema(
         {
             "profile_context_count": {"type": "integer"},
@@ -1692,10 +1743,9 @@ async def mcp_route(
     else:
         raise HTTPException(status_code=404, detail="Not found")
 
-    if settings.brain_auth_enabled and not valid_bearer(authorization, settings):
-        return auth_challenge(settings, public_path)
-
     if request.method == "GET":
+        if settings.brain_auth_enabled and not valid_bearer(authorization, settings):
+            return auth_challenge(settings, public_path)
         return JSONResponse(
             {
                 "service": settings.brain_service_name,
@@ -1711,22 +1761,62 @@ async def mcp_route(
         )
 
     payload = await request.json()
-    response_payload = await handle_json_rpc(payload, surface=surface)
+    auth_context = mcp_auth_context(
+        authorization,
+        settings,
+        remote_addr=request.client.host if request.client else None,
+    )
+    if settings.brain_auth_enabled and not auth_context.authenticated:
+        return auth_challenge(settings, public_path)
+    request_context = McpRequestContext(
+        auth=auth_context,
+        remote_addr=request.client.host if request.client else None,
+    )
+    response_payload = await handle_json_rpc(
+        payload,
+        surface=surface,
+        request_context=request_context,
+    )
     return JSONResponse(response_payload)
 
 
 def valid_bearer(header_value: str | None, active_settings: Settings) -> bool:
+    return mcp_auth_context(
+        header_value,
+        active_settings,
+        required_scopes=active_settings.brain_auth_scope_list,
+    ).authenticated
+
+
+def mcp_auth_context(
+    header_value: str | None,
+    active_settings: Settings,
+    *,
+    remote_addr: str | None = None,
+    required_scopes: list[str] | None = None,
+) -> McpAuthContext:
+    required = required_scopes or []
     if active_settings.brain_auth_token:
         expected = f"Bearer {active_settings.brain_auth_token}"
         if header_value == expected:
-            return True
+            return McpAuthContext(
+                authenticated=True,
+                static_token=True,
+                scopes=tuple(active_settings.brain_auth_scope_list),
+                remote_addr=remote_addr,
+            )
     token = parse_bearer(header_value)
     if oauth_provider and token:
-        return oauth_provider.validate_access_token(
-            token,
-            active_settings.brain_auth_scope_list,
-        )
-    return False
+        record = oauth_provider.access_token_record(token, required)
+        if record is not None:
+            return McpAuthContext(
+                authenticated=True,
+                token=token,
+                client_id=record.get("client_id"),
+                scopes=tuple(record.get("scopes") or ()),
+                remote_addr=remote_addr,
+            )
+    return McpAuthContext(remote_addr=remote_addr)
 
 
 def auth_challenge(active_settings: Settings, resource_path: str | None = None) -> Response:
@@ -1735,6 +1825,22 @@ def auth_challenge(active_settings: Settings, resource_path: str | None = None) 
         status_code=401,
         headers=auth_challenge_headers(active_settings, resource_path),
     )
+
+
+def require_app_scopes(
+    request_context: McpRequestContext | None,
+    *,
+    surface: str,
+    scopes: list[str],
+) -> None:
+    if surface != MCP_SURFACE_CHATGPT_APP or not settings.brain_auth_enabled:
+        return
+    auth = request_context.auth if request_context else McpAuthContext()
+    if auth.static_token:
+        return
+    missing = [scope for scope in scopes if scope not in auth.scopes]
+    if missing:
+        raise ValueError(f"Insufficient OAuth scope for ChatGPT App MCP call: {', '.join(missing)}")
 
 
 def require_api_auth(header_value: str | None, active_settings: Settings) -> None:
@@ -1785,9 +1891,21 @@ async def delete_datasource_or_404(datasource: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
-async def handle_json_rpc(payload: Any, *, surface: str = MCP_SURFACE_INTERNAL) -> Any:
+async def handle_json_rpc(
+    payload: Any,
+    *,
+    surface: str = MCP_SURFACE_INTERNAL,
+    request_context: McpRequestContext | None = None,
+) -> Any:
     if isinstance(payload, list):
-        return [await handle_json_rpc(item, surface=surface) for item in payload]
+        return [
+            await handle_json_rpc(
+                item,
+                surface=surface,
+                request_context=request_context,
+            )
+            for item in payload
+        ]
 
     request_id = payload.get("id") if isinstance(payload, dict) else None
     method = payload.get("method") if isinstance(payload, dict) else None
@@ -1805,22 +1923,42 @@ async def handle_json_rpc(payload: Any, *, surface: str = MCP_SURFACE_INTERNAL) 
                 },
             }
         elif method == "tools/list":
+            require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = {"tools": memory_tool_definitions(surface=surface)}
         elif method == "prompts/list":
+            require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = {"prompts": prompt_definitions()}
         elif method == "prompts/get":
+            require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = get_prompt(
                 str(params.get("name", "")),
                 params.get("arguments") or {},
             )
         elif method == "resources/list":
+            require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = {"resources": resource_definitions()}
         elif method == "resources/templates/list":
+            require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = {"resourceTemplates": resource_template_definitions()}
         elif method == "resources/read":
+            require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = read_resource(str(params.get("uri", "")))
         elif method == "tools/call":
-            result = await call_tool(params, surface=surface)
+            tool_name = str(params.get("name") or "") if isinstance(params, dict) else ""
+            require_app_scopes(
+                request_context,
+                surface=surface,
+                scopes=app_tool_required_scopes(tool_name),
+            )
+            result = await call_tool(
+                params,
+                surface=surface,
+                request_context=McpRequestContext(
+                    auth=request_context.auth if request_context else McpAuthContext(),
+                    remote_addr=request_context.remote_addr if request_context else None,
+                    json_rpc_id=request_id,
+                ),
+            )
         elif method and method.startswith("notifications/"):
             return {"jsonrpc": "2.0", "id": request_id, "result": {}}
         else:
@@ -1835,11 +1973,44 @@ async def call_tool(
     params: dict[str, Any],
     *,
     surface: str = MCP_SURFACE_INTERNAL,
+    request_context: McpRequestContext | None = None,
 ) -> dict[str, Any]:
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
     if not tool_available_on_surface(name, surface):
         raise ValueError(f"Tool is not available on the {surface} MCP surface: {name}")
+    if surface == MCP_SURFACE_CHATGPT_APP and name in APP_MUTATING_TOOLS:
+        rate_limit_app_write(request_context, tool_name=name)
+    try:
+        result = await call_tool_dispatch(params, surface=surface)
+    except Exception as exc:
+        audit_app_write(
+            name,
+            arguments,
+            surface=surface,
+            request_context=request_context,
+            status="failed",
+            summary=str(exc),
+        )
+        raise
+    audit_app_write(
+        name,
+        arguments,
+        surface=surface,
+        request_context=request_context,
+        status="succeeded",
+        response=result,
+    )
+    return result
+
+
+async def call_tool_dispatch(
+    params: dict[str, Any],
+    *,
+    surface: str = MCP_SURFACE_INTERNAL,
+) -> dict[str, Any]:
+    name = str(params.get("name") or "")
+    arguments = params.get("arguments") or {}
     if name == "brain_session":
         payload = brain_session_payload(settings)
         return json_tool_response(
@@ -1898,6 +2069,31 @@ async def call_tool(
         return json_tool_response(
             payload,
             summary=f"Profile context forget result: {payload['status']}.",
+        )
+
+    if name == "brain_app_data_controls":
+        limit = bounded_int(arguments.get("limit", 20), minimum=1, maximum=100)
+        store = BrainStore(settings)
+        records = list_profile_context(settings)
+        profile_context = [item for item in records if item.get("scope") != "brain_preprompt"]
+        preprompt_items = [item for item in records if item.get("scope") == "brain_preprompt"]
+        payload = {
+            "app_write_audit": store.list_app_write_audit(limit=limit),
+            "profile_context": profile_context,
+            "preprompt_items": preprompt_items,
+            "recent_memory_cards": (
+                store.list_memory_cards(limit=limit)
+                if bool(arguments.get("include_recent_memories", True))
+                else []
+            ),
+            "open_loops": brain_list_open_loops(settings, limit=limit),
+        }
+        return json_tool_response(
+            payload,
+            summary=(
+                f"Loaded {len(payload['app_write_audit'])} app write audit records "
+                f"and {len(profile_context)} profile context items."
+            ),
         )
 
     if name == "brain_profile_context_sync":
@@ -2343,12 +2539,127 @@ def confirmation_first_arguments(arguments: Any, *, surface: str) -> dict[str, A
 def require_app_confirmation(arguments: Any, *, surface: str, action: str) -> None:
     if surface != MCP_SURFACE_CHATGPT_APP:
         return
-    if not isinstance(arguments, dict) or not bool(arguments.get("confirmed_by_user")):
+    if not app_confirmed(arguments):
         raise ValueError(
             f"Explicit user confirmation is required to {action} on the "
             "chatgpt_app MCP surface. Call again with confirmed_by_user=true "
             "only after the user confirms."
         )
+
+
+def app_confirmed(arguments: Any) -> bool:
+    if not isinstance(arguments, dict):
+        return False
+    context = arguments.get("context")
+    if not isinstance(context, dict):
+        context = {}
+    return bool(
+        arguments.get("confirmed_by_user")
+        or arguments.get("app_confirmed")
+        or context.get("confirmed_by_user")
+        or context.get("app_confirmed")
+    )
+
+
+def rate_limit_app_write(
+    request_context: McpRequestContext | None,
+    *,
+    tool_name: str,
+) -> None:
+    auth = request_context.auth if request_context else McpAuthContext()
+    identity = auth.client_id or auth.token or request_context.remote_addr if request_context else None
+    key = f"app-write:{tool_name}:{identity or 'anonymous'}"
+    limit = max(1, settings.brain_app_write_rate_limit_count)
+    window = max(1, settings.brain_app_write_rate_limit_window_seconds)
+    now = time.monotonic()
+    bucket = _rate_limit_buckets[key]
+    while bucket and now - bucket[0] > window:
+        bucket.popleft()
+    if len(bucket) >= limit:
+        raise ValueError(
+            f"Rate limit exceeded for ChatGPT App write calls; retry after {window} seconds."
+        )
+    bucket.append(now)
+
+
+def audit_app_write(
+    tool_name: str,
+    arguments: Any,
+    *,
+    surface: str,
+    request_context: McpRequestContext | None,
+    status: str,
+    response: dict[str, Any] | None = None,
+    summary: str | None = None,
+) -> None:
+    if surface != MCP_SURFACE_CHATGPT_APP or tool_name not in APP_MUTATING_TOOLS:
+        return
+    try:
+        structured = (response or {}).get("structuredContent") if response else None
+        auth = request_context.auth if request_context else McpAuthContext()
+        BrainStore(settings).create_app_write_audit(
+            tool_name=tool_name,
+            status=status,
+            confirmed_by_user=app_confirmed(arguments),
+            client_id=auth.client_id,
+            subject=app_write_subject(auth),
+            request_id=str(request_context.json_rpc_id) if request_context else None,
+            target_id=app_write_target_id(tool_name, arguments, structured),
+            summary=summary or app_write_summary(tool_name, structured),
+            metadata_json={
+                "surface": MCP_SURFACE_CHATGPT_APP,
+                "remote_addr": request_context.remote_addr if request_context else None,
+            },
+        )
+    except Exception:
+        return
+
+
+def app_write_subject(auth: McpAuthContext) -> str | None:
+    if auth.static_token:
+        return "static_token"
+    if auth.client_id:
+        return f"oauth_client:{auth.client_id}"
+    return None
+
+
+def app_write_target_id(tool_name: str, arguments: Any, structured: Any) -> str | None:
+    if isinstance(structured, dict):
+        if tool_name == "brain_profile_context_remember":
+            return structured.get("id")
+        if tool_name == "brain_profile_context_forget":
+            return structured.get("context_id") or (arguments or {}).get("context_id")
+        if tool_name == "brain_undo_last":
+            return structured.get("ingestion_run_id") or (arguments or {}).get("ingestion_run_id")
+        if tool_name == "brain_remember":
+            memory_ids = [
+                str(card.get("id"))
+                for card in structured.get("memory_cards", [])
+                if isinstance(card, dict) and card.get("created") and card.get("id")
+            ]
+            return ",".join(memory_ids[:5]) if memory_ids else structured.get("ingestion_run_id")
+    if isinstance(arguments, dict):
+        return arguments.get("context_id") or arguments.get("ingestion_run_id")
+    return None
+
+
+def app_write_summary(tool_name: str, structured: Any) -> str | None:
+    if not isinstance(structured, dict):
+        return tool_name
+    if tool_name == "brain_remember":
+        created = sum(
+            1
+            for card in structured.get("memory_cards", [])
+            if isinstance(card, dict) and card.get("created")
+        )
+        return f"brain_remember dry_run={bool(structured.get('dry_run'))} created={created}"
+    if tool_name == "brain_profile_context_remember":
+        return f"profile_context scope={structured.get('scope')} id={structured.get('id')}"
+    if tool_name == "brain_profile_context_forget":
+        return f"profile_context_forget status={structured.get('status')}"
+    if tool_name == "brain_undo_last":
+        return f"undo_last status={structured.get('status')}"
+    return tool_name
 
 
 def configured_cognee_dataset(dataset: str, active_settings: Settings) -> str:

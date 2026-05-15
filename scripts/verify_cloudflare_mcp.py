@@ -38,6 +38,7 @@ CHATGPT_APP_TOOLS = {
     "brain_profile_context_list",
     "brain_profile_context_remember",
     "brain_profile_context_forget",
+    "brain_app_data_controls",
 }
 
 APP_READ_ONLY_TOOLS = {
@@ -48,6 +49,7 @@ APP_READ_ONLY_TOOLS = {
     "brain_get_memory",
     "brain_review_recent",
     "brain_profile_context_list",
+    "brain_app_data_controls",
 }
 
 APP_MUTATING_TOOLS = {
@@ -264,67 +266,140 @@ def check_authorization_server_metadata(url: str, settings, failures: list[str])
 
 def check_authenticated_public_app_mcp(settings, hostname: str, failures: list[str]) -> None:
     failure_count = len(failures)
-    token = issue_oauth_token(settings, hostname, failures)
-    if not token:
+    issued = issue_oauth_token(settings, hostname, failures)
+    if not issued:
         return
+    token, refresh_token, client_id = issued
 
-    tool_list = rpc_call(
-        settings.public_app_mcp_url,
-        token,
-        {"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
-        "authenticated ChatGPT App tools/list",
-        failures,
-    )
-    if not tool_list:
-        return
-    tools = tool_list.get("result", {}).get("tools")
-    if not isinstance(tools, list):
-        failures.append(f"authenticated ChatGPT App tools/list returned invalid tools: {tool_list}")
-        return
-
-    tool_names = {tool.get("name") for tool in tools}
-    if tool_names != CHATGPT_APP_TOOLS:
-        failures.append(
-            "authenticated ChatGPT App tool set is wrong: "
-            f"{sorted(str(name) for name in tool_names)}"
+    try:
+        tool_list = rpc_call(
+            settings.public_app_mcp_url,
+            token,
+            {"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
+            "authenticated ChatGPT App tools/list",
+            failures,
         )
-    for tool in tools:
-        validate_app_tool_descriptor(tool, failures)
+        if not tool_list:
+            return
+        tools = tool_list.get("result", {}).get("tools")
+        if not isinstance(tools, list):
+            failures.append(f"authenticated ChatGPT App tools/list returned invalid tools: {tool_list}")
+            return
 
-    blocked_admin = rpc_call(
+        tool_names = {tool.get("name") for tool in tools}
+        if tool_names != CHATGPT_APP_TOOLS:
+            failures.append(
+                "authenticated ChatGPT App tool set is wrong: "
+                f"{sorted(str(name) for name in tool_names)}"
+            )
+        for tool in tools:
+            validate_app_tool_descriptor(tool, failures)
+
+        blocked_admin = rpc_call(
+            settings.public_app_mcp_url,
+            token,
+            {
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "brain_rebuild_cognee", "arguments": {"confirm": True}},
+            },
+            "authenticated ChatGPT App admin block",
+            failures,
+        )
+        if blocked_admin and "not available on the chatgpt_app MCP surface" not in json.dumps(blocked_admin):
+            failures.append(f"ChatGPT App admin tool did not fail closed: {blocked_admin}")
+
+        unconfirmed_write = rpc_call(
+            settings.public_app_mcp_url,
+            token,
+            {
+                "jsonrpc": "2.0",
+                "id": 3,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {"statement": "Verifier unconfirmed write should not save."},
+                },
+            },
+            "authenticated ChatGPT App unconfirmed write block",
+            failures,
+        )
+        if unconfirmed_write and "Explicit user confirmation is required" not in json.dumps(unconfirmed_write):
+            failures.append(f"ChatGPT App unconfirmed write did not fail closed: {unconfirmed_write}")
+
+        verify_confirmed_write_cleanup(settings, token, failures)
+        if len(failures) == failure_count:
+            console.print("[green][OK][/green] authenticated ChatGPT App MCP surface verified")
+    finally:
+        revoke_oauth_token(settings, client_id, token, "verifier access token", failures)
+        if refresh_token:
+            revoke_oauth_token(settings, client_id, refresh_token, "verifier refresh token", failures)
+
+
+def verify_confirmed_write_cleanup(settings, token: str, failures: list[str]) -> None:
+    statement = f"Brain verifier temporary profile context {secrets.token_urlsafe(8)}."
+    confirmed_write = rpc_call(
         settings.public_app_mcp_url,
         token,
         {
             "jsonrpc": "2.0",
-            "id": 2,
-            "method": "tools/call",
-            "params": {"name": "brain_rebuild_cognee", "arguments": {"confirm": True}},
-        },
-        "authenticated ChatGPT App admin block",
-        failures,
-    )
-    if blocked_admin and "not available on the chatgpt_app MCP surface" not in json.dumps(blocked_admin):
-        failures.append(f"ChatGPT App admin tool did not fail closed: {blocked_admin}")
-
-    unconfirmed_write = rpc_call(
-        settings.public_app_mcp_url,
-        token,
-        {
-            "jsonrpc": "2.0",
-            "id": 3,
+            "id": 4,
             "method": "tools/call",
             "params": {
                 "name": "brain_profile_context_remember",
-                "arguments": {"statement": "Verifier unconfirmed write should not save."},
+                "arguments": {
+                    "statement": statement,
+                    "source": "brain_production_verifier",
+                    "confirmed_by_user": True,
+                },
             },
         },
-        "authenticated ChatGPT App unconfirmed write block",
+        "authenticated ChatGPT App confirmed write",
         failures,
     )
-    if unconfirmed_write and "Explicit user confirmation is required" not in json.dumps(unconfirmed_write):
-        failures.append(f"ChatGPT App unconfirmed write did not fail closed: {unconfirmed_write}")
-    if len(failures) == failure_count:
-        console.print("[green][OK][/green] authenticated ChatGPT App MCP surface verified")
+    context_id = (
+        (confirmed_write or {})
+        .get("result", {})
+        .get("structuredContent", {})
+        .get("id")
+    )
+    if not isinstance(context_id, str) or not context_id:
+        failures.append(f"ChatGPT App confirmed write did not return context id: {confirmed_write}")
+        return
+
+    controls = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {"name": "brain_app_data_controls", "arguments": {"limit": 25}},
+        },
+        "authenticated ChatGPT App data controls",
+        failures,
+    )
+    if controls and context_id not in json.dumps(controls):
+        failures.append("ChatGPT App data controls did not include verifier test context")
+
+    cleanup = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "method": "tools/call",
+            "params": {
+                "name": "brain_profile_context_forget",
+                "arguments": {"context_id": context_id, "confirmed_by_user": True},
+            },
+        },
+        "authenticated ChatGPT App confirmed cleanup",
+        failures,
+    )
+    if cleanup and "deleted" not in json.dumps(cleanup):
+        failures.append(f"ChatGPT App verifier cleanup did not delete test context: {cleanup}")
 
 
 def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
@@ -336,9 +411,8 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
     annotations = tool.get("annotations") or {}
     if tool.get("securitySchemes") != meta.get("securitySchemes"):
         failures.append(f"{name} does not mirror securitySchemes in _meta")
-    if tool.get("securitySchemes") != [
-        {"type": "oauth2", "scopes": ["brain.memory.read", "brain.memory.write"]}
-    ]:
+    expected_scopes = ["brain.memory.read", "brain.memory.write"] if name in APP_MUTATING_TOOLS else ["brain.memory.read"]
+    if tool.get("securitySchemes") != [{"type": "oauth2", "scopes": expected_scopes}]:
         failures.append(f"{name} has wrong securitySchemes: {tool.get('securitySchemes')}")
     if meta.get("ui") != {"visibility": ["model"]}:
         failures.append(f"{name} has wrong UI visibility metadata: {meta}")
@@ -358,7 +432,11 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
         failures.append(f"{name} has wrong confirmation metadata: {meta}")
 
 
-def issue_oauth_token(settings, hostname: str, failures: list[str]) -> str | None:
+def issue_oauth_token(
+    settings,
+    hostname: str,
+    failures: list[str],
+) -> tuple[str, str | None, str] | None:
     password_path = settings.auth_password_path
     if not password_path.exists():
         failures.append(f"Brain auth password file does not exist: {password_path}")
@@ -443,7 +521,25 @@ def issue_oauth_token(settings, hostname: str, failures: list[str]) -> str | Non
     if not isinstance(access_token, str):
         failures.append(f"OAuth token exchange did not return an access token: {token}")
         return None
-    return access_token
+    refresh_token = token.get("refresh_token")
+    return access_token, refresh_token if isinstance(refresh_token, str) else None, client_id
+
+
+def revoke_oauth_token(
+    settings,
+    client_id: str,
+    token: str,
+    label: str,
+    failures: list[str],
+) -> None:
+    status, _headers, body, _final_url = request_url(
+        f"{settings.brain_public_base_url.rstrip('/')}/revoke",
+        method="POST",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        body=urllib.parse.urlencode({"client_id": client_id, "token": token}).encode("utf-8"),
+    )
+    if status != 200:
+        failures.append(f"OAuth revoke failed for {label}: HTTP {status} {body[:300]}")
 
 
 def pkce_s256(verifier: str) -> str:

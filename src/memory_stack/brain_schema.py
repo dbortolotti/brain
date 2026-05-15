@@ -226,6 +226,26 @@ recall_logs = Table(
 )
 
 
+app_write_audit = Table(
+    "app_write_audit",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("tool_name", Text, nullable=False),
+    Column("client_id", Text),
+    Column("subject", Text),
+    Column("request_id", Text),
+    Column("target_id", Text),
+    Column("status", Text, nullable=False),
+    Column("confirmed_by_user", Integer, nullable=False, default=0),
+    Column("summary", Text),
+    Column("metadata_json", JSON, nullable=False, default=dict),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+Index("app_write_audit_tool_idx", app_write_audit.c.tool_name)
+Index("app_write_audit_status_idx", app_write_audit.c.status)
+Index("app_write_audit_created_idx", app_write_audit.c.created_at)
+
+
 taste_items = Table(
     "taste_items",
     metadata,

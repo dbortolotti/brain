@@ -58,6 +58,7 @@ def test_brain_app_ui_routes() -> None:
     assert "Memory Contents" in root_response.text
     assert "Latest Session Data" in root_response.text
     assert "Custom Preprompt Instructions" in root_response.text
+    assert "Data Controls" in root_response.text
     assert app_response.status_code == 200
     assert callback_response.status_code == 200
     assert css_response.status_code == 200
@@ -73,6 +74,7 @@ def test_brain_app_ui_routes() -> None:
     assert "startOAuth" in js_response.text
     assert "showMemoryDetails" in js_response.text
     assert "refreshPrompt" in js_response.text
+    assert "refreshControls" in js_response.text
     assert "brain_preprompt" in js_response.text
 
 
@@ -119,6 +121,7 @@ def test_datasource_tools_are_listed() -> None:
         "brain_profile_context_remember",
         "brain_profile_context_list",
         "brain_profile_context_forget",
+        "brain_app_data_controls",
         "brain_profile_context_sync",
         "brain_remember",
         "brain_ingest_source",
@@ -202,12 +205,20 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoking"], str)
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoked"], str)
         assert tool["annotations"]["openWorldHint"] is False
+        expected_scopes = (
+            ["brain.memory.read", "brain.memory.write"]
+            if tool["name"] in mcp_server.APP_MUTATING_TOOLS
+            else ["brain.memory.read"]
+        )
+        assert tool["securitySchemes"] == [{"type": "oauth2", "scopes": expected_scopes}]
     assert remember["annotations"]["readOnlyHint"] is False
     assert remember["annotations"]["destructiveHint"] is False
     assert remember["_meta"]["brain/requiresUserConfirmation"] is True
     recall = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_recall")
     assert recall["annotations"]["readOnlyHint"] is True
     assert recall["_meta"]["brain/requiresUserConfirmation"] is False
+    data_controls = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_app_data_controls")
+    assert data_controls["annotations"]["readOnlyHint"] is True
     undo = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_undo_last")
     assert undo["annotations"]["destructiveHint"] is True
 
@@ -342,6 +353,54 @@ def test_chatgpt_app_profile_context_remember_requires_confirmation(tmp_path) ->
     assert "Explicit user confirmation is required" in unconfirmed_response.json()["error"]["message"]
     assert confirmed_response.status_code == 200
     assert confirmed_response.json()["result"]["structuredContent"]["created"] is True
+
+
+def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app)
+        confirmed_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": "ctx-confirm",
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele accepts context confirmation.",
+                        "context": {"confirmed_by_user": True},
+                    },
+                },
+            },
+        )
+        controls_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "brain_app_data_controls", "arguments": {"limit": 10}},
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert confirmed_response.status_code == 200
+    context_id = confirmed_response.json()["result"]["structuredContent"]["id"]
+    assert controls_response.status_code == 200
+    controls = controls_response.json()["result"]["structuredContent"]
+    assert any(item["id"] == context_id for item in controls["profile_context"])
+    assert any(
+        item["tool_name"] == "brain_profile_context_remember"
+        and item["target_id"] == context_id
+        and item["confirmed_by_user"] == 1
+        for item in controls["app_write_audit"]
+    )
 
 
 def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
@@ -1337,6 +1396,88 @@ def test_oauth_authorization_code_flow(tmp_path) -> None:
         assert mcp_response.json()["service"] == "Brain"
 
 
+def test_chatgpt_app_requires_write_scope_for_mutating_tools(tmp_path) -> None:
+    with oauth_settings(tmp_path):
+        client = TestClient(app, follow_redirects=False)
+        access_token = issue_test_oauth_token(client, tmp_path, scope="brain.memory.read")
+        read_response = client.post(
+            "/app/mcp",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
+        )
+        write_response = client.post(
+            "/app/mcp",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "This should be blocked by scope.",
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+
+    assert read_response.status_code == 200
+    assert write_response.status_code == 200
+    assert "Insufficient OAuth scope" in write_response.json()["error"]["message"]
+
+
+def test_chatgpt_app_write_rate_limit(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        brain_app_write_rate_limit_count=1,
+        brain_app_write_rate_limit_window_seconds=60,
+    )
+    mcp_server._rate_limit_buckets.clear()
+    try:
+        client = TestClient(app)
+        first = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele rate limit first.",
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+        second = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele rate limit second.",
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server._rate_limit_buckets.clear()
+        mcp_server.settings = previous_settings
+
+    assert first.status_code == 200
+    assert first.json()["result"]["structuredContent"]["created"] is True
+    assert second.status_code == 200
+    assert "Rate limit exceeded" in second.json()["error"]["message"]
+
+
 def test_oauth_register_rate_limit(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(
         mcp_server,
@@ -1490,3 +1631,52 @@ class oauth_settings:
 def pkce_challenge(verifier: str) -> str:
     digest = hashlib.sha256(verifier.encode("ascii")).digest()
     return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+
+
+def issue_test_oauth_token(client: TestClient, tmp_path, *, scope: str) -> str:
+    register_response = client.post(
+        "/register",
+        json={
+            "client_name": "test-client",
+            "redirect_uris": ["http://127.0.0.1/callback"],
+            "token_endpoint_auth_method": "none",
+            "scope": scope,
+        },
+    )
+    assert register_response.status_code == 201
+    client_id = register_response.json()["client_id"]
+    verifier = "test-code-verifier"
+    authorize_response = client.get(
+        "/authorize",
+        params={
+            "response_type": "code",
+            "client_id": client_id,
+            "redirect_uri": "http://127.0.0.1/callback",
+            "scope": scope,
+            "state": "abc",
+            "code_challenge": pkce_challenge(verifier),
+            "code_challenge_method": "S256",
+        },
+    )
+    assert authorize_response.status_code == 200
+    request_id_match = re.search(r'name="request_id" value="([^"]+)"', authorize_response.text)
+    assert request_id_match
+    password = (tmp_path / "brain-auth-password").read_text(encoding="utf-8").strip()
+    complete_response = client.post(
+        "/authorize",
+        data={"request_id": request_id_match.group(1), "password": password},
+    )
+    assert complete_response.status_code == 302
+    code = parse_qs(urlsplit(complete_response.headers["location"]).query)["code"][0]
+    token_response = client.post(
+        "/token",
+        data={
+            "grant_type": "authorization_code",
+            "client_id": client_id,
+            "code": code,
+            "redirect_uri": "http://127.0.0.1/callback",
+            "code_verifier": verifier,
+        },
+    )
+    assert token_response.status_code == 200
+    return token_response.json()["access_token"]
