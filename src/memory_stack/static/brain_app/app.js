@@ -287,6 +287,7 @@ async function saveProfileItem(container) {
     statement,
     scope,
     source: "brain_app_ui",
+    confirmed_by_user: true,
   });
   if (oldId && saved.id !== oldId) {
     await mcpCall("brain_profile_context_forget", { context_id: oldId });
@@ -411,6 +412,7 @@ function wireEvents() {
       statement: $("profileStatement").value,
       scope: $("profileScope").value || "answer_tailoring",
       source: "brain_app_ui",
+      confirmed_by_user: true,
     }).catch((error) => {
       setStatus(error.message, true);
       return null;
@@ -435,6 +437,7 @@ function wireEvents() {
       statement: $("prepromptStatement").value,
       scope: "brain_preprompt",
       source: "brain_app_ui",
+      confirmed_by_user: true,
     }).catch((error) => {
       setStatus(error.message, true);
       return null;

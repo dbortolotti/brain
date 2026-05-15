@@ -196,6 +196,7 @@ class BrainProfileContextRememberRequest(BaseModel):
     statement: str
     scope: str = "answer_tailoring"
     source: str | None = None
+    confirmed_by_user: bool = False
 
 
 class BrainProfileContextForgetRequest(BaseModel):
@@ -253,7 +254,8 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
             "name": "brain_profile_context_remember",
             "description": (
                 "Store a stable user-profile fact that should always be returned "
-                "by brain_session to tailor future answers."
+                "by brain_session to tailor future answers. On the ChatGPT App "
+                "surface this requires confirmed_by_user=true."
             ),
             "inputSchema": {
                 "type": "object",
@@ -265,6 +267,11 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
                         "description": "Why this standing context should be loaded.",
                     },
                     "source": {"type": "string"},
+                    "confirmed_by_user": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true on the ChatGPT App surface.",
+                    },
                 },
                 "required": ["statement"],
                 "additionalProperties": False,
@@ -797,7 +804,7 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
                     "surface this tool previews by default; save only after explicit "
                     "user confirmation by passing context.confirmed_by_user=true."
                 )
-    return tools_with_output_schemas(tools)
+    return tools_with_output_schemas(tools, surface=surface)
 
 
 def tool_available_on_surface(tool_name: str, surface: str) -> bool:
@@ -808,16 +815,92 @@ def tool_available_on_surface(tool_name: str, surface: str) -> bool:
     return False
 
 
-def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def tools_with_output_schemas(
+    tools: list[dict[str, Any]],
+    *,
+    surface: str = MCP_SURFACE_INTERNAL,
+) -> list[dict[str, Any]]:
     icons = brain_icon_metadata(settings.brain_public_base_url)
     return [
-        {
-            **tool,
-            "icons": icons,
-            "outputSchema": tool_output_schema(str(tool["name"])),
-        }
+        tool_descriptor_with_runtime_metadata(tool, icons=icons, surface=surface)
         for tool in tools
     ]
+
+
+def tool_descriptor_with_runtime_metadata(
+    tool: dict[str, Any],
+    *,
+    icons: list[dict[str, Any]],
+    surface: str,
+) -> dict[str, Any]:
+    tool_name = str(tool["name"])
+    descriptor = {
+        **tool,
+        "icons": icons,
+        "outputSchema": tool_output_schema(tool_name),
+    }
+    if surface == MCP_SURFACE_CHATGPT_APP:
+        descriptor.update(app_tool_metadata(tool_name))
+    return descriptor
+
+
+def app_tool_metadata(tool_name: str) -> dict[str, Any]:
+    security_schemes = [
+        {
+            "type": "oauth2",
+            "scopes": ["brain.memory.read", "brain.memory.write"],
+        }
+    ]
+    read_only_tools = {
+        "brain_session",
+        "brain_recall",
+        "brain_profile_entity",
+        "brain_list_open_loops",
+        "brain_get_memory",
+        "brain_review_recent",
+        "brain_profile_context_list",
+    }
+    destructive_tools = {"brain_undo_last", "brain_profile_context_forget"}
+    mutating_tools = {
+        "brain_remember",
+        "brain_profile_context_remember",
+        "brain_profile_context_forget",
+        "brain_undo_last",
+    }
+    return {
+        "securitySchemes": security_schemes,
+        "annotations": {
+            "readOnlyHint": tool_name in read_only_tools,
+            "destructiveHint": tool_name in destructive_tools,
+            "openWorldHint": False,
+        },
+        "_meta": {
+            "securitySchemes": security_schemes,
+            "ui": {"visibility": ["model"]},
+            "openai/toolInvocation/invoking": tool_invocation_status(tool_name, done=False),
+            "openai/toolInvocation/invoked": tool_invocation_status(tool_name, done=True),
+            "openai/visibility": "public",
+            "brain/requiresUserConfirmation": tool_name in mutating_tools,
+        },
+    }
+
+
+def tool_invocation_status(tool_name: str, *, done: bool) -> str:
+    statuses = {
+        "brain_session": ("Loading Brain session", "Brain session loaded"),
+        "brain_recall": ("Searching Brain", "Brain recall complete"),
+        "brain_remember": ("Preparing memory", "Memory preview ready"),
+        "brain_profile_entity": ("Building profile", "Profile ready"),
+        "brain_list_open_loops": ("Loading open loops", "Open loops loaded"),
+        "brain_get_memory": ("Loading memory", "Memory loaded"),
+        "brain_review_recent": ("Reviewing recent memory", "Recent memory loaded"),
+        "brain_undo_last": ("Checking undo", "Undo complete"),
+        "brain_profile_context_list": ("Loading profile context", "Profile context loaded"),
+        "brain_profile_context_remember": ("Saving profile context", "Profile context saved"),
+        "brain_profile_context_forget": ("Removing profile context", "Profile context removed"),
+    }
+    invoking, invoked = statuses.get(tool_name, ("Calling Brain", "Brain call complete"))
+    return invoked if done else invoking
 
 
 def brain_app_file(filename: str, media_type: str) -> FileResponse:
@@ -1780,6 +1863,11 @@ async def call_tool(
         return json_tool_response(payload, summary=remember_summary(payload))
 
     if name == "brain_profile_context_remember":
+        require_app_confirmation(
+            arguments,
+            surface=surface,
+            action="save profile context",
+        )
         request = BrainProfileContextRememberRequest.model_validate(arguments)
         payload = remember_profile_context(
             settings,

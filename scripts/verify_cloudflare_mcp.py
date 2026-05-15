@@ -2,12 +2,17 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import hashlib
 import json
+import re
+import secrets
 import socket
 import ssl
 import subprocess
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -20,6 +25,39 @@ from production_check_utils import command_exists, uid
 
 
 console = Console()
+
+CHATGPT_APP_TOOLS = {
+    "brain_session",
+    "brain_recall",
+    "brain_remember",
+    "brain_profile_entity",
+    "brain_list_open_loops",
+    "brain_get_memory",
+    "brain_review_recent",
+    "brain_undo_last",
+    "brain_profile_context_list",
+    "brain_profile_context_remember",
+    "brain_profile_context_forget",
+}
+
+APP_READ_ONLY_TOOLS = {
+    "brain_session",
+    "brain_recall",
+    "brain_profile_entity",
+    "brain_list_open_loops",
+    "brain_get_memory",
+    "brain_review_recent",
+    "brain_profile_context_list",
+}
+
+APP_MUTATING_TOOLS = {
+    "brain_remember",
+    "brain_profile_context_remember",
+    "brain_profile_context_forget",
+    "brain_undo_last",
+}
+
+APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
 
 
 def main() -> int:
@@ -73,6 +111,8 @@ def main() -> int:
         settings,
         failures,
     )
+    if settings.brain_auth_enabled:
+        check_authenticated_public_app_mcp(settings, hostname, failures)
     if not args.skip_cloudflared:
         check_cloudflared(failures)
 
@@ -222,6 +262,254 @@ def check_authorization_server_metadata(url: str, settings, failures: list[str])
         failures.append(f"OAuth authorization-server issuer is wrong: {payload}")
 
 
+def check_authenticated_public_app_mcp(settings, hostname: str, failures: list[str]) -> None:
+    failure_count = len(failures)
+    token = issue_oauth_token(settings, hostname, failures)
+    if not token:
+        return
+
+    tool_list = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
+        "authenticated ChatGPT App tools/list",
+        failures,
+    )
+    if not tool_list:
+        return
+    tools = tool_list.get("result", {}).get("tools")
+    if not isinstance(tools, list):
+        failures.append(f"authenticated ChatGPT App tools/list returned invalid tools: {tool_list}")
+        return
+
+    tool_names = {tool.get("name") for tool in tools}
+    if tool_names != CHATGPT_APP_TOOLS:
+        failures.append(
+            "authenticated ChatGPT App tool set is wrong: "
+            f"{sorted(str(name) for name in tool_names)}"
+        )
+    for tool in tools:
+        validate_app_tool_descriptor(tool, failures)
+
+    blocked_admin = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "brain_rebuild_cognee", "arguments": {"confirm": True}},
+        },
+        "authenticated ChatGPT App admin block",
+        failures,
+    )
+    if blocked_admin and "not available on the chatgpt_app MCP surface" not in json.dumps(blocked_admin):
+        failures.append(f"ChatGPT App admin tool did not fail closed: {blocked_admin}")
+
+    unconfirmed_write = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+                "name": "brain_profile_context_remember",
+                "arguments": {"statement": "Verifier unconfirmed write should not save."},
+            },
+        },
+        "authenticated ChatGPT App unconfirmed write block",
+        failures,
+    )
+    if unconfirmed_write and "Explicit user confirmation is required" not in json.dumps(unconfirmed_write):
+        failures.append(f"ChatGPT App unconfirmed write did not fail closed: {unconfirmed_write}")
+    if len(failures) == failure_count:
+        console.print("[green][OK][/green] authenticated ChatGPT App MCP surface verified")
+
+
+def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
+    name = tool.get("name")
+    if not isinstance(name, str):
+        failures.append(f"ChatGPT App tool descriptor has no string name: {tool}")
+        return
+    meta = tool.get("_meta") or {}
+    annotations = tool.get("annotations") or {}
+    if tool.get("securitySchemes") != meta.get("securitySchemes"):
+        failures.append(f"{name} does not mirror securitySchemes in _meta")
+    if tool.get("securitySchemes") != [
+        {"type": "oauth2", "scopes": ["brain.memory.read", "brain.memory.write"]}
+    ]:
+        failures.append(f"{name} has wrong securitySchemes: {tool.get('securitySchemes')}")
+    if meta.get("ui") != {"visibility": ["model"]}:
+        failures.append(f"{name} has wrong UI visibility metadata: {meta}")
+    if meta.get("openai/visibility") != "public":
+        failures.append(f"{name} is missing public OpenAI visibility metadata")
+    if not isinstance(meta.get("openai/toolInvocation/invoking"), str):
+        failures.append(f"{name} is missing invoking status metadata")
+    if not isinstance(meta.get("openai/toolInvocation/invoked"), str):
+        failures.append(f"{name} is missing invoked status metadata")
+    if annotations.get("openWorldHint") is not False:
+        failures.append(f"{name} must declare openWorldHint=false")
+    if annotations.get("readOnlyHint") is not (name in APP_READ_ONLY_TOOLS):
+        failures.append(f"{name} has wrong readOnlyHint: {annotations}")
+    if annotations.get("destructiveHint") is not (name in APP_DESTRUCTIVE_TOOLS):
+        failures.append(f"{name} has wrong destructiveHint: {annotations}")
+    if meta.get("brain/requiresUserConfirmation") is not (name in APP_MUTATING_TOOLS):
+        failures.append(f"{name} has wrong confirmation metadata: {meta}")
+
+
+def issue_oauth_token(settings, hostname: str, failures: list[str]) -> str | None:
+    password_path = settings.brain_auth_password_path
+    if not password_path.exists():
+        failures.append(f"Brain auth password file does not exist: {password_path}")
+        return None
+    password = password_path.read_text(encoding="utf-8").strip()
+    redirect_uri = f"https://{hostname}/app/oauth/callback"
+    scope = " ".join(settings.oauth_scopes)
+    register_payload = {
+        "client_name": "Brain Production Verifier",
+        "redirect_uris": [redirect_uri],
+        "token_endpoint_auth_method": "none",
+        "grant_types": ["authorization_code", "refresh_token"],
+        "response_types": ["code"],
+        "scope": scope,
+    }
+    registration = post_json(
+        f"{settings.brain_public_base_url.rstrip('/')}/register",
+        register_payload,
+        "OAuth dynamic client registration",
+        failures,
+    )
+    if not registration:
+        return None
+    client_id = registration.get("client_id")
+    if not isinstance(client_id, str):
+        failures.append(f"OAuth registration did not return a client_id: {registration}")
+        return None
+
+    code_verifier = secrets.token_urlsafe(48)
+    code_challenge = pkce_s256(code_verifier)
+    auth_url = f"{settings.brain_public_base_url.rstrip('/')}/authorize?{urllib.parse.urlencode({
+        'response_type': 'code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'scope': scope,
+        'state': 'brain-production-verifier',
+        'code_challenge': code_challenge,
+        'code_challenge_method': 'S256',
+    })}"
+    status, _headers, body, _final_url = request_url(auth_url, method="GET")
+    if status != 200:
+        failures.append(f"OAuth authorize form returned HTTP {status}: {body[:300]}")
+        return None
+    request_id_match = re.search(r'name="request_id"\s+value="([^"]+)"', body)
+    if not request_id_match:
+        failures.append("OAuth authorize form did not include request_id")
+        return None
+
+    status, headers, body, _final_url = request_url(
+        f"{settings.brain_public_base_url.rstrip('/')}/authorize",
+        method="POST",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        body=urllib.parse.urlencode(
+            {"request_id": request_id_match.group(1), "password": password}
+        ).encode("utf-8"),
+        follow_redirects=False,
+    )
+    if status not in {302, 303}:
+        failures.append(f"OAuth authorize completion returned HTTP {status}: {body[:300]}")
+        return None
+    location = headers.get("location", "")
+    code = urllib.parse.parse_qs(urllib.parse.urlsplit(location).query).get("code", [None])[0]
+    if not code:
+        failures.append(f"OAuth authorize completion did not return a code: {location}")
+        return None
+
+    token = post_form(
+        f"{settings.brain_public_base_url.rstrip('/')}/token",
+        {
+            "grant_type": "authorization_code",
+            "client_id": client_id,
+            "code": code,
+            "redirect_uri": redirect_uri,
+            "code_verifier": code_verifier,
+        },
+        "OAuth token exchange",
+        failures,
+    )
+    if not token:
+        return None
+    access_token = token.get("access_token")
+    if not isinstance(access_token, str):
+        failures.append(f"OAuth token exchange did not return an access token: {token}")
+        return None
+    return access_token
+
+
+def pkce_s256(verifier: str) -> str:
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+def rpc_call(url: str, token: str, payload: dict, label: str, failures: list[str]) -> dict | None:
+    status, _headers, body, _final_url = request_url(
+        url,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+        body=json.dumps(payload).encode("utf-8"),
+    )
+    if status != 200:
+        failures.append(f"{label} returned HTTP {status}: {body[:300]}")
+        return None
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError:
+        failures.append(f"{label} did not return JSON: {body[:300]}")
+        return None
+
+
+def post_json(url: str, payload: dict, label: str, failures: list[str]) -> dict | None:
+    status, _headers, body, _final_url = request_url(
+        url,
+        method="POST",
+        headers={"Content-Type": "application/json"},
+        body=json.dumps(payload).encode("utf-8"),
+    )
+    return parse_expected_json(status, body, label, failures, expected_statuses={200, 201})
+
+
+def post_form(url: str, payload: dict[str, str], label: str, failures: list[str]) -> dict | None:
+    status, _headers, body, _final_url = request_url(
+        url,
+        method="POST",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        body=urllib.parse.urlencode(payload).encode("utf-8"),
+    )
+    return parse_expected_json(status, body, label, failures, expected_statuses={200})
+
+
+def parse_expected_json(
+    status: int | None,
+    body: str,
+    label: str,
+    failures: list[str],
+    *,
+    expected_statuses: set[int],
+) -> dict | None:
+    if status not in expected_statuses:
+        failures.append(f"{label} returned HTTP {status}: {body[:300]}")
+        return None
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        failures.append(f"{label} did not return JSON: {body[:300]}")
+        return None
+    return payload
+
+
 def fetch_json(url: str, label: str, failures: list[str]) -> dict | None:
     status, _headers, body = fetch(url)
     if status is None:
@@ -243,26 +531,46 @@ def fetch_json(url: str, label: str, failures: list[str]) -> dict | None:
 
 
 def fetch(url: str) -> tuple[int | None, dict[str, str], str]:
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "brain-mcp-verifier/0.1"},
-        method="GET",
-    )
+    status, headers, body, _final_url = request_url(url, method="GET")
+    return status, headers, body
+
+
+def request_url(
+    url: str,
+    *,
+    method: str,
+    headers: dict[str, str] | None = None,
+    body: bytes | None = None,
+    follow_redirects: bool = True,
+) -> tuple[int | None, dict[str, str], str, str]:
+    request_headers = {"User-Agent": "brain-mcp-verifier/0.1"}
+    request_headers.update(headers or {})
+    request = urllib.request.Request(url, headers=request_headers, data=body, method=method)
+    opener = urllib.request.build_opener()
+    if not follow_redirects:
+        opener = urllib.request.build_opener(NoRedirectHandler)
     try:
-        with urllib.request.urlopen(request, timeout=8) as response:
+        with opener.open(request, timeout=8) as response:
             return (
                 response.status,
                 {k.lower(): v for k, v in response.headers.items()},
                 response.read().decode("utf-8", errors="replace"),
+                response.geturl(),
             )
     except urllib.error.HTTPError as exc:
         return (
             exc.code,
             {k.lower(): v for k, v in exc.headers.items()},
             exc.read().decode("utf-8", errors="replace"),
+            exc.geturl(),
         )
     except Exception as exc:
-        return None, {}, str(exc)
+        return None, {}, str(exc), url
+
+
+class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
 
 
 def check_cloudflared(failures: list[str]) -> None:

@@ -195,6 +195,21 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     }.isdisjoint(tool_names)
     remember = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_remember")
     assert "previews by default" in remember["description"]
+    for tool in response.json()["result"]["tools"]:
+        assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
+        assert tool["_meta"]["ui"] == {"visibility": ["model"]}
+        assert tool["_meta"]["openai/visibility"] == "public"
+        assert isinstance(tool["_meta"]["openai/toolInvocation/invoking"], str)
+        assert isinstance(tool["_meta"]["openai/toolInvocation/invoked"], str)
+        assert tool["annotations"]["openWorldHint"] is False
+    assert remember["annotations"]["readOnlyHint"] is False
+    assert remember["annotations"]["destructiveHint"] is False
+    assert remember["_meta"]["brain/requiresUserConfirmation"] is True
+    recall = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_recall")
+    assert recall["annotations"]["readOnlyHint"] is True
+    assert recall["_meta"]["brain/requiresUserConfirmation"] is False
+    undo = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_undo_last")
+    assert undo["annotations"]["destructiveHint"] is True
 
 
 def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
@@ -230,7 +245,10 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
                 "method": "tools/call",
                 "params": {
                     "name": "brain_profile_context_remember",
-                    "arguments": {"statement": "Daniele prefers confirmation gates."},
+                    "arguments": {
+                        "statement": "Daniele prefers confirmation gates.",
+                        "confirmed_by_user": True,
+                    },
                 },
             },
         )
@@ -280,6 +298,50 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
     assert confirmed_forget.json()["result"]["structuredContent"]["status"] == "deleted"
     assert unconfirmed_undo.status_code == 200
     assert "Explicit user confirmation is required" in unconfirmed_undo.json()["error"]["message"]
+
+
+def test_chatgpt_app_profile_context_remember_requires_confirmation(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app)
+        unconfirmed_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {"statement": "Daniele prefers explicit saves."},
+                },
+            },
+        )
+        confirmed_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele prefers explicit saves.",
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert unconfirmed_response.status_code == 200
+    assert "Explicit user confirmation is required" in unconfirmed_response.json()["error"]["message"]
+    assert confirmed_response.status_code == 200
+    assert confirmed_response.json()["result"]["structuredContent"]["created"] is True
 
 
 def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
