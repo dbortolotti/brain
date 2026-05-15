@@ -51,6 +51,9 @@ def test_brain_app_ui_routes() -> None:
 
     assert root_response.status_code == 200
     assert "Brain" in root_response.text
+    assert "Memory Contents" in root_response.text
+    assert "Latest Session Data" in root_response.text
+    assert "Custom Preprompt Instructions" in root_response.text
     assert app_response.status_code == 200
     assert callback_response.status_code == 200
     assert css_response.status_code == 200
@@ -58,6 +61,9 @@ def test_brain_app_ui_routes() -> None:
     assert js_response.status_code == 200
     assert "mcpCall" in js_response.text
     assert "startOAuth" in js_response.text
+    assert "showMemoryDetails" in js_response.text
+    assert "refreshPrompt" in js_response.text
+    assert "brain_preprompt" in js_response.text
 
 
 def test_mcp_initialize() -> None:

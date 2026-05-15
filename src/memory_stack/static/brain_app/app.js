@@ -1,5 +1,6 @@
 const state = {
   previewArgs: null,
+  latestSession: null,
   token: localStorage.getItem("brainBearerToken") || "",
 };
 const OAUTH_STORAGE_KEY = "brainOAuthPkce";
@@ -113,6 +114,16 @@ async function finishOAuthIfPresent() {
 }
 
 async function mcpCall(name, args = {}) {
+  const payload = await mcpRequest("tools/call", { name, arguments: args });
+  return payload.result.structuredContent;
+}
+
+async function mcpPrompt(name, args = {}) {
+  const payload = await mcpRequest("prompts/get", { name, arguments: args });
+  return payload.result;
+}
+
+async function mcpRequest(method, params = {}) {
   const response = await fetch("/app/mcp", {
     method: "POST",
     headers: {
@@ -122,15 +133,15 @@ async function mcpCall(name, args = {}) {
     body: JSON.stringify({
       jsonrpc: "2.0",
       id: Date.now(),
-      method: "tools/call",
-      params: { name, arguments: args },
+      method,
+      params,
     }),
   });
   const payload = await response.json();
   if (!response.ok || payload.error) {
     throw new Error(payload.error?.message || payload.detail?.error || `HTTP ${response.status}`);
   }
-  return payload.result.structuredContent;
+  return payload;
 }
 
 function renderList(target, rows, emptyText, formatter) {
@@ -162,11 +173,9 @@ async function refreshReview() {
     mcpCall("brain_review_recent", { limit: 12, include_sources: true }),
     mcpCall("brain_list_open_loops", { limit: 12 }),
   ]);
+  state.latestSession = session;
   $("sessionLine").textContent = `${session.profile_full_name || session.profile_name} - ${session.session_id}`;
-  renderList($("recentCards"), recent.memory_cards, "No recent cards.", (card) => {
-    const title = card.summary || card.content || card.id;
-    return `<div class="item-title">${safe(title)}</div><div class="item-meta">${safe(card.kind || card.memory_kind || "memory")} - ${safe(card.id)}</div>`;
-  });
+  renderMemoryCards(recent.memory_cards);
   renderList($("openLoops"), loops.open_loops, "No open loops.", (loop) => {
     const title = loop.question || loop.summary || loop.content || loop.id;
     return `<div class="item-title">${safe(title)}</div><div class="item-meta">${safe(loop.status || "open")} - ${safe(loop.id)}</div>`;
@@ -174,13 +183,131 @@ async function refreshReview() {
   setStatus("Review loaded.");
 }
 
+function renderMemoryCards(cards) {
+  const target = $("recentCards");
+  target.innerHTML = "";
+  if (!cards || cards.length === 0) {
+    target.innerHTML = '<div class="item"><div class="item-meta">No recent cards.</div></div>';
+    return;
+  }
+  cards.forEach((card) => {
+    const title = card.summary || card.content || card.statement || card.id;
+    const item = document.createElement("button");
+    item.className = "item memory-card";
+    item.type = "button";
+    item.dataset.memoryId = card.id;
+    item.innerHTML = `<span class="item-title">${safe(title)}</span><span class="item-meta">${safe(card.kind || card.memory_kind || "memory")} - ${safe(card.id)}</span>`;
+    target.appendChild(item);
+  });
+}
+
+async function showMemoryDetails(memoryId) {
+  if (!memoryId) return;
+  setStatus("Loading memory contents...");
+  const payload = await mcpCall("brain_get_memory", { memory_id: memoryId });
+  $("memoryDetails").textContent = JSON.stringify(payload.memory, null, 2);
+  setStatus("Memory loaded.");
+}
+
 async function refreshProfile() {
   setStatus("Loading profile context...");
   const payload = await mcpCall("brain_profile_context_list");
-  renderList($("profileItems"), payload.profile_context, "No profile context.", (item) => {
-    return `<div class="item-title">${safe(item.statement)}</div><div class="item-meta">${safe(item.scope)} - ${safe(item.id)}</div><button class="danger" type="button" data-forget="${safe(item.id)}">Forget</button>`;
-  });
+  renderEditableProfileItems(
+    $("profileItems"),
+    payload.profile_context.filter((item) => item.scope !== "brain_preprompt"),
+    "No personal info.",
+  );
   setStatus("Profile context loaded.");
+}
+
+async function refreshPrompt() {
+  setStatus("Loading Brain prompt data...");
+  const session = await mcpCall("brain_session");
+  state.latestSession = session;
+  $("sessionLine").textContent = `${session.profile_full_name || session.profile_name} - ${session.session_id}`;
+  $("sessionData").textContent = JSON.stringify(session, null, 2);
+
+  const [profileContext, biasPrompt, agentPrompt] = await Promise.all([
+    mcpCall("brain_profile_context_list"),
+    mcpPrompt("brain_bias_protocol", { profile_name: session.profile_name }),
+    mcpPrompt("brain_agent_memory_protocol", { session_id: session.session_id }),
+  ]);
+  const records = profileContext.profile_context || [];
+  renderList(
+    $("promptProfileItems"),
+    records.filter((item) => item.scope !== "brain_preprompt"),
+    "No personal info in session.",
+    (item) => `<div class="item-title">${safe(item.statement)}</div><div class="item-meta">${safe(item.scope)} - ${safe(item.id)}</div>`,
+  );
+  renderEditableProfileItems(
+    $("prepromptItems"),
+    records.filter((item) => item.scope === "brain_preprompt"),
+    "No custom preprompt instructions.",
+  );
+  $("biasPrompt").textContent = promptText(biasPrompt);
+  $("agentPrompt").textContent = promptText(agentPrompt);
+  setStatus("Brain prompt data loaded.");
+}
+
+function promptText(promptPayload) {
+  return promptPayload?.messages?.[0]?.content?.text || JSON.stringify(promptPayload, null, 2);
+}
+
+function renderEditableProfileItems(target, rows, emptyText) {
+  target.innerHTML = "";
+  if (!rows || rows.length === 0) {
+    target.innerHTML = `<div class="item"><div class="item-meta">${emptyText}</div></div>`;
+    return;
+  }
+  rows.forEach((item) => {
+    const wrapper = document.createElement("article");
+    wrapper.className = "item edit-item";
+    wrapper.dataset.contextId = item.id;
+    wrapper.innerHTML = `
+      <label>Statement</label>
+      <textarea rows="3" data-field="statement">${safe(item.statement)}</textarea>
+      <label>Scope</label>
+      <input data-field="scope" value="${safe(item.scope || "answer_tailoring")}" />
+      <div class="item-meta">${safe(item.id)}${item.memory_id ? ` - ${safe(item.memory_id)}` : ""}</div>
+      <div class="form-row">
+        <button type="button" data-action="save-profile">Save</button>
+        <button class="danger" type="button" data-action="forget-profile">Forget</button>
+      </div>
+    `;
+    target.appendChild(wrapper);
+  });
+}
+
+async function saveProfileItem(container) {
+  const oldId = container.dataset.contextId;
+  const statement = container.querySelector('[data-field="statement"]').value;
+  const scope = container.querySelector('[data-field="scope"]').value || "answer_tailoring";
+  setStatus("Saving profile context...");
+  const saved = await mcpCall("brain_profile_context_remember", {
+    statement,
+    scope,
+    source: "brain_app_ui",
+  });
+  if (oldId && saved.id !== oldId) {
+    await mcpCall("brain_profile_context_forget", { context_id: oldId });
+  }
+  await Promise.all([
+    refreshProfile().catch(() => {}),
+    refreshPrompt().catch(() => {}),
+  ]);
+  setStatus("Profile context saved.");
+}
+
+async function forgetProfileItem(container) {
+  const id = container.dataset.contextId;
+  if (!id) return;
+  setStatus("Removing profile context...");
+  await mcpCall("brain_profile_context_forget", { context_id: id });
+  await Promise.all([
+    refreshProfile().catch(() => {}),
+    refreshPrompt().catch(() => {}),
+  ]);
+  setStatus("Profile context removed.");
 }
 
 function showTab(tabName) {
@@ -213,6 +340,12 @@ function wireEvents() {
   });
   $("refreshReview").addEventListener("click", () => refreshReview().catch((error) => setStatus(error.message, true)));
   $("refreshProfile").addEventListener("click", () => refreshProfile().catch((error) => setStatus(error.message, true)));
+  $("refreshPrompt").addEventListener("click", () => refreshPrompt().catch((error) => setStatus(error.message, true)));
+  $("recentCards").addEventListener("click", (event) => {
+    const card = event.target.closest(".memory-card");
+    if (!card) return;
+    showMemoryDetails(card.dataset.memoryId).catch((error) => setStatus(error.message, true));
+  });
   $("recallForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     setStatus("Searching...");
@@ -279,17 +412,38 @@ function wireEvents() {
       return null;
     });
     $("profileStatement").value = "";
-    await refreshProfile().catch((error) => setStatus(error.message, true));
+    await Promise.all([
+      refreshProfile().catch((error) => setStatus(error.message, true)),
+      refreshPrompt().catch(() => {}),
+    ]);
   });
-  $("profileItems").addEventListener("click", async (event) => {
-    const id = event.target?.dataset?.forget;
-    if (!id) return;
-    setStatus("Removing profile context...");
-    await mcpCall("brain_profile_context_forget", { context_id: id }).catch((error) => {
+  $("profileItems").addEventListener("click", (event) => {
+    const action = event.target?.dataset?.action;
+    const container = event.target.closest(".edit-item");
+    if (!action || !container) return;
+    const operation = action === "save-profile" ? saveProfileItem : forgetProfileItem;
+    operation(container).catch((error) => setStatus(error.message, true));
+  });
+  $("prepromptForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setStatus("Adding custom preprompt instruction...");
+    await mcpCall("brain_profile_context_remember", {
+      statement: $("prepromptStatement").value,
+      scope: "brain_preprompt",
+      source: "brain_app_ui",
+    }).catch((error) => {
       setStatus(error.message, true);
       return null;
     });
-    await refreshProfile().catch((error) => setStatus(error.message, true));
+    $("prepromptStatement").value = "";
+    await refreshPrompt().catch((error) => setStatus(error.message, true));
+  });
+  $("prepromptItems").addEventListener("click", (event) => {
+    const action = event.target?.dataset?.action;
+    const container = event.target.closest(".edit-item");
+    if (!action || !container) return;
+    const operation = action === "save-profile" ? saveProfileItem : forgetProfileItem;
+    operation(container).catch((error) => setStatus(error.message, true));
   });
 }
 
@@ -298,7 +452,11 @@ finishOAuthIfPresent()
   .then((handled) => {
     if (handled) return;
     if (state.token) {
-      refreshReview().catch((error) => setStatus(error.message, true));
+      Promise.all([
+        refreshReview(),
+        refreshProfile(),
+        refreshPrompt(),
+      ]).catch((error) => setStatus(error.message, true));
     } else {
       setStatus("Authorize Brain or paste a bearer token to load memory.");
     }

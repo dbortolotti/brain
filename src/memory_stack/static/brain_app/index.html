@@ -28,6 +28,7 @@
         <button class="tab" type="button" data-tab="recall">Recall</button>
         <button class="tab" type="button" data-tab="remember">Remember</button>
         <button class="tab" type="button" data-tab="profile">Profile</button>
+        <button class="tab" type="button" data-tab="prompt">Prompt</button>
       </section>
 
       <section id="status" class="status" role="status"></section>
@@ -47,6 +48,10 @@
             <div id="openLoops" class="list"></div>
           </article>
         </div>
+        <article class="detail-pane">
+          <h3>Memory Contents</h3>
+          <div id="memoryDetails" class="result">Select a memory card to inspect it.</div>
+        </article>
       </section>
 
       <section id="recall" class="panel" aria-labelledby="recallTitle">
@@ -94,6 +99,43 @@
           </div>
         </form>
         <div id="profileItems" class="list"></div>
+      </section>
+
+      <section id="prompt" class="panel" aria-labelledby="promptTitle">
+        <div class="panel-head">
+          <h2 id="promptTitle">Brain Prompt</h2>
+          <button id="refreshPrompt" type="button">Refresh</button>
+        </div>
+        <div class="grid two">
+          <article>
+            <h3>Personal Info In Session</h3>
+            <div id="promptProfileItems" class="list"></div>
+          </article>
+          <article>
+            <h3>Custom Preprompt Instructions</h3>
+            <form id="prepromptForm" class="stack">
+              <textarea id="prepromptStatement" rows="5" placeholder="Add or revise a standing instruction for Brain prompts..."></textarea>
+              <button type="submit">Add Instruction</button>
+            </form>
+            <div id="prepromptItems" class="list"></div>
+          </article>
+        </div>
+        <div class="grid two prompt-grid">
+          <article>
+            <h3>Latest Session Data</h3>
+            <pre id="sessionData" class="prompt-box"></pre>
+          </article>
+          <article>
+            <h3>Bias Protocol</h3>
+            <pre id="biasPrompt" class="prompt-box"></pre>
+          </article>
+        </div>
+        <div class="prompt-grid">
+          <article>
+            <h3>Agent Memory Protocol</h3>
+            <pre id="agentPrompt" class="prompt-box"></pre>
+          </article>
+        </div>
       </section>
     </main>
 
