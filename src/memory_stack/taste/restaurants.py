@@ -106,7 +106,7 @@ def fetch_google_places_metadata(
     params = {
         "input": canonical_name,
         "inputtype": "textquery",
-        "fields": "place_id,name,formatted_address,rating,user_ratings_total,types,website,url,price_level",
+        "fields": "place_id,name,formatted_address,rating,user_ratings_total,type,price_level",
         "key": api_key,
     }
     url = f"{GOOGLE_FIND_PLACE_URL}?{urlencode(params)}"
@@ -138,6 +138,7 @@ def fetch_google_places_metadata(
 
     candidate = candidates[0]
     source_url = candidate.get("url") or maps_search_url(canonical_name)
+    place_types = candidate.get("type") or candidate.get("types") or []
     metadata = {
         "google": {
             "rating": candidate.get("rating"),
@@ -146,7 +147,7 @@ def fetch_google_places_metadata(
             "source": "google_places",
             "checked_at": checked_at(),
         },
-        "cuisine": cuisine_from_terms(candidate.get("types") or []),
+        "cuisine": cuisine_from_terms(place_types),
     }
     return {
         "metadata": metadata,

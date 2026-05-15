@@ -67,6 +67,9 @@ def test_restaurant_strict_source_google_places_enrichment(tmp_path, monkeypatch
 
     def fake_json_url(url: str, *, timeout: float) -> dict[str, Any]:
         assert "key=places-key" in url
+        assert "type" in url
+        assert "types" not in url
+        assert "website" not in url
         assert timeout > 0
         return {
             "status": "OK",
@@ -76,7 +79,7 @@ def test_restaurant_strict_source_google_places_enrichment(tmp_path, monkeypatch
                     "place_id": "place_123",
                     "rating": 4.6,
                     "user_ratings_total": 1200,
-                    "types": ["restaurant", "wine_bar"],
+                    "type": ["restaurant", "wine_bar"],
                     "url": "https://www.google.com/maps/place/Noble+Rot",
                 }
             ],

@@ -100,7 +100,7 @@ def test_probe_enrichment_demo_uses_strict_source_and_stores_point(monkeypatch) 
                     "place_id": "place_123",
                     "rating": 4.6,
                     "user_ratings_total": 1200,
-                    "types": ["restaurant", "wine_bar"],
+                    "type": ["restaurant", "wine_bar"],
                     "url": "https://www.google.com/maps/place/Noble+Rot",
                 }
             ],
