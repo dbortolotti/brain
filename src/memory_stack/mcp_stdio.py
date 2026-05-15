@@ -88,7 +88,7 @@ def build_server():
         dry_run: bool = False,
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Store a user-level memory; high-confidence taste writes may route to Brain Taste."""
+        """Store memory. Do not use for read-only palate describe/enrich; call brain_palate_describe_item."""
         request = RememberRequest(
             input=input,
             input_type=input_type,
@@ -342,7 +342,7 @@ def build_server():
         fetch_external_ratings: bool = True,
         allow_broader_web_search: bool = False,
     ) -> dict[str, Any]:
-        """Describe a taste item without storing it."""
+        """Read-only palate describe/enrich. Use for 'use palate to describe Junsei restaurant in London'."""
         return TasteService(settings).describe_item(
             TasteDescribeRequest(
                 item_text=item_text,

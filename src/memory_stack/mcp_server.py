@@ -202,7 +202,9 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             "name": "brain_remember",
             "description": (
                 "Store a user-level memory, fact, thought, or short note in Brain. "
-                "High-confidence palate memories may route to Brain Palate automatically."
+                "High-confidence palate memories may route to Brain Palate automatically. "
+                "Do not use this for read-only palate describe/enrich requests; use "
+                "brain_palate_describe_item instead."
             ),
             "inputSchema": {
                 "type": "object",
@@ -567,12 +569,30 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
         },
         {
             "name": "brain_palate_describe_item",
-            "description": "Normalize and enrich a palate item without storing it.",
+            "description": (
+                "Read-only palate describe/enrich tool. Use this when the user asks to "
+                "use palate to describe, look up, normalize, or enrich a restaurant, wine, "
+                "film, series, music, cigar, or other taste item without saving it. "
+                "For example: 'use palate to describe Junsei restaurant in London'. "
+                "This must not store palate data."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "item_text": {"type": "string"},
-                    "entity_type": {"type": "string"},
+                    "item_text": {
+                        "type": "string",
+                        "description": (
+                            "The item plus useful disambiguating context, e.g. "
+                            "'Junsei restaurant in London'."
+                        ),
+                    },
+                    "entity_type": {
+                        "type": "string",
+                        "description": (
+                            "Palate item type. Use 'restaurant' for restaurant/place "
+                            "lookups such as Junsei in London."
+                        ),
+                    },
                     "canonical_name": {"type": "string"},
                     "attributes": {"type": "object", "additionalProperties": True},
                     "attribute_intervals_95": {"type": "object", "additionalProperties": True},

@@ -228,6 +228,25 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert "confirm" in forget_properties
 
 
+def test_palate_describe_tool_description_covers_read_only_restaurant_requests() -> None:
+    client = TestClient(app)
+    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+
+    assert response.status_code == 200
+    tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
+    describe = tools["brain_palate_describe_item"]
+    remember = tools["brain_remember"]
+
+    description = describe["description"].casefold()
+    assert "use palate to describe junsei restaurant in london" in description
+    assert "read-only" in description
+    assert "without saving" in description or "must not store" in description
+    assert "restaurant" in describe["inputSchema"]["properties"]["entity_type"]["description"]
+    assert "do not use this for read-only palate describe/enrich requests" in remember[
+        "description"
+    ].casefold()
+
+
 def test_brain_session_returns_configured_identity(tmp_path) -> None:
     previous_settings = mcp_server.settings
     mcp_server.settings = Settings(
