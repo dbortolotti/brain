@@ -57,6 +57,17 @@ def test_icon_routes_do_not_require_ui_session(monkeypatch) -> None:
     assert response.content.startswith(b"\x89PNG")
 
 
+def test_mcp_and_app_paths_passthrough_to_mcp(monkeypatch) -> None:
+    ui_proxy = load_ui_proxy(monkeypatch)
+
+    assert ui_proxy.is_mcp_passthrough_path("mcp") is True
+    assert ui_proxy.is_mcp_passthrough_path("app/mcp") is True
+    assert ui_proxy.is_mcp_passthrough_path(".well-known/oauth-protected-resource/app/mcp") is True
+    assert ui_proxy.is_mcp_passthrough_path("app") is True
+    assert ui_proxy.is_mcp_passthrough_path("app-assets/app.js") is True
+    assert ui_proxy.is_mcp_passthrough_path("ui") is False
+
+
 def load_ui_proxy(monkeypatch):
     monkeypatch.setenv("BRAIN_AUTH_PASSWORD", "test-password")
     monkeypatch.setenv("BRAIN_PUBLIC_BASE_URL", "https://brain.dceb.net")

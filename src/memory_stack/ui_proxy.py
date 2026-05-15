@@ -135,10 +135,8 @@ async def proxy_ui_api(path: str, request: Request) -> Response:
     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 )
 async def proxy_frontend_root_paths(path: str, request: Request) -> Response:
-    if path in {"mcp", "healthz", "authorize", "token", "register", "revoke"}:
-        raise HTTPException(status_code=404, detail="Not found")
-    if path.startswith(".well-known/"):
-        raise HTTPException(status_code=404, detail="Not found")
+    if is_mcp_passthrough_path(path):
+        return await proxy_request(request, mcp_base_url(), "/" + path)
 
     require_session(request)
     return await proxy_request(request, frontend_base_url(), "/" + path)
@@ -274,6 +272,29 @@ def frontend_base_url() -> str:
 
 def backend_base_url() -> str:
     return f"http://127.0.0.1:{settings.brain_ui_backend_port}"
+
+
+def mcp_base_url() -> str:
+    return f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}"
+
+
+def is_mcp_passthrough_path(path: str) -> bool:
+    normalized = "/" + path.strip("/")
+    if normalized in {
+        settings.brain_mcp_path,
+        settings.brain_app_mcp_path,
+        settings.brain_health_path,
+        "/app",
+        "/authorize",
+        "/token",
+        "/register",
+        "/revoke",
+        "/icon.png",
+        "/apple-touch-icon.png",
+        "/favicon.ico",
+    }:
+        return True
+    return normalized.startswith(("/.well-known/", "/app-assets/"))
 
 
 async def proxy_request(request: Request, upstream_base_url: str, upstream_path: str) -> Response:
