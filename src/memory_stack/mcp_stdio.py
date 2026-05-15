@@ -421,7 +421,7 @@ def build_server():
         intent: dict[str, Any] | None = None,
         extracted_entities: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
-        """Rank saved taste records for a recommendation query."""
+        """Rank saved taste records for recommendations. Do not use to describe one item; call brain_palate_describe_item."""
         return TasteService(settings).query(
             TasteQueryRequest(
                 query=query,
@@ -442,7 +442,7 @@ def build_server():
         intent: dict[str, Any] | None = None,
         extracted_entities: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
-        """Rank only supplied options against saved taste records."""
+        """Rank supplied options against saved taste records. Do not use to describe one item."""
         return TasteService(settings).evaluate_options(
             TasteQueryRequest(
                 query=query,

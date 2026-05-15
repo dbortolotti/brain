@@ -236,6 +236,8 @@ def test_palate_describe_tool_description_covers_read_only_restaurant_requests()
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
     describe = tools["brain_palate_describe_item"]
     remember = tools["brain_remember"]
+    query = tools["brain_palate_query"]
+    evaluate_options = tools["brain_palate_evaluate_options"]
 
     description = describe["description"].casefold()
     assert "use palate to describe junsei restaurant in london" in description
@@ -245,6 +247,10 @@ def test_palate_describe_tool_description_covers_read_only_restaurant_requests()
     assert "do not use this for read-only palate describe/enrich requests" in remember[
         "description"
     ].casefold()
+    assert "do not use this to describe" in query["description"].casefold()
+    assert "single named unsaved item such as junsei" in query["description"].casefold()
+    assert "call brain_palate_describe_item" in query["description"]
+    assert "do not use this to describe" in evaluate_options["description"].casefold()
 
 
 def test_brain_session_returns_configured_identity(tmp_path) -> None:

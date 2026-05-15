@@ -641,7 +641,12 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
         },
         {
             "name": "brain_palate_query",
-            "description": "Rank canonical palate records for a recommendation or comparison query.",
+            "description": (
+                "Rank already-saved canonical palate records for a recommendation or "
+                "comparison query. Do not use this to describe, look up, enrich, or "
+                "check a single named unsaved item such as Junsei; call "
+                "brain_palate_describe_item for that."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -661,7 +666,11 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
         },
         {
             "name": "brain_palate_evaluate_options",
-            "description": "Rank only supplied options against canonical palate records.",
+            "description": (
+                "Rank only supplied options against already-saved canonical palate records. "
+                "Do not use this to describe, look up, enrich, or check one named item; "
+                "call brain_palate_describe_item for read-only item descriptions."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
