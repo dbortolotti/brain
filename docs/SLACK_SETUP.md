@@ -117,6 +117,8 @@ Example commands:
 ```text
 /brain remember Sam from Goldman prefers morning calls.
 /brain confirm Sam from Goldman prefers morning calls.
+/brain cancel tprop_...
+/brain correct tprop_... this is a wine
 /brain recall What do we know about Sam from Goldman?
 /brain profile Sam from Goldman
 /brain open-loops Slack

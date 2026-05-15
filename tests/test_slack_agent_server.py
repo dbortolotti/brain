@@ -269,7 +269,7 @@ def test_slack_interaction_confirmation_commits_proposed_memory(tmp_path, monkey
     assert response.json()["payload"]["receipt"]["dry_run"] is False
 
 
-def test_slack_help_command_returns_text_only_payload(tmp_path, monkeypatch) -> None:
+def test_slack_help_command_returns_blocks_payload(tmp_path, monkeypatch) -> None:
     settings = slack_settings(tmp_path)
     monkeypatch.setattr(slack_agent_server, "settings", settings)
     client = TestClient(app)
@@ -282,7 +282,7 @@ def test_slack_help_command_returns_text_only_payload(tmp_path, monkeypatch) -> 
 
     assert response.status_code == 200
     payload = response.json()
-    assert "blocks" not in payload
+    assert payload["blocks"]
     assert "/brain remember <memory>" in payload["text"]
     assert "/brain recall <query>" in payload["text"]
 

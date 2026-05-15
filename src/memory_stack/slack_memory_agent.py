@@ -228,6 +228,8 @@ class SlackMemoryAgent:
                 "commands": [
                     "remember",
                     "confirm",
+                    "cancel",
+                    "correct",
                     "recall",
                     "profile",
                     "open-loops",
@@ -237,6 +239,7 @@ class SlackMemoryAgent:
                     "help",
                 ]
             },
+            blocks=help_blocks(),
         )
 
     def _handle_help_template(self, command: str) -> SlackAgentResponse:
@@ -717,6 +720,9 @@ def split_intent(text: str) -> tuple[str, str]:
 
 HELP_COMMAND_TEMPLATES = {
     "remember": "/brain remember <memory>",
+    "confirm": "/brain confirm <memory>",
+    "cancel": "/brain cancel <proposal_id>",
+    "correct": "/brain correct <proposal_id> <correction>",
     "recall": "/brain recall <query>",
     "profile": "/brain profile <entity>",
     "open_loops": "/brain open-loops [topic]",
@@ -731,6 +737,8 @@ def slack_help_text() -> str:
             "Brain commands",
             "/brain remember <memory> - propose a memory to save",
             "/brain confirm <memory> - confirm a proposed memory",
+            "/brain cancel <proposal_id> - cancel a pending taste proposal",
+            "/brain correct <proposal_id> <correction> - correct a pending taste proposal",
             "/brain recall <query> - answer from saved memory",
             "/brain profile <entity> - summarize what Brain knows about an entity",
             "/brain open-loops [topic] - list open questions",
@@ -745,6 +753,9 @@ def slack_help_text() -> str:
 def help_blocks() -> list[dict[str, Any]]:
     buttons = [
         ("Remember", "remember"),
+        ("Confirm", "confirm"),
+        ("Cancel", "cancel"),
+        ("Correct", "correct"),
         ("Recall", "recall"),
         ("Profile", "profile"),
         ("Open loops", "open_loops"),

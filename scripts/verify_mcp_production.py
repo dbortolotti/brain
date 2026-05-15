@@ -52,7 +52,13 @@ def main() -> int:
         failures,
         expect_json_service=True,
     )
+    check_http(
+        f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}/",
+        "local Brain dashboard",
+        failures,
+    )
     check_mcp(settings, failures)
+    check_app_mcp(settings, failures)
     if settings.brain_auth_enabled:
         check_oauth_metadata(settings, failures)
 
@@ -221,6 +227,36 @@ def check_http(
 
 def check_mcp(settings, failures: list[str]) -> None:
     url = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_mcp_path}"
+    check_mcp_get(
+        settings,
+        failures,
+        url=url,
+        expected_metadata_url=settings.protected_resource_metadata_url,
+        label="local MCP",
+    )
+
+
+def check_app_mcp(settings, failures: list[str]) -> None:
+    url = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_app_mcp_path}"
+    check_mcp_get(
+        settings,
+        failures,
+        url=url,
+        expected_metadata_url=settings.protected_resource_metadata_url_for_path(
+            settings.brain_public_app_mcp_path
+        ),
+        label="local ChatGPT App MCP",
+    )
+
+
+def check_mcp_get(
+    settings,
+    failures: list[str],
+    *,
+    url: str,
+    expected_metadata_url: str,
+    label: str,
+) -> None:
     request = urllib.request.Request(url, method="GET")
     try:
         with urllib.request.urlopen(request, timeout=5) as response:
@@ -232,28 +268,28 @@ def check_mcp(settings, failures: list[str]) -> None:
         status = exc.code
         headers = {key.lower(): value for key, value in exc.headers.items()}
     except Exception as exc:
-        failures.append(f"local MCP failed at {url}: {exc}")
+        failures.append(f"{label} failed at {url}: {exc}")
         return
 
     if settings.brain_auth_enabled:
         if status != 401:
-            failures.append(f"auth-enabled MCP did not fail closed; status={status}")
+            failures.append(f"auth-enabled {label} did not fail closed; status={status}")
         challenge = headers.get("www-authenticate", "")
         if "Brain" not in challenge and "brain" not in challenge:
-            failures.append(f"MCP auth challenge does not identify Brain: {challenge}")
-        if settings.protected_resource_metadata_url not in challenge:
+            failures.append(f"{label} auth challenge does not identify Brain: {challenge}")
+        if expected_metadata_url not in challenge:
             failures.append(
-                "MCP auth challenge does not advertise Brain protected-resource metadata: "
+                f"{label} auth challenge does not advertise Brain protected-resource metadata: "
                 f"{challenge}"
             )
         else:
-            console.print("[green][OK][/green] local MCP fails closed with Brain auth metadata")
+            console.print(f"[green][OK][/green] {label} fails closed with Brain auth metadata")
     elif status >= 400:
-        failures.append(f"local MCP returned HTTP {status}: {body[:200]}")
+        failures.append(f"{label} returned HTTP {status}: {body[:200]}")
     else:
         if "Brain" not in body and "brain" not in body:
-            failures.append("local MCP response does not identify Brain")
-        console.print(f"[green][OK][/green] local MCP: {url}")
+            failures.append(f"{label} response does not identify Brain")
+        console.print(f"[green][OK][/green] {label}: {url}")
 
 
 def check_oauth_metadata(settings, failures: list[str]) -> None:
@@ -270,6 +306,20 @@ def check_oauth_metadata(settings, failures: list[str]) -> None:
             failures.append(
                 "protected-resource metadata resource does not match public MCP URL: "
                 f"{protected}"
+            )
+
+    app_protected = check_http_json(
+        f"{base}/.well-known/oauth-protected-resource{settings.brain_public_app_mcp_path}",
+        "local OAuth app protected-resource metadata",
+        failures,
+    )
+    if app_protected:
+        if app_protected.get("resource_name") != "Brain":
+            failures.append(f"app protected-resource metadata is not Brain: {app_protected}")
+        if app_protected.get("resource") != settings.public_app_mcp_url:
+            failures.append(
+                "app protected-resource metadata resource does not match public app MCP URL: "
+                f"{app_protected}"
             )
 
     issuer = check_http_json(

@@ -34,6 +34,7 @@ BRAIN_DATABASE_URL=sqlite:///.data/brain/brain.db
 BRAIN_MCP_HOST=127.0.0.1
 BRAIN_MCP_PORT=8000
 BRAIN_MCP_PATH=/mcp
+BRAIN_APP_MCP_PATH=/app/mcp
 BRAIN_AUTH_ENABLED=false
 ```
 
@@ -75,10 +76,17 @@ The MCP endpoint is:
 GET|POST /mcp
 ```
 
+The curated ChatGPT App MCP endpoint is:
+
+```text
+GET|POST /app/mcp
+```
+
 The path is controlled by:
 
 ```env
 BRAIN_MCP_PATH=/mcp
+BRAIN_APP_MCP_PATH=/app/mcp
 ```
 
 ## HTTP Endpoints
@@ -86,6 +94,8 @@ BRAIN_MCP_PATH=/mcp
 Core memory endpoints:
 
 ```text
+GET  /
+GET  /app
 POST /memory/remember
 POST /memory/ingest_source
 POST /memory/recall
@@ -109,7 +119,46 @@ POST   /datasources
 DELETE /datasources/{datasource}
 ```
 
-Low-level SQL and raw Cognee primitives are not exposed as public MCP tools.
+Raw SQL and arbitrary Cognee primitives are not exposed as public MCP tools.
+Brain does expose curated Cognee/admin operations such as sync, rebuild, and
+configured improve.
+
+## ChatGPT App Surface
+
+Use `/app/mcp` for a ChatGPT App or any user-facing client that should not see
+admin tools. In production its public URL is:
+
+```text
+https://brain.dceb.net/app/mcp
+```
+
+The browser dashboard is served by the same MCP process at:
+
+```text
+https://brain.dceb.net/
+```
+
+The curated app tool set is:
+
+```text
+brain_session
+brain_recall
+brain_remember
+brain_profile_entity
+brain_list_open_loops
+brain_get_memory
+brain_review_recent
+brain_undo_last
+brain_profile_context_list
+brain_profile_context_remember
+brain_profile_context_forget
+```
+
+`brain_remember` is confirmation-first on `/app/mcp`. Without explicit
+confirmation it is forced to `dry_run=true`; after the user confirms, call it
+again with `context.confirmed_by_user=true` to save. Admin tools, raw Cognee
+projection tools, agent-memory clear, and Palate writes are not listed or
+callable on `/app/mcp`.
 
 ## Authentication
 
@@ -252,9 +301,9 @@ python -m memory_stack.mcp_stdio
 from the repository root with environment values derived from your active
 Brain settings.
 
-## MCP Tools
+## Internal MCP Tools
 
-The public MCP tools are:
+The internal `/mcp` surface exposes:
 
 ```text
 brain_session
@@ -388,11 +437,14 @@ curl -s http://127.0.0.1:8000/memory/remember \
   -H "Content-Type: application/json" \
   -d '{
     "input": "Sam from Goldman prefers morning calls.",
-    "input_type": "person_fact",
+    "input_type": "fact",
     "source_policy": "memory_only",
     "dry_run": false
   }'
 ```
+
+Brain may classify the stored memory card as kind `person_fact`; `fact` is the
+client input type.
 
 Ingest source:
 

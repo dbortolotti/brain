@@ -40,6 +40,23 @@ def test_icon_routes() -> None:
     assert favicon_response.content.startswith(b"\x00\x00\x01\x00")
 
 
+def test_brain_app_ui_routes() -> None:
+    client = TestClient(app)
+
+    root_response = client.get("/")
+    app_response = client.get("/app")
+    css_response = client.get("/app-assets/app.css")
+    js_response = client.get("/app-assets/app.js")
+
+    assert root_response.status_code == 200
+    assert "Brain" in root_response.text
+    assert app_response.status_code == 200
+    assert css_response.status_code == 200
+    assert css_response.headers["content-type"].startswith("text/css")
+    assert js_response.status_code == 200
+    assert "mcpCall" in js_response.text
+
+
 def test_mcp_initialize() -> None:
     client = TestClient(app)
     response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
@@ -140,6 +157,96 @@ def test_datasource_tools_are_listed() -> None:
         "brain.taste.remember",
         "brain.taste.query",
     }.isdisjoint(tool_names)
+
+
+def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
+    client = TestClient(app)
+    response = client.post("/app/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+
+    assert response.status_code == 200
+    tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
+    assert tool_names == mcp_server.CHATGPT_APP_TOOLS
+    assert {
+        "brain_forget",
+        "brain_sync_cognee",
+        "brain_rebuild_cognee",
+        "cognee_improve",
+        "brain_agent_memory_clear",
+        "brain_palate_remember",
+    }.isdisjoint(tool_names)
+    remember = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_remember")
+    assert "previews by default" in remember["description"]
+
+
+def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/app/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "brain_rebuild_cognee", "arguments": {"confirm": True}},
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["error"]["code"] == -32000
+    assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
+
+
+def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app)
+        preview_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_remember",
+                    "arguments": {
+                        "input": "Remember that app-surface writes require user confirmation.",
+                        "input_type": "fact",
+                    },
+                },
+            },
+        )
+        confirmed_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_remember",
+                    "arguments": {
+                        "input": "Remember that app-surface writes require user confirmation.",
+                        "input_type": "fact",
+                        "dry_run": False,
+                        "context": {"confirmed_by_user": True},
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert preview_response.status_code == 200
+    preview = preview_response.json()["result"]["structuredContent"]
+    assert preview["dry_run"] is True
+    assert all(card["created"] is False for card in preview["memory_cards"])
+
+    assert confirmed_response.status_code == 200
+    confirmed = confirmed_response.json()["result"]["structuredContent"]
+    assert confirmed["dry_run"] is False
+    assert any(card["created"] is True for card in confirmed["memory_cards"])
 
 
 def test_memory_tools_expose_node_set_and_search_options() -> None:
@@ -994,6 +1101,16 @@ def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:
     assert response.status_code == 401
     assert "Brain" in response.headers["www-authenticate"]
     assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
+
+
+def test_auth_enabled_app_mcp_fails_closed_with_app_resource(tmp_path) -> None:
+    with oauth_settings(tmp_path):
+        client = TestClient(app)
+        response = client.get("/app/mcp")
+
+    assert response.status_code == 401
+    assert "Brain" in response.headers["www-authenticate"]
+    assert "oauth-protected-resource/app/mcp" in response.headers["www-authenticate"]
 
 
 def test_auth_enabled_datasources_fail_closed(tmp_path) -> None:

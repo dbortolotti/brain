@@ -42,26 +42,31 @@ uv run alembic upgrade head
 make mcp-http
 ```
 
-HTTP endpoints include:
+Selected user-facing HTTP endpoints include:
 
 - `GET /healthz`
+- `GET /` and `GET /app` for the Brain dashboard
 - `GET|POST /mcp`
+- `GET|POST /app/mcp`
 - `POST /memory/remember`
 - `POST /memory/ingest_source`
 - `POST /memory/recall`
 - `POST /memory/profile_entity`
 - `GET /memory/open_loops`
+- `GET /memory/{memory_id}`
+- `POST /memory/forget`
+- `POST /memory/resolve_conflict`
 - `POST /memory/review_recent`
 - `POST /memory/undo_last`
+- `POST /memory/sync_cognee`
+- `POST /memory/rebuild_cognee`
+- `POST /memory/merge_entities`
 
-The high-level MCP tools are:
+The high-level MCP tools are grouped by purpose:
+
+Core memory:
 
 - `brain_remember`
-- `brain_session`
-- `brain_profile_context_remember`
-- `brain_profile_context_list`
-- `brain_profile_context_forget`
-- `brain_profile_context_sync`
 - `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
@@ -72,13 +77,24 @@ The high-level MCP tools are:
 - `brain_forget`
 - `brain_review_recent`
 - `brain_undo_last`
-- `brain_sync_cognee`
-- `brain_rebuild_cognee`
-- `cognee_improve`
+- `brain_merge_entities`
+
+Session and profile context:
+
+- `brain_session`
+- `brain_profile_context_remember`
+- `brain_profile_context_list`
+- `brain_profile_context_forget`
+- `brain_profile_context_sync`
+
+Agent memory:
+
 - `brain_agent_memory`
 - `brain_agent_memory_recall`
 - `brain_agent_memory_clear`
-- `brain_merge_entities`
+
+Palate:
+
 - `brain_palate_describe_item`
 - `brain_palate_remember`
 - `brain_palate_query`
@@ -89,8 +105,40 @@ The high-level MCP tools are:
 - `brain_palate_correct_proposal`
 - `brain_palate_refresh_enrichment`
 
-Low-level Cognee and SQL operations are intentionally not exposed as public MCP
-tools.
+Curated Cognee/admin operations:
+
+- `brain_sync_cognee`
+- `brain_rebuild_cognee`
+- `cognee_improve`
+
+Raw SQL and arbitrary Cognee primitives are intentionally not exposed as public
+MCP tools. Brain exposes curated Cognee/admin operations such as sync, rebuild,
+and configured improve.
+
+## ChatGPT App Surface
+
+Brain exposes a curated MCP surface for a ChatGPT App at `/app/mcp`, with the
+public URL `https://brain.dceb.net/app/mcp`. The root dashboard is available at
+`https://brain.dceb.net/` and uses the same curated surface.
+
+The ChatGPT App surface intentionally lists only user-safe tools:
+
+- `brain_session`
+- `brain_recall`
+- `brain_remember`
+- `brain_profile_entity`
+- `brain_list_open_loops`
+- `brain_get_memory`
+- `brain_review_recent`
+- `brain_undo_last`
+- `brain_profile_context_list`
+- `brain_profile_context_remember`
+- `brain_profile_context_forget`
+
+Admin, raw projection, hard-delete, agent-memory-clear, and Palate write tools
+remain on the internal `/mcp` surface only. On `/app/mcp`, `brain_remember`
+previews by default; a client may save only after explicit user confirmation by
+calling it with `context.confirmed_by_user=true`.
 
 ## Running The Slack Memory Agent
 
@@ -265,10 +313,17 @@ does not bypass Brain DB.
 
 ## Profiles
 
-Runtime uses one configured LLM and one configured embedding model. The default
-production values are OpenAI `gpt-5.4-mini` for runtime/Cognee LLM calls and
-`fastembed:intfloat/multilingual-e5-large` with 1024-dimensional vectors for
-local embeddings.
+Runtime uses one configured LLM and one configured embedding model. The checked-in
+defaults are OpenAI `gpt-5.4-mini` for runtime/Cognee LLM calls and OpenAI
+`text-embedding-3-large` with 3072-dimensional vectors for embeddings.
+
+Environment examples differ by local setup:
+
+- `.env.example` mirrors `cfg/common.yaml`: Postgres Cognee metadata,
+  pgvector vectors, and the default graph provider.
+- `.env.openai.example` is a smaller local/OpenAI-oriented example using Neo4j,
+  LanceDB, and SQLite.
+- `cfg/prod.yaml` is the production override used by deployment.
 
 Provider API keys can be stored once and reused across every model for that
 provider:
@@ -303,6 +358,8 @@ uv run brain models auth login --provider openai-codex
 ```
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls.
-OpenAI embeddings still require `OPENAI_API_KEY`; Codex OAuth is not used as an
-embedding credential. Non-runtime providers are available only for explicit
-eval/smoke experiments.
+When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee
+OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI
+embedding credential. Use API-key mode when you want embeddings to use
+`OPENAI_API_KEY` explicitly. Non-runtime providers are available only for
+explicit eval/smoke experiments.

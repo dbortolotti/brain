@@ -55,10 +55,13 @@ def test_help_command_returns_supported_commands(tmp_path) -> None:
     assert "/brain remember <memory>" in response.text
     assert "/brain recall <query>" in response.text
     assert "/brain undo-last" in response.text
-    assert response.blocks == []
+    assert response.blocks
+    assert response.blocks[1]["elements"][0]["action_id"] == "brain_help_template_remember"
     assert response.payload["commands"] == [
         "remember",
         "confirm",
+        "cancel",
+        "correct",
         "recall",
         "profile",
         "open-loops",

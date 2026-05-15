@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Brain</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/app-assets/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Brain</h1>
+        <p id="sessionLine">Connect to review memory.</p>
+      </div>
+      <div class="auth">
+        <input id="tokenInput" type="password" autocomplete="off" placeholder="Bearer token" />
+        <button id="saveToken" type="button">Connect</button>
+        <button id="clearToken" type="button" title="Clear stored token">Clear</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="Brain actions">
+        <button class="tab active" type="button" data-tab="review">Review</button>
+        <button class="tab" type="button" data-tab="recall">Recall</button>
+        <button class="tab" type="button" data-tab="remember">Remember</button>
+        <button class="tab" type="button" data-tab="profile">Profile</button>
+      </section>
+
+      <section id="status" class="status" role="status"></section>
+
+      <section id="review" class="panel active" aria-labelledby="reviewTitle">
+        <div class="panel-head">
+          <h2 id="reviewTitle">Recent Memory</h2>
+          <button id="refreshReview" type="button">Refresh</button>
+        </div>
+        <div class="grid two">
+          <article>
+            <h3>Recent Cards</h3>
+            <div id="recentCards" class="list"></div>
+          </article>
+          <article>
+            <h3>Open Loops</h3>
+            <div id="openLoops" class="list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="recall" class="panel" aria-labelledby="recallTitle">
+        <h2 id="recallTitle">Recall</h2>
+        <form id="recallForm" class="stack">
+          <textarea id="recallQuery" rows="4" placeholder="Ask Brain..."></textarea>
+          <div class="form-row">
+            <input id="recallLimit" type="number" min="1" max="100" value="10" />
+            <button type="submit">Search</button>
+          </div>
+        </form>
+        <div id="recallResult" class="result"></div>
+      </section>
+
+      <section id="remember" class="panel" aria-labelledby="rememberTitle">
+        <h2 id="rememberTitle">Remember</h2>
+        <form id="rememberForm" class="stack">
+          <textarea id="rememberInput" rows="5" placeholder="Write a memory to preview..."></textarea>
+          <div class="form-row">
+            <select id="rememberType">
+              <option value="auto">auto</option>
+              <option value="note">note</option>
+              <option value="fact">fact</option>
+              <option value="thought">thought</option>
+              <option value="open_question">open question</option>
+              <option value="chat_conclusion">chat conclusion</option>
+            </select>
+            <button type="submit">Preview</button>
+          </div>
+        </form>
+        <div id="rememberPreview" class="result"></div>
+        <button id="confirmRemember" class="primary hidden" type="button">Save Preview</button>
+      </section>
+
+      <section id="profile" class="panel" aria-labelledby="profileTitle">
+        <div class="panel-head">
+          <h2 id="profileTitle">Profile Context</h2>
+          <button id="refreshProfile" type="button">Refresh</button>
+        </div>
+        <form id="profileForm" class="stack">
+          <textarea id="profileStatement" rows="3" placeholder="Add standing answer-tailoring context..."></textarea>
+          <div class="form-row">
+            <input id="profileScope" value="answer_tailoring" />
+            <button type="submit">Add</button>
+          </div>
+        </form>
+        <div id="profileItems" class="list"></div>
+      </section>
+    </main>
+
+    <script src="/app-assets/app.js" defer></script>
+  </body>
+</html>

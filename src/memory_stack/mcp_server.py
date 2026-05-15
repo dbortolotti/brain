@@ -4,6 +4,7 @@ import argparse
 import json
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Request, Response
@@ -36,7 +37,7 @@ from memory_stack.cognee_adapter import (
     list_datasources as list_cognee_datasources,
     recall_text,
 )
-from memory_stack.cfg import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings, normalize_path
 from memory_stack.domain_constants import (
     ADMIN_COGNEE_DATASETS,
     ADMIN_COGNEE_OBJECT_TYPES,
@@ -79,6 +80,22 @@ settings = load_settings()
 oauth_provider = BrainOAuthProvider(settings) if settings.brain_auth_enabled else None
 SUPPORTED_MCP_PROTOCOL_VERSIONS = {"2024-11-05", "2025-11-25"}
 DEFAULT_MCP_PROTOCOL_VERSION = "2024-11-05"
+MCP_SURFACE_INTERNAL = "internal"
+MCP_SURFACE_CHATGPT_APP = "chatgpt_app"
+CHATGPT_APP_TOOLS = {
+    "brain_session",
+    "brain_recall",
+    "brain_remember",
+    "brain_profile_entity",
+    "brain_list_open_loops",
+    "brain_get_memory",
+    "brain_review_recent",
+    "brain_undo_last",
+    "brain_profile_context_list",
+    "brain_profile_context_remember",
+    "brain_profile_context_forget",
+}
+APP_STATIC_DIR = Path(__file__).resolve().parent / "static" / "brain_app"
 
 app = FastAPI(title="Brain MCP", version="0.1.0")
 if settings.brain_request_log_enabled:
@@ -184,7 +201,7 @@ class MergeEntitiesRequest(BaseModel):
     confirm: bool = False
 
 
-def memory_tool_definitions() -> list[dict[str, Any]]:
+def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[str, Any]]:
     tools = [
         {
             "name": "brain_session",
@@ -747,7 +764,24 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
     ]
+    if surface == MCP_SURFACE_CHATGPT_APP:
+        tools = [tool for tool in tools if tool["name"] in CHATGPT_APP_TOOLS]
+        for tool in tools:
+            if tool["name"] == "brain_remember":
+                tool["description"] = (
+                    "Prepare or store a user-level Brain memory. On the ChatGPT App "
+                    "surface this tool previews by default; save only after explicit "
+                    "user confirmation by passing context.confirmed_by_user=true."
+                )
     return tools_with_output_schemas(tools)
+
+
+def tool_available_on_surface(tool_name: str, surface: str) -> bool:
+    if surface == MCP_SURFACE_INTERNAL:
+        return True
+    if surface == MCP_SURFACE_CHATGPT_APP:
+        return tool_name in CHATGPT_APP_TOOLS
+    return False
 
 
 def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -760,6 +794,17 @@ def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any
         }
         for tool in tools
     ]
+
+
+def brain_app_file(filename: str, media_type: str) -> FileResponse:
+    path = APP_STATIC_DIR / filename
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Not found")
+    return FileResponse(
+        path,
+        media_type=media_type,
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 def tool_output_schema(tool_name: str) -> dict[str, Any]:
@@ -1116,9 +1161,29 @@ async def healthz() -> dict[str, Any]:
         "status": "ok",
         "service": settings.brain_service_name,
         "mcp_path": settings.brain_mcp_path,
+        "app_mcp_path": settings.brain_app_mcp_path,
         "public_mcp_url": settings.public_mcp_url,
+        "public_app_mcp_url": settings.public_app_mcp_url,
         "uptime_seconds": round(time.time() - STARTED_AT, 3),
     }
+
+
+@app.get("/", include_in_schema=False)
+async def app_root() -> FileResponse:
+    return brain_app_file("index.html", "text/html; charset=utf-8")
+
+
+@app.get("/app", include_in_schema=False)
+async def app_dashboard() -> FileResponse:
+    return brain_app_file("index.html", "text/html; charset=utf-8")
+
+
+@app.get("/app-assets/{asset_name}", include_in_schema=False)
+async def app_asset(asset_name: str) -> FileResponse:
+    if asset_name not in {"app.css", "app.js"}:
+        raise HTTPException(status_code=404, detail="Not found")
+    media_type = "text/css; charset=utf-8" if asset_name.endswith(".css") else "text/javascript; charset=utf-8"
+    return brain_app_file(asset_name, media_type)
 
 
 @app.get("/icon.png", include_in_schema=False)
@@ -1151,18 +1216,31 @@ async def favicon_ico() -> FileResponse:
 @app.get("/.well-known/oauth-protected-resource")
 @app.get("/.well-known/oauth-protected-resource/{resource_path:path}")
 async def oauth_protected_resource(resource_path: str = "") -> dict[str, Any]:
-    if oauth_provider:
-        return oauth_provider.protected_resource_metadata()
-
     normalized_resource_path = "/" + resource_path.strip("/")
-    resource_url = f"{settings.brain_public_base_url.rstrip('/')}{normalized_resource_path}"
+    if normalized_resource_path == "/":
+        normalized_resource_path = settings.brain_public_mcp_path
+    return protected_resource_metadata_for_path(settings, normalized_resource_path)
+
+
+def protected_resource_metadata_for_path(active_settings: Settings, resource_path: str) -> dict[str, Any]:
+    normalized_resource_path = normalize_public_resource_path(active_settings, resource_path)
+    resource_url = f"{active_settings.brain_public_base_url.rstrip('/')}{normalized_resource_path}"
     return {
         "resource": resource_url,
-        "resource_name": settings.brain_service_name,
-        "authorization_servers": [settings.brain_public_base_url.rstrip("/")],
-        "scopes_supported": settings.oauth_scopes,
+        "resource_name": active_settings.brain_service_name,
+        "authorization_servers": [active_settings.brain_public_base_url.rstrip("/")],
+        "scopes_supported": active_settings.oauth_scopes,
         "bearer_methods_supported": ["header"],
     }
+
+
+def normalize_public_resource_path(active_settings: Settings, resource_path: str) -> str:
+    requested = normalize_path(resource_path)
+    if requested == active_settings.brain_app_mcp_path:
+        return active_settings.brain_public_app_mcp_path
+    if requested == active_settings.brain_mcp_path:
+        return active_settings.brain_public_mcp_path
+    return requested
 
 
 @app.get("/.well-known/oauth-authorization-server")
@@ -1453,24 +1531,35 @@ async def mcp_route(
     authorization: str | None = Header(default=None),
 ) -> Response:
     requested_path = "/" + path.strip("/")
-    if requested_path != settings.brain_mcp_path:
+    if requested_path == settings.brain_mcp_path:
+        surface = MCP_SURFACE_INTERNAL
+        public_path = settings.brain_public_mcp_path
+    elif requested_path == settings.brain_app_mcp_path:
+        surface = MCP_SURFACE_CHATGPT_APP
+        public_path = settings.brain_public_app_mcp_path
+    else:
         raise HTTPException(status_code=404, detail="Not found")
 
     if settings.brain_auth_enabled and not valid_bearer(authorization, settings):
-        return auth_challenge(settings)
+        return auth_challenge(settings, public_path)
 
     if request.method == "GET":
         return JSONResponse(
             {
                 "service": settings.brain_service_name,
-                "mcp_path": settings.brain_mcp_path,
-                "public_mcp_url": settings.public_mcp_url,
+                "mcp_path": requested_path,
+                "public_mcp_url": (
+                    settings.public_app_mcp_url
+                    if surface == MCP_SURFACE_CHATGPT_APP
+                    else settings.public_mcp_url
+                ),
+                "surface": surface,
                 "status": "ready",
             }
         )
 
     payload = await request.json()
-    response_payload = await handle_json_rpc(payload)
+    response_payload = await handle_json_rpc(payload, surface=surface)
     return JSONResponse(response_payload)
 
 
@@ -1488,11 +1577,11 @@ def valid_bearer(header_value: str | None, active_settings: Settings) -> bool:
     return False
 
 
-def auth_challenge(active_settings: Settings) -> Response:
+def auth_challenge(active_settings: Settings, resource_path: str | None = None) -> Response:
     return JSONResponse(
         authentication_required_payload(active_settings),
         status_code=401,
-        headers=auth_challenge_headers(active_settings),
+        headers=auth_challenge_headers(active_settings, resource_path),
     )
 
 
@@ -1519,11 +1608,19 @@ def authentication_required_payload(active_settings: Settings) -> dict[str, str]
     return {"error": "authentication_required", "service": active_settings.brain_service_name}
 
 
-def auth_challenge_headers(active_settings: Settings) -> dict[str, str]:
+def auth_challenge_headers(
+    active_settings: Settings,
+    resource_path: str | None = None,
+) -> dict[str, str]:
+    metadata_url = (
+        active_settings.protected_resource_metadata_url_for_path(resource_path)
+        if resource_path
+        else active_settings.protected_resource_metadata_url
+    )
     return {
         "WWW-Authenticate": (
             'Bearer realm="Brain", '
-            f'resource_metadata="{active_settings.protected_resource_metadata_url}", '
+            f'resource_metadata="{metadata_url}", '
             f'scope="{" ".join(active_settings.brain_auth_scope_list)}"'
         )
     }
@@ -1536,9 +1633,9 @@ async def delete_datasource_or_404(datasource: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
-async def handle_json_rpc(payload: Any) -> Any:
+async def handle_json_rpc(payload: Any, *, surface: str = MCP_SURFACE_INTERNAL) -> Any:
     if isinstance(payload, list):
-        return [await handle_json_rpc(item) for item in payload]
+        return [await handle_json_rpc(item, surface=surface) for item in payload]
 
     request_id = payload.get("id") if isinstance(payload, dict) else None
     method = payload.get("method") if isinstance(payload, dict) else None
@@ -1556,7 +1653,7 @@ async def handle_json_rpc(payload: Any) -> Any:
                 },
             }
         elif method == "tools/list":
-            result = {"tools": memory_tool_definitions()}
+            result = {"tools": memory_tool_definitions(surface=surface)}
         elif method == "prompts/list":
             result = {"prompts": prompt_definitions()}
         elif method == "prompts/get":
@@ -1571,7 +1668,7 @@ async def handle_json_rpc(payload: Any) -> Any:
         elif method == "resources/read":
             result = read_resource(str(params.get("uri", "")))
         elif method == "tools/call":
-            result = await call_tool(params)
+            result = await call_tool(params, surface=surface)
         elif method and method.startswith("notifications/"):
             return {"jsonrpc": "2.0", "id": request_id, "result": {}}
         else:
@@ -1582,9 +1679,15 @@ async def handle_json_rpc(payload: Any) -> Any:
     return {"jsonrpc": "2.0", "id": request_id, "result": result}
 
 
-async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
+async def call_tool(
+    params: dict[str, Any],
+    *,
+    surface: str = MCP_SURFACE_INTERNAL,
+) -> dict[str, Any]:
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
+    if not tool_available_on_surface(name, surface):
+        raise ValueError(f"Tool is not available on the {surface} MCP surface: {name}")
     if name == "brain_session":
         payload = brain_session_payload(settings)
         return json_tool_response(
@@ -1593,6 +1696,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         )
 
     if name == "brain_remember":
+        arguments = confirmation_first_arguments(arguments, surface=surface)
         request = RememberRequest.model_validate(
             {
                 "input": arguments.get("input", ""),
@@ -2043,6 +2147,30 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         )
 
     raise ValueError(f"Unknown tool: {name}")
+
+
+def confirmation_first_arguments(arguments: Any, *, surface: str) -> dict[str, Any]:
+    if not isinstance(arguments, dict):
+        return {}
+    normalized = dict(arguments)
+    if surface != MCP_SURFACE_CHATGPT_APP:
+        return normalized
+    context = normalized.get("context")
+    if not isinstance(context, dict):
+        context = {}
+    confirmed = bool(
+        context.get("confirmed_by_user")
+        or context.get("app_confirmed")
+        or normalized.get("confirmed_by_user")
+    )
+    if not confirmed:
+        normalized["dry_run"] = True
+        normalized["context"] = {
+            **context,
+            "confirmation_required": True,
+            "confirmation_surface": MCP_SURFACE_CHATGPT_APP,
+        }
+    return normalized
 
 
 def configured_cognee_dataset(dataset: str, active_settings: Settings) -> str:
