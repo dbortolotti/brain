@@ -138,7 +138,15 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 Admin, raw projection, hard-delete, agent-memory-clear, and Palate write tools
 remain on the internal `/mcp` surface only. On `/app/mcp`, `brain_remember`
 previews by default; a client may save only after explicit user confirmation by
-calling it with `context.confirmed_by_user=true`.
+calling it with `context.confirmed_by_user=true`. Destructive app-surface calls
+such as `brain_undo_last` and `brain_profile_context_forget` require
+`confirmed_by_user=true`.
+
+Public app support pages:
+
+- `https://brain.dceb.net/privacy`
+- `https://brain.dceb.net/terms`
+- `https://brain.dceb.net/support`
 
 ## Running The Slack Memory Agent
 

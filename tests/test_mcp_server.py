@@ -48,9 +48,13 @@ def test_brain_app_ui_routes() -> None:
     callback_response = client.get("/app/oauth/callback")
     css_response = client.get("/app-assets/app.css")
     js_response = client.get("/app-assets/app.js")
+    privacy_response = client.get("/privacy")
+    terms_response = client.get("/terms")
+    support_response = client.get("/support")
 
     assert root_response.status_code == 200
     assert "Brain" in root_response.text
+    assert "/privacy" in root_response.text
     assert "Memory Contents" in root_response.text
     assert "Latest Session Data" in root_response.text
     assert "Custom Preprompt Instructions" in root_response.text
@@ -59,6 +63,12 @@ def test_brain_app_ui_routes() -> None:
     assert css_response.status_code == 200
     assert css_response.headers["content-type"].startswith("text/css")
     assert js_response.status_code == 200
+    assert privacy_response.status_code == 200
+    assert "Brain Privacy" in privacy_response.text
+    assert terms_response.status_code == 200
+    assert "Brain Terms" in terms_response.text
+    assert support_response.status_code == 200
+    assert "Brain Support" in support_response.text
     assert "mcpCall" in js_response.text
     assert "startOAuth" in js_response.text
     assert "showMemoryDetails" in js_response.text
@@ -202,6 +212,74 @@ def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
     assert response.status_code == 200
     assert response.json()["error"]["code"] == -32000
     assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
+
+
+def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app)
+        context_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {"statement": "Daniele prefers confirmation gates."},
+                },
+            },
+        )
+        context_id = context_response.json()["result"]["structuredContent"]["id"]
+        unconfirmed_forget = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_forget",
+                    "arguments": {"context_id": context_id},
+                },
+            },
+        )
+        confirmed_forget = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 3,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_forget",
+                    "arguments": {
+                        "context_id": context_id,
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+        unconfirmed_undo = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 4,
+                "method": "tools/call",
+                "params": {"name": "brain_undo_last", "arguments": {}},
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert unconfirmed_forget.status_code == 200
+    assert "Explicit user confirmation is required" in unconfirmed_forget.json()["error"]["message"]
+    assert confirmed_forget.status_code == 200
+    assert confirmed_forget.json()["result"]["structuredContent"]["status"] == "deleted"
+    assert unconfirmed_undo.status_code == 200
+    assert "Explicit user confirmation is required" in unconfirmed_undo.json()["error"]["message"]
 
 
 def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
@@ -1195,6 +1273,34 @@ def test_oauth_authorization_code_flow(tmp_path) -> None:
         mcp_response = client.get("/mcp", headers={"Authorization": f"Bearer {access_token}"})
         assert mcp_response.status_code == 200
         assert mcp_response.json()["service"] == "Brain"
+
+
+def test_oauth_register_rate_limit(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        mcp_server,
+        "OAUTH_RATE_LIMITS",
+        {**mcp_server.OAUTH_RATE_LIMITS, "register": (2, 60)},
+    )
+    mcp_server._rate_limit_buckets.clear()
+    try:
+        with oauth_settings(tmp_path):
+            client = TestClient(app)
+            payload = {
+                "client_name": "test-client",
+                "redirect_uris": ["http://127.0.0.1/callback"],
+                "token_endpoint_auth_method": "none",
+                "scope": "brain.memory.read brain.memory.write",
+            }
+            first = client.post("/register", json=payload)
+            second = client.post("/register", json=payload)
+            third = client.post("/register", json=payload)
+    finally:
+        mcp_server._rate_limit_buckets.clear()
+
+    assert first.status_code == 201
+    assert second.status_code == 201
+    assert third.status_code == 429
+    assert third.json()["error"] == "rate_limited"
 
 
 def test_request_response_logger_redacts_secrets(tmp_path) -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict, deque
 import json
 import time
 from datetime import datetime
@@ -96,6 +97,13 @@ CHATGPT_APP_TOOLS = {
     "brain_profile_context_forget",
 }
 APP_STATIC_DIR = Path(__file__).resolve().parent / "static" / "brain_app"
+OAUTH_RATE_LIMITS = {
+    "register": (20, 60),
+    "authorize": (60, 60),
+    "token": (30, 60),
+    "revoke": (30, 60),
+}
+_rate_limit_buckets: dict[str, deque[float]] = defaultdict(deque)
 
 app = FastAPI(title="Brain MCP", version="0.1.0")
 if settings.brain_request_log_enabled:
@@ -273,11 +281,19 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
         },
         {
             "name": "brain_profile_context_forget",
-            "description": "Remove one standing user-profile context item by id.",
+            "description": (
+                "Remove one standing user-profile context item by id. On the "
+                "ChatGPT App surface this requires confirmed_by_user=true."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "context_id": {"type": "string"},
+                    "confirmed_by_user": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true on the ChatGPT App surface.",
+                    },
                 },
                 "required": ["context_id"],
                 "additionalProperties": False,
@@ -457,11 +473,19 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
         },
         {
             "name": "brain_undo_last",
-            "description": "Soft-delete objects created by one recent ingestion run.",
+            "description": (
+                "Soft-delete objects created by one recent ingestion run. On the "
+                "ChatGPT App surface this requires confirmed_by_user=true."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "ingestion_run_id": {"type": "string"},
+                    "confirmed_by_user": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true on the ChatGPT App surface.",
+                    },
                 },
                 "additionalProperties": False,
             },
@@ -805,6 +829,27 @@ def brain_app_file(filename: str, media_type: str) -> FileResponse:
         media_type=media_type,
         headers={"Cache-Control": "no-store"},
     )
+
+
+def rate_limit_oauth(request: Request, bucket: str) -> None:
+    limit, window_seconds = OAUTH_RATE_LIMITS[bucket]
+    forwarded_for = request.headers.get("x-forwarded-for", "").split(",", maxsplit=1)[0].strip()
+    client_host = forwarded_for or (request.client.host if request.client else "unknown")
+    key = f"{bucket}:{client_host}"
+    now = time.monotonic()
+    hits = _rate_limit_buckets[key]
+    while hits and now - hits[0] > window_seconds:
+        hits.popleft()
+    if len(hits) >= limit:
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "error": "rate_limited",
+                "error_description": "Too many authentication requests. Try again shortly.",
+            },
+            headers={"Retry-After": str(window_seconds)},
+        )
+    hits.append(now)
 
 
 def tool_output_schema(tool_name: str) -> dict[str, Any]:
@@ -1183,6 +1228,21 @@ async def app_oauth_callback() -> FileResponse:
     return brain_app_file("index.html", "text/html; charset=utf-8")
 
 
+@app.get("/privacy", include_in_schema=False)
+async def privacy_page() -> FileResponse:
+    return brain_app_file("privacy.html", "text/html; charset=utf-8")
+
+
+@app.get("/terms", include_in_schema=False)
+async def terms_page() -> FileResponse:
+    return brain_app_file("terms.html", "text/html; charset=utf-8")
+
+
+@app.get("/support", include_in_schema=False)
+async def support_page() -> FileResponse:
+    return brain_app_file("support.html", "text/html; charset=utf-8")
+
+
 @app.get("/app-assets/{asset_name}", include_in_schema=False)
 async def app_asset(asset_name: str) -> FileResponse:
     if asset_name not in {"app.css", "app.js"}:
@@ -1269,6 +1329,7 @@ async def oauth_authorization_server() -> dict[str, Any]:
 async def register_client(request: Request) -> Response:
     if not oauth_provider:
         raise HTTPException(status_code=404, detail="OAuth is not enabled")
+    rate_limit_oauth(request, "register")
     return await oauth_provider.register_client(request)
 
 
@@ -1276,6 +1337,7 @@ async def register_client(request: Request) -> Response:
 async def authorize(request: Request) -> Response:
     if not oauth_provider:
         raise HTTPException(status_code=404, detail="OAuth is not enabled")
+    rate_limit_oauth(request, "authorize")
     return await oauth_provider.authorize(request)
 
 
@@ -1283,6 +1345,7 @@ async def authorize(request: Request) -> Response:
 async def token(request: Request) -> Response:
     if not oauth_provider:
         raise HTTPException(status_code=404, detail="OAuth is not enabled")
+    rate_limit_oauth(request, "token")
     return await oauth_provider.token(request)
 
 
@@ -1290,6 +1353,7 @@ async def token(request: Request) -> Response:
 async def revoke(request: Request) -> Response:
     if not oauth_provider:
         raise HTTPException(status_code=404, detail="OAuth is not enabled")
+    rate_limit_oauth(request, "revoke")
     return await oauth_provider.revoke(request)
 
 
@@ -1736,6 +1800,11 @@ async def call_tool(
         )
 
     if name == "brain_profile_context_forget":
+        require_app_confirmation(
+            arguments,
+            surface=surface,
+            action="remove profile context",
+        )
         request = BrainProfileContextForgetRequest.model_validate(arguments)
         payload = forget_profile_context(settings, context_id=request.context_id)
         return json_tool_response(
@@ -1905,6 +1974,11 @@ async def call_tool(
         )
 
     if name == "brain_undo_last":
+        require_app_confirmation(
+            arguments,
+            surface=surface,
+            action="undo the latest Brain write",
+        )
         payload = brain_undo_last(
             settings,
             ingestion_run_id=arguments.get("ingestion_run_id"),
@@ -2176,6 +2250,17 @@ def confirmation_first_arguments(arguments: Any, *, surface: str) -> dict[str, A
             "confirmation_surface": MCP_SURFACE_CHATGPT_APP,
         }
     return normalized
+
+
+def require_app_confirmation(arguments: Any, *, surface: str, action: str) -> None:
+    if surface != MCP_SURFACE_CHATGPT_APP:
+        return
+    if not isinstance(arguments, dict) or not bool(arguments.get("confirmed_by_user")):
+        raise ValueError(
+            f"Explicit user confirmation is required to {action} on the "
+            "chatgpt_app MCP surface. Call again with confirmed_by_user=true "
+            "only after the user confirms."
+        )
 
 
 def configured_cognee_dataset(dataset: str, active_settings: Settings) -> str:

@@ -43,10 +43,30 @@ def main() -> int:
             require_brain=True,
         )
     check_public_mcp(settings, failures)
+    check_public_app_mcp(settings, failures)
+    check_url(
+        f"https://{hostname}/",
+        "public Brain dashboard",
+        failures,
+        require_text="Brain",
+    )
+    for path, label in [
+        ("/privacy", "public privacy page"),
+        ("/terms", "public terms page"),
+        ("/support", "public support page"),
+    ]:
+        check_url(f"https://{hostname}{path}", label, failures, require_text="Brain")
     check_protected_resource_metadata(
         f"https://{hostname}/.well-known/oauth-protected-resource{settings.brain_public_mcp_path}",
         settings,
         failures,
+    )
+    check_protected_resource_metadata(
+        f"https://{hostname}/.well-known/oauth-protected-resource{settings.brain_public_app_mcp_path}",
+        settings,
+        failures,
+        expected_resource=settings.public_app_mcp_url,
+        label="OAuth app protected-resource metadata",
     )
     check_authorization_server_metadata(
         f"https://{hostname}/.well-known/oauth-authorization-server",
@@ -94,31 +114,67 @@ def check_tls(hostname: str, failures: list[str]) -> None:
 
 
 def check_public_mcp(settings, failures: list[str]) -> None:
-    url = settings.public_mcp_url
+    check_public_mcp_url(
+        settings.public_mcp_url,
+        settings.protected_resource_metadata_url,
+        settings,
+        failures,
+        label="public MCP",
+    )
+
+
+def check_public_app_mcp(settings, failures: list[str]) -> None:
+    check_public_mcp_url(
+        settings.public_app_mcp_url,
+        settings.protected_resource_metadata_url_for_path(settings.brain_public_app_mcp_path),
+        settings,
+        failures,
+        label="public ChatGPT App MCP",
+    )
+
+
+def check_public_mcp_url(
+    url: str,
+    expected_metadata_url: str,
+    settings,
+    failures: list[str],
+    *,
+    label: str,
+) -> None:
     status, headers, body = fetch(url)
     if status is None:
-        failures.append(f"public MCP request failed: {body}")
+        failures.append(f"{label} request failed: {body}")
         return
     if settings.brain_auth_enabled:
         if status != 401:
-            failures.append(f"auth-enabled public MCP did not fail closed; status={status}")
+            failures.append(f"auth-enabled {label} did not fail closed; status={status}")
             return
         challenge = headers.get("www-authenticate") or headers.get("WWW-Authenticate") or ""
         if "Brain" not in challenge and "brain" not in challenge:
-            failures.append(f"public MCP auth challenge does not identify Brain: {challenge}")
+            failures.append(f"{label} auth challenge does not identify Brain: {challenge}")
             return
-        console.print("[green][OK][/green] public MCP fails closed with Brain auth metadata")
+        if expected_metadata_url not in challenge:
+            failures.append(f"{label} challenge points at wrong OAuth metadata: {challenge}")
+            return
+        console.print(f"[green][OK][/green] {label} fails closed with Brain auth metadata")
         return
     if status >= 400:
-        failures.append(f"public MCP returned HTTP {status}: {body[:200]}")
+        failures.append(f"{label} returned HTTP {status}: {body[:200]}")
         return
     if "Brain" not in body and "brain" not in body:
-        failures.append("public MCP response does not identify Brain")
+        failures.append(f"{label} response does not identify Brain")
         return
-    console.print("[green][OK][/green] public MCP routes to Brain")
+    console.print(f"[green][OK][/green] {label} routes to Brain")
 
 
-def check_url(url: str, label: str, failures: list[str], *, require_brain: bool = False) -> None:
+def check_url(
+    url: str,
+    label: str,
+    failures: list[str],
+    *,
+    require_brain: bool = False,
+    require_text: str | None = None,
+) -> None:
     status, _headers, body = fetch(url)
     if status is None:
         failures.append(f"{label} failed: {body}")
@@ -133,17 +189,27 @@ def check_url(url: str, label: str, failures: list[str], *, require_brain: bool 
             payload = body[:300]
         failures.append(f"{label} does not identify Brain: {payload}")
         return
+    if require_text and require_text not in body:
+        failures.append(f"{label} did not include expected text {require_text!r}")
+        return
     console.print(f"[green][OK][/green] {label}: {url}")
 
 
-def check_protected_resource_metadata(url: str, settings, failures: list[str]) -> None:
-    payload = fetch_json(url, "OAuth protected-resource metadata", failures)
+def check_protected_resource_metadata(
+    url: str,
+    settings,
+    failures: list[str],
+    *,
+    expected_resource: str | None = None,
+    label: str = "OAuth protected-resource metadata",
+) -> None:
+    payload = fetch_json(url, label, failures)
     if not payload:
         return
     if payload.get("resource_name") != "Brain":
-        failures.append(f"OAuth protected-resource metadata is not Brain: {payload}")
-    if payload.get("resource") != settings.public_mcp_url:
-        failures.append(f"OAuth protected-resource resource is wrong: {payload}")
+        failures.append(f"{label} is not Brain: {payload}")
+    if payload.get("resource") != (expected_resource or settings.public_mcp_url):
+        failures.append(f"{label} resource is wrong: {payload}")
 
 
 def check_authorization_server_metadata(url: str, settings, failures: list[str]) -> None:

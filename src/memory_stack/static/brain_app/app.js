@@ -301,8 +301,12 @@ async function saveProfileItem(container) {
 async function forgetProfileItem(container) {
   const id = container.dataset.contextId;
   if (!id) return;
+  if (!window.confirm("Remove this profile context item from Brain?")) return;
   setStatus("Removing profile context...");
-  await mcpCall("brain_profile_context_forget", { context_id: id });
+  await mcpCall("brain_profile_context_forget", {
+    context_id: id,
+    confirmed_by_user: true,
+  });
   await Promise.all([
     refreshProfile().catch(() => {}),
     refreshPrompt().catch(() => {}),
