@@ -135,6 +135,8 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert "uv run python scripts/live_model_smoke.py" in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script
+    assert "--exclude '.env'" in script
+    assert 'rm -f "$RELEASE_DIR/.env"' in script
     assert script.index("uv run python scripts/live_model_smoke.py") < script.index(
         'ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"'
     )

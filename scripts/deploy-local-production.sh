@@ -304,6 +304,7 @@ if [[ ! -d "$RELEASE_DIR" ]]; then
   mkdir -p "$RELEASE_DIR"
   rsync -a --delete \
     --exclude '.git' \
+    --exclude '.env' \
     --exclude '.data' \
     --exclude '.venv' \
     --exclude '__pycache__' \
@@ -313,6 +314,7 @@ if [[ ! -d "$RELEASE_DIR" ]]; then
 else
   log "release already exists: $RELEASE_DIR"
 fi
+rm -f "$RELEASE_DIR/.env"
 
 log "installing dependencies in release"
 (
