@@ -339,6 +339,87 @@ def test_taste_and_palate_keywords_strongly_hint_generic_remember_routing(tmp_pa
     assert table_count(settings, schema.memory_cards) == 0
 
 
+def test_bare_want_to_try_food_routes_to_restaurant_palate_proposal(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+
+    receipt = remember(
+        RememberRequest(
+            input=(
+                "Want to try Mayfair Food Fayre — specifically the Caesar salad wrap, "
+                "spotted on Instagram. Location: Mayfair, London."
+            ),
+            context={
+                "category": "restaurant_wishlist",
+                "palate": True,
+                "location": "Mayfair, London",
+                "dish": "Caesar salad wrap",
+                "source": "Instagram",
+            },
+        ),
+        settings,
+    )
+
+    assert receipt.classification == "taste_proposal"
+    payload = receipt.taste["proposal"]["remember_payload"]
+    assert payload["type"] == "restaurant"
+    assert payload["canonical_name"] == "Mayfair Food Fayre"
+    assert payload["wanted"] is True
+
+
+def test_explicit_palate_context_uses_llm_extraction_before_generic_memory(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient(
+        {
+            "domain": "ambiguous",
+            "taste_intent": "remember",
+            "entity_type_hint": "restaurant",
+            "confidence": 0.84,
+            "requires_enrichment": True,
+            "requires_confirmation": True,
+            "ambiguity_reasons": ["Confirm restaurant wishlist extraction."],
+            "extracted": {
+                "item": "Mayfair Food Fayre",
+                "wanted": True,
+            },
+        }
+    )
+
+    receipt = remember(
+        RememberRequest(
+            input="remember mayfair food fayre, want to try the cesar salad wrap .. saw on instagram",
+            context={"palate": True, "category": "restaurant_wishlist"},
+        ),
+        settings,
+        llm_client=llm,
+    )
+
+    assert receipt.classification == "taste_proposal"
+    assert llm.calls
+    assert llm.calls[0]["kwargs"]["schema_name"] == "brain_palate_memory_extraction"
+    assert receipt.taste["proposal"]["route"]["classification_source"] == "llm_palate_context"
+    assert receipt.taste["proposal"]["remember_payload"]["type"] == "restaurant"
+    assert receipt.taste["proposal"]["remember_payload"]["canonical_name"] == "Mayfair Food Fayre"
+    assert receipt.taste["proposal"]["remember_payload"]["wanted"] is True
+    assert table_count(settings, schema.memory_cards) == 0
+
+
+def test_explicit_palate_context_never_falls_through_to_generic_memory(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+
+    receipt = remember(
+        RememberRequest(
+            input="save this vague food thing for later",
+            context={"palate": True, "category": "restaurant_wishlist"},
+        ),
+        settings,
+    )
+
+    assert receipt.classification == "taste_proposal"
+    assert receipt.taste["proposal"]["route"]["classification_source"] == "palate_context_fallback"
+    assert receipt.taste["proposal"]["remember_payload"]["type"] == "restaurant"
+    assert table_count(settings, schema.memory_cards) == 0
+
+
 def test_taste_and_palate_keywords_do_not_replace_domain_evidence(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
 

@@ -7,7 +7,7 @@ from memory_stack.taste.schema import ENTITY_TYPES
 
 
 WANTED_RE = re.compile(
-    r"\b(?:i|daniele)\s+(?:want|wants|would like|would love)\s+to\s+"
+    r"\b(?:(?:i|daniele)\s+)?(?:want|wants|would like|would love)\s+to\s+"
     r"(?P<verb>try|watch|listen to)\s+(?P<item>[^.]+)",
     re.IGNORECASE,
 )
@@ -315,6 +315,67 @@ def classify_taste_route(
     return route
 
 
+def classify_palate_memory_route(
+    text: str,
+    *,
+    context: dict[str, Any] | None = None,
+    settings: Any = None,
+    llm_client: Any = None,
+) -> dict[str, Any]:
+    deterministic = taste_domain_router(text)
+    deterministic["classification_source"] = "deterministic"
+    deterministic["llm_classification_status"] = "not_available"
+    if llm_client is not None:
+        try:
+            llm_route = normalize_llm_route(
+                llm_client.complete_json(
+                    palate_memory_extraction_prompt(text, context or {}),
+                    taste_classification_schema(),
+                    model=getattr(settings, "brain_taste_llm_model", None),
+                    reasoning_effort=getattr(settings, "brain_taste_llm_reasoning_effort", None),
+                    temperature=0,
+                    schema_name="brain_palate_memory_extraction",
+                )
+            )
+            llm_route["classification_source"] = "llm_palate_context"
+            llm_route["llm_classification_status"] = "success"
+            if llm_route.get("taste_intent") == "remember" and llm_route.get("domain") in {
+                "taste",
+                "ambiguous",
+            }:
+                return llm_route
+            deterministic["llm_classification_status"] = "ignored_non_taste"
+        except Exception as exc:
+            deterministic["llm_classification_status"] = "failed"
+            deterministic.setdefault("ambiguity_reasons", []).append(
+                f"LLM palate extraction failed: {exc}"
+            )
+
+    if deterministic.get("taste_intent") == "remember" and deterministic.get("domain") in {
+        "taste",
+        "ambiguous",
+    }:
+        deterministic["palate_context_forced"] = True
+        return deterministic
+
+    context_type = entity_type_from_context(context or {})
+    return {
+        "domain": "ambiguous",
+        "taste_intent": "remember",
+        "entity_type_hint": context_type,
+        "confidence": 0.7 if context_type else 0.5,
+        "requires_enrichment": True,
+        "requires_confirmation": True,
+        "ambiguity_reasons": [
+            "Explicit palate context was supplied, but the item could not be extracted confidently."
+        ],
+        "extracted": {},
+        "classification_source": "palate_context_fallback",
+        "llm_classification_status": deterministic.get("llm_classification_status", "not_available"),
+        "palate_context_forced": True,
+    }
+
+
 def normalize_llm_route(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("LLM classifier returned non-object JSON.")
@@ -382,6 +443,24 @@ def taste_classification_prompt(text: str) -> str:
     )
 
 
+def palate_memory_extraction_prompt(text: str, context: dict[str, Any]) -> str:
+    context_lines = [f"{key}: {value}" for key, value in sorted(context.items())]
+    return "\n".join(
+        [
+            "Extract a Brain Palate memory from this user note.",
+            "Use Brain Palate for taste, restaurants, food/drink, wine, music, films, series, cigars, and experiences.",
+            "Prefer the LLM's semantic reading over brittle phrasing, but do not invent item names.",
+            "If the note is a food place or restaurant wishlist, use entity_type_hint=restaurant and wanted=true.",
+            "Return a remember/taste or remember/ambiguous route. Use ambiguous when confirmation is needed.",
+            f"Allowed entity types: {', '.join(ENTITY_TYPES)}.",
+            "Context:",
+            "\n".join(context_lines) if context_lines else "{}",
+            "Message:",
+            text[:4000],
+        ]
+    )
+
+
 def taste_classification_schema() -> dict[str, Any]:
     return {
         "type": "object",
@@ -425,7 +504,7 @@ def type_for_item(item: str, *, verb: str | None = None) -> str | None:
         return "series" if any(word in lower for word in ("season", "series", "show")) else "movie"
     if verb == "listen to":
         return "music"
-    if any(word in lower for word in ("restaurant", "bar", "cafe", "bistro", "grill", "rot")):
+    if any(word in lower for word in ("restaurant", "bar", "cafe", "bistro", "grill", "rot", "food")):
         return "restaurant"
     if any(word in lower for word in ("wine", "chateau", "barolo", "riesling", "cabernet")):
         return "wine"
@@ -436,6 +515,13 @@ def type_for_item(item: str, *, verb: str | None = None) -> str | None:
     if any(word in lower for word in ("album", "song", "track", "jazz")):
         return "music"
     return None
+
+
+def entity_type_from_context(context: dict[str, Any]) -> str | None:
+    text = " ".join(str(value) for value in context.values()).casefold()
+    if any(word in text for word in ("restaurant", "food", "dining", "cafe", "bar")):
+        return "restaurant"
+    return mentioned_entity_type(text)
 
 
 def mentioned_entity_type(lower_text: str) -> str | None:
@@ -453,6 +539,7 @@ def mentioned_entity_type(lower_text: str) -> str | None:
 
 def clean_item(value: str) -> str:
     text = value.strip().strip("\"'“”‘’").rstrip(".")
+    text = re.split(r"\s+[-–—]\s+specifically\b", text, maxsplit=1, flags=re.IGNORECASE)[0]
     text = re.split(
         r"\s+and\s+(?:loved|liked|disliked|hated|rate|rated|would|will)\b",
         text,

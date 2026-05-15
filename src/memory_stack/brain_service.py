@@ -26,7 +26,7 @@ from memory_stack.cognee.sync_worker import sync_one, sync_pending_cognee
 from memory_stack.cfg import Settings
 from memory_stack.ingestion.classifier import input_type_for_source_kind
 from memory_stack.ingestion.memory_compiler import compile_memory
-from memory_stack.llm.client import LLMClient
+from memory_stack.llm.client import LLMClient, build_llm_client
 from memory_stack.recall.evidence_builder import build_evidence, build_facts
 from memory_stack.recall.planner import extract_profile_name, infer_recall_mode
 from memory_stack.recall.profile_builder import build_profile_response
@@ -36,7 +36,7 @@ from memory_stack.resolution.conflict_detector import detect_and_apply_memory_re
 from memory_stack.resolution.entity_resolver import EntityResolver
 from memory_stack.route_logging import log_taste_route
 from memory_stack.taste.models import TasteQueryRequest
-from memory_stack.taste.routing import classify_taste_route
+from memory_stack.taste.routing import classify_palate_memory_route, classify_taste_route
 from memory_stack.taste.service import TasteService, canonical_taste_store, remember_request_from_route
 from memory_stack.taste.store import TasteStore
 
@@ -93,6 +93,43 @@ def remember(
     llm_client: LLMClient | None = None,
 ) -> IngestionReceipt:
     if settings.brain_taste_enabled and not request.context.get("taste_skip"):
+        if request.context.get("palate") is True:
+            active_llm_client = llm_client or build_llm_client(settings)
+            route = classify_palate_memory_route(
+                request.input,
+                context=request.context,
+                settings=settings,
+                llm_client=active_llm_client,
+            )
+            log_taste_route(request.input, route, settings)
+            taste_service = TasteService(settings, llm_client=active_llm_client)
+            if (
+                route.get("domain") == "taste"
+                and route.get("taste_intent") == "remember"
+                and float(route.get("confidence") or 0) >= settings.brain_taste_auto_write_threshold
+            ):
+                taste_result = taste_service.remember(
+                    remember_request_from_route(request.input, route).model_copy(
+                        update={"dry_run": request.dry_run, "context": request.context}
+                    )
+                )
+                return taste_result_to_ingestion_receipt(taste_result, settings, route)
+            proposal = taste_service.create_proposal_from_text(
+                request.input,
+                route=route,
+                source_metadata={"context": request.context, "forced_palate": True},
+            )
+            return IngestionReceipt(
+                ingestion_run_id=proposal["id"],
+                classification="taste_proposal",
+                dry_run=True,
+                taste={
+                    "requires_confirmation": True,
+                    "proposal_id": proposal["id"],
+                    "proposal": proposal["proposal_json"],
+                    "warnings": proposal["warnings_json"],
+                },
+            )
         route = classify_taste_route(request.input, settings=settings, llm_client=llm_client)
         log_taste_route(request.input, route, settings)
         if route.get("taste_intent") == "remember" and route.get("domain") in {"taste", "ambiguous"}:
