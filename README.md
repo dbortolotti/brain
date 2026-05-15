@@ -57,6 +57,11 @@ HTTP endpoints include:
 The high-level MCP tools are:
 
 - `brain_remember`
+- `brain_session`
+- `brain_profile_context_remember`
+- `brain_profile_context_list`
+- `brain_profile_context_forget`
+- `brain_profile_context_sync`
 - `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
@@ -69,7 +74,20 @@ The high-level MCP tools are:
 - `brain_undo_last`
 - `brain_sync_cognee`
 - `brain_rebuild_cognee`
+- `cognee_improve`
+- `brain_agent_memory`
+- `brain_agent_memory_recall`
+- `brain_agent_memory_clear`
 - `brain_merge_entities`
+- `brain_palate_describe_item`
+- `brain_palate_remember`
+- `brain_palate_query`
+- `brain_palate_evaluate_options`
+- `brain_palate_log_decision`
+- `brain_palate_confirm`
+- `brain_palate_cancel`
+- `brain_palate_correct_proposal`
+- `brain_palate_refresh_enrichment`
 
 Low-level Cognee and SQL operations are intentionally not exposed as public MCP
 tools.
@@ -200,6 +218,8 @@ Cognee projection settings:
 - `BRAIN_COGNEE_MEMORY_DATASET=memory`
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
+- `BRAIN_COGNEE_AGENT_MEMORY_DATASET=agent_memory`
+- `BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
 - `GRAPH_DATABASE_PROVIDER=ladybug`
 - `VECTOR_DB_PROVIDER=pgvector`

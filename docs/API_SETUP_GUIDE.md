@@ -172,7 +172,24 @@ curl -s http://127.0.0.1:8000/mcp \
   }'
 ```
 
-Call `brain_remember`:
+Call `brain_session` first when an agent needs Brain workflow names or the
+standard portable session id:
+
+```bash
+curl -s http://127.0.0.1:8000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "brain_session",
+      "arguments": {}
+    }
+  }'
+```
+
+Call `brain_remember` for a durable fact or decision:
 
 ```bash
 curl -s http://127.0.0.1:8000/mcp \
@@ -185,13 +202,17 @@ curl -s http://127.0.0.1:8000/mcp \
       "name": "brain_remember",
       "arguments": {
         "input": "Brain DB is the source of truth.",
-        "input_type": "chat_conclusion",
+        "input_type": "fact",
         "source_policy": "memory_only",
         "dry_run": true
       }
     }
   }'
 ```
+
+Use `brain_agent_memory`, not `brain_remember`, for chat-session handovers,
+conversation summaries, agent workflow learnings, and preserved chat context.
+Pass the `session_id` returned by `brain_session`.
 
 If auth is enabled, add:
 
@@ -236,6 +257,11 @@ Brain settings.
 The public MCP tools are:
 
 ```text
+brain_session
+brain_profile_context_remember
+brain_profile_context_list
+brain_profile_context_forget
+brain_profile_context_sync
 brain_remember
 brain_ingest_source
 brain_recall
@@ -249,7 +275,20 @@ brain_review_recent
 brain_undo_last
 brain_sync_cognee
 brain_rebuild_cognee
+cognee_improve
+brain_agent_memory
+brain_agent_memory_recall
+brain_agent_memory_clear
 brain_merge_entities
+brain_palate_describe_item
+brain_palate_remember
+brain_palate_query
+brain_palate_evaluate_options
+brain_palate_log_decision
+brain_palate_confirm
+brain_palate_cancel
+brain_palate_correct_proposal
+brain_palate_refresh_enrichment
 ```
 
 Use `brain_remember` for short durable statements:
@@ -309,6 +348,10 @@ research_question
 chat_conclusion
 table
 ```
+
+`chat_conclusion` is for durable conclusions made in chat. It is not the
+handover/session-memory path. Use `brain_agent_memory` for chat-session memory
+and handovers.
 
 Common `brain_ingest_source` source kinds:
 

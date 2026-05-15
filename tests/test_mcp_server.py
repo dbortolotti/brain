@@ -177,7 +177,10 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
     assert tools["brain_session"]["inputSchema"]["properties"] == {}
     assert tools["brain_session"]["outputSchema"]["required"] == ["session_id"]
-    assert "profile_context" in tools["brain_session"]["outputSchema"]["properties"]
+    session_output = tools["brain_session"]["outputSchema"]["properties"]
+    assert "profile_context" in session_output
+    assert "agent_memory_workflow" in session_output
+    assert "resolved_agent_memory_dataset" in session_output
     profile_context_properties = tools["brain_profile_context_remember"]["inputSchema"]["properties"]
     assert {"statement", "scope", "source"} <= set(profile_context_properties)
 
@@ -410,6 +413,8 @@ def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp
     assert sync_response.status_code == 200
     sync_payload = sync_response.json()["result"]["structuredContent"]
     assert sync_payload["synced_count"] == 1
+    assert sync_payload["profile_context_count"] == 1
+    assert sync_payload["profile_context"][0]["memory_id"].startswith("mem_")
     assert "Daniele has a PhD in theoretical physics." in profile_response.json()["result"][
         "structuredContent"
     ]["answer"]
@@ -668,6 +673,9 @@ def test_agent_memory_protocol_prompt_can_be_inserted_with_session_id() -> None:
     text = get_response.json()["result"]["messages"][0]["content"]["text"]
     assert 'Use session_id="daniele" consistently' in text
     assert "brain_agent_memory" in text
+    assert "brain_agent_memory_recall" in text
+    assert "Do not use `brain_remember` for chat/session memory" in text
+    assert "Cognee MCP server with `remember`" not in text
     assert "Don't narrate" in text
 
 

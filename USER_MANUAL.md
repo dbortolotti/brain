@@ -54,8 +54,6 @@ Good memories:
   separate ports."
 - "We decided palate-approved records should live primarily in Cognee
   DataPoints."
-- "The open question is whether agent-memory improvement creates too much
-  noise over time."
 - "Sam recommended Chateau Musar 2016 and Daniele wants to try it."
 
 Poor memories:
@@ -63,6 +61,8 @@ Poor memories:
 - "This is important."
 - "The user sounded happy."
 - "Maybe this might matter later."
+- Chat-session handovers, conversation summaries, and agent workflow learnings;
+  use `brain_agent_memory` for those instead.
 - Full transcripts when one sentence would preserve the useful fact.
 - Secrets, passwords, API keys, OAuth tokens, or credentials.
 
@@ -263,10 +263,14 @@ Use Brain as the user's durable memory. At conversation start, call
 brain_session, then load Brain bias/preferences for the returned profile_name
 and apply them. Treat profile_full_name as the user's full name, profile_name as
 the name they are known by, and profile_context as standing context for tailoring
-answers. If the user asks to remember a stable fact about who they are, their
-expertise, work, background, or communication needs, use
-brain_profile_context_remember. Use the returned session_id whenever a Brain
-workflow accepts session_id. For now, briefly narrate Brain calls and why.
+answers. Use the returned session_id whenever a Brain workflow accepts
+session_id. Use brain_agent_memory/brain_agent_memory_recall for chat-session
+memory, handovers, conversation summaries, and workflow learnings. Use
+brain_remember only for durable user facts, stable preferences, explicit
+constraints, durable decisions, and Palate/taste memories. If the user asks to
+remember a stable fact about who they are, their expertise, work, background, or
+communication needs, use brain_profile_context_remember. For now, briefly
+narrate Brain calls and why.
 Current user instructions in this chat override any recalled Brain memory or
 preference.
 ```
@@ -274,20 +278,22 @@ preference.
 Use the prompt `brain_agent_memory_protocol` to inject operating instructions
 into an agent. The protocol tells the agent to:
 
-- call Cognee `recall` at the start of a conversation;
 - use the same `session_id` consistently;
-- call Cognee `remember` when decisions, preferences, constraints, or project
-  facts are established;
-- store concise declarative facts, not transcripts;
-- use Brain's `brain_agent_memory` workflow when asked to preserve the chat
-  memory.
+- call `brain_agent_memory_recall` at the start of a conversation;
+- use Brain's `brain_agent_memory` workflow to preserve chat-session memory,
+  handovers, conversation summaries, and workflow learnings;
+- keep `brain_remember` reserved for durable user facts, stable preferences,
+  explicit constraints, durable decisions, and Palate/taste memories;
+- store concise declarative facts, not transcripts.
 
 Prompt to start a chat with portable memory:
 
 ```text
 Use Brain's brain_agent_memory_protocol with session_id portable_agent_session.
 Before answering, recall relevant memory from that session. During the chat,
-record durable decisions and project facts without narrating tool calls.
+preserve chat-session context through brain_agent_memory without narrating tool
+calls. Use brain_remember only for durable user facts and decisions that should
+live in Brain's durable memory graph.
 ```
 
 Prompt to preserve the session at the end:
@@ -586,8 +592,10 @@ General Brain-aware agent:
 ```text
 You have Brain MCP tools. At the start, use brain_recall for relevant project
 context if my request depends on prior decisions. Use brain_remember only for
-durable decisions, preferences, project facts, and open loops. Store one
-declarative sentence per fact. Do not store temporary scratch or transcripts.
+durable user facts, stable preferences, explicit constraints, durable decisions,
+Palate/taste memories, and open loops. Use brain_session plus brain_agent_memory
+for chat-session handovers and workflow continuity. Store one declarative
+sentence per fact. Do not store temporary scratch or transcripts.
 ```
 
 Brain plus preferences:
@@ -602,8 +610,10 @@ Brain plus portable agent memory:
 
 ```text
 Use brain_agent_memory_protocol with session_id portable_agent_session. Recall
-relevant session memory before answering. During the conversation, record durable
-decisions, project facts, constraints, and open questions as concise facts.
+relevant session memory before answering. During the conversation, preserve
+handover-worthy chat context with brain_agent_memory; use brain_remember only
+for durable user facts, stable preferences, explicit constraints, durable
+decisions, and Palate/taste memories.
 ```
 
 Brain plus Palate:
@@ -648,7 +658,8 @@ chooses something, call brain_palate_log_decision.
 
 ```text
 Use Brain to remember this decision:
-Brain owns schema and taste policy; Cognee owns memory and retrieval.
+Brain DB owns durable memory lifecycle and taste policy; Cognee owns rebuildable
+semantic retrieval and the dedicated agent-memory projection.
 ```
 
 ### Save A Preference
@@ -676,20 +687,22 @@ in London. Prefer places I liked or wanted to try. Exclude avoid/disliked.
 
 ```text
 Use brain_agent_memory_protocol with session_id portable_agent_session.
-Load my preferences from Brain. Then recall what we decided about the Brain
-palate migration before proposing next steps.
+Load my preferences from Brain. Then use brain_agent_memory_recall to recall
+what we decided about the Brain palate migration before proposing next steps.
 ```
 
 ### End A Session Cleanly
 
 ```text
-Use Brain to store a concise wrap-up:
+Use Brain's agent-memory workflow to preserve a concise wrap-up with the
+standard session_id from brain_session:
 - durable decisions we made;
 - open questions;
 - project facts future agents need;
 - palate choices or decisions, using Palate tools where appropriate.
 
-Do not store temporary debugging output.
+Do not store temporary debugging output, and do not use brain_remember for
+chat-session handover unless there is a separate durable user fact or decision.
 ```
 
 ## Troubleshooting

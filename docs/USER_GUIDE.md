@@ -157,6 +157,12 @@ Open question: should we add Telegram later?
 Context: this came from the May architecture review.
 ```
 
+Preserve chat/session context for handover:
+
+```text
+Use brain_session to get the standard session id, then use Brain's agent-memory workflow to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
+```
+
 Recall context:
 
 ```text
@@ -211,6 +217,8 @@ Do not save:
 - Temporary chatter: "that was funny."
 - Guesses as facts: "Maybe Sam likes Bill Evans."
 - Sensitive personal facts unless there is a clear reason and permission.
+- Chat-session handovers, conversation summaries, or agent workflow learnings;
+  use `brain_agent_memory` with the `brain_session` session id.
 - Full raw dumps when only a concise memory is needed.
 
 ## Supported Memory Types
@@ -254,6 +262,8 @@ table
 
 Brain may then classify the final stored card as a more specific memory kind,
 such as `preference`, `person_fact`, `project_state`, or `source_summary`.
+For chat-session continuity and handovers, prefer the dedicated
+`brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion`.
 
 ## How Memories Are Stored
 

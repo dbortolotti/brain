@@ -830,10 +830,22 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
     "brain_session": object_schema(
         {
             "session_id": {"type": "string"},
-            "owner": ANY_OBJECT_SCHEMA,
+            "profile_name": {"type": "string"},
+            "profile_full_name": {"type": "string"},
             "profile_context": OBJECT_ARRAY_SCHEMA,
-            "agent_memory": ANY_OBJECT_SCHEMA,
-            "instructions": {"type": "string"},
+            "profile_context_records": OBJECT_ARRAY_SCHEMA,
+            "memory_tool": {"type": "string"},
+            "recall_tool": {"type": "string"},
+            "profile_context_remember_tool": {"type": "string"},
+            "profile_context_list_tool": {"type": "string"},
+            "profile_context_forget_tool": {"type": "string"},
+            "bias_prompt": {"type": "string"},
+            "agent_memory_prompt": {"type": "string"},
+            "agent_memory_workflow": {"type": "string"},
+            "agent_memory_recall_tool": {"type": "string"},
+            "agent_memory_clear_tool": {"type": "string"},
+            "agent_memory_dataset": {"type": "string"},
+            "resolved_agent_memory_dataset": {"type": "string"},
         },
         required=["session_id"],
     ),
@@ -856,7 +868,15 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
     ),
     "brain_profile_context_list": object_schema({"profile_context": OBJECT_ARRAY_SCHEMA}, required=["profile_context"]),
     "brain_profile_context_forget": object_schema({"context_id": {"type": "string"}, "status": {"type": "string"}}, required=["status"]),
-    "brain_profile_context_sync": object_schema({"synced_count": {"type": "integer"}, "results": OBJECT_ARRAY_SCHEMA}, required=["synced_count"]),
+    "brain_profile_context_sync": object_schema(
+        {
+            "profile_context_count": {"type": "integer"},
+            "synced_count": {"type": "integer"},
+            "owner_entity_id": {"type": "string"},
+            "profile_context": OBJECT_ARRAY_SCHEMA,
+        },
+        required=["synced_count"],
+    ),
     "brain_ingest_source": object_schema(
         {
             "source_id": {"type": ["string", "null"]},
@@ -927,14 +947,14 @@ def prompt_definitions() -> list[dict[str, Any]]:
         {
             "name": "brain_agent_memory_protocol",
             "description": (
-                "Insert operating instructions for using Cognee session memory "
-                "during an agent conversation."
+                "Insert operating instructions for using Brain's portable "
+                "agent-memory workflow during an agent conversation."
             ),
             "arguments": [
                 {
                     "name": "session_id",
                     "description": (
-                        "Cognee session ID to use consistently. Defaults to the "
+                        "Brain agent-memory session ID to use consistently. Defaults to the "
                         "configured Brain agent-memory session."
                     ),
                     "required": False,
@@ -964,7 +984,7 @@ def get_prompt(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         if not session_id:
             raise ValueError("session_id must not be blank.")
         return prompt_response(
-            description=f"Cognee session-memory protocol for session_id={session_id}.",
+            description=f"Brain agent-memory protocol for session_id={session_id}.",
             text=agent_memory_protocol_prompt(session_id),
         )
     if name == "brain_bias_protocol":
@@ -991,28 +1011,29 @@ def prompt_response(*, description: str, text: str) -> dict[str, Any]:
 
 
 def agent_memory_protocol_prompt(session_id: str) -> str:
-    return f"""## Memory Protocol (Cognee)
+    return f"""## Agent Memory Protocol (Brain)
 
-You have access to a Cognee MCP server with `remember`, `recall`, and `forget`.
-Use session_id="{session_id}" consistently across all calls.
+You have access to Brain MCP tools for portable chat/session memory. Use session_id="{session_id}" consistently for every agent-memory workflow.
 
-**On every conversation start:** call `recall` with a query derived from the user's first message before responding. Silently surface anything relevant.
+**On every conversation start:** call `brain_agent_memory_recall` with a query derived from the user's first message before responding. Silently surface anything relevant.
 
-**During conversation, call `remember` immediately when:**
+**During conversation, preserve chat/session context through `brain_agent_memory`, not `brain_remember`, when:**
 - A decision is made (technical, architectural, personal)
 - A preference or constraint is stated
 - A project fact, name, number, or status is established
 - The user says "remember", "note", "keep in mind", or similar
 
-**At natural stopping points** (long pause, topic shift, explicit wrap-up): call `remember` with a concise summary of what was established.
+**At natural stopping points** (long pause, topic shift, explicit wrap-up): call `brain_agent_memory` with session_id="{session_id}" so the chat can be improved into the dedicated, removable agent-memory dataset.
 
-**Format for remember:** one declarative sentence per fact, not transcripts.
+**Format for preserved chat memory:** concise declarative facts, not transcripts.
 Good: "Daniele prefers FastMCP over raw MCP SDK for Python servers."
 Bad: "User said they like FastMCP because it's simpler."
 
+**Do not use `brain_remember` for chat/session memory, handovers, conversation summaries, or agent workflow learnings.** Use `brain_remember` only for durable user facts, stable preferences, explicit constraints, durable decisions, and Palate/taste memories.
+
 **Don't narrate** the tool calls. No "I'm now storing this in memory..." — just do it and continue. If recall returns nothing useful, proceed silently.
 
-**On ambiguous references** ("the project", "last time", "what we decided"): call `recall` before asking for clarification.
+**On ambiguous references** ("the project", "last time", "what we decided"): call `brain_agent_memory_recall` before asking for clarification.
 
 When the user asks to record or preserve the chat memory using Brain, use Brain's `brain_agent_memory` workflow with session_id="{session_id}" so this session can be improved into the dedicated, removable agent-memory dataset."""
 

@@ -19,7 +19,11 @@ from memory_stack.brain_service import (
     sync_cognee as brain_sync_cognee,
     undo_last as brain_undo_last,
 )
+from memory_stack.cognee_adapter import delete_datasource as delete_cognee_datasource
+from memory_stack.cognee_adapter import improve_cognee, recall_text
 from memory_stack.cfg import load_settings
+from memory_stack.domain_constants import COGNEE_IMPROVE_DATASETS
+from memory_stack.io import to_jsonable
 from memory_stack.profile_context import (
     forget_profile_context,
     list_profile_context,
@@ -314,6 +318,89 @@ def build_server():
             confirm=confirm,
         )
 
+    @mcp.tool(name="cognee_improve", structured_output=True)
+    async def cognee_improve(
+        dataset: str = "memory",
+        node_name: list[str] | None = None,
+        session_ids: list[str] | None = None,
+        run_in_background: bool = False,
+    ) -> dict[str, Any]:
+        """Run Cognee native improve on a configured dataset."""
+        resolved_dataset = _configured_cognee_dataset(dataset, settings)
+        result = await improve_cognee(
+            dataset=resolved_dataset,
+            node_name=node_name,
+            session_ids=session_ids,
+            run_in_background=run_in_background,
+            settings=settings,
+        )
+        return {
+            "dataset": dataset,
+            "resolved_dataset": resolved_dataset,
+            "node_name": node_name or [],
+            "session_ids": session_ids or [],
+            "run_in_background": run_in_background,
+            "result": to_jsonable(result),
+        }
+
+    @mcp.tool(name="brain_agent_memory", structured_output=True)
+    async def agent_memory(
+        session_id: str,
+        node_name: list[str] | None = None,
+        run_in_background: bool = False,
+    ) -> dict[str, Any]:
+        """Bridge one Cognee agent session into the dedicated agent-memory dataset."""
+        normalized_session_id = session_id.strip()
+        if not normalized_session_id:
+            raise ValueError("session_id must not be blank.")
+        result = await improve_cognee(
+            dataset=settings.brain_cognee_agent_memory_dataset,
+            node_name=node_name,
+            session_ids=[normalized_session_id],
+            run_in_background=run_in_background,
+            settings=settings,
+        )
+        return {
+            "session_id": normalized_session_id,
+            "dataset": "agent_memory",
+            "resolved_dataset": settings.brain_cognee_agent_memory_dataset,
+            "node_name": node_name or [],
+            "run_in_background": run_in_background,
+            "result": to_jsonable(result),
+        }
+
+    @mcp.tool(name="brain_agent_memory_recall", structured_output=True)
+    async def agent_memory_recall(query: str, top_k: int = 10) -> dict[str, Any]:
+        """Recall directly from the dedicated agent-memory dataset."""
+        result = await recall_text(
+            query=query,
+            dataset=settings.brain_cognee_agent_memory_dataset,
+            search_type="GRAPH_COMPLETION",
+            top_k=max(1, min(50, int(top_k))),
+            settings=settings,
+        )
+        return {
+            "query": query,
+            "dataset": "agent_memory",
+            "resolved_dataset": settings.brain_cognee_agent_memory_dataset,
+            "result": to_jsonable(result),
+        }
+
+    @mcp.tool(name="brain_agent_memory_clear", structured_output=True)
+    async def agent_memory_clear(confirm: bool = False) -> dict[str, Any]:
+        """Clear the dedicated agent-memory dataset after explicit confirmation."""
+        if not confirm:
+            raise ValueError("brain_agent_memory_clear requires confirm=true.")
+        result = await delete_cognee_datasource(
+            settings.brain_cognee_agent_memory_dataset,
+            settings=settings,
+        )
+        return {
+            "dataset": "agent_memory",
+            "resolved_dataset": settings.brain_cognee_agent_memory_dataset,
+            "result": to_jsonable(result),
+        }
+
     @mcp.tool(name="brain_merge_entities", structured_output=True)
     async def merge_entities(
         primary_entity_id: str,
@@ -494,6 +581,19 @@ def build_server():
         )
 
     return mcp
+
+
+def _configured_cognee_dataset(dataset: str, settings: Any) -> str:
+    mapping = {
+        "memory": settings.brain_cognee_memory_dataset,
+        "sources": settings.brain_cognee_sources_dataset,
+        "data": settings.brain_cognee_data_dataset,
+        "palate": settings.brain_cognee_palate_dataset,
+        "agent_memory": settings.brain_cognee_agent_memory_dataset,
+    }
+    if dataset not in mapping:
+        raise ValueError(f"dataset must be one of: {', '.join(COGNEE_IMPROVE_DATASETS)}")
+    return mapping[dataset]
 
 
 def main() -> None:
