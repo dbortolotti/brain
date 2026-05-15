@@ -2,6 +2,7 @@ const state = {
   previewArgs: null,
   token: localStorage.getItem("brainBearerToken") || "",
 };
+const OAUTH_STORAGE_KEY = "brainOAuthPkce";
 
 const $ = (id) => document.getElementById(id);
 
@@ -13,6 +14,102 @@ function setStatus(message, isError = false) {
 
 function tokenHeader() {
   return state.token ? { Authorization: `Bearer ${state.token}` } : {};
+}
+
+function randomBase64Url(bytes = 32) {
+  const data = new Uint8Array(bytes);
+  crypto.getRandomValues(data);
+  return base64UrlEncode(data);
+}
+
+function base64UrlEncode(data) {
+  const binary = Array.from(data, (byte) => String.fromCharCode(byte)).join("");
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+async function sha256Base64Url(text) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return base64UrlEncode(new Uint8Array(digest));
+}
+
+async function startOAuth() {
+  setStatus("Starting Brain authorization...");
+  const redirectUri = `${window.location.origin}/app/oauth/callback`;
+  const clientResponse = await fetch("/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_name: "Brain Dashboard",
+      redirect_uris: [redirectUri],
+      token_endpoint_auth_method: "none",
+      grant_types: ["authorization_code", "refresh_token"],
+      response_types: ["code"],
+      scope: "brain.memory.read brain.memory.write",
+    }),
+  });
+  const client = await clientResponse.json();
+  if (!clientResponse.ok) {
+    throw new Error(client.error_description || client.detail || `Registration failed: HTTP ${clientResponse.status}`);
+  }
+  const verifier = randomBase64Url(48);
+  const oauthState = randomBase64Url(24);
+  sessionStorage.setItem(
+    OAUTH_STORAGE_KEY,
+    JSON.stringify({
+      client_id: client.client_id,
+      code_verifier: verifier,
+      redirect_uri: redirectUri,
+      state: oauthState,
+    }),
+  );
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: client.client_id,
+    redirect_uri: redirectUri,
+    scope: "brain.memory.read brain.memory.write",
+    state: oauthState,
+    code_challenge: await sha256Base64Url(verifier),
+    code_challenge_method: "S256",
+  });
+  window.location.assign(`/authorize?${params.toString()}`);
+}
+
+async function finishOAuthIfPresent() {
+  const url = new URL(window.location.href);
+  const code = url.searchParams.get("code");
+  const returnedState = url.searchParams.get("state");
+  if (!code) return false;
+
+  const stored = JSON.parse(sessionStorage.getItem(OAUTH_STORAGE_KEY) || "{}");
+  sessionStorage.removeItem(OAUTH_STORAGE_KEY);
+  window.history.replaceState({}, document.title, "/app");
+  if (!stored.client_id || !stored.code_verifier || stored.state !== returnedState) {
+    throw new Error("OAuth state did not match. Start authorization again.");
+  }
+
+  setStatus("Completing Brain authorization...");
+  const form = new URLSearchParams({
+    grant_type: "authorization_code",
+    client_id: stored.client_id,
+    code,
+    redirect_uri: stored.redirect_uri,
+    code_verifier: stored.code_verifier,
+  });
+  const tokenResponse = await fetch("/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: form.toString(),
+  });
+  const token = await tokenResponse.json();
+  if (!tokenResponse.ok) {
+    throw new Error(token.error_description || token.error || `Token exchange failed: HTTP ${tokenResponse.status}`);
+  }
+  state.token = token.access_token;
+  localStorage.setItem("brainBearerToken", state.token);
+  $("tokenInput").value = state.token;
+  setStatus("Brain authorized.");
+  await refreshReview();
+  return true;
 }
 
 async function mcpCall(name, args = {}) {
@@ -97,6 +194,9 @@ function showTab(tabName) {
 
 function wireEvents() {
   $("tokenInput").value = state.token;
+  $("authorizeBrain").addEventListener("click", () => {
+    startOAuth().catch((error) => setStatus(error.message, true));
+  });
   $("saveToken").addEventListener("click", async () => {
     state.token = $("tokenInput").value.trim();
     localStorage.setItem("brainBearerToken", state.token);
@@ -194,8 +294,13 @@ function wireEvents() {
 }
 
 wireEvents();
-if (state.token) {
-  refreshReview().catch((error) => setStatus(error.message, true));
-} else {
-  setStatus("Enter a Brain bearer token to load memory.");
-}
+finishOAuthIfPresent()
+  .then((handled) => {
+    if (handled) return;
+    if (state.token) {
+      refreshReview().catch((error) => setStatus(error.message, true));
+    } else {
+      setStatus("Authorize Brain or paste a bearer token to load memory.");
+    }
+  })
+  .catch((error) => setStatus(error.message, true));

@@ -45,16 +45,19 @@ def test_brain_app_ui_routes() -> None:
 
     root_response = client.get("/")
     app_response = client.get("/app")
+    callback_response = client.get("/app/oauth/callback")
     css_response = client.get("/app-assets/app.css")
     js_response = client.get("/app-assets/app.js")
 
     assert root_response.status_code == 200
     assert "Brain" in root_response.text
     assert app_response.status_code == 200
+    assert callback_response.status_code == 200
     assert css_response.status_code == 200
     assert css_response.headers["content-type"].startswith("text/css")
     assert js_response.status_code == 200
     assert "mcpCall" in js_response.text
+    assert "startOAuth" in js_response.text
 
 
 def test_mcp_initialize() -> None:

@@ -64,6 +64,7 @@ def test_mcp_and_app_paths_passthrough_to_mcp(monkeypatch) -> None:
     assert ui_proxy.is_mcp_passthrough_path("app/mcp") is True
     assert ui_proxy.is_mcp_passthrough_path(".well-known/oauth-protected-resource/app/mcp") is True
     assert ui_proxy.is_mcp_passthrough_path("app") is True
+    assert ui_proxy.is_mcp_passthrough_path("app/oauth/callback") is True
     assert ui_proxy.is_mcp_passthrough_path("app-assets/app.js") is True
     assert ui_proxy.is_mcp_passthrough_path("ui") is False
 

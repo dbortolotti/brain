@@ -285,6 +285,7 @@ def is_mcp_passthrough_path(path: str) -> bool:
         settings.brain_app_mcp_path,
         settings.brain_health_path,
         "/app",
+        "/app/oauth/callback",
         "/authorize",
         "/token",
         "/register",

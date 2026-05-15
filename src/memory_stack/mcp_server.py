@@ -1178,6 +1178,11 @@ async def app_dashboard() -> FileResponse:
     return brain_app_file("index.html", "text/html; charset=utf-8")
 
 
+@app.get("/app/oauth/callback", include_in_schema=False)
+async def app_oauth_callback() -> FileResponse:
+    return brain_app_file("index.html", "text/html; charset=utf-8")
+
+
 @app.get("/app-assets/{asset_name}", include_in_schema=False)
 async def app_asset(asset_name: str) -> FileResponse:
     if asset_name not in {"app.css", "app.js"}:
