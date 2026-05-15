@@ -342,7 +342,7 @@ def build_server():
         fetch_external_ratings: bool = True,
         allow_broader_web_search: bool = False,
     ) -> dict[str, Any]:
-        """Read-only palate describe/enrich. Use for 'use palate to describe Junsei restaurant in London'."""
+        """Read-only palate describe/enrich. Show enriched record and ask before saving."""
         return TasteService(settings).describe_item(
             TasteDescribeRequest(
                 item_text=item_text,
@@ -378,12 +378,13 @@ def build_server():
         notes: str | None = None,
         metadata: dict[str, Any] | None = None,
         dry_run: bool = False,
+        confirm_save: bool = False,
         store_anyway: bool = False,
         context: dict[str, Any] | None = None,
         fetch_external_ratings: bool = True,
         allow_broader_web_search: bool = False,
     ) -> dict[str, Any]:
-        """Store a structured taste item and Brain projection."""
+        """Store only after user saw the enriched record and confirmed; otherwise return a dry-run preview."""
         return TasteService(settings).remember(
             TasteRememberRequest(
                 id=id,
@@ -404,7 +405,7 @@ def build_server():
                 bad_fit=bad_fit,
                 notes=notes,
                 metadata=metadata or {},
-                dry_run=dry_run,
+                dry_run=dry_run or not confirm_save,
                 store_anyway=store_anyway,
                 context=context or {},
                 fetch_external_ratings=fetch_external_ratings,

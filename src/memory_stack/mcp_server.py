@@ -574,7 +574,8 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                 "use palate to describe, look up, normalize, or enrich a restaurant, wine, "
                 "film, series, music, cigar, or other taste item without saving it. "
                 "For example: 'use palate to describe Junsei restaurant in London'. "
-                "This must not store palate data."
+                "This must not store palate data. After describing, show the enriched "
+                "record and ask the user whether to save it."
             ),
             "inputSchema": {
                 "type": "object",
@@ -607,7 +608,12 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
         },
         {
             "name": "brain_palate_remember",
-            "description": "Store an approved normalized palate item in the canonical palate store and project Brain evidence.",
+            "description": (
+                "Store an approved normalized palate item in the canonical palate store "
+                "and project Brain evidence. Only store after the user has seen the "
+                "enriched record and explicitly confirmed saving; otherwise call this "
+                "with confirm_save=false for a dry-run confirmation preview."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -630,6 +636,14 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                     "notes": {"type": "string"},
                     "metadata": {"type": "object", "additionalProperties": True},
                     "dry_run": {"type": "boolean", "default": False},
+                    "confirm_save": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": (
+                            "Required true to persist. Leave false to return the enriched "
+                            "record and ask for confirmation before saving."
+                        ),
+                    },
                     "store_anyway": {"type": "boolean", "default": False},
                     "context": {"type": "object", "additionalProperties": True},
                     "fetch_external_ratings": {"type": "boolean", "default": True},
@@ -891,7 +905,18 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
     "brain_agent_memory_clear": object_schema({"dataset": {"type": "string"}, "resolved_dataset": {"type": "string"}, "result": ANY_OBJECT_SCHEMA}),
     "brain_merge_entities": object_schema({"status": {"type": "string"}, "primary_entity_id": {"type": "string"}, "duplicate_entity_id": {"type": "string"}}, required=["status"]),
     "brain_palate_describe_item": ANY_OBJECT_SCHEMA,
-    "brain_palate_remember": object_schema({"stored": {"type": "boolean"}, "taste_records": OBJECT_ARRAY_SCHEMA, "canonical_store": {"type": "string"}, "brain_projection": ANY_OBJECT_SCHEMA, "requires_confirmation": {"type": "boolean"}}),
+    "brain_palate_remember": object_schema(
+        {
+            "stored": {"type": "boolean"},
+            "dry_run": {"type": "boolean"},
+            "taste_records": OBJECT_ARRAY_SCHEMA,
+            "canonical_store": {"type": "string"},
+            "brain_projection": ANY_OBJECT_SCHEMA,
+            "requires_confirmation": {"type": "boolean"},
+            "enriched_record": ANY_OBJECT_SCHEMA,
+            "save_confirmation": ANY_OBJECT_SCHEMA,
+        }
+    ),
     "brain_palate_query": PALATE_QUERY_OUTPUT_SCHEMA,
     "brain_palate_evaluate_options": PALATE_QUERY_OUTPUT_SCHEMA,
     "brain_palate_log_decision": object_schema({"logged": {"type": "boolean"}, "decision": ANY_OBJECT_SCHEMA}),
@@ -1926,6 +1951,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         return json_tool_response(payload, summary="Palate item described without storing.")
 
     if name == "brain_palate_remember":
+        confirm_save = bool(arguments.get("confirm_save", False))
         payload = TasteService(settings).remember(
             TasteRememberRequest.model_validate(
                 {
@@ -1947,7 +1973,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                     "bad_fit": arguments.get("bad_fit"),
                     "notes": arguments.get("notes"),
                     "metadata": arguments.get("metadata") or {},
-                    "dry_run": bool(arguments.get("dry_run", False)),
+                    "dry_run": bool(arguments.get("dry_run", False)) or not confirm_save,
                     "store_anyway": bool(arguments.get("store_anyway", False)),
                     "context": arguments.get("context") or {},
                     "fetch_external_ratings": bool(
@@ -1965,7 +1991,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                 f"Stored {len(payload.get('taste_records', []))} palate record(s) in "
                 f"{payload.get('canonical_store', 'the canonical store')}."
                 if payload.get("stored")
-                else "Palate remember dry run complete."
+                else "Show the enriched palate record and ask the user to confirm saving."
             ),
         )
 

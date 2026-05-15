@@ -215,7 +215,9 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
     taste_properties = tools["brain_palate_remember"]["inputSchema"]["properties"]
     assert {"type", "canonical_name", "description"} <= set(taste_properties)
+    assert "confirm_save" in taste_properties
     assert "taste_records" in tools["brain_palate_remember"]["outputSchema"]["properties"]
+    assert "save_confirmation" in tools["brain_palate_remember"]["outputSchema"]["properties"]
 
     forget_properties = tools["brain_forget"]["inputSchema"]["properties"]
     assert forget_properties["object_type"]["enum"] == [
@@ -236,6 +238,7 @@ def test_palate_describe_tool_description_covers_read_only_restaurant_requests()
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
     describe = tools["brain_palate_describe_item"]
     remember = tools["brain_remember"]
+    palate_remember = tools["brain_palate_remember"]
     query = tools["brain_palate_query"]
     evaluate_options = tools["brain_palate_evaluate_options"]
 
@@ -247,10 +250,46 @@ def test_palate_describe_tool_description_covers_read_only_restaurant_requests()
     assert "do not use this for read-only palate describe/enrich requests" in remember[
         "description"
     ].casefold()
+    assert "ask the user whether to save it" in description
+    assert "explicitly confirmed saving" in palate_remember["description"].casefold()
     assert "do not use this to describe" in query["description"].casefold()
     assert "single named unsaved item such as junsei" in query["description"].casefold()
     assert "call brain_palate_describe_item" in query["description"]
     assert "do not use this to describe" in evaluate_options["description"].casefold()
+
+
+def test_palate_remember_tool_dry_runs_until_save_is_confirmed(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_palate_remember",
+                    "arguments": {
+                        "type": "restaurant",
+                        "canonical_name": "Junsei",
+                        "description": "Junsei restaurant in London",
+                        "fetch_external_ratings": False,
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["stored"] is False
+    assert payload["dry_run"] is True
+    assert payload["requires_confirmation"] is True
+    assert payload["enriched_record"]["canonical_name"] == "Junsei"
+    assert payload["save_confirmation"]["arguments"]["confirm_save"] is True
 
 
 def test_brain_session_returns_configured_identity(tmp_path) -> None:
