@@ -359,7 +359,7 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
 
 
 def issue_oauth_token(settings, hostname: str, failures: list[str]) -> str | None:
-    password_path = settings.brain_auth_password_path
+    password_path = settings.auth_password_path
     if not password_path.exists():
         failures.append(f"Brain auth password file does not exist: {password_path}")
         return None
