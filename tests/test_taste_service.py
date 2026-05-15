@@ -39,10 +39,6 @@ def test_describe_item_is_read_only(tmp_path) -> None:
 
     assert result["stored"] is False
     assert result["source"] == "read_only_enrichment"
-    assert result["enriched_record"]["canonical_name"] == "Coherence"
-    assert result["save_confirmation"]["required_before_saving"] is True
-    assert result["save_confirmation"]["tool"] == "brain_palate_remember"
-    assert result["save_confirmation"]["arguments"]["confirm_save"] is True
     assert TasteStore(settings).list_entities() == []
     assert table_count(settings, schema.entities) == 0
     assert table_count(settings, schema.memory_cards) == 0
@@ -108,8 +104,6 @@ def test_restaurant_strict_source_google_places_enrichment(tmp_path, monkeypatch
 
     enriched = result["enriched"]
     assert result["stored"] is False
-    assert result["suggested_remember_payload"]["canonical_name"] == "Noble Rot"
-    assert result["save_confirmation"]["prompt"].startswith("Show the enriched restaurant record")
     assert enriched["enrichment_status"] == "success"
     assert enriched["normalized_metadata"]["google"]["rating"] == 4.6
     assert enriched["normalized_metadata"]["google"]["rating_count"] == 1200

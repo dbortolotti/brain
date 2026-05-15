@@ -93,9 +93,7 @@ class TasteService:
             "match": None,
             "needs_confirmation": [],
             "enriched": enriched,
-            "enriched_record": self._enriched_record(enriched),
             "suggested_remember_payload": self._suggest_remember_payload(enriched),
-            "save_confirmation": self._save_confirmation(enriched),
             "warnings": enriched["warnings"],
             "server_llm_used": {"enrichment": bool(enriched.get("llm_used"))},
         }
@@ -141,11 +139,9 @@ class TasteService:
                 },
             }
         if request.dry_run:
-            enriched_record = self._enriched_record(enriched)
             return {
                 "stored": False,
                 "dry_run": True,
-                "requires_confirmation": True,
                 "taste_records_created": 0,
                 "taste_records_updated": 0,
                 "taste_records": [
@@ -157,8 +153,6 @@ class TasteService:
                         "metadata": enriched["normalized_metadata"],
                     }
                 ],
-                "enriched_record": enriched_record,
-                "save_confirmation": self._save_confirmation(enriched),
                 "enrichment": {
                     "status": enriched["enrichment_status"],
                     "sources": enriched["sources"],
@@ -871,32 +865,6 @@ class TasteService:
             "attribute_intervals_95": enriched["attribute_intervals_95"],
             "metadata": enriched["normalized_metadata"],
             "fetch_external_ratings": False,
-        }
-
-    def _enriched_record(self, enriched: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "type": enriched["entity_type"],
-            "canonical_name": enriched["canonical_name"],
-            "attributes": enriched["attributes"],
-            "attribute_intervals_95": enriched["attribute_intervals_95"],
-            "metadata": enriched["normalized_metadata"],
-            "enrichment_metadata": enriched["enrichment_metadata"],
-            "enrichment_status": enriched["enrichment_status"],
-            "sources": enriched["sources"],
-            "warnings": enriched["warnings"],
-            "notes": enriched.get("notes"),
-        }
-
-    def _save_confirmation(self, enriched: dict[str, Any]) -> dict[str, Any]:
-        payload = self._suggest_remember_payload(enriched)
-        return {
-            "required_before_saving": True,
-            "prompt": (
-                f"Show the enriched {enriched['entity_type']} record for "
-                f"{enriched['canonical_name']} and ask whether to save it to Palate."
-            ),
-            "tool": "brain_palate_remember",
-            "arguments": {**payload, "confirm_save": True},
         }
 
 
