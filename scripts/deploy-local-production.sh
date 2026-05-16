@@ -125,7 +125,7 @@ is_true() {
 }
 
 log "creating production directories under $PROD_ROOT"
-mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs" "$LOCAL_SUPPORT_DIR"
+mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs" "$LOCAL_SUPPORT_DIR"
 
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   log "creating starter production env at $SECRETS_DIR/brain.env"
