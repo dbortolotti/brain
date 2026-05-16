@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import signal
+import shutil
 import socket
 import subprocess
 import sys
@@ -21,7 +22,7 @@ def main() -> None:
     settings = load_settings()
     configure_environment(settings)
 
-    frontend_dir = prepare_frontend()
+    frontend_dir = prepare_frontend(settings)
     start_backend(settings.brain_ui_backend_port)
     start_frontend(frontend_dir, settings.brain_ui_frontend_port)
 
@@ -56,8 +57,9 @@ def configure_environment(settings) -> None:
     )
 
 
-def prepare_frontend() -> Path:
+def prepare_frontend(settings) -> Path:
     from cognee.api.v1.ui.ui import download_frontend_assets, find_frontend_path
+    from cognee.version import get_cognee_version
 
     if not download_frontend_assets(force=False):
         raise RuntimeError("failed to download Cognee frontend assets")
@@ -65,8 +67,41 @@ def prepare_frontend() -> Path:
     if frontend_dir is None:
         raise RuntimeError("Cognee frontend cache was not found")
 
-    run(["npm", "install"], cwd=frontend_dir)
-    return frontend_dir
+    isolated_dir = isolate_frontend_cache(
+        frontend_dir,
+        cache_root=Path(settings.brain_prod_root) / "shared" / "ui-cache",
+        version=get_cognee_version(),
+    )
+    run(["npm", "install"], cwd=isolated_dir)
+    return isolated_dir
+
+
+def isolate_frontend_cache(frontend_dir: Path, *, cache_root: Path, version: str) -> Path:
+    target_dir = cache_root / "frontend"
+    marker = cache_root / "version.txt"
+    try:
+        if frontend_dir.resolve() == target_dir.resolve():
+            return frontend_dir
+    except FileNotFoundError:
+        pass
+
+    needs_refresh = (
+        not target_dir.exists()
+        or not (target_dir / "package.json").exists()
+        or not marker.exists()
+        or marker.read_text(encoding="utf-8").strip() != version
+    )
+    if needs_refresh:
+        if target_dir.exists():
+            shutil.rmtree(target_dir)
+        cache_root.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(
+            frontend_dir,
+            target_dir,
+            ignore=shutil.ignore_patterns(".next", "node_modules"),
+        )
+        marker.write_text(version + "\n", encoding="utf-8")
+    return target_dir
 
 
 def start_backend(port: int) -> None:
