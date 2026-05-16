@@ -51,7 +51,7 @@ def test_github_staging_action_deploys_main_to_staging() -> None:
     assert "uv run pytest" in workflow
     assert "Render staging config from GitHub Secrets" in workflow
     assert "BRAIN_DEPLOY_ENV: staging" in workflow
-    assert "BRAIN_PUBLIC_BASE_URL: https://staging.brain.dceb.net" in workflow
+    assert "BRAIN_PUBLIC_BASE_URL: https://brain-staging.dceb.net" in workflow
     assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
     assert "scripts/render_prod_env.py --env staging" in workflow
     assert "BRAIN_DEPLOY_ENV=staging ./scripts/deploy-local-production.sh" in workflow
@@ -137,7 +137,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
 
     assert 'DEPLOY_ENV="${BRAIN_DEPLOY_ENV:-prod}"' in script
     assert 'DEFAULT_ROOT="/Volumes/xpg_usb4/$DEPLOY_ENV/brain"' in script
-    assert 'DEFAULT_PUBLIC_BASE_URL="https://staging.brain.dceb.net"' in script
+    assert 'DEFAULT_PUBLIC_BASE_URL="https://brain-staging.dceb.net"' in script
     assert 'BRAIN_DOCKER_PROJECT="${BRAIN_DOCKER_PROJECT:-brain-$ENV_SUFFIX}"' in script
     for label in [
         'com.brain.$ENV_SUFFIX.mcp',

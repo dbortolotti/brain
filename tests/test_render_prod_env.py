@@ -149,7 +149,7 @@ def test_render_prod_env_can_render_staging_defaults(tmp_path) -> None:
 
     values = parse_rendered_env(output.read_text(encoding="utf-8"))
     assert values["BRAIN_PROD_ROOT"] == "/Volumes/xpg_usb4/staging/brain"
-    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://staging.brain.dceb.net"
+    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://brain-staging.dceb.net"
     assert (
         values["BRAIN_DATABASE_URL"]
         == "sqlite:////Volumes/xpg_usb4/staging/brain/shared/data/brain/brain.db"

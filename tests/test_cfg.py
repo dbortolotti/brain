@@ -53,7 +53,7 @@ def test_cfg_supports_staging_environment() -> None:
     assert package_cfg.active_env() == "staging"
     assert values["CONFIG_ENV"] == "staging"
     assert values["BRAIN_DATABASE_URL"] == "sqlite:////Volumes/xpg_usb4/staging/brain/shared/data/brain/brain.db"
-    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://staging.brain.dceb.net"
+    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://brain-staging.dceb.net"
     assert values["BRAIN_MCP_PORT"] == 18100
     assert values["VECTOR_DB_PORT"] == 16432
     assert values["DB_PORT"] == 16432
