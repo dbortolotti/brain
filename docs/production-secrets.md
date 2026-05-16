@@ -1,13 +1,24 @@
 # Production Secrets
 
-Production deploys run through `.github/workflows/deploy-local-production.yml` on the
-self-hosted `brain-prod` runner. The workflow renders
-`/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env` from GitHub Secrets and
-GitHub Variables before running `scripts/deploy-local-production.sh`.
+Deploys run on the self-hosted `brain-prod` runner with three environments:
 
-GitHub Secrets and Variables are the source of truth. Production config can still
-be edited directly for an emergency, but the next deploy will fail unless that
-change has been propagated back to GitHub.
+- `dev`: local developer runs.
+- `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
+  to `/Volumes/xpg_usb4/staging/brain`.
+- `prod`: manual release promotion runs through `.github/workflows/release.yml`
+  and deploys the currently deployed staging SHA to `/Volumes/xpg_usb4/prod/brain`,
+  then creates an annotated git tag.
+
+`.github/workflows/deploy-local-production.yml` remains available as a manual
+production deploy escape hatch. It is not triggered by pushes to `main`.
+
+The workflows render each environment's `shared/secrets/brain.env` from GitHub
+Secrets and GitHub Variables before running `scripts/deploy-local-production.sh`
+with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
+
+GitHub Secrets and Variables are the source of truth. Live config can still be
+edited directly for an emergency, but the next deploy for that environment will
+fail unless that change has been propagated back to GitHub.
 
 ## Conflict Rule
 
@@ -15,17 +26,17 @@ The renderer compares three files:
 
 ```text
 proposed: newly rendered GitHub Secrets/Vars config
-prod:     /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env
-base:     /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env.last-deployed
+live:     /Volumes/xpg_usb4/{staging|prod}/brain/shared/secrets/brain.env
+base:     /Volumes/xpg_usb4/{staging|prod}/brain/shared/secrets/brain.env.last-deployed
 ```
 
 For each non-metadata key:
 
 ```text
-if proposed == prod:
+if proposed == live:
   no change
-elif prod == base:
-  prod has not been manually edited; overwrite with proposed
+elif live == base:
+  live has not been manually edited; overwrite with proposed
 else:
   fail deploy
 ```
@@ -33,32 +44,29 @@ else:
 After a successful render, both `brain.env` and `brain.env.last-deployed` are
 updated to the proposed config.
 
-The GitHub Actions deploy workflow exposes `force_config_override` only as an
-explicit manual-dispatch option, and it defaults to `false`. Normal push deploys,
-and manual deploys without that option enabled, use the conflict rule above.
+The GitHub Actions staging, production, and release workflows expose
+`force_config_override` only as an explicit manual-dispatch option, and it
+defaults to `false`. Normal push deploys and manual deploys without that option
+enabled use the conflict rule above.
 
 Use `force_config_override=true` only for an intentional bootstrap or
-re-baseline. Otherwise, resolve a conflict by propagating the production change
-back to GitHub Secrets/Variables or by intentionally reconciling production back
+re-baseline. Otherwise, resolve a conflict by propagating the live change back
+to GitHub Secrets/Variables or by intentionally reconciling the environment back
 to the last deployed baseline before redeploying.
 
 ## Live Model Smoke
 
-After deployment, production runs `scripts/live_model_smoke.py` against the
+After deployment, staging and production run `scripts/live_model_smoke.py` against the
 configured live model scope. By default this is `active`, which calls the active
 `LLM_PROVIDER`/`LLM_MODEL` and `EMBEDDING_PROVIDER`/`EMBEDDING_MODEL` with tiny
-requests. Set repository variable `BRAIN_MODEL_SMOKE_SCOPE` to control push
-deploys:
+requests. Set repository variable `BRAIN_MODEL_SMOKE_SCOPE` to control deploys:
 
 ```text
 active   current configured LLM and embedding models
 none     disable live provider smoke
 ```
 
-Manual workflow dispatch exposes the same scope plus
-`model_smoke_skip_missing_keys`. Normal smoke runs fail on missing credentials.
-Use `skip_missing_keys=true` only when you want to check the providers currently
-available without blocking on unfetched keys.
+Normal smoke runs fail on missing credentials.
 
 The generated config includes metadata for diagnostics:
 
@@ -70,8 +78,8 @@ BRAIN_CONFIG_RENDER_SOURCE
 
 These metadata keys are ignored during conflict comparison.
 
-`BRAIN_AUTH_PASSWORD` is handled similarly, but is written to
-`/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password` with a matching
+`BRAIN_AUTH_PASSWORD` is handled similarly, but is written to the environment's
+`shared/secrets/brain-auth-password` with a matching
 `brain-auth-password.last-deployed` snapshot.
 
 ## Required Secrets
@@ -84,8 +92,8 @@ GRAPH_DATABASE_PASSWORD
 BRAIN_AUTH_PASSWORD
 ```
 
-`BRAIN_AUTH_PASSWORD` is written to
-`/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password`.
+`BRAIN_AUTH_PASSWORD` is written to each deployed environment's
+`shared/secrets/brain-auth-password`.
 
 ## Optional Eval Provider Secrets
 

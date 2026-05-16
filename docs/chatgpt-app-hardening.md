@@ -49,7 +49,13 @@ delete.
 
 After every merge or push to `main`:
 
-1. Watch the `Deploy Local Production` GitHub Actions run to completion.
-2. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_mcp_production.py --skip-backups`.
+1. Watch the `Deploy Local Staging` GitHub Actions run to completion.
+2. Run `ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env uv run python scripts/verify_mcp_production.py --skip-backups`.
+3. Confirm `/Volumes/xpg_usb4/staging/brain/current` points to the pushed release.
+
+For a production release:
+
+1. Run the manual `Release` GitHub Actions workflow with the desired `vX.Y.Z` tag.
+2. Watch production deployment and verification finish successfully.
 3. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
-4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the pushed release.
+4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the tagged release.

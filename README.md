@@ -15,8 +15,8 @@ semantic projection that can be rebuilt from Brain DB.
   allowlists, and troubleshooting.
 - [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification,
   Google Drive replication, and restore outline.
-- [Production Secrets](docs/production-secrets.md) - production secret and
-  variable handling.
+- [Production Secrets](docs/production-secrets.md) - staging/prod release flow,
+  secret, and variable handling.
 - [Runtime Flow Diagrams](docs/role_flow_diagram.md) - current runtime flow and
   model-role topology notes.
 
@@ -346,7 +346,8 @@ Environment examples differ by local setup:
   pgvector vectors, and the default graph provider.
 - `.env.openai.example` is a smaller local/OpenAI-oriented example using Neo4j,
   LanceDB, and SQLite.
-- `cfg/prod.yaml` is the production override used by deployment.
+- `cfg/staging.yaml` is the staging override deployed from `main`.
+- `cfg/prod.yaml` is the production override promoted by the release workflow.
 
 Provider API keys can be stored once and reused across every model for that
 provider:

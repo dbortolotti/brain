@@ -14,9 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from memory_stack import cfg
 
 
-PROD_ROOT = Path(str(cfg.load("prod").get("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain")))
-SHARED_DIR = PROD_ROOT / "shared"
-SECRETS_DIR = SHARED_DIR / "secrets"
+DEPLOY_ENVS = ("staging", "prod")
 
 
 METADATA_KEYS = {
@@ -212,20 +210,36 @@ ORDERED_KEYS = [
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", default=str(SECRETS_DIR / "brain.env"))
+    parser.add_argument(
+        "--env",
+        choices=DEPLOY_ENVS,
+        default=os.getenv("BRAIN_DEPLOY_ENV") or "prod",
+        help="Deployment environment to render.",
+    )
+    parser.add_argument("--output", default=None)
     parser.add_argument("--base-output", default=None)
-    parser.add_argument("--auth-password-file", default=str(SECRETS_DIR / "brain-auth-password"))
+    parser.add_argument("--auth-password-file", default=None)
     parser.add_argument("--auth-password-base-file", default=None)
     parser.add_argument(
         "--force-config-override",
         action="store_true",
-        help="Bypass three-way conflict checks and establish a new prod config baseline.",
+        help="Bypass three-way conflict checks and establish a new deployment config baseline.",
     )
     args = parser.parse_args()
 
-    output = Path(args.output)
+    deploy_defaults = cfg.load(args.env)
+    deploy_root = Path(
+        str(deploy_defaults.get("BRAIN_PROD_ROOT", f"/Volumes/xpg_usb4/{args.env}/brain"))
+    )
+    secrets_dir = deploy_root / "shared" / "secrets"
+
+    output = Path(args.output) if args.output else secrets_dir / "brain.env"
     base_output = Path(args.base_output) if args.base_output else last_deployed_path(output)
-    auth_password_file = Path(args.auth_password_file)
+    auth_password_file = (
+        Path(args.auth_password_file)
+        if args.auth_password_file
+        else secrets_dir / "brain-auth-password"
+    )
     auth_password_base_file = (
         Path(args.auth_password_base_file)
         if args.auth_password_base_file
@@ -233,7 +247,7 @@ def main() -> int:
     )
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    rendered = render_values()
+    rendered = render_values(args.env)
     missing = missing_required_values(rendered)
     if missing:
         print(
@@ -261,10 +275,16 @@ def main() -> int:
         if auth_password_conflict:
             conflicts.append(auth_password_conflict)
         if conflicts:
-            print("production config conflict; propagate prod edits to GitHub first:", file=sys.stderr)
+            print(
+                f"{args.env} config conflict; propagate live edits to GitHub first:",
+                file=sys.stderr,
+            )
             for key in conflicts:
                 print(f"- {key}", file=sys.stderr)
-            print("Use --force-config-override only to intentionally re-baseline prod.", file=sys.stderr)
+            print(
+                "Use --force-config-override only to intentionally re-baseline this environment.",
+                file=sys.stderr,
+            )
             return 3
 
     write_env_file(output, rendered)
@@ -296,9 +316,9 @@ def parse_env_file(path: Path) -> dict[str, str]:
     return values
 
 
-def render_values() -> dict[str, str]:
+def render_values(env_name: str) -> dict[str, str]:
     metadata = render_metadata()
-    defaults = cfg.load("prod")
+    defaults = cfg.load(env_name)
     values: dict[str, str] = {}
     for key in ORDERED_KEYS:
         if key in metadata:

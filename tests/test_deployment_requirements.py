@@ -6,11 +6,13 @@ from pathlib import Path
 def test_github_deploy_action_validates_before_deploying() -> None:
     workflow = Path(".github/workflows/deploy-local-production.yml").read_text(encoding="utf-8")
 
+    assert "push:" not in workflow
+    assert "workflow_dispatch:" in workflow
     assert "uv sync --all-extras" in workflow
     assert "uv run ruff check src tests scripts" in workflow
     assert "uv run pytest" in workflow
     assert "Render production config from GitHub Secrets" in workflow
-    assert "scripts/render_prod_env.py" in workflow
+    assert "scripts/render_prod_env.py --env prod" in workflow
     assert "force_config_override" in workflow
     assert "default: false" in workflow
     assert "--force-config-override" in workflow
@@ -34,6 +36,52 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     )
     assert workflow.index("Render production config from GitHub Secrets") < workflow.index(
         "Deploy to local LaunchAgents"
+    )
+    assert "BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh" in workflow
+
+
+def test_github_staging_action_deploys_main_to_staging() -> None:
+    workflow = Path(".github/workflows/deploy-local-staging.yml").read_text(encoding="utf-8")
+
+    assert "push:" in workflow
+    assert "main" in workflow
+    assert "group: brain-staging" in workflow
+    assert "uv sync --all-extras" in workflow
+    assert "uv run ruff check src tests scripts" in workflow
+    assert "uv run pytest" in workflow
+    assert "Render staging config from GitHub Secrets" in workflow
+    assert "BRAIN_DEPLOY_ENV: staging" in workflow
+    assert "BRAIN_PUBLIC_BASE_URL: https://staging.brain.dceb.net" in workflow
+    assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
+    assert "scripts/render_prod_env.py --env staging" in workflow
+    assert "BRAIN_DEPLOY_ENV=staging ./scripts/deploy-local-production.sh" in workflow
+    assert workflow.index("Validate repository") < workflow.index(
+        "Render staging config from GitHub Secrets"
+    )
+    assert workflow.index("Render staging config from GitHub Secrets") < workflow.index(
+        "Deploy to local staging LaunchAgents"
+    )
+
+
+def test_release_action_promotes_staging_sha_to_prod_and_tags() -> None:
+    workflow = Path(".github/workflows/release.yml").read_text(encoding="utf-8")
+
+    assert "workflow_dispatch:" in workflow
+    assert "version:" in workflow
+    assert "contents: write" in workflow
+    assert "/Volumes/xpg_usb4/staging/brain/current" in workflow
+    assert "readlink \"$STAGING_CURRENT\"" in workflow
+    assert "git checkout \"$STAGING_SHA\"" in workflow
+    assert "scripts/render_prod_env.py --env prod" in workflow
+    assert "BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh" in workflow
+    assert "git tag -a" in workflow
+    assert "git push origin" in workflow
+    assert workflow.index("Resolve staging release") < workflow.index("Validate staged revision")
+    assert workflow.index("Validate staged revision") < workflow.index(
+        "Render production config from GitHub Secrets"
+    )
+    assert workflow.index("Promote staging revision to production") < workflow.index(
+        "Tag released revision"
     )
 
 
@@ -69,7 +117,9 @@ def test_deployment_templates_live_under_deployment() -> None:
 def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
     compose = Path("deployment/docker-compose.prod.yml").read_text(encoding="utf-8")
 
+    assert "name: ${BRAIN_DOCKER_PROJECT:-brain-prod}" in compose
     assert "brain-prod-postgres" in compose
+    assert "${BRAIN_POSTGRES_CONTAINER:-brain-prod-postgres}" in compose
     assert "pgvector/pgvector:pg16" in compose
     assert "127.0.0.1:${DB_PORT:-15432}:5432" in compose
     assert "./postgres/initdb:/docker-entrypoint-initdb.d:ro" in compose
@@ -77,17 +127,24 @@ def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
         "deployment/postgres/initdb/001-vector.sql"
     ).read_text(encoding="utf-8")
     assert "brain-prod-neo4j" in compose
+    assert "${BRAIN_NEO4J_CONTAINER:-brain-prod-neo4j}" in compose
+    assert "127.0.0.1:${BRAIN_NEO4J_HTTP_PORT:-17474}:7474" in compose
+    assert "127.0.0.1:${BRAIN_NEO4J_BOLT_PORT:-17687}:7687" in compose
 
 
 def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     script = Path("scripts/deploy-local-production.sh").read_text(encoding="utf-8")
 
+    assert 'DEPLOY_ENV="${BRAIN_DEPLOY_ENV:-prod}"' in script
+    assert 'DEFAULT_ROOT="/Volumes/xpg_usb4/$DEPLOY_ENV/brain"' in script
+    assert 'DEFAULT_PUBLIC_BASE_URL="https://staging.brain.dceb.net"' in script
+    assert 'BRAIN_DOCKER_PROJECT="${BRAIN_DOCKER_PROJECT:-brain-$ENV_SUFFIX}"' in script
     for label in [
-        "com.brain.prod.mcp",
-        "com.brain.prod.ui",
-        "com.brain.prod.slack-agent",
-        "com.brain.prod.agent-memory",
-        "com.brain.prod.log-rotation",
+        'com.brain.$ENV_SUFFIX.mcp',
+        'com.brain.$ENV_SUFFIX.ui',
+        'com.brain.$ENV_SUFFIX.slack-agent',
+        'com.brain.$ENV_SUFFIX.agent-memory',
+        'com.brain.$ENV_SUFFIX.log-rotation',
     ]:
         assert label in script
 
@@ -97,8 +154,9 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template" in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
-    assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"' in script
+    assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "$BRAIN_SLACK_AGENT_PORT"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
+    assert 'BRAIN_PROD_ROOT=$PROD_ROOT' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
     assert "LLM_MODEL=gpt-5.4-mini" in script
     assert "LLM_TEMPERATURE=0.0" in script
@@ -126,12 +184,15 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" in script
     assert "uv run python scripts/verify_slack_agent.py" in script
     assert 'ensure_env_var "BRAIN_AGENT_MEMORY_SESSION_ID" "portable_agent_session"' in script
-    assert "docker compose -f deployment/docker-compose.prod.yml up -d postgres neo4j" in script
+    assert (
+        'docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml up -d postgres neo4j'
+        in script
+    )
     assert 'set_env_var "VECTOR_DB_PROVIDER" "pgvector"' in script
-    assert 'set_env_var "VECTOR_DB_PORT" "15432"' in script
+    assert 'set_env_var "VECTOR_DB_PORT" "$VECTOR_DB_PORT"' in script
     assert 'set_env_var "VECTOR_DATASET_DATABASE_HANDLER" "pgvector"' in script
     assert 'set_env_var "DB_PROVIDER" "postgres"' in script
-    assert 'set_env_var "DB_PORT" "15432"' in script
+    assert 'set_env_var "DB_PORT" "$DB_PORT"' in script
     assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert "uv run python scripts/live_model_smoke.py" in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script

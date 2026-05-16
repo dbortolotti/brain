@@ -136,6 +136,34 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "prod-auth-password" not in result.stdout
 
 
+def test_render_prod_env_can_render_staging_defaults(tmp_path) -> None:
+    _, output, _ = run_renderer_with_args(
+        tmp_path,
+        {
+            "BRAIN_PROD_ROOT": "",
+            "BRAIN_PUBLIC_BASE_URL": "",
+            "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED": "",
+        },
+        ["--env", "staging"],
+    )
+
+    values = parse_rendered_env(output.read_text(encoding="utf-8"))
+    assert values["BRAIN_PROD_ROOT"] == "/Volumes/xpg_usb4/staging/brain"
+    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://staging.brain.dceb.net"
+    assert (
+        values["BRAIN_DATABASE_URL"]
+        == "sqlite:////Volumes/xpg_usb4/staging/brain/shared/data/brain/brain.db"
+    )
+    assert values["BRAIN_MCP_PORT"] == "18100"
+    assert values["BRAIN_UI_PROXY_PORT"] == "18102"
+    assert values["BRAIN_UI_FRONTEND_PORT"] == "13100"
+    assert values["BRAIN_UI_BACKEND_PORT"] == "18101"
+    assert values["BRAIN_SLACK_AGENT_PORT"] == "18103"
+    assert values["VECTOR_DB_PORT"] == "16432"
+    assert values["DB_PORT"] == "16432"
+    assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] == "false"
+
+
 def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> None:
     _, output, _ = run_renderer(
         tmp_path,

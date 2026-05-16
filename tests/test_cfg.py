@@ -47,9 +47,22 @@ def test_cfg_uses_prod_only_when_explicit() -> None:
     assert values["BRAIN_ROUTING_LOG_ENABLED"] is True
 
 
+def test_cfg_supports_staging_environment() -> None:
+    values = package_cfg.reload("staging")
+
+    assert package_cfg.active_env() == "staging"
+    assert values["CONFIG_ENV"] == "staging"
+    assert values["BRAIN_DATABASE_URL"] == "sqlite:////Volumes/xpg_usb4/staging/brain/shared/data/brain/brain.db"
+    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://staging.brain.dceb.net"
+    assert values["BRAIN_MCP_PORT"] == 18100
+    assert values["VECTOR_DB_PORT"] == 16432
+    assert values["DB_PORT"] == 16432
+    assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] is False
+
+
 def test_cfg_rejects_unknown_environment() -> None:
     with pytest.raises(package_cfg.ConfigError, match="Unsupported config environment"):
-        package_cfg.reload("staging")
+        package_cfg.reload("qa")
 
 
 def test_settings_defaults_follow_explicit_config_env(tmp_path) -> None:

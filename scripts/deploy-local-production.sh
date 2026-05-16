@@ -2,12 +2,55 @@
 set -euo pipefail
 
 APP_NAME="brain"
-LABEL="com.brain.prod.mcp"
-UI_LABEL="com.brain.prod.ui"
-SLACK_LABEL="com.brain.prod.slack-agent"
-AGENT_MEMORY_LABEL="com.brain.prod.agent-memory"
-LOG_ROTATION_LABEL="com.brain.prod.log-rotation"
-PROD_ROOT="${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}"
+DEPLOY_ENV="${BRAIN_DEPLOY_ENV:-prod}"
+if [[ "$DEPLOY_ENV" != "prod" && "$DEPLOY_ENV" != "staging" ]]; then
+  printf 'BRAIN_DEPLOY_ENV must be prod or staging, got: %s\n' "$DEPLOY_ENV" >&2
+  exit 2
+fi
+ENV_SUFFIX="$DEPLOY_ENV"
+DEFAULT_ROOT="/Volumes/xpg_usb4/$DEPLOY_ENV/brain"
+DEFAULT_PUBLIC_BASE_URL="https://brain.dceb.net"
+DEFAULT_MCP_PORT="18000"
+DEFAULT_UI_PROXY_PORT="18002"
+DEFAULT_UI_FRONTEND_PORT="13000"
+DEFAULT_UI_BACKEND_PORT="18001"
+DEFAULT_SLACK_AGENT_PORT="18003"
+DEFAULT_DB_PORT="15432"
+DEFAULT_NEO4J_HTTP_PORT="17474"
+DEFAULT_NEO4J_BOLT_PORT="17687"
+DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED="true"
+if [[ "$DEPLOY_ENV" == "staging" ]]; then
+  DEFAULT_PUBLIC_BASE_URL="https://staging.brain.dceb.net"
+  DEFAULT_MCP_PORT="18100"
+  DEFAULT_UI_PROXY_PORT="18102"
+  DEFAULT_UI_FRONTEND_PORT="13100"
+  DEFAULT_UI_BACKEND_PORT="18101"
+  DEFAULT_SLACK_AGENT_PORT="18103"
+  DEFAULT_DB_PORT="16432"
+  DEFAULT_NEO4J_HTTP_PORT="18474"
+  DEFAULT_NEO4J_BOLT_PORT="18687"
+  DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED="false"
+fi
+LABEL="${BRAIN_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.mcp}"
+UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
+SLACK_LABEL="${BRAIN_SLACK_AGENT_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.slack-agent}"
+AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
+LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.log-rotation}"
+PROD_ROOT="${BRAIN_PROD_ROOT:-$DEFAULT_ROOT}"
+BRAIN_PUBLIC_BASE_URL="${BRAIN_PUBLIC_BASE_URL:-$DEFAULT_PUBLIC_BASE_URL}"
+BRAIN_MCP_PORT="${BRAIN_MCP_PORT:-$DEFAULT_MCP_PORT}"
+BRAIN_UI_PROXY_PORT="${BRAIN_UI_PROXY_PORT:-$DEFAULT_UI_PROXY_PORT}"
+BRAIN_UI_FRONTEND_PORT="${BRAIN_UI_FRONTEND_PORT:-$DEFAULT_UI_FRONTEND_PORT}"
+BRAIN_UI_BACKEND_PORT="${BRAIN_UI_BACKEND_PORT:-$DEFAULT_UI_BACKEND_PORT}"
+BRAIN_SLACK_AGENT_PORT="${BRAIN_SLACK_AGENT_PORT:-$DEFAULT_SLACK_AGENT_PORT}"
+DB_PORT="${DB_PORT:-$DEFAULT_DB_PORT}"
+VECTOR_DB_PORT="${VECTOR_DB_PORT:-$DB_PORT}"
+BRAIN_NEO4J_HTTP_PORT="${BRAIN_NEO4J_HTTP_PORT:-$DEFAULT_NEO4J_HTTP_PORT}"
+BRAIN_NEO4J_BOLT_PORT="${BRAIN_NEO4J_BOLT_PORT:-$DEFAULT_NEO4J_BOLT_PORT}"
+BRAIN_DOCKER_PROJECT="${BRAIN_DOCKER_PROJECT:-brain-$ENV_SUFFIX}"
+BRAIN_POSTGRES_CONTAINER="${BRAIN_POSTGRES_CONTAINER:-brain-$ENV_SUFFIX-postgres}"
+BRAIN_NEO4J_CONTAINER="${BRAIN_NEO4J_CONTAINER:-brain-$ENV_SUFFIX-neo4j}"
+BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED="${BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED:-$DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"
 SHA="${GITHUB_SHA:-$(git -C "$REPO_ROOT" rev-parse HEAD)}"
@@ -20,7 +63,7 @@ DATA_DIR="$SHARED_DIR/data"
 BACKUP_DIR="$SHARED_DIR/backups"
 LOG_DIR="$SHARED_DIR/logs"
 DATABASE_URL="sqlite:///$DATA_DIR/brain/brain.db"
-LOCAL_SUPPORT_DIR="$HOME/Library/Application Support/brain"
+LOCAL_SUPPORT_DIR="$HOME/Library/Application Support/brain-$ENV_SUFFIX"
 PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.mcp.plist.template"
 PLIST_DST="$HOME/Library/LaunchAgents/$LABEL.plist"
 UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
@@ -113,6 +156,55 @@ install_newsyslog_config() {
   log "cannot install $NEWSYSLOG_DST without sudo; launchd logs will not get daily system rotation"
 }
 
+render_plist() {
+  local src="$1"
+  local dst="$2"
+  python3 - "$src" "$dst" "$DEPLOY_ENV" "$PROD_ROOT" "$BRAIN_PUBLIC_BASE_URL" \
+    "$BRAIN_MCP_PORT" "$BRAIN_UI_PROXY_PORT" "$BRAIN_UI_FRONTEND_PORT" \
+    "$BRAIN_UI_BACKEND_PORT" "$BRAIN_SLACK_AGENT_PORT" <<'PY'
+from pathlib import Path
+import sys
+
+(
+    src,
+    dst,
+    deploy_env,
+    root,
+    public_base_url,
+    mcp_port,
+    ui_proxy_port,
+    ui_frontend_port,
+    ui_backend_port,
+    slack_agent_port,
+) = sys.argv[1:]
+text = Path(src).read_text(encoding="utf-8")
+replacements = {
+    "com.brain.prod.": f"com.brain.{deploy_env}.",
+    "/Volumes/xpg_usb4/prod/brain": root,
+    "https://brain.dceb.net": public_base_url,
+    "18000": mcp_port,
+    "18002": ui_proxy_port,
+    "13000": ui_frontend_port,
+    "18001": ui_backend_port,
+    "18003": slack_agent_port,
+    "brain-prod": f"brain-{deploy_env}",
+    "--env prod": f"--env {deploy_env}",
+}
+if deploy_env != "prod":
+    replacements.update(
+        {
+            "brain-ui.": f"brain-{deploy_env}-ui.",
+            "brain-slack-agent.": f"brain-{deploy_env}-slack-agent.",
+            "brain-agent-memory.": f"brain-{deploy_env}-agent-memory.",
+            "brain-log-rotation.": f"brain-{deploy_env}-log-rotation.",
+        }
+    )
+for old, new in replacements.items():
+    text = text.replace(old, new)
+Path(dst).write_text(text, encoding="utf-8")
+PY
+}
+
 is_true() {
   case "${1:-}" in
     1|true|TRUE|yes|YES|on|ON)
@@ -124,11 +216,11 @@ is_true() {
   esac
 }
 
-log "creating production directories under $PROD_ROOT"
+log "creating $DEPLOY_ENV directories under $PROD_ROOT"
 mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs" "$LOCAL_SUPPORT_DIR"
 
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
-  log "creating starter production env at $SECRETS_DIR/brain.env"
+  log "creating starter $DEPLOY_ENV env at $SECRETS_DIR/brain.env"
   cat >"$SECRETS_DIR/brain.env" <<EOF
 PROFILE=openai
 LLM_PROVIDER=openai
@@ -144,13 +236,13 @@ EMBEDDING_PROVIDER=openai
 EMBEDDING_MODEL=text-embedding-3-large
 EMBEDDING_DIMENSIONS=3072
 GRAPH_DATABASE_PROVIDER=neo4j
-GRAPH_DATABASE_URL=bolt://127.0.0.1:17687
+GRAPH_DATABASE_URL=bolt://127.0.0.1:$BRAIN_NEO4J_BOLT_PORT
 GRAPH_DATABASE_NAME=neo4j
 GRAPH_DATABASE_USERNAME=neo4j
 GRAPH_DATABASE_PASSWORD=change-me
 VECTOR_DB_PROVIDER=pgvector
 VECTOR_DB_URL=
-VECTOR_DB_PORT=15432
+VECTOR_DB_PORT=$VECTOR_DB_PORT
 VECTOR_DB_NAME=cognee_vectors
 VECTOR_DB_KEY=
 VECTOR_DATASET_DATABASE_HANDLER=pgvector
@@ -160,21 +252,22 @@ VECTOR_DB_HOST=127.0.0.1
 DB_PROVIDER=postgres
 DB_NAME=cognee_db
 DB_HOST=127.0.0.1
-DB_PORT=15432
+DB_PORT=$DB_PORT
 DB_USERNAME=cognee
 DB_PASSWORD=cognee
 SYSTEM_ROOT_DIRECTORY=$DATA_DIR/system
 DATA_ROOT_DIRECTORY=$DATA_DIR/data
 BRAIN_DATABASE_URL=$DATABASE_URL
+BRAIN_PROD_ROOT=$PROD_ROOT
 BRAIN_MCP_HOST=127.0.0.1
-BRAIN_MCP_PORT=18000
+BRAIN_MCP_PORT=$BRAIN_MCP_PORT
 BRAIN_MCP_PATH=/mcp
 BRAIN_APP_MCP_PATH=/app/mcp
-BRAIN_PUBLIC_BASE_URL=https://brain.dceb.net
+BRAIN_PUBLIC_BASE_URL=$BRAIN_PUBLIC_BASE_URL
 BRAIN_PUBLIC_MCP_PATH=/mcp
 BRAIN_PUBLIC_APP_MCP_PATH=/app/mcp
 BRAIN_BACKUP_DIR=$BACKUP_DIR
-BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true
+BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=$BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED
 BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
 BRAIN_AUTH_ENABLED=true
 BRAIN_AUTH_PASSWORD_FILE=$SECRETS_DIR/brain-auth-password
@@ -203,15 +296,15 @@ BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS=24
 ENABLE_BACKEND_ACCESS_CONTROL=false
 BRAIN_UI_ENABLED=true
 BRAIN_UI_HOST=127.0.0.1
-BRAIN_UI_PROXY_PORT=18002
-BRAIN_UI_FRONTEND_PORT=13000
-BRAIN_UI_BACKEND_PORT=18001
+BRAIN_UI_PROXY_PORT=$BRAIN_UI_PROXY_PORT
+BRAIN_UI_FRONTEND_PORT=$BRAIN_UI_FRONTEND_PORT
+BRAIN_UI_BACKEND_PORT=$BRAIN_UI_BACKEND_PORT
 BRAIN_PUBLIC_UI_PATH=/ui
 BRAIN_PUBLIC_UI_API_PATH=/ui-api
 BRAIN_UI_SESSION_SECONDS=43200
 BRAIN_SLACK_AGENT_ENABLED=true
 BRAIN_SLACK_AGENT_HOST=127.0.0.1
-BRAIN_SLACK_AGENT_PORT=18003
+BRAIN_SLACK_AGENT_PORT=$BRAIN_SLACK_AGENT_PORT
 BRAIN_SLACK_SIGNING_SECRET=
 BRAIN_SLACK_BOT_TOKEN=
 BRAIN_SLACK_ALLOWED_TEAM_IDS=
@@ -245,11 +338,14 @@ ensure_env_var "BRAIN_ROUTING_LOG_ENABLED" "true"
 set_env_var "BRAIN_ROUTING_LOG_PATH" "$LOG_DIR/routing/{date}.jsonl"
 ensure_env_var "BRAIN_ROUTING_LOG_RETENTION_DAYS" "90"
 ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"
-set_env_var "BRAIN_MCP_PORT" "18000"
-set_env_var "GRAPH_DATABASE_URL" "bolt://127.0.0.1:17687"
+set_env_var "BRAIN_PROD_ROOT" "$PROD_ROOT"
+set_env_var "BRAIN_MCP_PORT" "$BRAIN_MCP_PORT"
+set_env_var "BRAIN_PUBLIC_BASE_URL" "$BRAIN_PUBLIC_BASE_URL"
+set_env_var "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED" "$BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"
+set_env_var "GRAPH_DATABASE_URL" "bolt://127.0.0.1:$BRAIN_NEO4J_BOLT_PORT"
 set_env_var "VECTOR_DB_PROVIDER" "pgvector"
 set_env_var "VECTOR_DB_URL" ""
-set_env_var "VECTOR_DB_PORT" "15432"
+set_env_var "VECTOR_DB_PORT" "$VECTOR_DB_PORT"
 set_env_var "VECTOR_DB_NAME" "cognee_vectors"
 set_env_var "VECTOR_DB_KEY" ""
 set_env_var "VECTOR_DATASET_DATABASE_HANDLER" "pgvector"
@@ -259,7 +355,7 @@ set_env_var "VECTOR_DB_HOST" "127.0.0.1"
 set_env_var "DB_PROVIDER" "postgres"
 set_env_var "DB_NAME" "cognee_db"
 set_env_var "DB_HOST" "127.0.0.1"
-set_env_var "DB_PORT" "15432"
+set_env_var "DB_PORT" "$DB_PORT"
 set_env_var "DB_USERNAME" "cognee"
 set_env_var "DB_PASSWORD" "cognee"
 ensure_env_var "BRAIN_TASTE_ENABLED" "true"
@@ -274,15 +370,15 @@ ensure_env_var "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS" "24"
 ensure_env_var "ENABLE_BACKEND_ACCESS_CONTROL" "false"
 ensure_env_var "BRAIN_UI_ENABLED" "true"
 ensure_env_var "BRAIN_UI_HOST" "127.0.0.1"
-set_env_var "BRAIN_UI_PROXY_PORT" "18002"
-set_env_var "BRAIN_UI_FRONTEND_PORT" "13000"
-set_env_var "BRAIN_UI_BACKEND_PORT" "18001"
+set_env_var "BRAIN_UI_PROXY_PORT" "$BRAIN_UI_PROXY_PORT"
+set_env_var "BRAIN_UI_FRONTEND_PORT" "$BRAIN_UI_FRONTEND_PORT"
+set_env_var "BRAIN_UI_BACKEND_PORT" "$BRAIN_UI_BACKEND_PORT"
 ensure_env_var "BRAIN_PUBLIC_UI_PATH" "/ui"
 ensure_env_var "BRAIN_PUBLIC_UI_API_PATH" "/ui-api"
 ensure_env_var "BRAIN_UI_SESSION_SECONDS" "43200"
 ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"
 ensure_env_var "BRAIN_SLACK_AGENT_HOST" "127.0.0.1"
-set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"
+set_env_var "BRAIN_SLACK_AGENT_PORT" "$BRAIN_SLACK_AGENT_PORT"
 ensure_env_var "BRAIN_SLACK_SIGNING_SECRET" ""
 ensure_env_var "BRAIN_SLACK_BOT_TOKEN" ""
 ensure_env_var "BRAIN_SLACK_ALLOWED_TEAM_IDS" ""
@@ -344,16 +440,21 @@ if [[ -z "${GRAPH_DATABASE_PASSWORD:-}" || "$GRAPH_DATABASE_PASSWORD" == "change
   exit 1
 fi
 
-log "starting production Postgres/pgvector and Neo4j containers"
+log "starting $DEPLOY_ENV Postgres/pgvector and Neo4j containers"
 (
   cd "$RELEASE_DIR"
   GRAPH_DATABASE_PASSWORD="$GRAPH_DATABASE_PASSWORD" \
     DB_NAME="${DB_NAME:-cognee_db}" \
     DB_USERNAME="${DB_USERNAME:-cognee}" \
     DB_PASSWORD="${DB_PASSWORD:-cognee}" \
-    DB_PORT="${DB_PORT:-15432}" \
+    DB_PORT="${DB_PORT:-$DEFAULT_DB_PORT}" \
     BRAIN_PROD_ROOT="$PROD_ROOT" \
-    docker compose -f deployment/docker-compose.prod.yml up -d postgres neo4j
+    BRAIN_DOCKER_PROJECT="$BRAIN_DOCKER_PROJECT" \
+    BRAIN_POSTGRES_CONTAINER="$BRAIN_POSTGRES_CONTAINER" \
+    BRAIN_NEO4J_CONTAINER="$BRAIN_NEO4J_CONTAINER" \
+    BRAIN_NEO4J_HTTP_PORT="$BRAIN_NEO4J_HTTP_PORT" \
+    BRAIN_NEO4J_BOLT_PORT="$BRAIN_NEO4J_BOLT_PORT" \
+    docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml up -d postgres neo4j
 )
 
 log "running Brain database migrations"
@@ -381,17 +482,21 @@ else
 fi
 
 log "installing launchd plist"
-cp "$PLIST_SRC" "$PLIST_DST"
+render_plist "$PLIST_SRC" "$PLIST_DST"
 plutil -lint "$PLIST_DST" >/dev/null
-cp "$UI_PLIST_SRC" "$UI_PLIST_DST"
+render_plist "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
-cp "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
+render_plist "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
-cp "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
+render_plist "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
 plutil -lint "$AGENT_MEMORY_PLIST_DST" >/dev/null
-cp "$LOG_ROTATION_PLIST_SRC" "$LOG_ROTATION_PLIST_DST"
+render_plist "$LOG_ROTATION_PLIST_SRC" "$LOG_ROTATION_PLIST_DST"
 plutil -lint "$LOG_ROTATION_PLIST_DST" >/dev/null
-install_newsyslog_config
+if [[ "$DEPLOY_ENV" == "prod" ]]; then
+  install_newsyslog_config
+else
+  log "skipping system newsyslog config for $DEPLOY_ENV"
+fi
 
 log "updating current symlink"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
@@ -447,7 +552,7 @@ for attempt in {1..30}; do
   sleep 1
 done
 
-log "running production verifier"
+log "running $DEPLOY_ENV verifier"
 (
   cd "$RELEASE_DIR"
   uv run python scripts/verify_mcp_production.py --skip-backups
