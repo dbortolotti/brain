@@ -30,7 +30,7 @@ from memory_stack.brain_service import (
     sync_cognee as brain_sync_cognee,
     undo_last as brain_undo_last,
 )
-from memory_stack.brain_store import BrainStore
+from memory_stack.brain_store import BrainStore, normalize_user_id
 from memory_stack.cognee_adapter import (
     DatasourceNotFoundError,
     create_datasource as create_cognee_datasource,
@@ -59,7 +59,15 @@ from memory_stack.icon_assets import (
     brain_icon_metadata,
 )
 from memory_stack.io import to_jsonable
-from memory_stack.oauth import BrainOAuthProvider, parse_bearer
+from memory_stack.oauth import (
+    BrainOAuthProvider,
+    auth_users_admin_payload,
+    ensure_auth_password,
+    load_auth_users,
+    parse_bearer,
+    public_auth_user,
+    write_auth_users,
+)
 from memory_stack.profile_context import (
     forget_profile_context,
     list_profile_context,
@@ -240,6 +248,21 @@ class BrainProfileContextRememberRequest(BaseModel):
 
 class BrainProfileContextForgetRequest(BaseModel):
     context_id: str
+
+
+class AuthUserCreateRequest(BaseModel):
+    id: str
+    password: str
+    display_name: str | None = None
+    email: str | None = None
+    superuser: bool = False
+
+
+class AuthUserUpdateRequest(BaseModel):
+    password: str | None = None
+    display_name: str | None = None
+    email: str | None = None
+    superuser: bool | None = None
 
 
 class MergeEntitiesRequest(BaseModel):
@@ -1493,6 +1516,94 @@ async def revoke(request: Request) -> Response:
     return await oauth_provider.revoke(request)
 
 
+@app.get("/admin/users")
+async def list_auth_users_endpoint(
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    auth_context = require_superuser_auth(authorization)
+    payload = auth_users_admin_payload(settings, default_password=auth_admin_password())
+    return {
+        **payload,
+        "current_user_id": auth_context.user_id or settings.brain_user_id,
+    }
+
+
+@app.post("/admin/users", status_code=201)
+async def create_auth_user_endpoint(
+    payload: AuthUserCreateRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_superuser_auth(authorization)
+    user_id = normalize_user_id(payload.id)
+    if not user_id:
+        raise HTTPException(status_code=400, detail="User id is required.")
+    if not payload.password:
+        raise HTTPException(status_code=400, detail="Password is required.")
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    if user_id in users:
+        raise HTTPException(status_code=409, detail="User already exists.")
+    users[user_id] = {
+        "id": user_id,
+        "password": payload.password,
+        "display_name": payload.display_name or user_id,
+        "email": payload.email or "",
+        "superuser": str(payload.superuser).lower(),
+    }
+    write_auth_users(settings, users)
+    reload_oauth_users()
+    return {"user": public_auth_user(users[user_id])}
+
+
+@app.put("/admin/users/{user_id}")
+async def update_auth_user_endpoint(
+    user_id: str,
+    payload: AuthUserUpdateRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_superuser_auth(authorization)
+    normalized = normalize_user_id(user_id)
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    if normalized not in users:
+        raise HTTPException(status_code=404, detail="User not found.")
+    updated = dict(users[normalized])
+    if payload.password is not None:
+        if not payload.password:
+            raise HTTPException(status_code=400, detail="Password cannot be blank.")
+        updated["password"] = payload.password
+    if payload.display_name is not None:
+        updated["display_name"] = payload.display_name or normalized
+    if payload.email is not None:
+        updated["email"] = payload.email
+    if payload.superuser is not None:
+        if not payload.superuser and normalized == require_superuser_auth(authorization).user_id:
+            raise HTTPException(status_code=400, detail="Cannot remove superuser from the current user.")
+        updated["superuser"] = str(payload.superuser).lower()
+    users[normalized] = updated
+    ensure_at_least_one_superuser(users)
+    write_auth_users(settings, users)
+    reload_oauth_users()
+    return {"user": public_auth_user(updated)}
+
+
+@app.delete("/admin/users/{user_id}")
+async def delete_auth_user_endpoint(
+    user_id: str,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    auth_context = require_superuser_auth(authorization)
+    normalized = normalize_user_id(user_id)
+    if normalized == (auth_context.user_id or settings.brain_user_id):
+        raise HTTPException(status_code=400, detail="Cannot delete the current user.")
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    if normalized not in users:
+        raise HTTPException(status_code=404, detail="User not found.")
+    deleted = users.pop(normalized)
+    ensure_at_least_one_superuser(users)
+    write_auth_users(settings, users)
+    reload_oauth_users()
+    return {"deleted": public_auth_user(deleted)}
+
+
 @app.get("/datasources")
 @app.get("/list_datasources")
 async def list_datasources_endpoint(
@@ -1874,6 +1985,42 @@ def require_api_auth(header_value: str | None, active_settings: Settings) -> Set
             headers=auth_challenge_headers(active_settings),
         )
     return settings_for_auth_context(active_settings, auth_context)
+
+
+def require_superuser_auth(header_value: str | None) -> McpAuthContext:
+    auth_context = mcp_auth_context(
+        header_value,
+        settings,
+        required_scopes=settings.brain_auth_scope_list,
+    )
+    if settings.brain_auth_enabled and not auth_context.authenticated:
+        raise HTTPException(
+            status_code=401,
+            detail=authentication_required_payload(settings),
+            headers=auth_challenge_headers(settings),
+        )
+    user_id = auth_context.user_id or settings.brain_user_id
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    record = users.get(normalize_user_id(user_id))
+    if not record or str(record.get("superuser", "")).lower() != "true":
+        raise HTTPException(status_code=403, detail="Superuser privileges are required.")
+    return auth_context
+
+
+def auth_admin_password() -> str:
+    if oauth_provider:
+        return oauth_provider.password
+    return ensure_auth_password(settings)
+
+
+def reload_oauth_users() -> None:
+    if oauth_provider:
+        oauth_provider.reload_users()
+
+
+def ensure_at_least_one_superuser(users: dict[str, dict[str, Any]]) -> None:
+    if not any(str(record.get("superuser", "")).lower() == "true" for record in users.values()):
+        raise HTTPException(status_code=400, detail="At least one superuser is required.")
 
 
 def authenticated_model_response(authorization: str | None, factory: Any) -> dict[str, Any]:

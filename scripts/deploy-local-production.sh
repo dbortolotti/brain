@@ -271,6 +271,8 @@ BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=$BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED
 BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
 BRAIN_AUTH_ENABLED=true
 BRAIN_AUTH_PASSWORD_FILE=$SECRETS_DIR/brain-auth-password
+BRAIN_AUTH_USERS_FILE=$SECRETS_DIR/brain-auth-users.json
+BRAIN_AUTH_SUPERUSER_IDS=default
 BRAIN_AUTH_STATE_PATH=$SECRETS_DIR/brain-oauth.json
 BRAIN_AUTH_SCOPES="brain.memory.read brain.memory.write"
 BRAIN_AUTH_REQUIRE_PKCE=true
@@ -324,6 +326,8 @@ ensure_env_var "OPENAI_CODEX_BASE_URL" "https://chatgpt.com/backend-api/codex"
 ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH" "$SECRETS_DIR/provider-auth-profiles.json"
 ensure_env_var "BRAIN_PROVIDER_AUTH_STATE_DIR" "$SECRETS_DIR/provider-auth-state"
 ensure_env_var "BRAIN_AUTH_PASSWORD_FILE" "$SECRETS_DIR/brain-auth-password"
+ensure_env_var "BRAIN_AUTH_USERS_FILE" "$SECRETS_DIR/brain-auth-users.json"
+ensure_env_var "BRAIN_AUTH_SUPERUSER_IDS" "default"
 ensure_env_var "BRAIN_AUTH_STATE_PATH" "$SECRETS_DIR/brain-oauth.json"
 ensure_env_var "BRAIN_AUTH_SCOPES" '"brain.memory.read brain.memory.write"'
 ensure_env_var "BRAIN_AUTH_REQUIRE_PKCE" "true"

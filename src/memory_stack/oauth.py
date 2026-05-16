@@ -26,6 +26,7 @@ AUTH_CODE_SECONDS = 5 * 60
 
 class BrainOAuthProvider:
     def __init__(self, settings: Settings):
+        self.settings = settings
         self.service_name = settings.brain_service_name
         self.issuer_url = settings.brain_public_base_url.rstrip("/")
         self.resource_url = settings.public_mcp_url
@@ -40,6 +41,9 @@ class BrainOAuthProvider:
         self._lock = RLock()
         self.state_path.parent.mkdir(parents=True, exist_ok=True)
         self._save_state(self._load_state())
+
+    def reload_users(self) -> None:
+        self.users = load_auth_users(self.settings, default_password=self.password)
 
     def protected_resource_metadata(self) -> dict[str, Any]:
         return {
@@ -422,6 +426,7 @@ def load_auth_users(
     default_password: str,
 ) -> dict[str, dict[str, str]]:
     default_user_id = normalize_user_id(settings.brain_user_id)
+    configured_superusers = set(settings.brain_auth_superuser_id_list)
     users_file = settings.brain_auth_users_file
     if not users_file:
         return {
@@ -429,6 +434,7 @@ def load_auth_users(
                 "id": default_user_id,
                 "password": default_password,
                 "display_name": settings.brain_owner_full_name or settings.brain_owner_name or default_user_id,
+                "superuser": "true",
             }
         }
     path = Path(users_file).expanduser()
@@ -438,6 +444,7 @@ def load_auth_users(
                 "id": default_user_id,
                 "password": default_password,
                 "display_name": settings.brain_owner_full_name or settings.brain_owner_name or default_user_id,
+                "superuser": str(default_user_id in configured_superusers or default_user_id == "default").lower(),
             }
         }
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -455,10 +462,70 @@ def load_auth_users(
             "password": password,
             "display_name": str(record.get("display_name") or record.get("name") or user_id),
             "email": str(record.get("email") or ""),
+            "superuser": str(parse_bool(record.get("superuser")) or user_id in configured_superusers).lower(),
         }
     if not users:
         raise ValueError(f"BRAIN_AUTH_USERS_FILE contains no usable users: {path}")
     return users
+
+
+def auth_users_file_path(settings: Settings) -> Path | None:
+    if not settings.brain_auth_users_file:
+        return None
+    return Path(settings.brain_auth_users_file).expanduser()
+
+
+def auth_users_admin_payload(settings: Settings, *, default_password: str) -> dict[str, Any]:
+    users = load_auth_users(settings, default_password=default_password)
+    return {
+        "users_file": str(auth_users_file_path(settings) or ""),
+        "users_file_configured": bool(auth_users_file_path(settings)),
+        "superuser_ids": settings.brain_auth_superuser_id_list,
+        "users": [public_auth_user(record) for record in sorted(users.values(), key=lambda item: item["id"])],
+    }
+
+
+def public_auth_user(record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": str(record.get("id") or ""),
+        "display_name": str(record.get("display_name") or ""),
+        "email": str(record.get("email") or ""),
+        "superuser": parse_bool(record.get("superuser")),
+    }
+
+
+def write_auth_users(settings: Settings, users: dict[str, dict[str, Any]]) -> Path:
+    path = auth_users_file_path(settings)
+    if path is None:
+        raise ValueError("BRAIN_AUTH_USERS_FILE must be configured before users can be managed.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = [
+        {
+            "id": user_id,
+            "password": str(record["password"]),
+            "display_name": str(record.get("display_name") or user_id),
+            "email": str(record.get("email") or ""),
+            "superuser": parse_bool(record.get("superuser")),
+        }
+        for user_id, record in sorted(users.items())
+    ]
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+        json.dump(payload, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+        temp_name = handle.name
+    temp_path = Path(temp_name)
+    try:
+        temp_path.chmod(0o600)
+    except OSError:
+        pass
+    temp_path.replace(path)
+    return path
+
+
+def parse_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
 def auth_form(

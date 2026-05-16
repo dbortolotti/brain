@@ -266,7 +266,9 @@ Brain data is scoped by `BRAIN_USER_ID`. Existing single-user installs use the
 `default` user. For OAuth deployments, `BRAIN_AUTH_USERS_FILE` may point to a
 JSON user registry; issued OAuth tokens carry a `user_id`, and Brain filters
 memory, profile context, Palate records, audit logs, and recall data to that
-user.
+user. Superusers are marked with `superuser: true` or configured through
+`BRAIN_AUTH_SUPERUSER_IDS`; they can manage users from the dashboard User Admin
+tab.
 
 LLM compiler settings, disabled by default. When enabled, it uses the same fixed
 runtime LLM as the rest of Brain/Cognee: `openai:gpt-5.4-mini`.

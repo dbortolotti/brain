@@ -112,6 +112,8 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
         "BRAIN_PROFILE_CONTEXT_PATH=/Volumes/xpg_usb4/prod/brain/shared/data/brain/profile_context.json"
         in rendered
     )
+    assert "BRAIN_AUTH_USERS_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-users.json" in rendered
+    assert "BRAIN_AUTH_SUPERUSER_IDS=default" in rendered
     assert "BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session" in rendered
     assert "BRAIN_REQUEST_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl" in rendered
     assert "BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192" in rendered
@@ -159,6 +161,8 @@ def test_render_prod_env_can_render_staging_defaults(tmp_path) -> None:
     assert values["BRAIN_UI_FRONTEND_PORT"] == "13100"
     assert values["BRAIN_UI_BACKEND_PORT"] == "18101"
     assert values["BRAIN_SLACK_AGENT_PORT"] == "18103"
+    assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/staging/brain/shared/secrets/brain-auth-users.json"
+    assert values["BRAIN_AUTH_SUPERUSER_IDS"] == "default"
     assert values["VECTOR_DB_PORT"] == "16432"
     assert values["DB_PORT"] == "16432"
     assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] == "false"

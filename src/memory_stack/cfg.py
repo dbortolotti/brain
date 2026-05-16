@@ -276,6 +276,7 @@ class Settings(BaseSettings):
     brain_auth_password: str | None = None
     brain_auth_password_file: str = Field(default_factory=lambda: get("BRAIN_AUTH_PASSWORD_FILE", "./secrets/brain-auth-password"))
     brain_auth_users_file: str | None = Field(default_factory=lambda: get("BRAIN_AUTH_USERS_FILE", None))
+    brain_auth_superuser_ids: str = Field(default_factory=lambda: get("BRAIN_AUTH_SUPERUSER_IDS", ""))
     brain_auth_state_path: str = Field(default_factory=lambda: get("BRAIN_AUTH_STATE_PATH", "./secrets/brain-oauth.json"))
     brain_auth_scopes: str = Field(default_factory=lambda: get("BRAIN_AUTH_SCOPES", "brain.memory.read brain.memory.write"))
     brain_auth_require_pkce: bool = Field(default_factory=lambda: get("BRAIN_AUTH_REQUIRE_PKCE", True))
@@ -495,6 +496,10 @@ class Settings(BaseSettings):
         return self.oauth_scopes
 
     @property
+    def brain_auth_superuser_id_list(self) -> list[str]:
+        return split_csv_setting(self.brain_auth_superuser_ids)
+
+    @property
     def brain_slack_allowed_team_id_list(self) -> list[str]:
         return split_csv_setting(self.brain_slack_allowed_team_ids)
 
@@ -655,6 +660,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_AUTH_ENABLED": str(settings.brain_auth_enabled).lower(),
         "BRAIN_AUTH_PASSWORD_FILE": settings.brain_auth_password_file,
         "BRAIN_AUTH_USERS_FILE": settings.brain_auth_users_file or "",
+        "BRAIN_AUTH_SUPERUSER_IDS": settings.brain_auth_superuser_ids,
         "BRAIN_AUTH_STATE_PATH": settings.brain_auth_state_path,
         "BRAIN_AUTH_SCOPES": settings.brain_auth_scopes,
         "BRAIN_AUTH_REQUIRE_PKCE": str(settings.brain_auth_require_pkce).lower(),

@@ -158,6 +158,8 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
     assert 'BRAIN_PROD_ROOT=$PROD_ROOT' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
+    assert 'BRAIN_AUTH_USERS_FILE=$SECRETS_DIR/brain-auth-users.json' in script
+    assert 'BRAIN_AUTH_SUPERUSER_IDS=default' in script
     assert "LLM_MODEL=gpt-5.4-mini" in script
     assert "LLM_TEMPERATURE=0.0" in script
     assert "LLM_MAX_TOKENS=8192" in script

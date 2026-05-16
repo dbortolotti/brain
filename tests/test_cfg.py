@@ -38,6 +38,8 @@ def test_cfg_uses_prod_only_when_explicit() -> None:
     assert values["VECTOR_DATASET_DATABASE_HANDLER"] == "pgvector"
     assert values["DB_PROVIDER"] == "postgres"
     assert values["DB_PORT"] == 15432
+    assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-users.json"
+    assert values["BRAIN_AUTH_SUPERUSER_IDS"] == "default"
     assert (
         values["BRAIN_PROFILE_CONTEXT_PATH"]
         == "/Volumes/xpg_usb4/prod/brain/shared/data/brain/profile_context.json"
@@ -57,6 +59,8 @@ def test_cfg_supports_staging_environment() -> None:
     assert values["BRAIN_MCP_PORT"] == 18100
     assert values["VECTOR_DB_PORT"] == 16432
     assert values["DB_PORT"] == 16432
+    assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/staging/brain/shared/secrets/brain-auth-users.json"
+    assert values["BRAIN_AUTH_SUPERUSER_IDS"] == "default"
     assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] is False
 
 

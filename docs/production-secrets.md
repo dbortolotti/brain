@@ -95,6 +95,12 @@ BRAIN_AUTH_PASSWORD
 `BRAIN_AUTH_PASSWORD` is written to each deployed environment's
 `shared/secrets/brain-auth-password`.
 
+Deployment also configures `BRAIN_AUTH_USERS_FILE` under
+`shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`.
+If the users file does not exist yet, Brain falls back to the default user with
+the shared auth password. A superuser can then create and edit user records from
+the dashboard User Admin tab without restarting the service.
+
 ## Optional Eval Provider Secrets
 
 Runtime uses the configured OpenAI LLM and local FastEmbed embedding model.

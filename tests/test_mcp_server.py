@@ -59,6 +59,7 @@ def test_brain_app_ui_routes() -> None:
     assert "Latest Session Data" in root_response.text
     assert "Custom Preprompt Instructions" in root_response.text
     assert "Data Controls" in root_response.text
+    assert "User Admin" in root_response.text
     assert app_response.status_code == 200
     assert callback_response.status_code == 200
     assert css_response.status_code == 200
@@ -75,6 +76,7 @@ def test_brain_app_ui_routes() -> None:
     assert "showMemoryDetails" in js_response.text
     assert "refreshPrompt" in js_response.text
     assert "refreshControls" in js_response.text
+    assert "refreshUsers" in js_response.text
     assert "brain_preprompt" in js_response.text
 
 
@@ -1506,6 +1508,104 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
     assert BrainStore(user_b_settings).search_memory("tenant scoped profile context")
     assert BrainStore(default_settings).search_memory("tenant scoped coffee") == []
     assert BrainStore(default_settings).search_memory("tenant scoped profile context") == []
+
+
+def test_superuser_can_manage_auth_users_without_restart(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps(
+            [
+                {"id": "admin", "password": "admin-pass", "display_name": "Admin", "superuser": True},
+                {"id": "user_a", "password": "pass-a", "display_name": "User A"},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    with oauth_settings(
+        tmp_path,
+        brain_auth_users_file=str(users_file),
+        brain_user_id="admin",
+    ):
+        client = TestClient(app, follow_redirects=False)
+        admin_token = issue_test_oauth_token(
+            client,
+            tmp_path,
+            scope="brain.memory.read brain.memory.write",
+            user_id="admin",
+            password="admin-pass",
+        )
+        admin_headers = {"Authorization": f"Bearer {admin_token}"}
+        list_response = client.get("/admin/users", headers=admin_headers)
+        create_response = client.post(
+            "/admin/users",
+            headers=admin_headers,
+            json={
+                "id": "user_b",
+                "password": "pass-b",
+                "display_name": "User B",
+                "email": "user-b@example.com",
+            },
+        )
+        update_response = client.put(
+            "/admin/users/user_b",
+            headers=admin_headers,
+            json={"display_name": "User Bee", "superuser": False},
+        )
+        user_b_token = issue_test_oauth_token(
+            client,
+            tmp_path,
+            scope="brain.memory.read brain.memory.write",
+            user_id="user_b",
+            password="pass-b",
+        )
+        forbidden_response = client.get(
+            "/admin/users",
+            headers={"Authorization": f"Bearer {user_b_token}"},
+        )
+
+    assert list_response.status_code == 200
+    assert list_response.json()["users_file"] == str(users_file)
+    assert list_response.json()["current_user_id"] == "admin"
+    assert all("password" not in user for user in list_response.json()["users"])
+    assert create_response.status_code == 201
+    assert create_response.json()["user"] == {
+        "id": "user_b",
+        "display_name": "User B",
+        "email": "user-b@example.com",
+        "superuser": False,
+    }
+    assert update_response.status_code == 200
+    assert update_response.json()["user"]["display_name"] == "User Bee"
+    assert forbidden_response.status_code == 403
+    stored = json.loads(users_file.read_text(encoding="utf-8"))
+    assert any(record["id"] == "user_b" and record["password"] == "pass-b" for record in stored)
+
+
+def test_superuser_cannot_delete_self_or_last_superuser(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps([{"id": "admin", "password": "admin-pass", "superuser": True}]),
+        encoding="utf-8",
+    )
+    with oauth_settings(
+        tmp_path,
+        brain_auth_users_file=str(users_file),
+        brain_user_id="admin",
+    ):
+        client = TestClient(app, follow_redirects=False)
+        admin_token = issue_test_oauth_token(
+            client,
+            tmp_path,
+            scope="brain.memory.read brain.memory.write",
+            user_id="admin",
+            password="admin-pass",
+        )
+        headers = {"Authorization": f"Bearer {admin_token}"}
+        delete_response = client.delete("/admin/users/admin", headers=headers)
+        demote_response = client.put("/admin/users/admin", headers=headers, json={"superuser": False})
+
+    assert delete_response.status_code == 400
+    assert demote_response.status_code == 400
 
 
 def test_chatgpt_app_write_rate_limit(tmp_path) -> None:

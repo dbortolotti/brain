@@ -30,6 +30,7 @@
         <button class="tab" type="button" data-tab="profile">Profile</button>
         <button class="tab" type="button" data-tab="prompt">Prompt</button>
         <button class="tab" type="button" data-tab="controls">Data Controls</button>
+        <button class="tab" type="button" data-tab="users">Users</button>
       </section>
 
       <section id="status" class="status" role="status"></section>
@@ -164,6 +165,34 @@
             <div id="controlsMemoryItems" class="list"></div>
           </article>
         </div>
+      </section>
+
+      <section id="users" class="panel" aria-labelledby="usersTitle">
+        <div class="panel-head">
+          <h2 id="usersTitle">User Admin</h2>
+          <button id="refreshUsers" type="button">Refresh</button>
+        </div>
+        <div class="grid two">
+          <article>
+            <h3>Create User</h3>
+            <form id="userForm" class="stack">
+              <input id="newUserId" autocomplete="off" placeholder="user id" />
+              <input id="newUserDisplayName" autocomplete="name" placeholder="display name" />
+              <input id="newUserEmail" autocomplete="email" placeholder="email" />
+              <input id="newUserPassword" type="password" autocomplete="new-password" placeholder="password" />
+              <label class="check-row">
+                <input id="newUserSuperuser" type="checkbox" />
+                <span>Superuser</span>
+              </label>
+              <button type="submit">Create</button>
+            </form>
+          </article>
+          <article>
+            <h3>Registry</h3>
+            <div id="usersRegistry" class="result">Load users to inspect registry status.</div>
+          </article>
+        </div>
+        <div id="usersList" class="list prompt-grid"></div>
       </section>
     </main>
     <footer class="footer-links">

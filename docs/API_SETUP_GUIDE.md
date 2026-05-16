@@ -217,11 +217,24 @@ Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 [Production Secrets](production-secrets.md) for secret handling.
 
 For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
-records with `id`/`user_id` and `password` fields. OAuth authorization stores the
-selected `user_id` in issued tokens; HTTP and MCP memory operations then scope
-Brain DB rows, profile context files, Palate data, recall logs, and app audit
-records to that user. Existing single-user data remains under
-`BRAIN_USER_ID=default`.
+records with `id`/`user_id`, `password`, optional `display_name`, optional
+`email`, and optional `superuser` fields. OAuth authorization stores the selected
+`user_id` in issued tokens; HTTP and MCP memory operations then scope Brain DB
+rows, profile context files, Palate data, recall logs, and app audit records to
+that user. Existing single-user data remains under `BRAIN_USER_ID=default`.
+
+Superusers can manage users from the Brain dashboard's User Admin tab. The
+dashboard calls the admin HTTP endpoints below with the user's bearer token:
+
+```text
+GET    /admin/users
+POST   /admin/users
+PUT    /admin/users/{user_id}
+DELETE /admin/users/{user_id}
+```
+
+These endpoints require full Brain auth plus a superuser user record. They never
+return passwords and refresh the in-process OAuth user registry after edits.
 
 ## MCP Over HTTP
 

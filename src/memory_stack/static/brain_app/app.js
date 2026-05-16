@@ -144,6 +144,22 @@ async function mcpRequest(method, params = {}) {
   return payload;
 }
 
+async function adminRequest(path, { method = "GET", body = null } = {}) {
+  const response = await fetch(path, {
+    method,
+    headers: {
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...tokenHeader(),
+    },
+    body: body ? JSON.stringify(body) : null,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.detail || payload.error || `HTTP ${response.status}`);
+  }
+  return payload;
+}
+
 function renderList(target, rows, emptyText, formatter) {
   target.innerHTML = "";
   if (!rows || rows.length === 0) {
@@ -285,6 +301,96 @@ async function refreshControls() {
   setStatus("Data controls loaded.");
 }
 
+async function refreshUsers() {
+  setStatus("Loading users...");
+  const payload = await adminRequest("/admin/users");
+  $("usersRegistry").textContent = JSON.stringify({
+    users_file: payload.users_file,
+    users_file_configured: payload.users_file_configured,
+    current_user_id: payload.current_user_id,
+    superuser_ids: payload.superuser_ids,
+  }, null, 2);
+  renderEditableUsers(payload.users || []);
+  setStatus("Users loaded.");
+}
+
+function renderEditableUsers(users) {
+  const target = $("usersList");
+  target.innerHTML = "";
+  if (!users.length) {
+    target.innerHTML = '<div class="item"><div class="item-meta">No users configured.</div></div>';
+    return;
+  }
+  users.forEach((user) => {
+    const wrapper = document.createElement("article");
+    wrapper.className = "item edit-item user-item";
+    wrapper.dataset.userId = user.id;
+    wrapper.innerHTML = `
+      <div class="item-title">${safe(user.id)}</div>
+      <label>Display name</label>
+      <input data-field="display_name" value="${safe(user.display_name || "")}" />
+      <label>Email</label>
+      <input data-field="email" value="${safe(user.email || "")}" />
+      <label>New password</label>
+      <input data-field="password" type="password" autocomplete="new-password" placeholder="leave unchanged" />
+      <label class="check-row">
+        <input data-field="superuser" type="checkbox" ${user.superuser ? "checked" : ""} />
+        <span>Superuser</span>
+      </label>
+      <div class="form-row">
+        <button type="button" data-action="save-user">Save</button>
+        <button class="danger" type="button" data-action="delete-user">Delete</button>
+      </div>
+    `;
+    target.appendChild(wrapper);
+  });
+}
+
+async function createUser() {
+  setStatus("Creating user...");
+  await adminRequest("/admin/users", {
+    method: "POST",
+    body: {
+      id: $("newUserId").value,
+      display_name: $("newUserDisplayName").value,
+      email: $("newUserEmail").value,
+      password: $("newUserPassword").value,
+      superuser: $("newUserSuperuser").checked,
+    },
+  });
+  $("newUserId").value = "";
+  $("newUserDisplayName").value = "";
+  $("newUserEmail").value = "";
+  $("newUserPassword").value = "";
+  $("newUserSuperuser").checked = false;
+  await refreshUsers();
+}
+
+async function saveUser(container) {
+  const userId = container.dataset.userId;
+  const password = container.querySelector('[data-field="password"]').value;
+  const body = {
+    display_name: container.querySelector('[data-field="display_name"]').value,
+    email: container.querySelector('[data-field="email"]').value,
+    superuser: container.querySelector('[data-field="superuser"]').checked,
+  };
+  if (password) body.password = password;
+  setStatus("Saving user...");
+  await adminRequest(`/admin/users/${encodeURIComponent(userId)}`, {
+    method: "PUT",
+    body,
+  });
+  await refreshUsers();
+}
+
+async function deleteUser(container) {
+  const userId = container.dataset.userId;
+  if (!window.confirm(`Delete user ${userId}? Existing user-scoped Brain data is not deleted.`)) return;
+  setStatus("Deleting user...");
+  await adminRequest(`/admin/users/${encodeURIComponent(userId)}`, { method: "DELETE" });
+  await refreshUsers();
+}
+
 function promptText(promptPayload) {
   return promptPayload?.messages?.[0]?.content?.text || JSON.stringify(promptPayload, null, 2);
 }
@@ -361,6 +467,9 @@ function showTab(tabName) {
   document.querySelectorAll(".panel").forEach((panel) => {
     panel.classList.toggle("active", panel.id === tabName);
   });
+  if (tabName === "users" && state.token) {
+    refreshUsers().catch((error) => setStatus(error.message, true));
+  }
 }
 
 function wireEvents() {
@@ -386,6 +495,7 @@ function wireEvents() {
   $("refreshProfile").addEventListener("click", () => refreshProfile().catch((error) => setStatus(error.message, true)));
   $("refreshPrompt").addEventListener("click", () => refreshPrompt().catch((error) => setStatus(error.message, true)));
   $("refreshControls").addEventListener("click", () => refreshControls().catch((error) => setStatus(error.message, true)));
+  $("refreshUsers").addEventListener("click", () => refreshUsers().catch((error) => setStatus(error.message, true)));
   $("recentCards").addEventListener("click", (event) => {
     const card = event.target.closest(".memory-card");
     if (!card) return;
@@ -490,6 +600,17 @@ function wireEvents() {
     const container = event.target.closest(".edit-item");
     if (!action || !container) return;
     const operation = action === "save-profile" ? saveProfileItem : forgetProfileItem;
+    operation(container).catch((error) => setStatus(error.message, true));
+  });
+  $("userForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    createUser().catch((error) => setStatus(error.message, true));
+  });
+  $("usersList").addEventListener("click", (event) => {
+    const action = event.target?.dataset?.action;
+    const container = event.target.closest(".user-item");
+    if (!action || !container) return;
+    const operation = action === "save-user" ? saveUser : deleteUser;
     operation(container).catch((error) => setStatus(error.message, true));
   });
 }
