@@ -6,12 +6,14 @@ from memory_stack.cfg import Settings
 from memory_stack.profile_context import list_profile_context
 
 
-def brain_session_payload(settings: Settings) -> dict[str, Any]:
+def brain_session_payload(settings: Settings, *, user_id: str | None = None) -> dict[str, Any]:
     session_id = settings.brain_agent_memory_session_id.strip()
     if not session_id:
         raise ValueError("BRAIN_AGENT_MEMORY_SESSION_ID must not be blank.")
-    profile_context_records = list_profile_context(settings)
+    active_user_id = user_id or settings.brain_user_id
+    profile_context_records = list_profile_context(settings, user_id=active_user_id)
     return {
+        "user_id": active_user_id,
         "session_id": session_id,
         "profile_name": settings.brain_owner_name,
         "profile_full_name": settings.brain_owner_full_name,

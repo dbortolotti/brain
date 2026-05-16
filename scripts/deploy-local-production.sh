@@ -183,6 +183,7 @@ BRAIN_AUTH_SCOPES="brain.memory.read brain.memory.write"
 BRAIN_AUTH_REQUIRE_PKCE=true
 BRAIN_AUTH_ACCESS_TOKEN_SECONDS=3600
 BRAIN_AUTH_REFRESH_TOKEN_SECONDS=2592000
+BRAIN_USER_ID=default
 BRAIN_REQUEST_LOG_ENABLED=true
 BRAIN_REQUEST_LOG_PATH=$LOG_DIR/requests/{date}.jsonl
 BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192
@@ -235,6 +236,7 @@ ensure_env_var "BRAIN_AUTH_SCOPES" '"brain.memory.read brain.memory.write"'
 ensure_env_var "BRAIN_AUTH_REQUIRE_PKCE" "true"
 ensure_env_var "BRAIN_AUTH_ACCESS_TOKEN_SECONDS" "3600"
 ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
+ensure_env_var "BRAIN_USER_ID" "default"
 ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
 set_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests/{date}.jsonl"
 set_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "8192"
@@ -352,6 +354,12 @@ log "starting production Postgres/pgvector and Neo4j containers"
     DB_PORT="${DB_PORT:-15432}" \
     BRAIN_PROD_ROOT="$PROD_ROOT" \
     docker compose -f deployment/docker-compose.prod.yml up -d postgres neo4j
+)
+
+log "running Brain database migrations"
+(
+  cd "$RELEASE_DIR"
+  uv run alembic upgrade head
 )
 
 MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"

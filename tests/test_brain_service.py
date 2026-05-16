@@ -339,5 +339,25 @@ def test_markdown_source_record_stores_citation_metadata_without_raw_text(tmp_pa
     )
 
 
+def test_memory_store_is_scoped_by_user_id(tmp_path) -> None:
+    db_url = f"sqlite:///{tmp_path / 'brain.db'}"
+    settings_a = Settings(brain_database_url=db_url, brain_user_id="user_a")
+    settings_b = Settings(brain_database_url=db_url, brain_user_id="user_b")
+
+    receipt_a = remember(RememberRequest(input="Daniele prefers green tea."), settings_a)
+    receipt_b = remember(RememberRequest(input="Daniele prefers green tea."), settings_b)
+
+    memory_id_a = receipt_a.memory_cards[0].id
+    memory_id_b = receipt_b.memory_cards[0].id
+    assert memory_id_a != memory_id_b
+    assert BrainStore(settings_a).get_memory(memory_id_b) is None
+    assert BrainStore(settings_b).get_memory(memory_id_a) is None
+
+    recall_a = recall(RecallRequest(query="green tea"), settings_a)
+    recall_b = recall(RecallRequest(query="green tea"), settings_b)
+    assert {fact["memory_id"] for fact in recall_a.facts} == {memory_id_a}
+    assert {fact["memory_id"] for fact in recall_b.facts} == {memory_id_b}
+
+
 def brain_test_settings(tmp_path) -> Settings:
     return Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")

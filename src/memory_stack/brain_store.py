@@ -15,6 +15,7 @@ from memory_stack.cfg import Settings, repo_path
 
 
 WORD_RE = re.compile(r"[a-z0-9]+")
+DEFAULT_USER_ID = "default"
 
 
 def now_utc() -> datetime:
@@ -39,6 +40,11 @@ def content_hash(*values: Any) -> str:
 def stable_id(prefix: str, *values: Any) -> str:
     digest = content_hash(*values).split(":", 1)[1][:16]
     return f"{prefix}_{digest}"
+
+
+def normalize_user_id(value: str | None) -> str:
+    normalized = normalize_name(value or DEFAULT_USER_ID).replace(" ", "_")
+    return normalized or DEFAULT_USER_ID
 
 
 def visible_memory_status_filter(
@@ -83,10 +89,43 @@ def row_dict(row: Any) -> dict[str, Any]:
 
 
 class BrainStore:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, *, user_id: str | None = None) -> None:
         self.settings = settings
+        self.user_id = normalize_user_id(user_id or settings.brain_user_id)
         self.engine = create_brain_engine(settings)
         schema.metadata.create_all(self.engine)
+        self.ensure_user()
+
+    def ensure_user(self) -> None:
+        with self.engine.begin() as conn:
+            try:
+                conn.execute(
+                    insert(schema.brain_users).values(
+                        id=self.user_id,
+                        display_name=self.user_id,
+                        status="active",
+                        metadata_json={},
+                    )
+                )
+            except IntegrityError:
+                return
+
+    def _user_filter(self, table: Any) -> Any:
+        return table.c.user_id == self.user_id
+
+    def _scoped_hash(self, *values: Any) -> str:
+        return content_hash("user", self.user_id, *values)
+
+    def _scoped_id(self, prefix: str, *values: Any) -> str:
+        return stable_id(prefix, "user", self.user_id, *values)
+
+    def _object_id(self, prefix: str, supplied_id: Any | None, *fallback_values: Any) -> str:
+        if supplied_id:
+            raw_id = str(supplied_id)
+            if self.user_id == DEFAULT_USER_ID:
+                return raw_id
+            return self._scoped_id(prefix, "external", raw_id)
+        return stable_id(prefix, *fallback_values)
 
     def create_ingestion_run(
         self,
@@ -96,9 +135,10 @@ class BrainStore:
         raw_input_preview: str,
         metadata_json: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        run_id = stable_id("ing", input_type, input_hash, now_utc().isoformat())
+        run_id = self._scoped_id("ing", input_type, input_hash, now_utc().isoformat())
         values = {
             "id": run_id,
+            "user_id": self.user_id,
             "input_type": input_type,
             "input_hash": input_hash,
             "raw_input_preview": raw_input_preview[:500],
@@ -108,7 +148,9 @@ class BrainStore:
         with self.engine.begin() as conn:
             conn.execute(insert(schema.ingestion_runs).values(**values))
             row = conn.execute(
-                select(schema.ingestion_runs).where(schema.ingestion_runs.c.id == run_id)
+                select(schema.ingestion_runs).where(
+                    and_(schema.ingestion_runs.c.id == run_id, self._user_filter(schema.ingestion_runs))
+                )
             ).one()
         return row_dict(row)
 
@@ -123,7 +165,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             conn.execute(
                 update(schema.ingestion_runs)
-                .where(schema.ingestion_runs.c.id == run_id)
+                .where(and_(schema.ingestion_runs.c.id == run_id, self._user_filter(schema.ingestion_runs)))
                 .values(
                     status=status,
                     source_id=source_id,
@@ -134,15 +176,17 @@ class BrainStore:
 
     def upsert_source(self, values: dict[str, Any]) -> tuple[dict[str, Any], bool]:
         raw_text = values.get("raw_text") or ""
-        source_hash = values.get("content_hash") or content_hash(
+        raw_source_hash = values.get("content_hash") or content_hash(
             values.get("kind"),
             values.get("uri"),
             values.get("title"),
             raw_text,
         )
-        source_id = values.get("id") or stable_id("src", source_hash)
+        source_hash = self._scoped_hash("source", raw_source_hash)
+        source_id = self._object_id("src", values.get("id"), source_hash)
         payload = {
             "id": source_id,
+            "user_id": self.user_id,
             "kind": values["kind"],
             "title": values.get("title"),
             "uri": values.get("uri"),
@@ -163,7 +207,12 @@ class BrainStore:
             except IntegrityError:
                 created = False
             row = conn.execute(
-                select(schema.sources).where(schema.sources.c.content_hash == source_hash)
+                select(schema.sources).where(
+                    and_(
+                        schema.sources.c.content_hash == source_hash,
+                        self._user_filter(schema.sources),
+                    )
+                )
             ).one()
         return row_dict(row), created
 
@@ -197,6 +246,7 @@ class BrainStore:
             row = conn.execute(
                 select(schema.entities).where(
                     and_(
+                        self._user_filter(schema.entities),
                         schema.entities.c.type == entity_type,
                         schema.entities.c.normalized_name == normalized_name,
                     )
@@ -219,6 +269,8 @@ class BrainStore:
                 )
                 .where(
                     and_(
+                        self._user_filter(schema.entities),
+                        self._user_filter(schema.entity_aliases),
                         schema.entities.c.type == entity_type,
                         schema.entity_aliases.c.normalized_alias == normalized_alias,
                     )
@@ -235,12 +287,13 @@ class BrainStore:
         confidence: str = "medium",
         metadata_json: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], bool]:
-        entity_id = stable_id("ent", entity_type, normalized_name)
+        entity_id = self._scoped_id("ent", entity_type, normalized_name)
         with self.engine.begin() as conn:
             try:
                 conn.execute(
                     insert(schema.entities).values(
                         id=entity_id,
+                        user_id=self.user_id,
                         type=entity_type,
                         canonical_name=canonical_name,
                         normalized_name=normalized_name,
@@ -253,7 +306,9 @@ class BrainStore:
             except IntegrityError:
                 created = False
             row = conn.execute(
-                select(schema.entities).where(schema.entities.c.id == entity_id)
+                select(schema.entities).where(
+                    and_(schema.entities.c.id == entity_id, self._user_filter(schema.entities))
+                )
             ).one()
         return row_dict(row), created
 
@@ -286,11 +341,12 @@ class BrainStore:
         normalized = normalize_name(alias)
         if not normalized:
             return
-        alias_id = stable_id("alias", entity_id, normalized)
+        alias_id = self._scoped_id("alias", entity_id, normalized)
         try:
             conn.execute(
                 insert(schema.entity_aliases).values(
                     id=alias_id,
+                    user_id=self.user_id,
                     entity_id=entity_id,
                     alias=alias,
                     normalized_alias=normalized,
@@ -302,15 +358,17 @@ class BrainStore:
             return
 
     def upsert_memory_card(self, values: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-        card_hash = values.get("content_hash") or content_hash(
+        raw_card_hash = values.get("content_hash") or content_hash(
             values.get("kind"),
             values.get("statement"),
             values.get("observed_at"),
             values.get("source_id"),
         )
-        memory_id = values.get("id") or stable_id("mem", card_hash)
+        card_hash = self._scoped_hash("memory", raw_card_hash)
+        memory_id = self._object_id("mem", values.get("id"), card_hash)
         payload = {
             "id": memory_id,
+            "user_id": self.user_id,
             "kind": values["kind"],
             "statement": values["statement"],
             "summary": values.get("summary"),
@@ -330,7 +388,12 @@ class BrainStore:
             except IntegrityError:
                 created = False
             row = conn.execute(
-                select(schema.memory_cards).where(schema.memory_cards.c.content_hash == card_hash)
+                select(schema.memory_cards).where(
+                    and_(
+                        schema.memory_cards.c.content_hash == card_hash,
+                        self._user_filter(schema.memory_cards),
+                    )
+                )
             ).one()
         return row_dict(row), created
 
@@ -346,6 +409,7 @@ class BrainStore:
             try:
                 conn.execute(
                     insert(schema.memory_entities).values(
+                        user_id=self.user_id,
                         memory_id=memory_id,
                         entity_id=entity_id,
                         role=role,
@@ -366,7 +430,7 @@ class BrainStore:
         status: str = "current",
         metadata_json: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], bool]:
-        relationship_id = stable_id(
+        relationship_id = self._scoped_id(
             "rel",
             subject_entity_id,
             predicate,
@@ -375,6 +439,7 @@ class BrainStore:
         )
         payload = {
             "id": relationship_id,
+            "user_id": self.user_id,
             "subject_entity_id": subject_entity_id,
             "predicate": predicate,
             "object_entity_id": object_entity_id,
@@ -390,7 +455,12 @@ class BrainStore:
             except IntegrityError:
                 created = False
             row = conn.execute(
-                select(schema.relationships).where(schema.relationships.c.id == relationship_id)
+                select(schema.relationships).where(
+                    and_(
+                        schema.relationships.c.id == relationship_id,
+                        self._user_filter(schema.relationships),
+                    )
+                )
             ).one()
         return row_dict(row), created
 
@@ -403,9 +473,10 @@ class BrainStore:
         confidence: str = "medium",
         metadata_json: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], bool]:
-        link_id = stable_id("mlink", from_memory_id, relation, to_memory_id)
+        link_id = self._scoped_id("mlink", from_memory_id, relation, to_memory_id)
         payload = {
             "id": link_id,
+            "user_id": self.user_id,
             "from_memory_id": from_memory_id,
             "relation": relation,
             "to_memory_id": to_memory_id,
@@ -419,7 +490,9 @@ class BrainStore:
             except IntegrityError:
                 created = False
             row = conn.execute(
-                select(schema.memory_links).where(schema.memory_links.c.id == link_id)
+                select(schema.memory_links).where(
+                    and_(schema.memory_links.c.id == link_id, self._user_filter(schema.memory_links))
+                )
             ).one()
         return row_dict(row), created
 
@@ -433,9 +506,10 @@ class BrainStore:
         reminder_policy: str | None = None,
         metadata_json: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], bool]:
-        open_loop_id = stable_id("loop", memory_id)
+        open_loop_id = self._scoped_id("loop", memory_id)
         payload = {
             "id": open_loop_id,
+            "user_id": self.user_id,
             "memory_id": memory_id,
             "status": status,
             "priority": priority,
@@ -450,7 +524,9 @@ class BrainStore:
             except IntegrityError:
                 created = False
             row = conn.execute(
-                select(schema.open_loops).where(schema.open_loops.c.id == open_loop_id)
+                select(schema.open_loops).where(
+                    and_(schema.open_loops.c.id == open_loop_id, self._user_filter(schema.open_loops))
+                )
             ).one()
         return row_dict(row), created
 
@@ -462,15 +538,17 @@ class BrainStore:
         dataset: str,
         projection_hash: str,
     ) -> None:
-        sync_id = stable_id("sync", object_type, object_id, dataset)
+        sync_id = self._scoped_id("sync", object_type, object_id, dataset)
         with self.engine.begin() as conn:
             row = conn.execute(
-                select(schema.cognee_sync).where(schema.cognee_sync.c.id == sync_id)
+                select(schema.cognee_sync).where(
+                    and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync))
+                )
             ).first()
             if row:
                 conn.execute(
                     update(schema.cognee_sync)
-                    .where(schema.cognee_sync.c.id == sync_id)
+                    .where(and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync)))
                     .values(
                         projection_hash=projection_hash,
                         status="pending",
@@ -482,6 +560,7 @@ class BrainStore:
             conn.execute(
                 insert(schema.cognee_sync).values(
                     id=sync_id,
+                    user_id=self.user_id,
                     object_type=object_type,
                     object_id=object_id,
                     dataset=dataset,
@@ -499,6 +578,7 @@ class BrainStore:
         projection_hash: str | None = None,
     ) -> int:
         filters = [
+            self._user_filter(schema.cognee_sync),
             schema.cognee_sync.c.object_type == object_type,
             schema.cognee_sync.c.object_id == object_id,
         ]
@@ -518,7 +598,9 @@ class BrainStore:
     def get_memory(self, memory_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
-                select(schema.memory_cards).where(schema.memory_cards.c.id == memory_id)
+                select(schema.memory_cards).where(
+                    and_(schema.memory_cards.c.id == memory_id, self._user_filter(schema.memory_cards))
+                )
             ).first()
             if row is None:
                 return None
@@ -537,7 +619,9 @@ class BrainStore:
     ) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
-                select(schema.sources).where(schema.sources.c.id == source_id)
+                select(schema.sources).where(
+                    and_(schema.sources.c.id == source_id, self._user_filter(schema.sources))
+                )
             ).first()
         if row is None:
             return None
@@ -551,13 +635,18 @@ class BrainStore:
     def get_entity(self, entity_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
-                select(schema.entities).where(schema.entities.c.id == entity_id)
+                select(schema.entities).where(
+                    and_(schema.entities.c.id == entity_id, self._user_filter(schema.entities))
+                )
             ).first()
             if row is None:
                 return None
             aliases = conn.execute(
                 select(schema.entity_aliases).where(
-                    schema.entity_aliases.c.entity_id == entity_id
+                    and_(
+                        schema.entity_aliases.c.entity_id == entity_id,
+                        self._user_filter(schema.entity_aliases),
+                    )
                 )
             ).fetchall()
         return {**row_dict(row), "aliases": [row_dict(alias) for alias in aliases]}
@@ -567,7 +656,13 @@ class BrainStore:
             row = conn.execute(
                 select(schema.open_loops, schema.memory_cards.c.statement)
                 .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
-                .where(schema.open_loops.c.id == loop_id)
+                .where(
+                    and_(
+                        schema.open_loops.c.id == loop_id,
+                        self._user_filter(schema.open_loops),
+                        self._user_filter(schema.memory_cards),
+                    )
+                )
             ).first()
         if row is None:
             return None
@@ -576,21 +671,30 @@ class BrainStore:
     def get_ingestion_run(self, run_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
-                select(schema.ingestion_runs).where(schema.ingestion_runs.c.id == run_id)
+                select(schema.ingestion_runs).where(
+                    and_(
+                        schema.ingestion_runs.c.id == run_id,
+                        self._user_filter(schema.ingestion_runs),
+                    )
+                )
             ).first()
         return row_dict(row) if row is not None else None
 
     def get_cognee_sync(self, object_id: str) -> list[dict[str, Any]]:
         with self.engine.begin() as conn:
             rows = conn.execute(
-                select(schema.cognee_sync).where(schema.cognee_sync.c.object_id == object_id)
+                select(schema.cognee_sync).where(
+                    and_(schema.cognee_sync.c.object_id == object_id, self._user_filter(schema.cognee_sync))
+                )
             ).fetchall()
         return [row_dict(row) for row in rows]
 
     def get_cognee_sync_by_id(self, sync_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
-                select(schema.cognee_sync).where(schema.cognee_sync.c.id == sync_id)
+                select(schema.cognee_sync).where(
+                    and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync))
+                )
             ).first()
         return row_dict(row) if row is not None else None
 
@@ -603,7 +707,7 @@ class BrainStore:
         dataset: str | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        filters = []
+        filters = [self._user_filter(schema.cognee_sync)]
         if statuses:
             filters.append(schema.cognee_sync.c.status.in_(list(statuses)))
         if object_type:
@@ -646,7 +750,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.cognee_sync)
-                .where(schema.cognee_sync.c.id == sync_id)
+                .where(and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync)))
                 .values(**values)
             )
         return result.rowcount > 0
@@ -659,7 +763,7 @@ class BrainStore:
         include_deleted: bool = False,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        filters = []
+        filters = [self._user_filter(schema.memory_cards)]
         if since is not None:
             filters.append(schema.memory_cards.c.created_at >= since)
         if source_id is not None:
@@ -696,6 +800,12 @@ class BrainStore:
                     schema.memory_entities.c.memory_id == schema.memory_cards.c.id,
                 )
                 .where(and_(schema.memory_entities.c.entity_id == entity_id, status_filter))
+                .where(
+                    and_(
+                        self._user_filter(schema.memory_cards),
+                        self._user_filter(schema.memory_entities),
+                    )
+                )
                 .order_by(schema.memory_cards.c.created_at.desc())
                 .limit(limit)
             ).fetchall()
@@ -715,7 +825,7 @@ class BrainStore:
         include_deleted: bool = False,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        filters = []
+        filters = [self._user_filter(schema.sources)]
         if since is not None:
             filters.append(schema.sources.c.created_at >= since)
         if not include_deleted:
@@ -736,7 +846,7 @@ class BrainStore:
         since: datetime | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        filters = []
+        filters = [self._user_filter(schema.ingestion_runs)]
         if since is not None:
             filters.append(schema.ingestion_runs.c.started_at >= since)
         where_clause = and_(*filters) if filters else True
@@ -762,7 +872,7 @@ class BrainStore:
         summary: str | None = None,
         metadata_json: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        audit_id = stable_id(
+        audit_id = self._scoped_id(
             "awa",
             tool_name,
             status,
@@ -773,6 +883,7 @@ class BrainStore:
         )
         values = {
             "id": audit_id,
+            "user_id": self.user_id,
             "tool_name": tool_name,
             "client_id": client_id,
             "subject": subject,
@@ -786,7 +897,9 @@ class BrainStore:
         with self.engine.begin() as conn:
             conn.execute(insert(schema.app_write_audit).values(**values))
             row = conn.execute(
-                select(schema.app_write_audit).where(schema.app_write_audit.c.id == audit_id)
+                select(schema.app_write_audit).where(
+                    and_(schema.app_write_audit.c.id == audit_id, self._user_filter(schema.app_write_audit))
+                )
             ).one()
         return row_dict(row)
 
@@ -796,7 +909,7 @@ class BrainStore:
         since: datetime | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        filters = []
+        filters = [self._user_filter(schema.app_write_audit)]
         if since is not None:
             filters.append(schema.app_write_audit.c.created_at >= since)
         where_clause = and_(*filters) if filters else True
@@ -816,7 +929,7 @@ class BrainStore:
         since: datetime | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        filters = []
+        filters = [self._user_filter(schema.memory_links)]
         if relations:
             filters.append(schema.memory_links.c.relation.in_(list(relations)))
         if since is not None:
@@ -859,7 +972,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             direct = conn.execute(
                 select(schema.memory_cards)
-                .where(and_(status_filter, or_(*text_filters)))
+                .where(and_(self._user_filter(schema.memory_cards), status_filter, or_(*text_filters)))
                 .limit(limit)
             ).fetchall()
             entity_rows = conn.execute(
@@ -872,6 +985,9 @@ class BrainStore:
                 .where(
                     and_(
                         status_filter,
+                        self._user_filter(schema.memory_cards),
+                        self._user_filter(schema.memory_entities),
+                        self._user_filter(schema.entities),
                         or_(
                             *[
                                 schema.entities.c.normalized_name.ilike(f"%{term}%")
@@ -919,7 +1035,11 @@ class BrainStore:
         with self.engine.begin() as conn:
             row = conn.execute(
                 select(schema.entities).where(
-                    and_(type_filter, schema.entities.c.normalized_name == normalized)
+                    and_(
+                        self._user_filter(schema.entities),
+                        type_filter,
+                        schema.entities.c.normalized_name == normalized,
+                    )
                 )
             ).first()
             if row:
@@ -928,7 +1048,12 @@ class BrainStore:
                 select(schema.entities)
                 .join(schema.entity_aliases, schema.entity_aliases.c.entity_id == schema.entities.c.id)
                 .where(
-                    and_(type_filter, schema.entity_aliases.c.normalized_alias == normalized)
+                    and_(
+                        self._user_filter(schema.entities),
+                        self._user_filter(schema.entity_aliases),
+                        type_filter,
+                        schema.entity_aliases.c.normalized_alias == normalized,
+                    )
                 )
             ).first()
             if row:
@@ -962,6 +1087,8 @@ class BrainStore:
                 .where(
                     and_(
                         schema.memory_entities.c.entity_id == entity["id"],
+                        self._user_filter(schema.memory_cards),
+                        self._user_filter(schema.memory_entities),
                         status_filter,
                     )
                 )
@@ -991,10 +1118,13 @@ class BrainStore:
                             schema.relationships.c.subject_entity_id == entity["id"],
                             schema.relationships.c.object_entity_id == entity["id"],
                         ),
+                        self._user_filter(schema.relationships),
+                        self._user_filter(subject_entities),
+                        self._user_filter(object_entities),
                         schema.relationships.c.status == "current",
                         or_(
                             schema.relationships.c.evidence_memory_id.is_(None),
-                            status_filter,
+                            and_(self._user_filter(schema.memory_cards), status_filter),
                         ),
                     )
                 )
@@ -1009,13 +1139,21 @@ class BrainStore:
                 .where(
                     and_(
                         schema.memory_entities.c.entity_id == entity["id"],
+                        self._user_filter(schema.open_loops),
+                        self._user_filter(schema.memory_cards),
+                        self._user_filter(schema.memory_entities),
                         schema.open_loops.c.status == "open",
                         status_filter,
                     )
                 )
             ).fetchall()
             aliases = conn.execute(
-                select(schema.entity_aliases).where(schema.entity_aliases.c.entity_id == entity["id"])
+                select(schema.entity_aliases).where(
+                    and_(
+                        schema.entity_aliases.c.entity_id == entity["id"],
+                        self._user_filter(schema.entity_aliases),
+                    )
+                )
             ).fetchall()
 
         memories = [
@@ -1053,7 +1191,9 @@ class BrainStore:
         status: str = "open",
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        filters = [] if status == "any" else [schema.open_loops.c.status == status]
+        filters = [self._user_filter(schema.open_loops), self._user_filter(schema.memory_cards)]
+        if status != "any":
+            filters.append(schema.open_loops.c.status == status)
         if topic:
             filters.append(schema.memory_cards.c.statement.ilike(f"%{topic}%"))
         with self.engine.begin() as conn:
@@ -1122,7 +1262,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.open_loops)
-                .where(schema.open_loops.c.id == loop_id)
+                .where(and_(schema.open_loops.c.id == loop_id, self._user_filter(schema.open_loops)))
                 .values(**values)
             )
         return result.rowcount > 0
@@ -1131,7 +1271,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.open_loops)
-                .where(schema.open_loops.c.id == loop_id)
+                .where(and_(schema.open_loops.c.id == loop_id, self._user_filter(schema.open_loops)))
                 .values(status=status, updated_at=now_utc())
             )
         return result.rowcount > 0
@@ -1154,7 +1294,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(table)
-                .where(table.c.id == object_id)
+                .where(and_(table.c.id == object_id, self._user_filter(table)))
                 .values(status="deleted", updated_at=now_utc())
             )
             if result.rowcount > 0 and object_type in {"memory", "source"}:
@@ -1164,6 +1304,7 @@ class BrainStore:
                         and_(
                             schema.cognee_sync.c.object_type == object_type,
                             schema.cognee_sync.c.object_id == object_id,
+                            self._user_filter(schema.cognee_sync),
                         )
                     )
                     .values(status="stale", updated_at=now_utc())
@@ -1174,7 +1315,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.memory_cards)
-                .where(schema.memory_cards.c.id == memory_id)
+                .where(and_(schema.memory_cards.c.id == memory_id, self._user_filter(schema.memory_cards)))
                 .values(status=status, updated_at=now_utc())
             )
             if result.rowcount > 0:
@@ -1184,6 +1325,7 @@ class BrainStore:
                         and_(
                             schema.cognee_sync.c.object_type == "memory",
                             schema.cognee_sync.c.object_id == memory_id,
+                            self._user_filter(schema.cognee_sync),
                         )
                     )
                     .values(status="stale", updated_at=now_utc())
@@ -1194,7 +1336,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.sources)
-                .where(schema.sources.c.id == source_id)
+                .where(and_(schema.sources.c.id == source_id, self._user_filter(schema.sources)))
                 .values(status=status, updated_at=now_utc())
             )
             if result.rowcount > 0:
@@ -1204,6 +1346,7 @@ class BrainStore:
                         and_(
                             schema.cognee_sync.c.object_type == "source",
                             schema.cognee_sync.c.object_id == source_id,
+                            self._user_filter(schema.cognee_sync),
                         )
                     )
                     .values(status="stale", updated_at=now_utc())
@@ -1226,7 +1369,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.entities)
-                .where(schema.entities.c.id == entity_id)
+                .where(and_(schema.entities.c.id == entity_id, self._user_filter(schema.entities)))
                 .values(**values)
             )
         return result.rowcount > 0
@@ -1254,6 +1397,7 @@ class BrainStore:
                 select(schema.entity_aliases).where(
                     and_(
                         schema.entity_aliases.c.entity_id == primary_entity_id,
+                        self._user_filter(schema.entity_aliases),
                         schema.entity_aliases.c.normalized_alias
                         == normalize_name(duplicate["canonical_name"]),
                     )
@@ -1270,7 +1414,10 @@ class BrainStore:
                 moved_aliases += 1
             duplicate_alias_rows = conn.execute(
                 select(schema.entity_aliases).where(
-                    schema.entity_aliases.c.entity_id == duplicate_entity_id
+                    and_(
+                        schema.entity_aliases.c.entity_id == duplicate_entity_id,
+                        self._user_filter(schema.entity_aliases),
+                    )
                 )
             ).fetchall()
             for alias_row in duplicate_alias_rows:
@@ -1279,6 +1426,7 @@ class BrainStore:
                     select(schema.entity_aliases).where(
                         and_(
                             schema.entity_aliases.c.entity_id == primary_entity_id,
+                            self._user_filter(schema.entity_aliases),
                             schema.entity_aliases.c.normalized_alias == alias["normalized_alias"],
                         )
                     )
@@ -1294,13 +1442,19 @@ class BrainStore:
                     moved_aliases += 1
             conn.execute(
                 delete(schema.entity_aliases).where(
-                    schema.entity_aliases.c.entity_id == duplicate_entity_id
+                    and_(
+                        schema.entity_aliases.c.entity_id == duplicate_entity_id,
+                        self._user_filter(schema.entity_aliases),
+                    )
                 )
             )
 
             duplicate_memory_rows = conn.execute(
                 select(schema.memory_entities).where(
-                    schema.memory_entities.c.entity_id == duplicate_entity_id
+                    and_(
+                        schema.memory_entities.c.entity_id == duplicate_entity_id,
+                        self._user_filter(schema.memory_entities),
+                    )
                 )
             ).fetchall()
             for memory_row in duplicate_memory_rows:
@@ -1311,12 +1465,14 @@ class BrainStore:
                             schema.memory_entities.c.memory_id == memory_link["memory_id"],
                             schema.memory_entities.c.entity_id == primary_entity_id,
                             schema.memory_entities.c.role == memory_link["role"],
+                            self._user_filter(schema.memory_entities),
                         )
                     )
                 ).first()
                 if existing is None:
                     conn.execute(
                         insert(schema.memory_entities).values(
+                            user_id=self.user_id,
                             memory_id=memory_link["memory_id"],
                             entity_id=primary_entity_id,
                             role=memory_link["role"],
@@ -1330,18 +1486,29 @@ class BrainStore:
                             schema.memory_entities.c.memory_id == memory_link["memory_id"],
                             schema.memory_entities.c.entity_id == duplicate_entity_id,
                             schema.memory_entities.c.role == memory_link["role"],
+                            self._user_filter(schema.memory_entities),
                         )
                     )
                 )
 
             subject_result = conn.execute(
                 update(schema.relationships)
-                .where(schema.relationships.c.subject_entity_id == duplicate_entity_id)
+                .where(
+                    and_(
+                        schema.relationships.c.subject_entity_id == duplicate_entity_id,
+                        self._user_filter(schema.relationships),
+                    )
+                )
                 .values(subject_entity_id=primary_entity_id, updated_at=now_utc())
             )
             object_result = conn.execute(
                 update(schema.relationships)
-                .where(schema.relationships.c.object_entity_id == duplicate_entity_id)
+                .where(
+                    and_(
+                        schema.relationships.c.object_entity_id == duplicate_entity_id,
+                        self._user_filter(schema.relationships),
+                    )
+                )
                 .values(object_entity_id=primary_entity_id, updated_at=now_utc())
             )
             repointed_relationships = subject_result.rowcount + object_result.rowcount
@@ -1356,7 +1523,7 @@ class BrainStore:
             )
             archive_result = conn.execute(
                 update(schema.entities)
-                .where(schema.entities.c.id == duplicate_entity_id)
+                .where(and_(schema.entities.c.id == duplicate_entity_id, self._user_filter(schema.entities)))
                 .values(
                     status="archived",
                     metadata_json=duplicate_metadata,
@@ -1387,7 +1554,8 @@ class BrainStore:
         with self.engine.begin() as conn:
             conn.execute(
                 insert(schema.recall_logs).values(
-                    id=stable_id("recall", query, mode, now_utc().isoformat()),
+                    id=self._scoped_id("recall", query, mode, now_utc().isoformat()),
+                    user_id=self.user_id,
                     query=query,
                     mode=mode,
                     retrieved_memory_ids=retrieved_memory_ids,
@@ -1401,7 +1569,13 @@ class BrainStore:
         rows = conn.execute(
             select(schema.memory_entities, schema.entities)
             .join(schema.entities, schema.entities.c.id == schema.memory_entities.c.entity_id)
-            .where(schema.memory_entities.c.memory_id == memory_id)
+            .where(
+                and_(
+                    schema.memory_entities.c.memory_id == memory_id,
+                    self._user_filter(schema.memory_entities),
+                    self._user_filter(schema.entities),
+                )
+            )
         ).fetchall()
         return [
             {
@@ -1417,7 +1591,10 @@ class BrainStore:
     def _memory_relationships(self, conn: Any, memory_id: str) -> list[dict[str, Any]]:
         rows = conn.execute(
             select(schema.relationships).where(
-                schema.relationships.c.evidence_memory_id == memory_id
+                and_(
+                    schema.relationships.c.evidence_memory_id == memory_id,
+                    self._user_filter(schema.relationships),
+                )
             )
         ).fetchall()
         return [row_dict(row) for row in rows]
@@ -1425,9 +1602,12 @@ class BrainStore:
     def _memory_links(self, conn: Any, memory_id: str) -> list[dict[str, Any]]:
         rows = conn.execute(
             select(schema.memory_links).where(
-                or_(
-                    schema.memory_links.c.from_memory_id == memory_id,
-                    schema.memory_links.c.to_memory_id == memory_id,
+                and_(
+                    or_(
+                        schema.memory_links.c.from_memory_id == memory_id,
+                        schema.memory_links.c.to_memory_id == memory_id,
+                    ),
+                    self._user_filter(schema.memory_links),
                 )
             )
         ).fetchall()

@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 from fastapi import HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
+from memory_stack.brain_store import normalize_user_id
 from memory_stack.cfg import Settings
 
 
@@ -31,6 +32,8 @@ class BrainOAuthProvider:
         self.scopes = settings.brain_auth_scope_list
         self.require_pkce = settings.brain_auth_require_pkce
         self.password = ensure_auth_password(settings)
+        self.default_user_id = normalize_user_id(settings.brain_user_id)
+        self.users = load_auth_users(settings, default_password=self.password)
         self.state_path = Path(settings.brain_auth_state_path).expanduser()
         self.access_token_seconds = settings.brain_auth_access_token_seconds
         self.refresh_token_seconds = settings.brain_auth_refresh_token_seconds
@@ -163,6 +166,7 @@ class BrainOAuthProvider:
             service_name=self.service_name,
             request_id=request_id,
             action="/authorize",
+            users=self.users,
         )
 
     async def _complete_authorization(self, request: Request) -> Response:
@@ -220,6 +224,7 @@ class BrainOAuthProvider:
             return None
         return {
             "client_id": stored.get("client_id"),
+            "user_id": stored.get("user_id") or self.default_user_id,
             "scopes": token_scopes,
             "resource": token_resource,
         }
@@ -278,6 +283,7 @@ class BrainOAuthProvider:
             token = self._issue_tokens(
                 state,
                 client_id=client["client_id"],
+                user_id=code.get("user_id") or self.default_user_id,
                 scopes=code["scopes"],
                 resource=code.get("resource") or self.resource_url,
                 now=now,
@@ -310,6 +316,7 @@ class BrainOAuthProvider:
             token = self._issue_tokens(
                 state,
                 client_id=client["client_id"],
+                user_id=refresh.get("user_id") or self.default_user_id,
                 scopes=scopes,
                 resource=refresh.get("resource") or self.resource_url,
                 now=now,
@@ -322,6 +329,7 @@ class BrainOAuthProvider:
         state: dict[str, Any],
         *,
         client_id: str,
+        user_id: str,
         scopes: list[str],
         resource: str,
         now: int,
@@ -330,12 +338,14 @@ class BrainOAuthProvider:
         refresh_token = secrets.token_urlsafe(32)
         state["access_tokens"][access_token] = {
             "client_id": client_id,
+            "user_id": user_id,
             "scopes": scopes,
             "resource": resource,
             "expires_at": now + self.access_token_seconds,
         }
         state["refresh_tokens"][refresh_token] = {
             "client_id": client_id,
+            "user_id": user_id,
             "scopes": scopes,
             "resource": resource,
             "expires_at": now + self.refresh_token_seconds,
@@ -406,17 +416,74 @@ def ensure_auth_password(settings: Settings) -> str:
     return password
 
 
+def load_auth_users(
+    settings: Settings,
+    *,
+    default_password: str,
+) -> dict[str, dict[str, str]]:
+    default_user_id = normalize_user_id(settings.brain_user_id)
+    users_file = settings.brain_auth_users_file
+    if not users_file:
+        return {
+            default_user_id: {
+                "id": default_user_id,
+                "password": default_password,
+                "display_name": settings.brain_owner_full_name or settings.brain_owner_name or default_user_id,
+            }
+        }
+    path = Path(users_file).expanduser()
+    if not path.exists():
+        return {
+            default_user_id: {
+                "id": default_user_id,
+                "password": default_password,
+                "display_name": settings.brain_owner_full_name or settings.brain_owner_name or default_user_id,
+            }
+        }
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    records = payload.values() if isinstance(payload, dict) else payload
+    users: dict[str, dict[str, str]] = {}
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        user_id = normalize_user_id(str(record.get("id") or record.get("user_id") or ""))
+        password = str(record.get("password") or "")
+        if not user_id or not password:
+            continue
+        users[user_id] = {
+            "id": user_id,
+            "password": password,
+            "display_name": str(record.get("display_name") or record.get("name") or user_id),
+            "email": str(record.get("email") or ""),
+        }
+    if not users:
+        raise ValueError(f"BRAIN_AUTH_USERS_FILE contains no usable users: {path}")
+    return users
+
+
 def auth_form(
     *,
     service_name: str,
     request_id: str,
     action: str,
+    users: dict[str, dict[str, str]] | None = None,
     error: str | None = None,
 ) -> HTMLResponse:
     safe_service = escape(service_name)
     safe_request_id = escape(request_id, quote=True)
     safe_action = escape(action, quote=True)
     error_html = f'<p class="error">{escape(error)}</p>' if error else ""
+    user_values = list((users or {}).values())
+    user_html = ""
+    if len(user_values) > 1:
+        options = "\n".join(
+            f'<option value="{escape(user["id"], quote=True)}">{escape(user.get("display_name") or user["id"])}</option>'
+            for user in user_values
+        )
+        user_html = f"""
+        <label for="user_id">User</label>
+        <select id="user_id" name="user_id">{options}</select>
+        """
     html = f"""<!doctype html>
 <html lang="en">
   <head>
@@ -449,7 +516,7 @@ def auth_form(
         font-size: 14px;
         margin: 24px 0 8px;
       }}
-      input, button {{
+      input, select, button {{
         box-sizing: border-box;
         width: 100%;
         border-radius: 8px;
@@ -457,7 +524,7 @@ def auth_form(
         font: inherit;
         padding: 12px 14px;
       }}
-      input {{
+      input, select {{
         background: #191b20;
         color: #f3f4f6;
       }}
@@ -479,6 +546,7 @@ def auth_form(
       {error_html}
       <form method="post" action="{safe_action}">
         <input type="hidden" name="request_id" value="{safe_request_id}">
+        {user_html}
         <label for="password">Password</label>
         <input id="password" name="password" type="password" autocomplete="current-password" autofocus>
         <button type="submit">Authorize</button>
@@ -615,12 +683,15 @@ def add_query_params(url: str, params: dict[str, str]) -> str:
 async def complete_authorization(provider: BrainOAuthProvider, request: Request) -> Response:
     form = await completion_form(request)
     request_id = form.get("request_id", "")
+    requested_user_id = normalize_user_id(form.get("user_id") or provider.default_user_id)
+    user = provider.users.get(requested_user_id)
     password = form.get("password", "")
-    if not hmac.compare_digest(password, provider.password):
+    if user is None or not hmac.compare_digest(password, user["password"]):
         return auth_form(
             service_name=provider.service_name,
             request_id=request_id,
             action="/authorize",
+            users=provider.users,
             error="Invalid or expired authorization.",
         )
 
@@ -633,6 +704,7 @@ async def complete_authorization(provider: BrainOAuthProvider, request: Request)
                 service_name=provider.service_name,
                 request_id=request_id,
                 action="/authorize",
+                users=provider.users,
                 error="Invalid or expired authorization.",
             )
 
@@ -640,6 +712,7 @@ async def complete_authorization(provider: BrainOAuthProvider, request: Request)
         code = {
             "code": code_value,
             "client_id": pending["client_id"],
+            "user_id": requested_user_id,
             "scopes": pending["scopes"],
             "code_challenge": pending.get("code_challenge"),
             "code_challenge_method": pending.get("code_challenge_method"),

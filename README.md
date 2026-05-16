@@ -256,10 +256,17 @@ BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 Core Brain settings:
 
 - `BRAIN_DATABASE_URL=sqlite:///.data/brain/brain.db`
+- `BRAIN_USER_ID=default`
 - `BRAIN_OWNER_NAME=Daniele`
 - `BRAIN_LOG_LEVEL=INFO`
 - `BRAIN_AUTH_ENABLED=false`
 - `BRAIN_AUTH_TOKEN`
+
+Brain data is scoped by `BRAIN_USER_ID`. Existing single-user installs use the
+`default` user. For OAuth deployments, `BRAIN_AUTH_USERS_FILE` may point to a
+JSON user registry; issued OAuth tokens carry a `user_id`, and Brain filters
+memory, profile context, Palate records, audit logs, and recall data to that
+user.
 
 LLM compiler settings, disabled by default. When enabled, it uses the same fixed
 runtime LLM as the rest of Brain/Cognee: `openai:gpt-5.4-mini`.

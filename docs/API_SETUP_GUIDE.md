@@ -216,6 +216,13 @@ Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, and token lifetime settings. See
 [Production Secrets](production-secrets.md) for secret handling.
 
+For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
+records with `id`/`user_id` and `password` fields. OAuth authorization stores the
+selected `user_id` in issued tokens; HTTP and MCP memory operations then scope
+Brain DB rows, profile context files, Palate data, recall logs, and app audit
+records to that user. Existing single-user data remains under
+`BRAIN_USER_ID=default`.
+
 ## MCP Over HTTP
 
 List MCP tools:

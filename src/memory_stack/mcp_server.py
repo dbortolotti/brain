@@ -146,6 +146,7 @@ class McpAuthContext:
     static_token: bool = False
     token: str | None = None
     client_id: str | None = None
+    user_id: str | None = None
     scopes: tuple[str, ...] = ()
     remote_addr: str | None = None
 
@@ -1044,6 +1045,7 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
     "brain_session": object_schema(
         {
             "session_id": {"type": "string"},
+            "user_id": {"type": "string"},
             "profile_name": {"type": "string"},
             "profile_full_name": {"type": "string"},
             "profile_context": OBJECT_ARRAY_SCHEMA,
@@ -1541,7 +1543,7 @@ async def brain_remember_endpoint(
 ) -> dict[str, Any]:
     return authenticated_model_response(
         authorization,
-        lambda: brain_remember(payload, settings),
+        lambda active_settings: brain_remember(payload, active_settings),
     )
 
 
@@ -1552,7 +1554,7 @@ async def brain_ingest_source_endpoint(
 ) -> dict[str, Any]:
     return authenticated_model_response(
         authorization,
-        lambda: brain_ingest_source(payload, settings),
+        lambda active_settings: brain_ingest_source(payload, active_settings),
     )
 
 
@@ -1563,7 +1565,7 @@ async def brain_recall_endpoint(
 ) -> dict[str, Any]:
     return authenticated_model_response(
         authorization,
-        lambda: brain_recall(payload, settings),
+        lambda active_settings: brain_recall(payload, active_settings),
     )
 
 
@@ -1574,8 +1576,8 @@ async def brain_profile_entity_endpoint(
 ) -> dict[str, Any]:
     return authenticated_model_response(
         authorization,
-        lambda: brain_profile_entity(
-            settings,
+        lambda active_settings: brain_profile_entity(
+            active_settings,
             name=payload.name,
             entity_type=None if payload.entity_type == "auto" else payload.entity_type,
             include_superseded=payload.include_superseded,
@@ -1593,9 +1595,9 @@ async def brain_open_loops_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: {
+        lambda active_settings: {
             "open_loops": brain_list_open_loops(
-                settings,
+                active_settings,
                 topic=topic,
                 status=status,
                 limit=limit,
@@ -1609,8 +1611,8 @@ async def brain_get_memory_endpoint(
     memory_id: str,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    memory = brain_get_memory(memory_id, settings)
+    active_settings = require_api_auth(authorization, settings)
+    memory = brain_get_memory(memory_id, active_settings)
     if memory is None:
         raise HTTPException(status_code=404, detail=f"Memory not found: {memory_id}")
     return {"memory": memory}
@@ -1623,8 +1625,8 @@ async def brain_forget_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_forget(
-            settings,
+        lambda active_settings: brain_forget(
+            active_settings,
             object_type=payload.object_type,
             object_id=payload.object_id,
             hard=payload.hard,
@@ -1640,8 +1642,8 @@ async def brain_resolve_conflict_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_resolve_conflict(
-            settings,
+        lambda active_settings: brain_resolve_conflict(
+            active_settings,
             conflict_memory_id=payload.conflict_memory_id,
             target_memory_id=payload.target_memory_id,
             action=payload.action,
@@ -1657,8 +1659,8 @@ async def brain_review_recent_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_review_recent(
-            settings,
+        lambda active_settings: brain_review_recent(
+            active_settings,
             since=parse_optional_datetime(payload.since),
             limit=payload.limit,
             include_sources=payload.include_sources,
@@ -1673,7 +1675,7 @@ async def brain_undo_last_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_undo_last(settings, ingestion_run_id=payload.ingestion_run_id),
+        lambda active_settings: brain_undo_last(active_settings, ingestion_run_id=payload.ingestion_run_id),
     )
 
 
@@ -1684,8 +1686,8 @@ async def brain_sync_cognee_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_sync_cognee(
-            settings,
+        lambda active_settings: brain_sync_cognee(
+            active_settings,
             object_type=payload.object_type,
             object_id=payload.object_id,
             dataset=payload.dataset,
@@ -1701,8 +1703,8 @@ async def brain_rebuild_cognee_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_rebuild_cognee(
-            settings,
+        lambda active_settings: brain_rebuild_cognee(
+            active_settings,
             dataset=payload.dataset,
             prune_first=payload.prune_first,
             confirm=payload.confirm,
@@ -1717,8 +1719,8 @@ async def brain_merge_entities_endpoint(
 ) -> dict[str, Any]:
     return authenticated_dict_response(
         authorization,
-        lambda: brain_merge_entities(
-            settings,
+        lambda active_settings: brain_merge_entities(
+            active_settings,
             primary_entity_id=payload.primary_entity_id,
             duplicate_entity_id=payload.duplicate_entity_id,
             reason=payload.reason,
@@ -1802,6 +1804,7 @@ def mcp_auth_context(
             return McpAuthContext(
                 authenticated=True,
                 static_token=True,
+                user_id=active_settings.brain_user_id,
                 scopes=tuple(active_settings.brain_auth_scope_list),
                 remote_addr=remote_addr,
             )
@@ -1813,6 +1816,7 @@ def mcp_auth_context(
                 authenticated=True,
                 token=token,
                 client_id=record.get("client_id"),
+                user_id=record.get("user_id") or active_settings.brain_user_id,
                 scopes=tuple(record.get("scopes") or ()),
                 remote_addr=remote_addr,
             )
@@ -1843,23 +1847,43 @@ def require_app_scopes(
         raise ValueError(f"Insufficient OAuth scope for ChatGPT App MCP call: {', '.join(missing)}")
 
 
-def require_api_auth(header_value: str | None, active_settings: Settings) -> None:
-    if active_settings.brain_auth_enabled and not valid_bearer(header_value, active_settings):
+def settings_for_request_context(request_context: McpRequestContext | None) -> Settings:
+    user_id = request_context.auth.user_id if request_context and request_context.auth.user_id else settings.brain_user_id
+    if user_id == settings.brain_user_id:
+        return settings
+    return settings.model_copy(update={"brain_user_id": user_id})
+
+
+def settings_for_auth_context(active_settings: Settings, auth_context: McpAuthContext) -> Settings:
+    user_id = auth_context.user_id or active_settings.brain_user_id
+    if user_id == active_settings.brain_user_id:
+        return active_settings
+    return active_settings.model_copy(update={"brain_user_id": user_id})
+
+
+def require_api_auth(header_value: str | None, active_settings: Settings) -> Settings:
+    auth_context = mcp_auth_context(
+        header_value,
+        active_settings,
+        required_scopes=active_settings.brain_auth_scope_list,
+    )
+    if active_settings.brain_auth_enabled and not auth_context.authenticated:
         raise HTTPException(
             status_code=401,
             detail=authentication_required_payload(active_settings),
             headers=auth_challenge_headers(active_settings),
         )
+    return settings_for_auth_context(active_settings, auth_context)
 
 
 def authenticated_model_response(authorization: str | None, factory: Any) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return factory().model_dump(mode="json")
+    active_settings = require_api_auth(authorization, settings)
+    return factory(active_settings).model_dump(mode="json")
 
 
 def authenticated_dict_response(authorization: str | None, factory: Any) -> dict[str, Any]:
-    require_api_auth(authorization, settings)
-    return factory()
+    active_settings = require_api_auth(authorization, settings)
+    return factory(active_settings)
 
 
 def authentication_required_payload(active_settings: Settings) -> dict[str, str]:
@@ -1942,7 +1966,7 @@ async def handle_json_rpc(
             result = {"resourceTemplates": resource_template_definitions()}
         elif method == "resources/read":
             require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
-            result = read_resource(str(params.get("uri", "")))
+            result = read_resource(str(params.get("uri", "")), request_context=request_context)
         elif method == "tools/call":
             tool_name = str(params.get("name") or "") if isinstance(params, dict) else ""
             require_app_scopes(
@@ -1982,7 +2006,11 @@ async def call_tool(
     if surface == MCP_SURFACE_CHATGPT_APP and name in APP_MUTATING_TOOLS:
         rate_limit_app_write(request_context, tool_name=name)
     try:
-        result = await call_tool_dispatch(params, surface=surface)
+        result = await call_tool_dispatch(
+            params,
+            surface=surface,
+            request_context=request_context,
+        )
     except Exception as exc:
         audit_app_write(
             name,
@@ -2008,7 +2036,9 @@ async def call_tool_dispatch(
     params: dict[str, Any],
     *,
     surface: str = MCP_SURFACE_INTERNAL,
+    request_context: McpRequestContext | None = None,
 ) -> dict[str, Any]:
+    settings = settings_for_request_context(request_context)
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
     if name == "brain_session":
@@ -2597,7 +2627,7 @@ def audit_app_write(
     try:
         structured = (response or {}).get("structuredContent") if response else None
         auth = request_context.auth if request_context else McpAuthContext()
-        BrainStore(settings).create_app_write_audit(
+        BrainStore(settings_for_request_context(request_context)).create_app_write_audit(
             tool_name=tool_name,
             status=status,
             confirmed_by_user=app_confirmed(arguments),
@@ -2732,8 +2762,8 @@ def normalize_conflict_resolution(payload: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
-def read_resource(uri: str) -> dict[str, Any]:
-    payload = resource_payload(uri)
+def read_resource(uri: str, *, request_context: McpRequestContext | None = None) -> dict[str, Any]:
+    payload = resource_payload(uri, request_context=request_context)
     if payload is None:
         raise ValueError(f"Unknown Brain resource: {uri}")
     return {
@@ -2747,8 +2777,8 @@ def read_resource(uri: str) -> dict[str, Any]:
     }
 
 
-def resource_payload(uri: str) -> Any:
-    store = BrainStore(settings)
+def resource_payload(uri: str, *, request_context: McpRequestContext | None = None) -> Any:
+    store = BrainStore(settings_for_request_context(request_context))
     if uri == "brain://schema/memory-card":
         return {"schema": "memory-card", "fields": list(schema_field_names("memory_cards"))}
     if uri == "brain://schema/source":

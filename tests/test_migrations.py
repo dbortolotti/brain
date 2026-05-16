@@ -22,6 +22,7 @@ def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:
     tables = set(inspector.get_table_names())
     assert {
         "memory_cards",
+        "brain_users",
         "sources",
         "entities",
         "relationships",
@@ -52,6 +53,9 @@ def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:
     assert "taste_items_status_ck" in taste_item_checks
     assert "taste_signals_type_ck" in taste_signal_checks
     assert "taste_proposals_status_ck" in proposal_checks
+    for table_name in ("memory_cards", "sources", "entities", "taste_items", "app_write_audit"):
+        columns = {column["name"] for column in inspector.get_columns(table_name)}
+        assert "user_id" in columns
 
 
 def test_brain_store_initializes_clean_sqlite_db(tmp_path) -> None:

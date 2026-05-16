@@ -1427,6 +1427,87 @@ def test_chatgpt_app_requires_write_scope_for_mutating_tools(tmp_path) -> None:
     assert "Insufficient OAuth scope" in write_response.json()["error"]["message"]
 
 
+def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps(
+            [
+                {"id": "user_a", "password": "pass-a", "display_name": "User A"},
+                {"id": "user_b", "password": "pass-b", "display_name": "User B"},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    db_url = f"sqlite:///{tmp_path / 'brain.db'}"
+    with oauth_settings(
+        tmp_path,
+        brain_auth_users_file=str(users_file),
+        brain_database_url=db_url,
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    ):
+        client = TestClient(app, follow_redirects=False)
+        access_token = issue_test_oauth_token(
+            client,
+            tmp_path,
+            scope="brain.memory.read brain.memory.write",
+            user_id="user_b",
+            password="pass-b",
+        )
+        headers = {"Authorization": f"Bearer {access_token}"}
+        session_response = client.post(
+            "/app/mcp",
+            headers=headers,
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+        profile_response = client.post(
+            "/app/mcp",
+            headers=headers,
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele has tenant scoped profile context.",
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+        http_response = client.post(
+            "/memory/remember",
+            headers=headers,
+            json={"input": "Daniele likes tenant scoped coffee."},
+        )
+
+    assert session_response.status_code == 200
+    assert session_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
+    assert profile_response.status_code == 200
+    assert profile_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
+    assert http_response.status_code == 200
+
+    user_b_settings = Settings(
+        brain_database_url=db_url,
+        brain_user_id="user_b",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    default_settings = Settings(
+        brain_database_url=db_url,
+        brain_user_id="default",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    assert BrainStore(user_b_settings).search_memory("tenant scoped coffee")
+    assert BrainStore(user_b_settings).search_memory("tenant scoped profile context")
+    assert BrainStore(default_settings).search_memory("tenant scoped coffee") == []
+    assert BrainStore(default_settings).search_memory("tenant scoped profile context") == []
+
+
 def test_chatgpt_app_write_rate_limit(tmp_path) -> None:
     previous_settings = mcp_server.settings
     mcp_server.settings = Settings(
@@ -1607,8 +1688,9 @@ def test_request_logger_redacts_auth_urls_and_html() -> None:
 
 
 class oauth_settings:
-    def __init__(self, tmp_path) -> None:
+    def __init__(self, tmp_path, **overrides) -> None:
         self.tmp_path = tmp_path
+        self.overrides = overrides
         self.previous_settings = mcp_server.settings
         self.previous_provider = mcp_server.oauth_provider
 
@@ -1619,6 +1701,7 @@ class oauth_settings:
             brain_auth_state_path=str(self.tmp_path / "brain-oauth.json"),
             brain_public_base_url="https://brain.dceb.net",
             brain_public_mcp_path="/mcp",
+            **self.overrides,
         )
         mcp_server.settings = settings
         mcp_server.oauth_provider = BrainOAuthProvider(settings)
@@ -1633,7 +1716,14 @@ def pkce_challenge(verifier: str) -> str:
     return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
 
 
-def issue_test_oauth_token(client: TestClient, tmp_path, *, scope: str) -> str:
+def issue_test_oauth_token(
+    client: TestClient,
+    tmp_path,
+    *,
+    scope: str,
+    user_id: str | None = None,
+    password: str | None = None,
+) -> str:
     register_response = client.post(
         "/register",
         json={
@@ -1661,10 +1751,13 @@ def issue_test_oauth_token(client: TestClient, tmp_path, *, scope: str) -> str:
     assert authorize_response.status_code == 200
     request_id_match = re.search(r'name="request_id" value="([^"]+)"', authorize_response.text)
     assert request_id_match
-    password = (tmp_path / "brain-auth-password").read_text(encoding="utf-8").strip()
+    password = password or (tmp_path / "brain-auth-password").read_text(encoding="utf-8").strip()
+    authorization_data = {"request_id": request_id_match.group(1), "password": password}
+    if user_id is not None:
+        authorization_data["user_id"] = user_id
     complete_response = client.post(
         "/authorize",
-        data={"request_id": request_id_match.group(1), "password": password},
+        data=authorization_data,
     )
     assert complete_response.status_code == 302
     code = parse_qs(urlsplit(complete_response.headers["location"]).query)["code"][0]

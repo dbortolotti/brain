@@ -27,15 +27,20 @@ class TasteStore:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.brain_store = BrainStore(settings)
+        self.user_id = self.brain_store.user_id
         self.engine = self.brain_store.engine
 
     def upsert_item(self, item: dict[str, Any]) -> tuple[dict[str, Any], bool]:
         item_type = str(item["type"])
         canonical_name = str(item["canonical_name"]).strip()
         normalized = normalize_name(canonical_name)
-        item_id = item.get("id") or stable_id("taste", item_type, normalized)
+        if item.get("id"):
+            item_id = str(item["id"]) if self.user_id == "default" else stable_id("taste", self.user_id, "external", item["id"])
+        else:
+            item_id = stable_id("taste", self.user_id, item_type, normalized)
         payload = {
             "id": item_id,
+            "user_id": self.user_id,
             "brain_entity_id": item["brain_entity_id"],
             "type": item_type,
             "canonical_name": canonical_name,
@@ -57,7 +62,12 @@ class TasteStore:
                 created = False
                 conn.execute(
                     update(schema.taste_items)
-                    .where(schema.taste_items.c.id == item_id)
+                    .where(
+                        and_(
+                            schema.taste_items.c.id == item_id,
+                            schema.taste_items.c.user_id == self.user_id,
+                        )
+                    )
                     .values(
                         brain_entity_id=payload["brain_entity_id"],
                         type=payload["type"],
@@ -74,6 +84,7 @@ class TasteStore:
                 )
             row = conn.execute(
                 select(schema.taste_items).where(schema.taste_items.c.id == item_id)
+                .where(schema.taste_items.c.user_id == self.user_id)
             ).one()
 
         for key, value in (item.get("attributes") or {}).items():
@@ -116,6 +127,7 @@ class TasteStore:
         )
         payload = {
             "taste_item_id": taste_item_id,
+            "user_id": self.user_id,
             "key": key,
             "value": point,
             "lower_95": interval["lower"],
@@ -130,6 +142,7 @@ class TasteStore:
                     .where(
                         and_(
                             schema.taste_attributes.c.taste_item_id == taste_item_id,
+                            schema.taste_attributes.c.user_id == self.user_id,
                             schema.taste_attributes.c.key == key,
                         )
                     )
@@ -155,6 +168,7 @@ class TasteStore:
         validate_signal(signal_type, value)
         signal_id = signal_id or stable_id(
             "tsig",
+            self.user_id,
             taste_item_id,
             signal_type,
             json.dumps(value, sort_keys=True, default=str),
@@ -164,6 +178,7 @@ class TasteStore:
         )
         payload = {
             "id": signal_id,
+            "user_id": self.user_id,
             "taste_item_id": taste_item_id,
             "signal_type": signal_type,
             "value_json": value,
@@ -178,11 +193,12 @@ class TasteStore:
                 pass
             row = conn.execute(
                 select(schema.taste_signals).where(schema.taste_signals.c.id == signal_id)
+                .where(schema.taste_signals.c.user_id == self.user_id)
             ).one()
         return row_dict(row)
 
     def get_item(self, taste_item_id: str, *, include_deleted: bool = False) -> dict[str, Any] | None:
-        filters = [schema.taste_items.c.id == taste_item_id]
+        filters = [schema.taste_items.c.id == taste_item_id, schema.taste_items.c.user_id == self.user_id]
         if not include_deleted:
             filters.append(schema.taste_items.c.status != "deleted")
         with self.engine.begin() as conn:
@@ -195,6 +211,7 @@ class TasteStore:
                 select(schema.taste_items).where(
                     and_(
                         schema.taste_items.c.brain_entity_id == brain_entity_id,
+                        schema.taste_items.c.user_id == self.user_id,
                         schema.taste_items.c.status != "deleted",
                     )
                 )
@@ -202,7 +219,7 @@ class TasteStore:
         return self._hydrate_item(row_dict(row)) if row is not None else None
 
     def list_entities(self, *, include_deleted: bool = False) -> list[dict[str, Any]]:
-        filters = []
+        filters = [schema.taste_items.c.user_id == self.user_id]
         if not include_deleted:
             filters.append(schema.taste_items.c.status != "deleted")
         where_clause = and_(*filters) if filters else True
@@ -256,11 +273,12 @@ class TasteStore:
         chosen_taste_item_id: str | None = None,
     ) -> str:
         chosen_id = chosen_taste_item_id or chosen_entity_id
-        decision_id = stable_id("tdec", query, json.dumps(options or [], default=str), now_utc().isoformat())
+        decision_id = stable_id("tdec", self.user_id, query, json.dumps(options or [], default=str), now_utc().isoformat())
         with self.engine.begin() as conn:
             conn.execute(
                 insert(schema.taste_decisions).values(
                     id=decision_id,
+                    user_id=self.user_id,
                     query=query,
                     context_json=context or {},
                     options_json=options or [],
@@ -274,7 +292,7 @@ class TasteStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.taste_decisions)
-                .where(schema.taste_decisions.c.id == decision_id)
+                .where(and_(schema.taste_decisions.c.id == decision_id, schema.taste_decisions.c.user_id == self.user_id))
                 .values(chosen_taste_item_id=chosen_taste_item_id)
             )
         return result.rowcount
@@ -299,6 +317,7 @@ class TasteStore:
                     schema.taste_decisions.c.chosen_taste_item_id,
                 )
                 .where(schema.taste_decisions.c.chosen_taste_item_id.is_not(None))
+                .where(schema.taste_decisions.c.user_id == self.user_id)
                 .order_by(schema.taste_decisions.c.created_at.desc())
                 .limit(limit)
             ).fetchall()
@@ -326,7 +345,7 @@ class TasteStore:
         source_metadata: dict[str, Any] | None = None,
         expires_at: datetime | None = None,
     ) -> dict[str, Any]:
-        proposal_id = stable_id("tprop", original_text, now_utc().isoformat())
+        proposal_id = stable_id("tprop", self.user_id, original_text, now_utc().isoformat())
         expires = expires_at or now_utc() + timedelta(hours=self.settings.brain_taste_proposal_expiry_hours)
         proposal = {
             "proposal_id": proposal_id,
@@ -337,6 +356,7 @@ class TasteStore:
             conn.execute(
                 insert(schema.taste_proposals).values(
                     id=proposal_id,
+                    user_id=self.user_id,
                     original_text=original_text,
                     proposal_json=proposal,
                     warnings_json=warnings or [],
@@ -347,6 +367,7 @@ class TasteStore:
             )
             row = conn.execute(
                 select(schema.taste_proposals).where(schema.taste_proposals.c.id == proposal_id)
+                .where(schema.taste_proposals.c.user_id == self.user_id)
             ).one()
         return row_dict(row)
 
@@ -354,6 +375,7 @@ class TasteStore:
         with self.engine.begin() as conn:
             row = conn.execute(
                 select(schema.taste_proposals).where(schema.taste_proposals.c.id == proposal_id)
+                .where(schema.taste_proposals.c.user_id == self.user_id)
             ).first()
         return row_dict(row) if row is not None else None
 
@@ -385,11 +407,12 @@ class TasteStore:
         with self.engine.begin() as conn:
             conn.execute(
                 update(schema.taste_proposals)
-                .where(schema.taste_proposals.c.id == proposal_id)
+                .where(and_(schema.taste_proposals.c.id == proposal_id, schema.taste_proposals.c.user_id == self.user_id))
                 .values(**values)
             )
             row = conn.execute(
                 select(schema.taste_proposals).where(schema.taste_proposals.c.id == proposal_id)
+                .where(schema.taste_proposals.c.user_id == self.user_id)
             ).one()
         return row_dict(row)
 
@@ -397,7 +420,7 @@ class TasteStore:
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(schema.taste_items)
-                .where(schema.taste_items.c.id == taste_item_id)
+                .where(and_(schema.taste_items.c.id == taste_item_id, schema.taste_items.c.user_id == self.user_id))
                 .values(status="deleted", updated_at=now_utc())
             )
         return result.rowcount > 0
@@ -408,16 +431,24 @@ class TasteStore:
         with self.engine.begin() as conn:
             conn.execute(
                 delete(schema.taste_attributes).where(
-                    schema.taste_attributes.c.taste_item_id == taste_item_id
+                    and_(
+                        schema.taste_attributes.c.taste_item_id == taste_item_id,
+                        schema.taste_attributes.c.user_id == self.user_id,
+                    )
                 )
             )
             conn.execute(
                 delete(schema.taste_signals).where(
-                    schema.taste_signals.c.taste_item_id == taste_item_id
+                    and_(
+                        schema.taste_signals.c.taste_item_id == taste_item_id,
+                        schema.taste_signals.c.user_id == self.user_id,
+                    )
                 )
             )
             result = conn.execute(
-                delete(schema.taste_items).where(schema.taste_items.c.id == taste_item_id)
+                delete(schema.taste_items).where(
+                    and_(schema.taste_items.c.id == taste_item_id, schema.taste_items.c.user_id == self.user_id)
+                )
             )
         return result.rowcount > 0
 
@@ -426,12 +457,16 @@ class TasteStore:
         with self.engine.begin() as conn:
             attrs = conn.execute(
                 select(schema.taste_attributes).where(
-                    schema.taste_attributes.c.taste_item_id == item_id
+                    and_(
+                        schema.taste_attributes.c.taste_item_id == item_id,
+                        schema.taste_attributes.c.user_id == self.user_id,
+                    )
                 )
             ).fetchall()
             signals = conn.execute(
                 select(schema.taste_signals)
                 .where(schema.taste_signals.c.taste_item_id == item_id)
+                .where(schema.taste_signals.c.user_id == self.user_id)
                 .order_by(schema.taste_signals.c.created_at.desc())
             ).fetchall()
 

@@ -19,10 +19,25 @@ from sqlalchemy import (
 metadata = MetaData()
 
 
+brain_users = Table(
+    "brain_users",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("display_name", Text),
+    Column("email", Text),
+    Column("status", Text, nullable=False, default="active"),
+    Column("metadata_json", JSON, nullable=False, default=dict),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("updated_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+Index("brain_users_status_idx", brain_users.c.status)
+
+
 sources = Table(
     "sources",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("kind", Text, nullable=False),
     Column("title", Text),
     Column("uri", Text),
@@ -38,12 +53,14 @@ sources = Table(
     Column("updated_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
 )
 Index("sources_content_hash_idx", sources.c.content_hash, unique=True)
+Index("sources_user_created_idx", sources.c.user_id, sources.c.created_at)
 
 
 memory_cards = Table(
     "memory_cards",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("kind", Text, nullable=False),
     Column("statement", Text, nullable=False),
     Column("summary", Text),
@@ -61,12 +78,14 @@ Index("memory_cards_kind_idx", memory_cards.c.kind)
 Index("memory_cards_status_idx", memory_cards.c.status)
 Index("memory_cards_source_id_idx", memory_cards.c.source_id)
 Index("memory_cards_content_hash_idx", memory_cards.c.content_hash, unique=True)
+Index("memory_cards_user_created_idx", memory_cards.c.user_id, memory_cards.c.created_at)
 
 
 entities = Table(
     "entities",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("type", Text, nullable=False),
     Column("canonical_name", Text, nullable=False),
     Column("normalized_name", Text, nullable=False),
@@ -78,12 +97,14 @@ entities = Table(
 )
 Index("entities_type_idx", entities.c.type)
 Index("entities_normalized_name_idx", entities.c.normalized_name)
+Index("entities_user_name_idx", entities.c.user_id, entities.c.type, entities.c.normalized_name)
 
 
 entity_aliases = Table(
     "entity_aliases",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("entity_id", Text, ForeignKey("entities.id"), nullable=False),
     Column("alias", Text, nullable=False),
     Column("normalized_alias", Text, nullable=False),
@@ -94,11 +115,13 @@ entity_aliases = Table(
 )
 Index("entity_aliases_entity_id_idx", entity_aliases.c.entity_id)
 Index("entity_aliases_normalized_alias_idx", entity_aliases.c.normalized_alias)
+Index("entity_aliases_user_alias_idx", entity_aliases.c.user_id, entity_aliases.c.normalized_alias)
 
 
 memory_entities = Table(
     "memory_entities",
     metadata,
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("memory_id", Text, ForeignKey("memory_cards.id"), primary_key=True),
     Column("entity_id", Text, ForeignKey("entities.id"), primary_key=True),
     Column("role", Text, primary_key=True),
@@ -113,6 +136,7 @@ relationships = Table(
     "relationships",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("subject_entity_id", Text, ForeignKey("entities.id"), nullable=False),
     Column("predicate", Text, nullable=False),
     Column("object_entity_id", Text, ForeignKey("entities.id"), nullable=False),
@@ -133,12 +157,14 @@ relationships = Table(
 Index("relationships_subject_idx", relationships.c.subject_entity_id)
 Index("relationships_object_idx", relationships.c.object_entity_id)
 Index("relationships_predicate_idx", relationships.c.predicate)
+Index("relationships_user_status_idx", relationships.c.user_id, relationships.c.status)
 
 
 memory_links = Table(
     "memory_links",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("from_memory_id", Text, ForeignKey("memory_cards.id"), nullable=False),
     Column("relation", Text, nullable=False),
     Column("to_memory_id", Text, ForeignKey("memory_cards.id"), nullable=False),
@@ -155,12 +181,14 @@ memory_links = Table(
 Index("memory_links_from_idx", memory_links.c.from_memory_id)
 Index("memory_links_to_idx", memory_links.c.to_memory_id)
 Index("memory_links_relation_idx", memory_links.c.relation)
+Index("memory_links_user_relation_idx", memory_links.c.user_id, memory_links.c.relation)
 
 
 open_loops = Table(
     "open_loops",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("memory_id", Text, ForeignKey("memory_cards.id"), nullable=False),
     Column("status", Text, nullable=False, default="open"),
     Column("priority", Text, nullable=False, default="normal"),
@@ -174,12 +202,14 @@ open_loops = Table(
 )
 Index("open_loops_status_idx", open_loops.c.status)
 Index("open_loops_next_review_idx", open_loops.c.next_review_at)
+Index("open_loops_user_status_idx", open_loops.c.user_id, open_loops.c.status)
 
 
 cognee_sync = Table(
     "cognee_sync",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("object_type", Text, nullable=False),
     Column("object_id", Text, nullable=False),
     Column("dataset", Text, nullable=False),
@@ -198,6 +228,7 @@ ingestion_runs = Table(
     "ingestion_runs",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("input_type", Text, nullable=False),
     Column("input_hash", Text, nullable=False),
     Column("raw_input_preview", Text),
@@ -210,12 +241,14 @@ ingestion_runs = Table(
 )
 Index("ingestion_runs_status_idx", ingestion_runs.c.status)
 Index("ingestion_runs_input_hash_idx", ingestion_runs.c.input_hash)
+Index("ingestion_runs_user_started_idx", ingestion_runs.c.user_id, ingestion_runs.c.started_at)
 
 
 recall_logs = Table(
     "recall_logs",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("query", Text, nullable=False),
     Column("mode", Text, nullable=False),
     Column("retrieved_memory_ids", JSON, nullable=False, default=list),
@@ -230,6 +263,7 @@ app_write_audit = Table(
     "app_write_audit",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("tool_name", Text, nullable=False),
     Column("client_id", Text),
     Column("subject", Text),
@@ -244,12 +278,14 @@ app_write_audit = Table(
 Index("app_write_audit_tool_idx", app_write_audit.c.tool_name)
 Index("app_write_audit_status_idx", app_write_audit.c.status)
 Index("app_write_audit_created_idx", app_write_audit.c.created_at)
+Index("app_write_audit_user_created_idx", app_write_audit.c.user_id, app_write_audit.c.created_at)
 
 
 taste_items = Table(
     "taste_items",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("brain_entity_id", Text, ForeignKey("entities.id"), nullable=False),
     Column("type", Text, nullable=False),
     Column("canonical_name", Text, nullable=False),
@@ -275,11 +311,13 @@ Index("taste_items_entity_idx", taste_items.c.brain_entity_id)
 Index("taste_items_type_idx", taste_items.c.type)
 Index("taste_items_normalized_name_idx", taste_items.c.normalized_name)
 Index("taste_items_status_idx", taste_items.c.status)
+Index("taste_items_user_name_idx", taste_items.c.user_id, taste_items.c.type, taste_items.c.normalized_name)
 
 
 taste_attributes = Table(
     "taste_attributes",
     metadata,
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("taste_item_id", Text, ForeignKey("taste_items.id"), primary_key=True),
     Column("key", Text, primary_key=True),
     Column("value", Float, nullable=False),
@@ -300,6 +338,7 @@ taste_signals = Table(
     "taste_signals",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("taste_item_id", Text, ForeignKey("taste_items.id"), nullable=False),
     Column("signal_type", Text, nullable=False),
     Column("value_json", JSON, nullable=False),
@@ -324,6 +363,7 @@ taste_decisions = Table(
     "taste_decisions",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("query", Text, nullable=False),
     Column("context_json", JSON, nullable=False, default=dict),
     Column("options_json", JSON, nullable=False, default=list),
@@ -338,6 +378,7 @@ taste_proposals = Table(
     "taste_proposals",
     metadata,
     Column("id", Text, primary_key=True),
+    Column("user_id", Text, nullable=False, default="default", server_default="default"),
     Column("original_text", Text, nullable=False),
     Column("proposal_json", JSON, nullable=False),
     Column("warnings_json", JSON, nullable=False, default=list),
