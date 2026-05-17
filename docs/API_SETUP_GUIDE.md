@@ -143,6 +143,8 @@ The dashboard and public app pages are also served by the Brain HTTP process:
 
 ```text
 GET /app
+GET /app-assets/{asset_name}
+GET /app/oauth/callback
 GET /privacy
 GET /terms
 GET /support
@@ -150,6 +152,9 @@ GET /docs
 GET /redoc
 GET /openapi.json
 GET /healthz
+GET /apple-touch-icon.png
+GET /favicon.ico
+GET /icon.png
 ```
 
 Admin user-management endpoints:
@@ -184,16 +189,13 @@ configured improve.
 
 ## ChatGPT App Surface
 
-Use `/mcp` for a ChatGPT App or any user-facing client that should not see
-admin tools. In production the public app MCP URL is the configured public base
-URL plus `BRAIN_PUBLIC_MCP_PATH`.
-
-`/app/mcp` remains a compatibility alias for older clients. Public deployment
-URLs are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`,
+Use the public app MCP surface for ChatGPT App or any user-facing client that
+should not see admin tools. In production, the public MCP URLs are configured by
+`BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`,
 `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
-The browser dashboard is served by the same HTTP process at the configured
-public base URL.
+`/app/mcp` remains a compatibility alias for older clients. The browser
+dashboard is served by the same HTTP process at the configured public base URL.
 
 The curated app tool set is:
 
@@ -657,4 +659,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 2ac74ba9b6115c46523d42941823267e6db03ae7d7523badd5ffdc89e208db50 -->
+<!-- brain-doc-source-hash: 097c0b0af2031a95441deb1f58a2c1427dfecd3bca842e36564041de21e19bad -->

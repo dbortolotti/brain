@@ -105,6 +105,7 @@ Brain also exposes HTTP endpoints and browser pages. Use them when you are not t
 
 - Health and docs: `/`, `/healthz`, `/docs`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, `/apple-touch-icon.png`
 - Auth and session: `/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource`, `/.well-known/oauth-protected-resource/{resource_path:path}`, `/authorize`, `/login`, `/logout`, `/register`, `/revoke`, `/token`, `/account/password`, `/api/session`, `/auth/session`
+- User administration: `/admin/users` and `/admin/users/{user_id}`
 - UI pages: `/app`, `/app-assets/{asset_name}`, `/app/oauth/callback`, `/user`, `/admin`, `/privacy`, `/support`, `/terms`
 - Memory endpoints: `/memory/remember`, `/memory/ingest_source`, `/memory/recall`, `/memory/profile_entity`, `/memory/open_loops`, `/memory/{memory_id}`, `/memory/review_recent`, `/memory/undo_last`, `/memory/forget`, `/memory/resolve_conflict`, `/memory/sync_cognee`, `/memory/rebuild_cognee`, `/memory/merge_entities`
 - Datasource endpoints: `/datasources`, `/create_datasource`, `/delete_datasource`, `/list_datasources`, `/datasources/{datasource}`, `/delete_datasource/{datasource}`
@@ -114,6 +115,44 @@ Brain also exposes HTTP endpoints and browser pages. Use them when you are not t
 The browser dashboard ships with `index.html`, `privacy.html`, `support.html`, and `terms.html`.
 
 The dashboard surfaces Review, Recall, Remember, Profile, Prompt, Data Controls, Account, Users, and Help. The top bar links to User, Admin, and Cognee views.
+
+The Prompt tab includes Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol. The Data Controls area includes App Write Audit, Export Preview, Profile Data, and Recent Memory Data.
+
+## Slack Surface
+
+Brain's Slack app is a separate guarded surface and should not be treated as an MCP client. It shares the Brain service layer and uses `/brain` commands. It is the strictest interface and may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or conflicts with an existing memory.
+
+Slack provenance belongs in Brain request-context metadata, not in the memory statement itself. The provenance fields are team id, channel id, user id, thread timestamp, message timestamp, and permalink.
+
+Supported command templates include:
+
+```text
+/brain remember <text>
+/brain source <url_or_text>
+/brain recall <query>
+/brain profile <entity>
+/brain open
+/brain review
+/brain undo-last
+/brain inspect <object>
+/brain debug <subcommand>
+/brain admin <subcommand>
+```
+
+The Slack proposal layer accepts a limited input set:
+
+```text
+auto
+fact
+note
+person_interaction
+open_question
+research_question
+chat_conclusion
+table
+```
+
+Brain may still classify the final stored card more specifically.
 
 ## Palate Tools
 
@@ -146,8 +185,7 @@ Describe an item without storing it:
 
 ```text
 Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine.
-Do not store it yet. Fetch external ratings if available, but do not use broad
-web search unless needed.
+Do not store it yet.
 ```
 
 Remember a wine:
@@ -219,7 +257,7 @@ Keep my personal signals unchanged.
 
 ## How Palate Ranking Works
 
-Palate ranking is policy-driven. Cognee can retrieve relevant structured DataPoints, but Brain decides what wins.
+Palate ranking is policy-driven. Cognee can retrieve relevant structured records, but Brain decides what wins.
 
 A good recommendation query should include:
 
@@ -337,6 +375,8 @@ Key reminders:
 - `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, and `release.yml`, intentionally when promoting changes.
 - `BRAIN_CONFIG_RENDER_SHA`, `BRAIN_CONFIG_RENDERED_AT`, and `BRAIN_CONFIG_RENDER_SOURCE` may appear in rendered config.
 - Use separate datasets for memory, data, sources, palate, and agent memory via the `BRAIN_COGNEE_*_DATASET` settings.
+- In dev, staging, and prod, `BRAIN_LOG_LEVEL` is also available.
+- The deploy and promotion workflows are `deploy-local-staging.yml`, `deploy-local-production.yml`, `release.yml`, and `validate.yml`.
 
 Never store secrets, passwords, API keys, OAuth tokens, or credentials in Brain.
 
@@ -488,6 +528,8 @@ Clear agent memory if it becomes noisy:
 Use brain_agent_memory_clear with confirm=true. I want to reset the dedicated
 portable agent-memory dataset.
 ```
+
+Prefer soft-delete; use hard-delete only with explicit confirmation and only when you intentionally want to remove data.
 
 ## Cognee Operations
 
@@ -775,4 +817,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: be05790fd8ebf8e4e0c6e56265047e9fc729a03062a07849bea8e8972dc7c0de -->
+<!-- brain-doc-source-hash: fac1311f714d9e2a81fa9a1d2214c3c3a0554dea382ed31730ece2c8f39b8799 -->

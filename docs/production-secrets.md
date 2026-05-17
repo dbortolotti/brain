@@ -68,7 +68,7 @@ Production promotion does not mint a new version. The release workflow reads
 staging `shared/release.json`, verifies the requested version is the active
 staged version, verifies the git tag already exists at that exact SHA, checks
 that the staging `current` symlink points at the same commit, and then deploys
-production with the same `BRAIN_RELEASE_VERSION`.
+production with the same `BRAIN_RELEASE_VERSION` and staged SHA.
 
 GitHub Secrets and GitHub Variables are the source of truth. Live config can
 still be edited directly for an emergency, but the next deploy for that
@@ -125,7 +125,7 @@ The deployed auth and dashboard surfaces include these route families:
 /user                 user dashboard
 /app                  app dashboard
 /login                user login endpoint
-/logout               user logout endpoint
+/logout               user login endpoint
 /account/password     change own password
 /admin/users          list and create auth users
 /admin/users/{user_id} update or delete auth users
@@ -341,6 +341,7 @@ BRAIN_COGNEE_RECALL_ENABLED
 BRAIN_COGNEE_RECALL_TOP_K
 BRAIN_COGNEE_SOURCES_DATASET
 BRAIN_TASTE_ENABLED
+BRAIN_TASTE_CANONICAL_STORE
 BRAIN_TASTE_LLM_MODEL
 BRAIN_TASTE_LLM_REASONING_EFFORT
 BRAIN_TASTE_LLM_ROUTING_ENABLED
@@ -393,8 +394,9 @@ including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`,
 `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`,
 `BRAIN_NEO4J_*` service and container labels, `BRAIN_SLACK_ENABLED`,
 `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
-`BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls, and the
-`BRAIN_UI_*` runtime settings shown above.
+`BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including
+`BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown
+above.
 
 ## Local Backup
 
@@ -405,4 +407,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 29c49580c26bb0e0c84e6386899a681f2b7809391e9623a1f608ebb206eb4911 -->
+<!-- brain-doc-source-hash: 8819a6e7334a84365dc625ba1893485bf2a41803cd2d082083a746b791305250 -->

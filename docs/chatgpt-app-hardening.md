@@ -1,6 +1,6 @@
 # ChatGPT App Hardening
 
-Brain exposes the public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias. In production, the public app and admin MCP paths are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read/interaction tools and `brain_ingest_source` are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`.
+Brain exposes the public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP paths are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`.
 
 ## Public App Tools
 
@@ -84,4 +84,4 @@ For a production release:
 3. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
 4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the tagged release.
 
-<!-- brain-doc-source-hash: bac3bbbe622913198985bbe8df0a368328ded87163b033ee24380e7982063300 -->
+<!-- brain-doc-source-hash: 5bbfcf7176a05e792b72d78da82b99c3b90a0b61450cacc43994460fa2b9c147 -->

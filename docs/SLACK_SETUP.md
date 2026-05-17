@@ -1,6 +1,6 @@
 # Slack Setup Guide
 
-Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and allowlists before handling any memory operation. Slack writes are guarded by proposal rules and require confirmation by default.
+Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and configured allowlists before handling any memory operation. Slack writes are guarded by proposal rules and require confirmation by default.
 
 For HTTP and MCP client setup, see [API Setup](API_SETUP_GUIDE.md).
 
@@ -130,7 +130,7 @@ Request URL: https://your-public-host.example.com/slack/events
 
 Slack will send a URL verification challenge. Brain responds to `type=url_verification` after signature verification.
 
-The Slack agent ignores bot messages and message edits/deletions with the `bot_message`, `message_deleted`, and `message_changed` subtypes.
+The Slack agent ignores events with `bot_id` and ignores bot messages and message edits/deletions with the `bot_message`, `message_deleted`, and `message_changed` subtypes.
 
 Subscribe to bot events as needed:
 
@@ -149,7 +149,7 @@ Enable Interactivity & Shortcuts and set:
 Request URL: https://your-public-host.example.com/slack/interactions
 ```
 
-Interactive confirmations are used for proposed Slack memory commits and help-template buttons.
+Interactive confirmations are used for proposed Slack memory commits and help-template buttons. The Slack agent reads the interactive `payload` form field, so the endpoint must receive Slack's form-encoded interaction payloads.
 
 ## Start The Services Locally
 
@@ -215,7 +215,7 @@ BRAIN_SLACK_ALLOWED_USER_IDS=U...
 BRAIN_SLACK_ADMIN_USER_IDS=U...
 ```
 
-Leave an allowlist blank only when you intentionally allow all values for that dimension. For production, set at least team and user allowlists. Set admin users separately because debug commands are read-only but can expose operational state.
+Leave an allowlist blank only when you intentionally allow all values for that dimension. For production, set at least team and user allowlists. Set admin users separately from the general allowlists.
 
 ## Production Notes
 
@@ -290,4 +290,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: 94a2932cfcd8c2e723b13bce61c906d4ca71d1680f4ac65ba551e23a45ed43c0 -->
+<!-- brain-doc-source-hash: e7d18bbad898e39ad0ae2fb81b1376f4e9a58c12dc6fef94676043563fc9fe51 -->

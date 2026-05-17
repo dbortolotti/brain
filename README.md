@@ -8,7 +8,7 @@ Brain is a local personal memory control plane exposed through a small MCP surfa
 - [API Setup Guide](docs/API_SETUP_GUIDE.md) - HTTP, MCP, auth, client setup, and integration examples.
 - [Slack Setup Guide](docs/SLACK_SETUP.md) - Slack app configuration, routes, allowlists, and troubleshooting.
 - [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification, Google Drive replication, and restore outline.
-- [Production Secrets](docs/production-secrets.md) - staging/prod release flow, secret, and variable handling.
+- [Production Secrets](docs/production-secrets.md) - staging, prod, and release flow, secret handling, and config conflict rules.
 - [ChatGPT App Hardening](docs/chatgpt-app-hardening.md) - app review hardening model and post-merge production verification checklist.
 - [Runtime Flow Diagrams](docs/role_flow_diagram.md) - current runtime flow and model-role topology notes.
 
@@ -184,7 +184,7 @@ The proxy also serves `GET /healthz`, `GET /docs`, `GET /redoc`, `GET /openapi.j
 
 ## ChatGPT App Surface
 
-Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at `/mcp`, with the public URL `https://brain.dceb.net/mcp`. `/app/mcp` remains a legacy alias. The root dashboard is available at `https://brain.dceb.net/` and uses the same curated surface through a browser session cookie. Browser users sign in with user id and password; the dashboard does not store OAuth bearer tokens in local storage.
+Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`. `/app/mcp` remains a legacy alias. The root dashboard uses the same curated surface through a browser session cookie. Browser users sign in with user id and password; the dashboard does not store OAuth bearer tokens in local storage.
 
 The ChatGPT App surface intentionally lists only user-safe tools:
 
@@ -216,9 +216,9 @@ The Cognee UI proxy also uses Brain user/password login. Regular users enter thr
 
 Public app support pages:
 
-- `https://brain.dceb.net/privacy`
-- `https://brain.dceb.net/terms`
-- `https://brain.dceb.net/support`
+- `/privacy`
+- `/terms`
+- `/support`
 
 See `docs/chatgpt-app-hardening.md` for the app review hardening model and the post-merge production verification checklist.
 
@@ -279,7 +279,7 @@ Workflow model:
 - `.github/workflows/deploy-local-production.yml` is manual only and accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
-Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`. If the users file does not exist yet, deployment creates one with `default` as a root superuser and a regular user using the existing shared auth password. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
+Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
 
 GitHub Secrets and GitHub Variables are the source of truth; direct emergency edits to live config must be propagated back before the next deploy.
 
@@ -432,11 +432,8 @@ BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie/CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-5.5` high reasoning.
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env \
-  uv run python scripts/staging_e2e_suite.py
+ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env uv run python scripts/staging_e2e_suite.py
 ```
-
-The default target is the local staging service at `http://127.0.0.1:18100`, which avoids public proxy routing for admin user-management APIs.
 
 The runner writes JSON reports under `.reports/staging-e2e/` by default. It is not part of normal `pytest` because it mutates staging and makes live provider calls.
 
@@ -457,6 +454,7 @@ Deployment, routing, auth-related settings worth calling out:
 - `BRAIN_AUTH_REQUIRE_PKCE`
 - `BRAIN_AUTH_SCOPES`
 - `BRAIN_AUTH_STATE_PATH`
+- `BRAIN_AUTH_SUPERUSER_IDS`
 - `BRAIN_AUTH_USERS_FILE`
 - `BRAIN_BACKUP_DIR`
 - `BRAIN_COGNEE_AGENT_MEMORY_DATASET`
@@ -580,7 +578,7 @@ Core Brain settings:
 - `BRAIN_AUTH_ENABLED=false`
 - `BRAIN_AUTH_TOKEN`
 
-Brain data is scoped by `BRAIN_USER_ID`. OAuth deployments must set `BRAIN_AUTH_USERS_FILE` to a JSON user registry; issued OAuth tokens carry a `user_id`, and Brain filters memory, profile context, Palate records, audit logs, and recall data to that user. Superusers are marked with `superuser: true` or configured through `BRAIN_AUTH_SUPERUSER_IDS`; they can manage users from the dashboard User Admin tab. Use `scripts/migrate_default_user_to_daniele.py` for the one-time migration from the original single-user `default` owner to `daniele` plus a separate `default` root user.
+Brain data is scoped by `BRAIN_USER_ID`. When auth is enabled, `BRAIN_AUTH_USERS_FILE` must point to a JSON user registry; issued OAuth tokens carry a `user_id`, and Brain filters memory, profile context, Palate records, audit logs, and recall data to that user. Superusers are marked with `superuser: true` or configured through `BRAIN_AUTH_SUPERUSER_IDS`; they can manage users from the dashboard User Admin tab. Auth-enabled deployments fail closed if the configured users file is missing or empty.
 
 Production auth also relies on `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_REQUIRE_PKCE`, and `BRAIN_AUTH_SCOPES`.
 
@@ -596,7 +594,6 @@ LLM compiler settings are disabled by default. When enabled, it uses the same fi
 - `BRAIN_LLM_ENABLED=false`
 - `LLM_PROVIDER`
 - `LLM_MODEL`
-- `LLM_API_KEY`
 
 Taste/palate input enrichment uses its own model setting so it can stay on a stronger model without changing Cognee projection defaults:
 
@@ -656,7 +653,7 @@ Slack command handling is a thin optional layer over Brain service methods. It d
 
 ## Profiles
 
-Runtime uses one configured LLM and one configured embedding model. The checked-in defaults are OpenAI `gpt-5.4-mini` for runtime/Cognee LLM calls and OpenAI `text-embedding-3-large` with 3072-dimensional vectors for embeddings.
+Runtime uses one configured LLM and one configured embedding model.
 
 Environment examples differ by local setup:
 
@@ -687,12 +684,6 @@ OPENAI_AUTH_MODE=oauth
 OPENAI_CODEX_AUTH_PROFILE=default
 ```
 
-Sign in with:
-
-```bash
-uv run brain models auth login --provider openai-codex
-```
-
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: de642c95c8e86bedfb0a4baf5b55564cce607aa9b9430e7b9ffe85c4fbe455dd -->
+<!-- brain-doc-source-hash: 0efb528201d7141d7e8219fde6fb4a57092c657a50416423e3de58b270d43f0b -->

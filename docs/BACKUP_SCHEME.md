@@ -46,6 +46,11 @@ BRAIN_NEO4J_DUMP_ENABLED=false
 BRAIN_NEO4J_STOP_FOR_DUMP=false
 ```
 
+Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`,
+`BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
+Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`,
+`BRAIN_NEO4J_DUMP_ENABLED=false`, and `BRAIN_NEO4J_STOP_FOR_DUMP=false`.
+
 Each backup run creates:
 
 ```text
@@ -410,4 +415,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 9360f1f1b02b7e0a90e7edc83ce3d8cba177d6e14cd67af922df12c669b73779 -->
+<!-- brain-doc-source-hash: 360071558ad0c6e26d46752b2dc0cbca393bef5c694d09d6379d36ed5c6512ab -->

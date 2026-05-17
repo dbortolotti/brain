@@ -1,6 +1,6 @@
 # Brain User Guide
 
-Brain is a personal memory and taste system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, and reminders of things you want to recall later.
+Brain is a personal memory and taste system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, and, when your client exposes it, chat-session continuity through a dedicated agent-memory workflow.
 
 Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard. You do not need to think in database terms while using it: write clear memory requests, confirm them when asked, and use recall or review when you need the saved context back.
 
@@ -15,6 +15,7 @@ Use Brain and Palate for these day-to-day jobs:
 - Recall stored context: `what do we know about...`
 - Review or correct memory: `show recent writes`, `undo the last one`, or `actually, replace the old fact with...`
 - Save or rank taste-related preferences with Palate.
+- Preserve chat handovers with `brain_session` and your client's dedicated agent-memory workflow when it is available.
 
 Slack is the strictest interface. It may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
@@ -116,11 +117,26 @@ Confirm a proposed write:
 
 Slack may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
+Slack's proposal layer accepts a smaller input set:
+
+```text
+auto
+fact
+note
+person_interaction
+open_question
+research_question
+chat_conclusion
+table
+```
+
+Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
+
 ## Using the User Dashboard
 
 The browser dashboard is for reviewing and managing your memory. It opens with a sign-in overlay and a session line that says Connect to review memory.
 
-The dashboard is available at `/` and `/user`. The top bar links to User, Admin, and Cognee views.
+The dashboard is available at `/` and `/user`. The app dashboard is also available at `/app`. The top bar links to User, Admin, and Cognee views.
 
 Main tabs:
 
@@ -138,15 +154,34 @@ Use Review before trusting a recall result. It is a safe place to inspect recent
 
 ## HTTP and Browser Surfaces
 
-Brain also exposes browser pages and HTTP endpoints directly.
+Brain also exposes browser pages, auth flows, HTTP endpoints, and MCP surfaces directly.
 
 Useful browser pages:
 
 - `/` and `/user` — memory dashboard
+- `/app` — app dashboard
 - `/admin` — admin dashboard
 - `/cognee` — user Cognee UI
 - `/cognee-login` — Cognee UI sign-in
+- `/ui`, `/ui-login`, and `/ui-logout` — UI proxy routes
+- `/admin/cognee`, `/admin/cognee-api/{path:path}`, and `/admin/cognee/{path:path}` — admin Cognee proxy routes
 - `/privacy`, `/support`, `/terms`
+- `/app-assets/{asset_name}` and `/app/oauth/callback`
+
+Useful auth and session endpoints:
+
+- `/.well-known/oauth-authorization-server`
+- `/.well-known/oauth-protected-resource`
+- `/.well-known/oauth-protected-resource/{resource_path:path}`
+- `/authorize`
+- `/login`
+- `/logout`
+- `/register`
+- `/revoke`
+- `/token`
+- `/account/password`
+- `/api/session`
+- `/auth/session`
 
 Useful memory endpoints:
 
@@ -164,7 +199,18 @@ Useful memory endpoints:
 - `/memory/rebuild_cognee`
 - `/memory/merge_entities`
 
-Other common endpoints include `/healthz`, `/docs`, `/redoc`, and `/openapi.json`.
+Datasource endpoints also exist:
+
+- `/datasources`
+- `/create_datasource`
+- `/delete_datasource`
+- `/list_datasources`
+- `/datasources/{datasource}`
+- `/delete_datasource/{datasource}`
+
+Other common endpoints include `/healthz`, `/docs`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, and `/apple-touch-icon.png`.
+
+MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated alias `/app/mcp`.
 
 ## Using Brain Through An LLM
 
@@ -242,7 +288,7 @@ Use Brain to dry-run this memory before committing it: Maya prefers written brie
 
 Palate is Brain's taste layer. It normalizes messy user input into structured items, enriches those items, stores taste signals, and ranks recommendations.
 
-The ChatGPT app surface exposes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. Internal/admin surfaces also expose `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
+The ChatGPT app surface exposes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. Internal or admin surfaces also expose `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
 
 Palate is best for:
 
@@ -619,4 +665,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: c1d4402db11cb3e56aa97aa3645e9f317c0b5c5412ba60f905e05594903cdf41 -->
+<!-- brain-doc-source-hash: 1d23185544d5a520fb5d597534a0c1abe6e20988959cd90070a384a181f5a6f2 -->

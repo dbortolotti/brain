@@ -11,9 +11,13 @@ The fine-grained topology is useful for model evaluation and deployment planning
 - an optional taste-routing / taste-proposal model when `BRAIN_TASTE_ENABLED=true` and the taste branch is active
 - an optional broad memory compiler fallback when `BRAIN_LLM_ENABLED=true` and deterministic rule compilation is not already high-confidence
 
-`SlackMemoryAgent` and `compile_memory()` both load shared prompt-contract blocks from `src/memory_stack/agents/prompt_contracts.py` plus the role docs under `src/memory_stack/agents/shared/`.
+`SlackMemoryAgent` and `compile_memory()` both load shared prompt-contract blocks from `src/memory_stack/agents/prompt_contracts.py` plus the role docs under `src/memory_stack/agents/shared/`. `SlackMemoryAgent` uses `prompt_contract_block(SLACK_RUNTIME_ROLES)`; `compile_memory()` uses `prompt_contract_block(MEMORY_COMPILER_RUNTIME_ROLES)`.
 
 Slack and MCP are separate ingress paths, but they share the same core Brain service layer. Slack is not an MCP client.
+
+The main Brain HTTP surface includes `/`, `/admin`, `/app`, `/healthz`, auth/session endpoints, `/memory/*`, and the catch-all MCP route `/{path:path}`. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
+
+The shared agent rules also refuse secrets, passwords, API keys, tokens, private authentication material, and credential-shaped strings.
 
 ## Current Runtime Flow
 
@@ -28,7 +32,7 @@ flowchart LR
 
     USER[/User or client/]:::ext
     SLACK[/Slack commands<br/>events<br/>interactions/]:::ext
-    HTTP[/HTTP or MCP tools/]:::ext
+    HTTP[/HTTP /memory/* endpoints<br/>MCP tools/]:::ext
     DB[(Brain DB<br/>memory cards · sources · entities · relationships<br/>open loops · ingestion runs · recall logs · cognee sync)]:::store
     COGNEE[(Cognee projection)]:::store
 
@@ -104,7 +108,7 @@ The table below describes current runtime behavior, not eval-topology intent.
 
 | Role | Current runtime status |
 | --- | --- |
-| `intent_router` | Deterministic route and command parsing |
+| `intent_router` | Deterministic route and command parsing from FastAPI routes, MCP tool names, and Slack command parsing |
 | `source_classifier` | Deterministic heuristics |
 | `durability_filter` | Deterministic guardrails / rule sufficiency |
 | `memory_kind_classifier` | Deterministic classification |
@@ -135,13 +139,13 @@ The table below describes current runtime behavior, not eval-topology intent.
 
 ### Legend
 
-- **model** (blue) — fine-grained role backed by an LLM
-- **det** (green) — deterministic policy / validator
-- **solid arrows** — intended information flow between coarse capabilities
-- **dotted arrows** — intended ordering inside a coarse capability
-- **dashed arrows** — out-of-band / supporting roles
+- **model** (blue) - fine-grained role backed by an LLM
+- **det** (green) - deterministic policy / validator
+- **solid arrows** - intended information flow between coarse capabilities
+- **dotted arrows** - intended ordering inside a coarse capability
+- **dashed arrows** - out-of-band / supporting roles
 
-Source of truth: `src/memory_stack/evals/scoring.py` (`COARSE_CAPABILITIES`) and shared prompt-contract docs under `src/memory_stack/agents/shared/`.
+Source of truth: `src/memory_stack/evals/scoring.py` (`COARSE_CAPABILITIES`) and shared prompt-contract docs under `src/memory_stack/agents/shared/`. Runtime prompt bundles are `SLACK_RUNTIME_ROLES` and `MEMORY_COMPILER_RUNTIME_ROLES`.
 
 ```mermaid
 flowchart TD
@@ -383,4 +387,4 @@ flowchart TD
 | judge (offline)    | eval_judge                                                                                                                      | —                                                                         |
 | embeddings         | embeddings                                                                                                                      | —                                                                         |
 
-<!-- brain-doc-source-hash: 3138522b9a0eeba69444a09279d07a72ed9c125e4d600b9336742959c227ecff -->
+<!-- brain-doc-source-hash: afe2e5efca893a677956b81e6019b85c4aefda25f2844cb1a8b55e0636b445d1 -->
