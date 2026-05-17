@@ -43,6 +43,24 @@ def test_icon_routes() -> None:
     assert favicon_response.content.startswith(b"\x00\x00\x01\x00")
 
 
+def test_openai_apps_challenge_route_is_configured_only() -> None:
+    previous_settings = mcp_server.settings
+    try:
+        mcp_server.settings = Settings(brain_openai_apps_challenge_token=None)
+        client = TestClient(app)
+        missing_response = client.get("/.well-known/openai-apps-challenge")
+        assert missing_response.status_code == 404
+
+        mcp_server.settings = Settings(brain_openai_apps_challenge_token="challenge-token")
+        configured_response = client.get("/.well-known/openai-apps-challenge")
+        assert configured_response.status_code == 200
+        assert configured_response.text == "challenge-token"
+        assert configured_response.headers["cache-control"] == "no-store"
+        assert configured_response.headers["x-robots-tag"] == "noindex"
+    finally:
+        mcp_server.settings = previous_settings
+
+
 def test_brain_app_ui_routes() -> None:
     client = TestClient(app)
 

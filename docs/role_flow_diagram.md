@@ -15,7 +15,7 @@ The fine-grained topology is useful for model evaluation and deployment planning
 
 Slack and MCP are separate ingress paths, but they share the same core Brain service layer. Slack is not an MCP client.
 
-The main Brain HTTP surface includes root `/`, OAuth discovery/protected-resource endpoints, auth/session and account/password endpoints, login/logout/register/revoke/token endpoints, admin/user management, app/dashboard and app asset/callback routes, datasources, `/memory/*`, docs/openapi/redoc/privacy/support/terms, healthz, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
+The main Brain HTTP surface includes root `/`, OAuth discovery/protected-resource endpoints, OpenAI apps challenge, account/password and session endpoints, login/logout/register/revoke/token endpoints, admin/user management, app/dashboard, app asset and OAuth callback routes, datasource routes, `/memory/*` including `/memory/{memory_id}`, docs/openapi/redoc/privacy/support/terms, `/healthz`, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
 
 The shared agent rules also refuse secrets, passwords, API keys, tokens, private authentication material, and credential-shaped strings.
 
@@ -23,7 +23,7 @@ The shared agent rules also refuse secrets, passwords, API keys, tokens, private
 
 ## Current Runtime Flow
 
-Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_store.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, `src/memory_stack/agents/prompt_contracts.py`, and `src/memory_stack/agents/shared/*`.
+Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_store.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, `src/memory_stack/agents/prompt_contracts.py`, `src/memory_stack/agents/shared/*`, `src/memory_stack/agents/shared/memory_agent_rules.md`, and `src/memory_stack/agents/shared/agent_architecture.md`.
 
 ```mermaid
 flowchart LR
@@ -34,7 +34,7 @@ flowchart LR
 
     USER[/User or client/]:::ext
     SLACK[/Slack commands<br/>events<br/>interactions/]:::ext
-    HTTP[/HTTP /memory/* endpoints<br/>MCP tools<br/>/api/session · /auth/session · /login · /logout · /register · /revoke · /token · /user · /admin · /app · /app/oauth/callback/]:::ext
+    HTTP[/HTTP routes<br/>OAuth discovery/protected-resource<br/>session/auth · account/password<br/>login/logout/register/revoke/token<br/>admin/user · app/dashboard/assets/callback<br/>datasources · /memory/*<br/>docs/openapi/redoc/privacy/support/terms<br/>healthz · MCP catch-all/]:::ext
     DB[(Brain DB<br/>memory cards · sources · entities · relationships<br/>open loops · ingestion runs · recall logs · cognee sync)]:::store
     COGNEE[(Cognee projection)]:::store
 
@@ -343,7 +343,7 @@ flowchart TD
 5. **Ask/reject paths are first-class outputs, not errors.** Ambiguity, no-durable-value input, unsafe conflicts, and entity uncertainty should flow to user clarification or rejection rather than being forced into a write.
 6. **Recall has two safety layers.** Backend status visibility removes deleted/superseded records before `recall_relevance_filter`; the relevance role then prunes semantically irrelevant records before synthesis.
 7. **Out-of-band roles are separate.** `eval_judge` scores fixtures offline, and `embeddings` supplies vector/projection data. Neither owns normal memory write policy.
-8. **Prompt contracts mirror the runtime bundles.** The Slack intake flow and the compiler flow both share the prompt-contract blocks used by the tests, so the topology should stay aligned with `SLACK_RUNTIME_ROLES` and `MEMORY_COMPILER_RUNTIME_ROLES`.
+8. **Prompt contracts mirror the runtime bundles.** The Slack intake flow and the compiler flow both share the prompt-contract blocks used by the tests, so the topology should stay aligned with `SLACK_RUNTIME_ROLES`, `MEMORY_COMPILER_RUNTIME_ROLES`, and the shared role docs.
 
 ### Fine-Grained Role Function Reference
 
@@ -389,4 +389,4 @@ flowchart TD
 | judge (offline)    | eval_judge                                                                                                                      | —                                                                         |
 | embeddings         | embeddings                                                                                                                      | —                                                                         |
 
-<!-- brain-doc-source-hash: 93f1bf6014a0fcdcb829224e9782509137e90998823822f2a3279729c4fadfa4 -->
+<!-- brain-doc-source-hash: 0233f1e4fcd2565109a09e3f1cf2ecdd5a1664b0609c41e5d87cb924c59b7337 -->

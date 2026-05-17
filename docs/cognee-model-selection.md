@@ -31,7 +31,7 @@ The latest retrieval run completed for all three candidate datasets using `gpt-5
 | `menotti-55-low` | `gpt-5.5` low-effort run | `gpt-5.5` extra high | `gpt-5.5` extra high | 100/100 | 4.69 | 1.151s |
 | `menotti-55-high` | `gpt-5.5` high-effort run | `gpt-5.5` extra high | `gpt-5.5` extra high | 100/100 | 4.71 | 1.139s |
 
-These are retrieval results for `gpt-5.5` answer synthesis, not final results for every possible retrieval model. This run holds retrieval/answer synthesis constant at `gpt-5.5` extra high. That means the current comparison is primarily testing how the different ingestion settings shape Cognee's stored graph/vector representation under a strong retrieval model. The matching `gpt-5.4-mini` retrieval run is recorded below, while keeping the scorer fixed at `gpt-5.5` extra high. The remaining open retrieval-model comparison is `gpt-5.5` low.
+These are retrieval results for `gpt-5.5` answer synthesis, not final results for every possible retrieval model. This run holds retrieval/answer synthesis constant at `gpt-5.5` extra high. That means the current comparison is primarily testing how the different ingestion settings shape Cognee's stored graph/vector representation under a strong retrieval model. The matching `gpt-5.4-mini` retrieval run is recorded below, while keeping the scorer fixed at `gpt-5.5` extra high.
 
 The completed raw answer artifacts are:
 
@@ -61,7 +61,7 @@ There are three separate model roles in this benchmark:
 - Retrieval / answer model: the model used by `GRAPH_COMPLETION` when answering the 100 questions.
 - Scoring judge: the model that grades candidate answers against the expected answers and corpus evidence.
 
-All benchmark runs are scored by the same judge: `gpt-5.5` extra high. Completed retrieval runs now include `gpt-5.5` extra high and `gpt-5.4-mini` as retrieval/answer models. A remaining retrieval run with `gpt-5.5` low would complete the model-cost comparison.
+All benchmark runs are scored by the same judge: `gpt-5.5` extra high. Completed retrieval runs include `gpt-5.5` extra high and `gpt-5.4-mini` as retrieval/answer models.
 
 ## Corpus
 
@@ -113,7 +113,7 @@ Each candidate was queried with `artifacts/ask_cognee_dataset.py`, using:
 - retrieval / answer model varies by run: `gpt-5.5` extra high for `20260513_141703`, and `gpt-5.4-mini` for `20260513_gpt54mini`
 - the same 100 questions in the same order
 
-The score table has one row per candidate/question with a 1-5 score and a short scoring note. For comparability, every scored run in this series uses `gpt-5.5` extra high as the judge, even when the retrieval/answer model changes.
+The score table has one row per candidate/question with a 1-5 score. For comparability, every scored run in this series uses `gpt-5.5` extra high as the judge, even when the retrieval/answer model changes.
 
 The repo's live runner follows the same separation of concerns: it creates a fresh dataset, ingests the full Manetti document, then ordered organic seed inserts, then asks all 200 fixture questions and scores every answer with a judge model.
 
@@ -424,8 +424,8 @@ The current data does not justify `menotti-55-high` as a default. Its ingestion 
 
 ## Next Steps
 
-1. Repeat the same 100-question retrieval run with `gpt-5.5` low as the retrieval/answer model, scored by `gpt-5.5` extra high.
-2. Compare low-score clusters across the `gpt-5.5`, `gpt-5.5` low, and `gpt-5.4-mini` retrieval runs.
+1. If you run another retrieval comparison, keep the same 100-question set and the same judge model so low-score clusters stay comparable.
+2. Compare low-score clusters across the completed `gpt-5.5` and `gpt-5.4-mini` retrieval runs.
 3. Select the cheaper ingestion and retrieval combination unless the slower model clearly fixes structural and interpretive retrieval errors.
 
-<!-- brain-doc-source-hash: b5038fd6fc33ffa16dad444075e9c2ebfb125c0b752cbb7f7d2291eb7e2cc827 -->
+<!-- brain-doc-source-hash: 73ecfc21d1955d6089790b87858b164cc8a7c466a5a0356649b34a0f97fdf048 -->

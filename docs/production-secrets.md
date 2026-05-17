@@ -24,8 +24,8 @@ workflow-dispatch `version` input is required, and the manual production deploy
 escape hatch only exposes `force_config_override`.
 
 `force_config_override` is available only on workflow-dispatch runs for staging,
-production, and release. It defaults to `false`. Push-based staging deploys do
-not use it.
+production, and release. It defaults to `false`. Push-based staging deploys
+do not use it.
 
 ## Release Versioning
 
@@ -40,20 +40,20 @@ The release metadata records the app name, environment, version, SHA, release
 directory, `deployed_at`, and source. The source is `github-actions` for
 workflow runs and `local` for local runs.
 
+The renderer also writes config-render metadata keys into the rendered config:
+
+```text
+BRAIN_CONFIG_RENDER_SHA
+BRAIN_CONFIG_RENDERED_AT
+BRAIN_CONFIG_RENDER_SOURCE
+```
+
 The release metadata keys are:
 
 ```text
 BRAIN_RELEASE_ENV
 BRAIN_RELEASE_SHA
 BRAIN_RELEASE_VERSION
-```
-
-The renderer also writes config-render metadata keys:
-
-```text
-BRAIN_CONFIG_RENDER_SHA
-BRAIN_CONFIG_RENDERED_AT
-BRAIN_CONFIG_RENDER_SOURCE
 ```
 
 The conflict checker ignores both metadata families.
@@ -137,6 +137,7 @@ The deployed auth and dashboard surfaces include these route families:
 /.well-known/oauth-authorization-server
 /.well-known/oauth-protected-resource
 /.well-known/oauth-protected-resource/{resource_path:path}
+/.well-known/openai-apps-challenge
 /auth/session         session endpoint
 /api/session          session endpoint
 /app-assets/{asset_name}
@@ -207,14 +208,14 @@ Configure these in GitHub repository secrets for staging and production deploys:
 OPENAI_API_KEY
 GRAPH_DATABASE_PASSWORD
 BRAIN_AUTH_PASSWORD
-BRAIN_AUTH_TOKEN
 ```
+
+The staging and production workflows also pass `BRAIN_AUTH_TOKEN` into
+`render_prod_env.py`.
 
 `GRAPH_DATABASE_PASSWORD` is treated as required by the renderer. The renderer
 rejects empty or placeholder values for `OPENAI_API_KEY` (``, `replace-me`,
-`sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`). The
-staging and production workflows also pass `BRAIN_AUTH_TOKEN` into
-`render_prod_env.py`.
+`sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
 
 ## Optional Taste Integration Secrets
 
@@ -289,6 +290,7 @@ BRAIN_PUBLIC_ADMIN_MCP_PATH
 BRAIN_PUBLIC_APP_MCP_PATH
 BRAIN_PUBLIC_UI_PATH
 BRAIN_PUBLIC_UI_API_PATH
+BRAIN_OPENAI_APPS_CHALLENGE_TOKEN
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED
 BRAIN_GOOGLE_DRIVE_REMOTE
 BRAIN_GOOGLE_DRIVE_FOLDER
@@ -392,8 +394,8 @@ BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 The renderer also reads additional environment variables in staging and prod,
 including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`,
 `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`,
-`BRAIN_NEO4J_*` service and container labels, `BRAIN_SLACK_ENABLED`,
-`BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
+`BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`,
+`BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
 `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including
 `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown
 above.
@@ -407,4 +409,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 1f8ede5f3d0fd3251c86aefe0303728dee68a5e50a710abebfa68af9748b9851 -->
+<!-- brain-doc-source-hash: 3e162901532b335d50495dc82fcda495d174f5178ebdc949a2b1d9c7a790e492 -->

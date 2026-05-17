@@ -1,11 +1,6 @@
 # Backup Scheme
 
-Brain backups are timestamped filesystem snapshots with a manifest. The backup
-job is implemented by `scripts/backup_stores.py` and exposed through:
-
-```bash
-make backup
-```
+Brain backups are timestamped backup directories with a manifest. The backup job is implemented by `scripts/backup_stores.py`.
 
 Production verification checks the latest backup manifest as part of:
 
@@ -90,10 +85,10 @@ That script runs `scripts/brain_agent_memory.py` first, then runs
 exits successfully. A failed cognify run therefore skips backup instead of
 creating a snapshot from a partially refreshed projection.
 
-Use the configured environment:
+Run the backup script directly with the configured environment:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make backup
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py
 ```
 
 Override the backup root for a one-off run:
@@ -154,8 +149,9 @@ The backup script searches the shared data root for SQLite databases:
 system/databases/*
 ```
 
-Each SQLite file is copied using SQLite's online backup API, not a raw file
-copy. The backup is then checked with:
+It only backs up files that SQLite identifies as databases. Each SQLite file is
+copied using SQLite's online backup API, not a raw file copy. The backup is then
+checked with:
 
 ```sql
 PRAGMA integrity_check;
@@ -189,7 +185,8 @@ raw_data/<data-root-name>.tar.gz
 This preserves source data and runtime files that are not captured by the
 SQLite- or vector-store-specific paths.
 
-If the shared data directory is missing, the manifest receives a blocker.
+If the shared data directory is missing, the manifest receives a blocker and no
+raw-data archive is written.
 
 ## Vector Store Backups
 
@@ -217,6 +214,9 @@ When the vector backend is LanceDB, the script archives:
 
 - The configured `VECTOR_DB_URL`.
 - Any path under the shared data root whose name contains `lancedb`.
+
+If `VECTOR_DB_URL` is not absolute, the script resolves it relative to the
+shared data root before checking for the path.
 
 Each candidate is stored as:
 
@@ -340,7 +340,8 @@ Production verification requires Google Drive verification when
 ## Production Verification
 
 `scripts/verify_mcp_production.py` checks the latest manifest under
-`BRAIN_BACKUP_DIR` unless `--skip-backups` is passed.
+`BRAIN_BACKUP_DIR` unless `--skip-backups` is passed. It also checks that the
+configured runtime paths are absolute and under `shared/data`.
 
 It fails when:
 
@@ -418,4 +419,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: f8bf4358c47d63838119ddb87e036d271648b684a5a572064fbc76a9a49c0e69 -->
+<!-- brain-doc-source-hash: 06200dcf127755e9cbe655c60ffea8e2d411dc2f49bae38453e1db322cd01c70 -->

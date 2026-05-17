@@ -15,7 +15,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 from fastapi import Cookie, FastAPI, Header, HTTPException, Request, Response
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, RedirectResponse
 from pydantic import BaseModel
 
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
@@ -1598,6 +1598,17 @@ async def favicon_ico() -> FileResponse:
         BRAIN_FAVICON_PATH,
         media_type="image/x-icon",
         headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@app.get("/.well-known/openai-apps-challenge", include_in_schema=False)
+async def openai_apps_challenge() -> PlainTextResponse:
+    token = (settings.brain_openai_apps_challenge_token or "").strip()
+    if not token:
+        raise HTTPException(status_code=404, detail="Not found")
+    return PlainTextResponse(
+        token,
+        headers={"Cache-Control": "no-store", "X-Robots-Tag": "noindex"},
     )
 
 

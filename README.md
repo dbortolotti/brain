@@ -54,7 +54,6 @@ Selected user-facing HTTP endpoints include:
 - `GET /healthz`
 - `GET /`, `GET /app`, and `GET /user` for the Brain user dashboard
 - `GET /admin` for the root/admin dashboard view
-- `GET /cognee` and `GET /admin/cognee` for the Cognee UI entry points
 - `GET /app-assets/{asset_name}` and `GET /app/oauth/callback`
 - `GET /auth/session` and `GET /api/session` for the web session endpoint
 - `POST /login` and `POST /logout`
@@ -66,11 +65,13 @@ Selected user-facing HTTP endpoints include:
 - `GET /.well-known/oauth-authorization-server`
 - `GET /.well-known/oauth-protected-resource`
 - `GET /.well-known/oauth-protected-resource/{resource_path:path}`
+- `GET /.well-known/openai-apps-challenge` when `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN` is configured for OpenAI domain verification
 - `GET /admin/users`, `POST /admin/users`, `PUT /admin/users/{user_id}`, and `DELETE /admin/users/{user_id}`
 - `GET|POST /mcp` for the curated user/app MCP surface
 - `GET|POST /admin/mcp` for the full admin MCP surface
 - `GET|POST /app/mcp` for the legacy ChatGPT App MCP alias
-- `GET /docs`, `GET /redoc`, and `GET /openapi.json`
+- `GET /docs`, `GET /docs/oauth2-redirect`, `GET /redoc`, and `GET /openapi.json`
+- `GET /favicon.ico`, `GET /icon.png`, and `GET /apple-touch-icon.png`
 - `GET /privacy`, `GET /terms`, and `GET /support`
 - `GET /datasources`, `POST /datasources`, and `DELETE /datasources/{datasource}`
 - `POST /create_datasource`
@@ -119,6 +120,7 @@ Public ChatGPT App surface:
 Internal admin surface:
 
 - `brain_session`
+- `brain_app_open_review_panel`
 - `brain_remember`
 - `brain_ingest_source`
 - `brain_recall`
@@ -156,7 +158,7 @@ Raw SQL and arbitrary Cognee primitives are intentionally not exposed as public 
 
 ## Running The Cognee UI Proxy
 
-The Cognee UI proxy is a separate HTTP service. It does not serve `/mcp`, and UI paths should be routed to its own port:
+The Cognee UI proxy is a separate HTTP service. It does not serve `/mcp`, and UI paths should be routed to its own port. The proxy owns the `/cognee`, `/admin/cognee`, `/ui`, `/ui-api`, `/cognee-api`, `/ui-login`, `/ui-logout`, `/cognee-login`, and `/cognee-logout` surfaces.
 
 ```bash
 make ui-proxy
@@ -193,6 +195,7 @@ Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at
 The ChatGPT App surface intentionally lists only user-safe tools:
 
 - `brain_session`
+- `brain_app_open_review_panel`
 - `brain_remember`
 - `brain_ingest_source`
 - `brain_recall`
@@ -278,12 +281,12 @@ make slack-agent-check
 Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 
 - `dev`: local developer runs.
-- `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`.
+- `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually; its `version` input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
 `.github/workflows/deploy-local-production.yml` remains available as a manual production deploy escape hatch. It is not triggered by pushes to `main`; its workflow-dispatch run resolves a `prod-<12-char-sha>` build version.
 
-The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
+The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. They also set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
 
 Workflow model:
 
@@ -293,6 +296,12 @@ Workflow model:
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
 The Makefile also exposes `make deploy-local-production` as a manual production deploy helper:
+
+```bash
+make deploy-local-production
+```
+
+Equivalent command:
 
 ```bash
 ./scripts/deploy-local-production.sh
@@ -314,7 +323,7 @@ Every deploy writes runtime release metadata into:
 
 The release metadata records the app name, environment, version, SHA, deployment directory, deploy time, and source. The source is `github-actions` for workflow runs and `local` for local runs.
 
-Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA when the version starts with `v`. If the tag already exists at a different SHA, the staging run fails instead of retagging.
+Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. If you omit the version on a manual staging run, it falls back to `staging-<12-char-sha>`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA when the version starts with `v`. If the tag already exists at a different SHA, the staging run fails instead of retagging.
 
 Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION`.
 
@@ -381,13 +390,7 @@ make slack-agent-check
 make cloudflare-verify
 ```
 
-`cloudflare-verify` checks DNS/TLS, public curated and admin MCP URLs, dashboard,
-privacy, terms, support, browser security headers, OAuth metadata, ChatGPT App
-tool descriptors, the embedded app component resource, and the authenticated
-public app MCP surface when auth is enabled. For authenticated checks against
-hashed user registries, set `BRAIN_VERIFIER_USER_ID` and
-`BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and
-`BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
+`cloudflare-verify` checks DNS/TLS, public curated and admin MCP URLs, dashboard, privacy, terms, support, browser security headers, OAuth metadata, ChatGPT App tool descriptors, the embedded app component resource, and the authenticated public app MCP surface when auth is enabled. For authenticated checks against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 Operational maintenance targets:
 
@@ -714,4 +717,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 8049416ff225aa7ff331ecd76a3b4290089e8b865fed52224c4c199ca82d9511 -->
+<!-- brain-doc-source-hash: b8a16580a70dd317d9e27fa10fdaf3e92927a115b3559e0d56d18520a9ba257e -->

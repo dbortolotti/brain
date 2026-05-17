@@ -132,6 +132,7 @@ OAuth, auth, and browser session endpoints:
 GET  /.well-known/oauth-protected-resource
 GET  /.well-known/oauth-protected-resource/{resource_path}
 GET  /.well-known/oauth-authorization-server
+GET  /.well-known/openai-apps-challenge
 POST /register
 GET|POST /authorize
 POST /token
@@ -143,7 +144,8 @@ GET  /api/session
 PUT  /account/password
 ```
 
-The dashboard and public app pages are also served by the Brain HTTP process:
+The dashboard and public app pages are also served by the Brain HTTP process by
+the configured Brain HTTP server:
 
 ```text
 GET /app
@@ -160,6 +162,24 @@ GET /healthz
 GET /apple-touch-icon.png
 GET /favicon.ico
 GET /icon.png
+```
+
+Cognee/UI proxy routes are also served by the same Brain HTTP process:
+
+```text
+GET|POST /cognee-login
+POST     /cognee-logout
+GET|POST /ui-login
+POST     /ui-logout
+DELETE|GET|PATCH|POST|PUT /cognee
+DELETE|GET|PATCH|POST|PUT /cognee/{path:path}
+DELETE|GET|PATCH|POST|PUT /cognee-api/{path:path}
+DELETE|GET|PATCH|POST|PUT /ui
+DELETE|GET|PATCH|POST|PUT /ui/{path:path}
+DELETE|GET|PATCH|POST|PUT /ui-api/{path:path}
+DELETE|GET|PATCH|POST|PUT /admin/cognee
+DELETE|GET|PATCH|POST|PUT /admin/cognee/{path:path}
+DELETE|GET|PATCH|POST|PUT /admin/cognee-api/{path:path}
 ```
 
 Admin user-management endpoints:
@@ -205,6 +225,7 @@ dashboard is served by the same HTTP process at the configured public base URL.
 The curated app tool set is:
 
 ```text
+brain_app_open_review_panel
 brain_session
 brain_recall
 brain_remember
@@ -283,6 +304,7 @@ OAuth metadata routes:
 GET /.well-known/oauth-protected-resource
 GET /.well-known/oauth-protected-resource/{resource_path}
 GET /.well-known/oauth-authorization-server
+GET /.well-known/openai-apps-challenge
 POST /register
 GET|POST /authorize
 POST /token
@@ -306,7 +328,8 @@ alias.
 The Cognee UI proxy also uses the Brain user registry. `/cognee-login` and
 `/ui-login` are login routes; `/cognee-logout` and `/ui-logout` are logout
 routes. `/admin/cognee` requires a superuser user record. `/ui`, `/ui-api`,
-`/cognee`, `/cognee-api`, and their path variants remain compatibility aliases.
+`/cognee`, `/cognee-api`, `/admin/cognee`, `/admin/cognee-api`, and their path
+variants remain compatibility aliases.
 
 Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`,
@@ -318,8 +341,8 @@ For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
 records with `id`/`user_id`, an Argon2id `password_hash`, optional
 `password_scheme`, optional `password_updated_at`, optional `display_name`,
 optional `email`, and optional `superuser` fields. Legacy records with a
-plaintext `password` are accepted only for migration; after successful login, or
-after running `scripts/migrate_auth_user_passwords.py`, Brain rewrites the
+plaintext `password` are accepted only for migration; after successful login,
+or after running `scripts/migrate_auth_user_passwords.py`, Brain rewrites the
 registry without plaintext password fields. OAuth authorization stores the
 selected `user_id` in issued tokens; HTTP and MCP memory operations then scope
 Brain DB rows, profile context files, Palate data, recall logs, and app audit
@@ -442,6 +465,7 @@ Brain settings.
 The internal `/admin/mcp` surface exposes:
 
 ```text
+brain_app_open_review_panel
 brain_session
 brain_profile_context_remember
 brain_profile_context_list
@@ -640,9 +664,10 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make cloudflare-v
 ```
 
 The production verifier checks runtime paths, health, release metadata, MCP
-route behavior, OAuth metadata when auth is enabled, and backup manifests unless
-`--skip-backups` is used. The Cloudflare verifier checks DNS/TLS, public curated
-and admin MCP URLs, dashboard, privacy, terms, and support pages, OAuth
+route behavior, the local Brain dashboard, the public app MCP surface, OAuth
+metadata when auth is enabled, and backup manifests unless `--skip-backups` is
+used. The Cloudflare verifier checks DNS/TLS, public curated, admin, and app
+MCP URLs, dashboard, privacy, terms, and support pages, OAuth
 protected-resource metadata, and the authenticated public app MCP surface when
 auth is enabled. It also checks browser security headers, ChatGPT App tool
 descriptor metadata, and the embedded component resource. For authenticated
@@ -684,4 +709,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 84aba55fea18b6ca4a8832b21d8c7b576bf69257d8b8080b2ee10d06a2e9a3b0 -->
+<!-- brain-doc-source-hash: 69ebe0cc92d2eaa3abb0b47b0b5c0171f5a3ca26ce4a58943d4f1704f4cb2ddb -->

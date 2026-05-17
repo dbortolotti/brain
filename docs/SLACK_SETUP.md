@@ -1,6 +1,6 @@
 # Slack Setup Guide
 
-Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and configured allowlists before handling memory operations. Slack writes are guarded by proposal rules and require confirmation by default.
+Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and configured allowlists before handling memory operations. Slack writes use proposal rules and confirmation flows, and `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer setting.
 
 ## Architecture
 
@@ -18,13 +18,21 @@ MCP/HTTP service: http://{BRAIN_MCP_HOST}:{BRAIN_MCP_PORT}
 Slack agent:      http://{BRAIN_SLACK_AGENT_HOST}:{BRAIN_SLACK_AGENT_PORT}
 ```
 
-Slack routes:
+Slack agent routes:
 
 ```text
 GET  /slack/healthz
 POST /slack/events
 POST /slack/commands
 POST /slack/interactions
+```
+
+The Slack agent also serves FastAPI documentation endpoints:
+
+```text
+GET /docs
+GET /openapi.json
+GET /redoc
 ```
 
 ## Prerequisites
@@ -122,7 +130,7 @@ app_mention
 message.im
 ```
 
-Use app mentions or DMs for free-form recall/profile/remember routing. The agent strips bot mentions before parsing the message. Event-based DMs and mentions do not use Slack's slash-command response channel, so Brain replies by calling Slack `chat.postMessage`; this requires `BRAIN_SLACK_BOT_TOKEN`.
+Use app mentions or DMs for free-form recall/profile/remember routing. The agent strips bot mentions before parsing the message. Event-based DMs and mentions do not use Slack's slash-command response channel, so Brain replies by calling Slack `chat.postMessage`; this requires `BRAIN_SLACK_BOT_TOKEN`. If the original event includes a thread timestamp, Brain posts the reply in that thread.
 
 ## Configure Interactivity
 
@@ -255,4 +263,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: 1ed57a349c65689b71558dd8ad25298e68498b126f7c5fad1c6b6fcffb8f853c -->
+<!-- brain-doc-source-hash: d92fbcd4197e748a48275d79768a7148015c41d11c080f851066fa451075b854 -->

@@ -265,6 +265,7 @@ class Settings(BaseSettings):
         default_factory=lambda: get("BRAIN_PUBLIC_ADMIN_MCP_PATH", "/admin/mcp")
     )
     brain_public_app_mcp_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_APP_MCP_PATH", "/app/mcp"))
+    brain_openai_apps_challenge_token: str | None = None
     brain_backup_dir: str = Field(default_factory=lambda: get("BRAIN_BACKUP_DIR"))
     brain_neo4j_dump_enabled: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_DUMP_ENABLED", False))
     brain_neo4j_stop_for_dump: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_STOP_FOR_DUMP", False))
@@ -662,6 +663,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_PUBLIC_MCP_PATH": settings.brain_public_mcp_path,
         "BRAIN_PUBLIC_ADMIN_MCP_PATH": settings.brain_public_admin_mcp_path,
         "BRAIN_PUBLIC_APP_MCP_PATH": settings.brain_public_app_mcp_path,
+        "BRAIN_OPENAI_APPS_CHALLENGE_TOKEN": settings.brain_openai_apps_challenge_token or "",
         "BRAIN_BACKUP_DIR": settings.brain_backup_dir,
         "BRAIN_NEO4J_DUMP_ENABLED": str(settings.brain_neo4j_dump_enabled).lower(),
         "BRAIN_NEO4J_STOP_FOR_DUMP": str(settings.brain_neo4j_stop_for_dump).lower(),

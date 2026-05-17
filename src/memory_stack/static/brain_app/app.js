@@ -69,6 +69,7 @@ const endpointGroups = [
       { method: "GET", path: "/.well-known/oauth-protected-resource/mcp", label: "MCP resource metadata" },
       { method: "GET", path: "/.well-known/oauth-protected-resource/admin/mcp", label: "Admin MCP resource metadata" },
       { method: "GET", path: "/.well-known/oauth-authorization-server", label: "OAuth authorization metadata" },
+      { method: "GET", path: "/.well-known/openai-apps-challenge", label: "OpenAI app domain challenge" },
       { method: "GET", path: "/icon.png", label: "App icon" },
     ],
   },
