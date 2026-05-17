@@ -30,6 +30,7 @@ CHATGPT_APP_TOOLS = {
     "brain_session",
     "brain_recall",
     "brain_remember",
+    "brain_ingest_source",
     "brain_profile_entity",
     "brain_list_open_loops",
     "brain_get_memory",
@@ -54,6 +55,7 @@ APP_READ_ONLY_TOOLS = {
 
 APP_MUTATING_TOOLS = {
     "brain_remember",
+    "brain_ingest_source",
     "brain_profile_context_remember",
     "brain_profile_context_forget",
     "brain_undo_last",

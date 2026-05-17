@@ -90,4 +90,4 @@ For a production release:
 3. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
 4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the tagged release.
 
-<!-- brain-doc-source-hash: f628dd6cf29e46e2593c14955b59f1838103851b88c3f9b3ee90b4a4384cc5db -->
+<!-- brain-doc-source-hash: 34dc2f960047e4d045b9d811c36923a32c0b60716921da1b3d09c566a56c9d4b -->
