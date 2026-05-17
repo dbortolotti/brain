@@ -34,9 +34,10 @@ fi
 LABEL="${BRAIN_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.mcp}"
 UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
 SLACK_LABEL="${BRAIN_SLACK_AGENT_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.slack-agent}"
-AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
+MAINTENANCE_LABEL="${BRAIN_MAINTENANCE_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.maintenance}"
 LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.log-rotation}"
-BACKUP_LABEL="${BRAIN_BACKUP_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.backup}"
+LEGACY_AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
+LEGACY_BACKUP_LABEL="${BRAIN_BACKUP_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.backup}"
 PROD_ROOT="${BRAIN_PROD_ROOT:-$DEFAULT_ROOT}"
 BRAIN_PUBLIC_BASE_URL="${BRAIN_PUBLIC_BASE_URL:-$DEFAULT_PUBLIC_BASE_URL}"
 BRAIN_MCP_PORT="${BRAIN_MCP_PORT:-$DEFAULT_MCP_PORT}"
@@ -72,12 +73,12 @@ UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
 UI_PLIST_DST="$HOME/Library/LaunchAgents/$UI_LABEL.plist"
 SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template"
 SLACK_PLIST_DST="$HOME/Library/LaunchAgents/$SLACK_LABEL.plist"
-AGENT_MEMORY_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template"
-AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$AGENT_MEMORY_LABEL.plist"
+MAINTENANCE_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template"
+MAINTENANCE_PLIST_DST="$HOME/Library/LaunchAgents/$MAINTENANCE_LABEL.plist"
 LOG_ROTATION_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template"
 LOG_ROTATION_PLIST_DST="$HOME/Library/LaunchAgents/$LOG_ROTATION_LABEL.plist"
-BACKUP_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.backup.plist.template"
-BACKUP_PLIST_DST="$HOME/Library/LaunchAgents/$BACKUP_LABEL.plist"
+LEGACY_AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$LEGACY_AGENT_MEMORY_LABEL.plist"
+LEGACY_BACKUP_PLIST_DST="$HOME/Library/LaunchAgents/$LEGACY_BACKUP_LABEL.plist"
 NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
 NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
 
@@ -196,6 +197,16 @@ enable_launch_agent() {
   launchctl bootstrap "$domain" "$plist"
 }
 
+disable_launch_agent() {
+  local label="$1"
+  local plist="$2"
+  local domain="gui/$(id -u)"
+
+  launchctl bootout "$domain" "$plist" >/dev/null 2>&1 || true
+  launchctl disable "$domain/$label" >/dev/null 2>&1 || true
+  rm -f "$plist"
+}
+
 install_newsyslog_config() {
   if [[ ! -f "$NEWSYSLOG_SRC" ]]; then
     log "newsyslog config template not found; skipping"
@@ -255,9 +266,8 @@ if deploy_env != "prod":
         {
             "brain-ui.": f"brain-{deploy_env}-ui.",
             "brain-slack-agent.": f"brain-{deploy_env}-slack-agent.",
-            "brain-agent-memory.": f"brain-{deploy_env}-agent-memory.",
+            "brain-maintenance.": f"brain-{deploy_env}-maintenance.",
             "brain-log-rotation.": f"brain-{deploy_env}-log-rotation.",
-            "brain-backup.": f"brain-{deploy_env}-backup.",
         }
     )
 for old, new in replacements.items():
@@ -635,12 +645,10 @@ render_plist "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
 render_plist "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
-render_plist "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
-plutil -lint "$AGENT_MEMORY_PLIST_DST" >/dev/null
+render_plist "$MAINTENANCE_PLIST_SRC" "$MAINTENANCE_PLIST_DST"
+plutil -lint "$MAINTENANCE_PLIST_DST" >/dev/null
 render_plist "$LOG_ROTATION_PLIST_SRC" "$LOG_ROTATION_PLIST_DST"
 plutil -lint "$LOG_ROTATION_PLIST_DST" >/dev/null
-render_plist "$BACKUP_PLIST_SRC" "$BACKUP_PLIST_DST"
-plutil -lint "$BACKUP_PLIST_DST" >/dev/null
 if [[ "$DEPLOY_ENV" == "prod" ]]; then
   install_newsyslog_config
 else
@@ -660,12 +668,13 @@ if command -v launchctl >/dev/null 2>&1; then
   enable_launch_agent "$UI_LABEL" "$UI_PLIST_DST"
   log "restarting launchd service $SLACK_LABEL"
   enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"
-  log "reloading launchd job $AGENT_MEMORY_LABEL"
-  enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"
+  log "reloading launchd job $MAINTENANCE_LABEL"
+  enable_launch_agent "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"
   log "reloading launchd job $LOG_ROTATION_LABEL"
   enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"
-  log "reloading launchd job $BACKUP_LABEL"
-  enable_launch_agent "$BACKUP_LABEL" "$BACKUP_PLIST_DST"
+  log "removing legacy launchd jobs $LEGACY_AGENT_MEMORY_LABEL and $LEGACY_BACKUP_LABEL"
+  disable_launch_agent "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"
+  disable_launch_agent "$LEGACY_BACKUP_LABEL" "$LEGACY_BACKUP_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi

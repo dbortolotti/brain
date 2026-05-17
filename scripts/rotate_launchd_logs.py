@@ -15,8 +15,8 @@ LOG_NAMES = [
     "brain-ui.err.log",
     "brain-slack-agent.out.log",
     "brain-slack-agent.err.log",
-    "brain-agent-memory.out.log",
-    "brain-agent-memory.err.log",
+    "brain-maintenance.out.log",
+    "brain-maintenance.err.log",
     "com.cloudflare.cloudflared.err.log",
 ]
 

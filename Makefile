@@ -1,4 +1,4 @@
-.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup agent-memory cloudflare-verify test lint
+.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup agent-memory maintenance cloudflare-verify test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_active.json
 MODEL_SMOKE_ARGS ?=
@@ -82,6 +82,9 @@ backup:
 
 agent-memory:
 	uv run python scripts/brain_agent_memory.py --env prod --session-id portable_agent_session
+
+maintenance:
+	uv run python scripts/nightly_maintenance.py --env prod
 
 cloudflare-verify:
 	uv run python scripts/verify_cloudflare_mcp.py

@@ -110,9 +110,8 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/launchd/com.brain.mcp.plist.template"),
         Path("deployment/launchd/com.brain.ui.plist.template"),
         Path("deployment/launchd/com.brain.slack-agent.plist.template"),
-        Path("deployment/launchd/com.brain.agent-memory.plist.template"),
+        Path("deployment/launchd/com.brain.maintenance.plist.template"),
         Path("deployment/launchd/com.brain.log-rotation.plist.template"),
-        Path("deployment/launchd/com.brain.backup.plist.template"),
         Path("deployment/mcp/claude_desktop_config.template.json"),
         Path("deployment/newsyslog/brain.conf"),
     }
@@ -152,18 +151,19 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         'com.brain.$ENV_SUFFIX.mcp',
         'com.brain.$ENV_SUFFIX.ui',
         'com.brain.$ENV_SUFFIX.slack-agent',
-        'com.brain.$ENV_SUFFIX.agent-memory',
+        'com.brain.$ENV_SUFFIX.maintenance',
         'com.brain.$ENV_SUFFIX.log-rotation',
-        'com.brain.$ENV_SUFFIX.backup',
     ]:
         assert label in script
 
     assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"' in script
     assert "deployment" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
-    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template" in script
+    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template" in script
-    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.backup.plist.template" in script
+    assert "disable_launch_agent" in script
+    assert 'com.brain.$ENV_SUFFIX.agent-memory' in script
+    assert 'com.brain.$ENV_SUFFIX.backup' in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
     assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "$BRAIN_SLACK_AGENT_PORT"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
@@ -191,9 +191,10 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'enable_launch_agent "$LABEL" "$PLIST_DST"' in script
     assert 'enable_launch_agent "$UI_LABEL" "$UI_PLIST_DST"' in script
     assert 'enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
-    assert 'enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"' in script
+    assert 'enable_launch_agent "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"' in script
     assert 'enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"' in script
-    assert 'enable_launch_agent "$BACKUP_LABEL" "$BACKUP_PLIST_DST"' in script
+    assert 'disable_launch_agent "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"' in script
+    assert 'disable_launch_agent "$LEGACY_BACKUP_LABEL" "$LEGACY_BACKUP_PLIST_DST"' in script
     assert 'ensure_env_var "BRAIN_LLM_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
@@ -246,18 +247,18 @@ def test_newsyslog_rotates_launchd_logs_daily() -> None:
     assert "brain-prod.err.log" in config
     assert "brain-ui.err.log" in config
     assert "brain-slack-agent.err.log" in config
-    assert "brain-backup.err.log" in config
+    assert "brain-maintenance.err.log" in config
     assert "@T00" in config
     assert " J" in config
 
 
-def test_agent_memory_launchd_runs_nightly_at_3am() -> None:
-    plist = Path("deployment/launchd/com.brain.agent-memory.plist.template").read_text(
+def test_maintenance_launchd_runs_cognify_then_backup_nightly_at_3am() -> None:
+    plist = Path("deployment/launchd/com.brain.maintenance.plist.template").read_text(
         encoding="utf-8"
     )
 
-    assert "com.brain.prod.agent-memory" in plist
-    assert "scripts/brain_agent_memory.py" in plist
+    assert "com.brain.prod.maintenance" in plist
+    assert "scripts/nightly_maintenance.py" in plist
     assert "--env prod" in plist
     assert "--env-file /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env" in plist
     assert "--session-id portable_agent_session" not in plist
@@ -281,26 +282,6 @@ def test_log_rotation_launchd_runs_daily_after_midnight() -> None:
     assert "<integer>0</integer>" in plist
     assert "<key>Minute</key>" in plist
     assert "<integer>5</integer>" in plist
-
-
-def test_backup_launchd_runs_daily_after_agent_memory() -> None:
-    plist = Path("deployment/launchd/com.brain.backup.plist.template").read_text(
-        encoding="utf-8"
-    )
-
-    assert "com.brain.prod.backup" in plist
-    assert "scripts/backup_stores.py" in plist
-    assert "com.brain.prod.agent-memory" in plist
-    assert "state = running" in plist
-    assert "agent-memory still running after timeout; skipping backup" in plist
-    assert "/Volumes/xpg_usb4/prod/brain/current" in plist
-    assert "ENV_FILE" in plist
-    assert "/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env" in plist
-    assert "<key>StartCalendarInterval</key>" in plist
-    assert "<key>Hour</key>" in plist
-    assert "<integer>3</integer>" in plist
-    assert "<key>Minute</key>" in plist
-    assert "<integer>30</integer>" in plist
 
 
 def test_cognee_ui_verifier_retries_backend_health() -> None:

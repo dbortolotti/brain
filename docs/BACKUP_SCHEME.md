@@ -71,14 +71,15 @@ when LanceDB is the configured vector backend.
 
 ## Running A Backup
 
-Local prod and staging deploys install a daily launchd backup job from
-`deployment/launchd/com.brain.backup.plist.template`. The rendered production
-label is `com.brain.prod.backup`; staging renders as `com.brain.staging.backup`.
-The job runs `scripts/backup_stores.py` against the environment's shared
-`brain.env` at 03:30, after the daily agent-memory/Cognee improvement job starts
-at 03:00. Before taking the snapshot, the backup job waits for the corresponding
-agent-memory launchd job to stop; if that job is still running after three
-hours, backup exits non-zero instead of snapshotting mid-cognify.
+Local prod and staging deploys install a daily maintenance launchd job from
+`deployment/launchd/com.brain.maintenance.plist.template`. The rendered
+production label is `com.brain.prod.maintenance`; staging renders as
+`com.brain.staging.maintenance`. The job starts at 03:00 and runs
+`scripts/nightly_maintenance.py` against the environment's shared `brain.env`.
+That script runs `scripts/brain_agent_memory.py` first, then runs
+`scripts/backup_stores.py` only if the agent-memory/Cognee improvement step
+exits successfully. A failed cognify run therefore skips backup instead of
+creating a snapshot from a partially refreshed projection.
 
 Use the configured environment:
 
@@ -408,4 +409,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 665e2bc3641f402e755f081f8cb0c9866015986bb59ddff56b7cf385b9dd009b -->
+<!-- brain-doc-source-hash: a4ca7afca10bb2f55654d933fb82e1874f767d71057d3277d14b248c7bcf50a2 -->

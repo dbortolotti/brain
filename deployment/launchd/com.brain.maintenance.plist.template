@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.brain.prod.maintenance</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python scripts/nightly_maintenance.py --env prod --env-file /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ENV_FILE</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+  </dict>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>3</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/oric</string>
+
+  <key>StandardOutPath</key>
+  <string>/Users/oric/Library/Logs/brain-maintenance.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/oric/Library/Logs/brain-maintenance.err.log</string>
+</dict>
+</plist>
