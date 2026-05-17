@@ -674,4 +674,4 @@ uv run brain models auth login --provider openai-codex
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 1df8e14374ea6487ac8c1ceba921a0b6887c47c6c8d6b49ecca7ac11fed84ed1 -->
+<!-- brain-doc-source-hash: 6c955e1aadc6f64c46790fd3a960e158c63ee1f1d17d31703f8e5eae9bbd868e -->
