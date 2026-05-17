@@ -347,6 +347,20 @@ The pytest live E2E gate is opt-in because it makes provider calls:
 BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 ```
 
+For live staging acceptance, use the staging E2E suite. It creates or updates the
+dedicated `brain-e2e` user, signs in through the cookie/CSRF UI auth path, primes
+staging organically through MCP tool calls, confirms Palate proposals, checks
+user isolation, and scores usage results with `gpt-5.5` high reasoning.
+
+```bash
+ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env \
+  uv run python scripts/staging_e2e_suite.py
+```
+
+The runner writes JSON reports under `.reports/staging-e2e/` by default. It is
+not part of normal `pytest` because it mutates staging and makes live provider
+calls.
+
 ## Environment Variables
 
 Deployment, routing, and auth-related settings worth calling out:

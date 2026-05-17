@@ -582,7 +582,16 @@ def taste_classification_schema() -> dict[str, Any]:
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["domain", "taste_intent", "confidence"],
+        "required": [
+            "domain",
+            "taste_intent",
+            "entity_type_hint",
+            "confidence",
+            "requires_enrichment",
+            "requires_confirmation",
+            "ambiguity_reasons",
+            "extracted",
+        ],
         "properties": {
             "domain": {"type": "string", "enum": ["general", "taste", "ambiguous"]},
             "taste_intent": {"type": "string", "enum": ["remember", "query", "none"]},
@@ -594,6 +603,20 @@ def taste_classification_schema() -> dict[str, Any]:
             "extracted": {
                 "type": "object",
                 "additionalProperties": False,
+                "required": [
+                    "item",
+                    "canonical_name",
+                    "rating",
+                    "wanted",
+                    "tried",
+                    "watched",
+                    "listened",
+                    "disliked",
+                    "avoid",
+                    "not_my_style",
+                    "bad_fit",
+                    "recommended_by",
+                ],
                 "properties": {
                     "item": {"type": ["string", "null"]},
                     "canonical_name": {"type": ["string", "null"]},
