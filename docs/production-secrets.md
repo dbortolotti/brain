@@ -106,7 +106,7 @@ Admin tab without restarting the service.
 Dashboard browser sessions are stored as opaque server-side records in
 `shared/secrets/brain-web-sessions.json`. The browser receives only a
 `Secure`, `HttpOnly`, `SameSite=Lax` session cookie plus an in-memory CSRF token
-from `/api/session`; OAuth bearer tokens remain reserved for MCP clients.
+from `/auth/session`; OAuth bearer tokens remain reserved for MCP clients.
 
 ## Optional Eval Provider Secrets
 

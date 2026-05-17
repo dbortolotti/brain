@@ -92,7 +92,7 @@ function setLoggedIn(payload) {
 }
 
 async function refreshSession() {
-  const response = await fetch("/api/session");
+  const response = await fetch("/auth/session");
   if (response.status === 401) {
     setLoggedIn({});
     setStatus("Sign in to load Brain.");

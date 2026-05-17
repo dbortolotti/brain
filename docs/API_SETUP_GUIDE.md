@@ -217,13 +217,13 @@ The browser dashboard uses cookie-based auth instead of pasted bearer tokens:
 ```text
 POST /login
 POST /logout
-GET  /api/session
+GET  /auth/session
 PUT  /account/password
 ```
 
 `/login` verifies the selected user id and password, creates an opaque
 server-side session under the Brain secrets directory, and sets a `Secure`,
-`HttpOnly`, `SameSite=Lax` cookie. `/api/session` returns the public current-user
+`HttpOnly`, `SameSite=Lax` cookie. `/auth/session` returns the public current-user
 record plus a CSRF token. Dashboard MCP and admin writes sent with the session
 cookie must include that token in `X-Brain-CSRF`.
 

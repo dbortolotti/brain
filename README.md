@@ -152,7 +152,7 @@ require confirmation.
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a
 user-registry password, creates an opaque server-side session, and sets a
 `Secure`, `HttpOnly`, `SameSite=Lax` cookie. Mutating dashboard requests must
-include the per-session CSRF token returned by `/api/session`. MCP clients still
+include the per-session CSRF token returned by `/auth/session`. MCP clients still
 use OAuth bearer tokens.
 
 Public app support pages:

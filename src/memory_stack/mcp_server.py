@@ -1568,6 +1568,7 @@ async def logout(
     return response
 
 
+@app.get("/auth/session")
 @app.get("/api/session")
 async def web_session_endpoint(
     request: Request,

@@ -1652,7 +1652,7 @@ def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> N
                 "method": "tools/list",
             },
         )
-        session_info = client.get("/api/session")
+        session_info = client.get("/auth/session")
 
     assert login_response.status_code == 200
     assert "brain_web_session" in login_response.headers["set-cookie"]
