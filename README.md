@@ -119,7 +119,9 @@ and configured improve.
 
 Brain exposes a curated MCP surface for a ChatGPT App at `/app/mcp`, with the
 public URL `https://brain.dceb.net/app/mcp`. The root dashboard is available at
-`https://brain.dceb.net/` and uses the same curated surface.
+`https://brain.dceb.net/` and uses the same curated surface through a browser
+session cookie. Browser users sign in with user id and password; the dashboard
+does not store OAuth bearer tokens in local storage.
 
 The ChatGPT App surface intentionally lists only user-safe tools:
 
@@ -146,6 +148,12 @@ Read tools advertise `brain.memory.read`; write tools advertise
 audit record visible in the dashboard Data Controls tab. Destructive
 app-surface calls such as `brain_undo_last` and `brain_profile_context_forget`
 require confirmation.
+
+Browser dashboard auth is separate from MCP client auth. `/login` verifies a
+user-registry password, creates an opaque server-side session, and sets a
+`Secure`, `HttpOnly`, `SameSite=Lax` cookie. Mutating dashboard requests must
+include the per-session CSRF token returned by `/api/session`. MCP clients still
+use OAuth bearer tokens.
 
 Public app support pages:
 

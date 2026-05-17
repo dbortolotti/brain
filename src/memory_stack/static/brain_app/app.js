@@ -1,9 +1,9 @@
 const state = {
   previewArgs: null,
   latestSession: null,
-  token: localStorage.getItem("brainBearerToken") || "",
+  csrfToken: "",
+  currentUser: null,
 };
-const OAUTH_STORAGE_KEY = "brainOAuthPkce";
 
 const $ = (id) => document.getElementById(id);
 
@@ -13,104 +13,8 @@ function setStatus(message, isError = false) {
   status.classList.toggle("error", isError);
 }
 
-function tokenHeader() {
-  return state.token ? { Authorization: `Bearer ${state.token}` } : {};
-}
-
-function randomBase64Url(bytes = 32) {
-  const data = new Uint8Array(bytes);
-  crypto.getRandomValues(data);
-  return base64UrlEncode(data);
-}
-
-function base64UrlEncode(data) {
-  const binary = Array.from(data, (byte) => String.fromCharCode(byte)).join("");
-  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
-}
-
-async function sha256Base64Url(text) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return base64UrlEncode(new Uint8Array(digest));
-}
-
-async function startOAuth() {
-  setStatus("Starting Brain authorization...");
-  const redirectUri = `${window.location.origin}/app/oauth/callback`;
-  const clientResponse = await fetch("/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_name: "Brain Dashboard",
-      redirect_uris: [redirectUri],
-      token_endpoint_auth_method: "none",
-      grant_types: ["authorization_code", "refresh_token"],
-      response_types: ["code"],
-      scope: "brain.memory.read brain.memory.write",
-    }),
-  });
-  const client = await clientResponse.json();
-  if (!clientResponse.ok) {
-    throw new Error(client.error_description || client.detail || `Registration failed: HTTP ${clientResponse.status}`);
-  }
-  const verifier = randomBase64Url(48);
-  const oauthState = randomBase64Url(24);
-  sessionStorage.setItem(
-    OAUTH_STORAGE_KEY,
-    JSON.stringify({
-      client_id: client.client_id,
-      code_verifier: verifier,
-      redirect_uri: redirectUri,
-      state: oauthState,
-    }),
-  );
-  const params = new URLSearchParams({
-    response_type: "code",
-    client_id: client.client_id,
-    redirect_uri: redirectUri,
-    scope: "brain.memory.read brain.memory.write",
-    state: oauthState,
-    code_challenge: await sha256Base64Url(verifier),
-    code_challenge_method: "S256",
-  });
-  window.location.assign(`/authorize?${params.toString()}`);
-}
-
-async function finishOAuthIfPresent() {
-  const url = new URL(window.location.href);
-  const code = url.searchParams.get("code");
-  const returnedState = url.searchParams.get("state");
-  if (!code) return false;
-
-  const stored = JSON.parse(sessionStorage.getItem(OAUTH_STORAGE_KEY) || "{}");
-  sessionStorage.removeItem(OAUTH_STORAGE_KEY);
-  window.history.replaceState({}, document.title, "/app");
-  if (!stored.client_id || !stored.code_verifier || stored.state !== returnedState) {
-    throw new Error("OAuth state did not match. Start authorization again.");
-  }
-
-  setStatus("Completing Brain authorization...");
-  const form = new URLSearchParams({
-    grant_type: "authorization_code",
-    client_id: stored.client_id,
-    code,
-    redirect_uri: stored.redirect_uri,
-    code_verifier: stored.code_verifier,
-  });
-  const tokenResponse = await fetch("/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
-  });
-  const token = await tokenResponse.json();
-  if (!tokenResponse.ok) {
-    throw new Error(token.error_description || token.error || `Token exchange failed: HTTP ${tokenResponse.status}`);
-  }
-  state.token = token.access_token;
-  localStorage.setItem("brainBearerToken", state.token);
-  $("tokenInput").value = state.token;
-  setStatus("Brain authorized.");
-  await Promise.all([refreshReview(), refreshControls()]);
-  return true;
+function csrfHeader() {
+  return state.csrfToken ? { "X-Brain-CSRF": state.csrfToken } : {};
 }
 
 async function mcpCall(name, args = {}) {
@@ -128,7 +32,7 @@ async function mcpRequest(method, params = {}) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...tokenHeader(),
+      ...csrfHeader(),
     },
     body: JSON.stringify({
       jsonrpc: "2.0",
@@ -149,7 +53,7 @@ async function adminRequest(path, { method = "GET", body = null } = {}) {
     method,
     headers: {
       ...(body ? { "Content-Type": "application/json" } : {}),
-      ...tokenHeader(),
+      ...(method === "GET" ? {} : csrfHeader()),
     },
     body: body ? JSON.stringify(body) : null,
   });
@@ -158,6 +62,93 @@ async function adminRequest(path, { method = "GET", body = null } = {}) {
     throw new Error(payload.detail || payload.error || `HTTP ${response.status}`);
   }
   return payload;
+}
+
+async function accountRequest(path, { method = "GET", body = null } = {}) {
+  const response = await fetch(path, {
+    method,
+    headers: {
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...(method === "GET" ? {} : csrfHeader()),
+    },
+    body: body ? JSON.stringify(body) : null,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.detail || payload.error || `HTTP ${response.status}`);
+  }
+  return payload;
+}
+
+function setLoggedIn(payload) {
+  state.csrfToken = payload.csrf_token || "";
+  state.currentUser = payload.user || null;
+  $("loginOverlay").classList.toggle("hidden", Boolean(state.currentUser));
+  $("currentUser").textContent = state.currentUser
+    ? `${state.currentUser.display_name || state.currentUser.id}${state.currentUser.superuser ? " (root)" : ""}`
+    : "Signed out";
+  $("accountDetails").textContent = JSON.stringify(state.currentUser || {}, null, 2);
+  document.querySelector('[data-tab="users"]').classList.toggle("hidden", !state.currentUser?.superuser);
+}
+
+async function refreshSession() {
+  const response = await fetch("/api/session");
+  if (response.status === 401) {
+    setLoggedIn({});
+    setStatus("Sign in to load Brain.");
+    return false;
+  }
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.detail || `HTTP ${response.status}`);
+  }
+  setLoggedIn(payload);
+  return true;
+}
+
+async function loginUser() {
+  $("loginStatus").textContent = "Signing in...";
+  const response = await fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: $("loginUserId").value,
+      password: $("loginPassword").value,
+    }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.detail || `HTTP ${response.status}`);
+  }
+  $("loginPassword").value = "";
+  $("loginStatus").textContent = "";
+  setLoggedIn(payload);
+  await loadInitialData();
+}
+
+async function logoutUser() {
+  await fetch("/logout", {
+    method: "POST",
+    headers: csrfHeader(),
+  });
+  state.csrfToken = "";
+  state.currentUser = null;
+  setLoggedIn({});
+  setStatus("Signed out.");
+}
+
+async function changePassword() {
+  setStatus("Changing password...");
+  await accountRequest("/account/password", {
+    method: "PUT",
+    body: {
+      current_password: $("currentPassword").value,
+      new_password: $("newPassword").value,
+    },
+  });
+  $("currentPassword").value = "";
+  $("newPassword").value = "";
+  setStatus("Password changed.");
 }
 
 function renderList(target, rows, emptyText, formatter) {
@@ -467,26 +458,30 @@ function showTab(tabName) {
   document.querySelectorAll(".panel").forEach((panel) => {
     panel.classList.toggle("active", panel.id === tabName);
   });
-  if (tabName === "users" && state.token) {
+  if (tabName === "users" && state.currentUser?.superuser) {
     refreshUsers().catch((error) => setStatus(error.message, true));
   }
 }
 
+async function loadInitialData() {
+  await Promise.all([
+    refreshReview(),
+    refreshProfile(),
+    refreshPrompt(),
+    refreshControls(),
+  ]);
+}
+
 function wireEvents() {
-  $("tokenInput").value = state.token;
-  $("authorizeBrain").addEventListener("click", () => {
-    startOAuth().catch((error) => setStatus(error.message, true));
+  $("loginForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    loginUser().catch((error) => {
+      $("loginStatus").textContent = error.message;
+      $("loginStatus").classList.add("error");
+    });
   });
-  $("saveToken").addEventListener("click", async () => {
-    state.token = $("tokenInput").value.trim();
-    localStorage.setItem("brainBearerToken", state.token);
-    await refreshReview().catch((error) => setStatus(error.message, true));
-  });
-  $("clearToken").addEventListener("click", () => {
-    state.token = "";
-    localStorage.removeItem("brainBearerToken");
-    $("tokenInput").value = "";
-    setStatus("Token cleared.");
+  $("logoutButton").addEventListener("click", () => {
+    logoutUser().catch((error) => setStatus(error.message, true));
   });
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => showTab(tab.dataset.tab));
@@ -496,6 +491,10 @@ function wireEvents() {
   $("refreshPrompt").addEventListener("click", () => refreshPrompt().catch((error) => setStatus(error.message, true)));
   $("refreshControls").addEventListener("click", () => refreshControls().catch((error) => setStatus(error.message, true)));
   $("refreshUsers").addEventListener("click", () => refreshUsers().catch((error) => setStatus(error.message, true)));
+  $("passwordForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    changePassword().catch((error) => setStatus(error.message, true));
+  });
   $("recentCards").addEventListener("click", (event) => {
     const card = event.target.closest(".memory-card");
     if (!card) return;
@@ -616,18 +615,11 @@ function wireEvents() {
 }
 
 wireEvents();
-finishOAuthIfPresent()
-  .then((handled) => {
-    if (handled) return;
-    if (state.token) {
-      Promise.all([
-        refreshReview(),
-        refreshProfile(),
-        refreshPrompt(),
-        refreshControls(),
-      ]).catch((error) => setStatus(error.message, true));
-    } else {
-      setStatus("Authorize Brain or paste a bearer token to load memory.");
+refreshSession()
+  .then((authenticated) => {
+    if (authenticated) {
+      return loadInitialData();
     }
+    return null;
   })
   .catch((error) => setStatus(error.message, true));

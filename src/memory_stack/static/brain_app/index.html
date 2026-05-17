@@ -9,16 +9,24 @@
     <link rel="stylesheet" href="/app-assets/app.css" />
   </head>
   <body>
+    <section id="loginOverlay" class="login-overlay">
+      <form id="loginForm" class="login-panel">
+        <h1>Brain</h1>
+        <p>Sign in to review and manage your memory.</p>
+        <input id="loginUserId" autocomplete="username" placeholder="user id" />
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="password" />
+        <button type="submit">Sign In</button>
+        <div id="loginStatus" class="status" role="status"></div>
+      </form>
+    </section>
     <header class="topbar">
       <div>
         <h1>Brain</h1>
         <p id="sessionLine">Connect to review memory.</p>
       </div>
       <div class="auth">
-        <input id="tokenInput" type="password" autocomplete="off" placeholder="Bearer token" />
-        <button id="authorizeBrain" type="button">Authorize</button>
-        <button id="saveToken" type="button">Connect</button>
-        <button id="clearToken" type="button" title="Clear stored token">Clear</button>
+        <span id="currentUser" class="user-pill">Signed out</span>
+        <button id="logoutButton" type="button">Sign Out</button>
       </div>
     </header>
 
@@ -30,6 +38,7 @@
         <button class="tab" type="button" data-tab="profile">Profile</button>
         <button class="tab" type="button" data-tab="prompt">Prompt</button>
         <button class="tab" type="button" data-tab="controls">Data Controls</button>
+        <button class="tab" type="button" data-tab="account">Account</button>
         <button class="tab" type="button" data-tab="users">Users</button>
       </section>
 
@@ -193,6 +202,26 @@
           </article>
         </div>
         <div id="usersList" class="list prompt-grid"></div>
+      </section>
+
+      <section id="account" class="panel" aria-labelledby="accountTitle">
+        <div class="panel-head">
+          <h2 id="accountTitle">Account</h2>
+        </div>
+        <div class="grid two">
+          <article>
+            <h3>Signed In</h3>
+            <pre id="accountDetails" class="prompt-box"></pre>
+          </article>
+          <article>
+            <h3>Password</h3>
+            <form id="passwordForm" class="stack">
+              <input id="currentPassword" type="password" autocomplete="current-password" placeholder="current password" />
+              <input id="newPassword" type="password" autocomplete="new-password" placeholder="new password" />
+              <button type="submit">Change Password</button>
+            </form>
+          </article>
+        </div>
       </section>
     </main>
     <footer class="footer-links">

@@ -3,13 +3,17 @@ from __future__ import annotations
 import argparse
 from collections import defaultdict, deque
 from dataclasses import dataclass
+import hashlib
+import hmac
 import json
+import secrets
+import tempfile
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Header, HTTPException, Request, Response
+from fastapi import Cookie, FastAPI, Header, HTTPException, Request, Response
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
@@ -126,11 +130,14 @@ APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
 APP_TOOL_READ_SCOPE = "brain.memory.read"
 APP_TOOL_WRITE_SCOPE = "brain.memory.write"
 APP_STATIC_DIR = Path(__file__).resolve().parent / "static" / "brain_app"
+WEB_SESSION_COOKIE = "brain_web_session"
+WEB_SESSION_SECONDS = 12 * 60 * 60
 OAUTH_RATE_LIMITS = {
     "register": (20, 60),
     "authorize": (60, 60),
     "token": (30, 60),
     "revoke": (30, 60),
+    "login": (20, 60),
 }
 _rate_limit_buckets: dict[str, deque[float]] = defaultdict(deque)
 
@@ -152,6 +159,7 @@ class DeleteDatasourceRequest(BaseModel):
 class McpAuthContext:
     authenticated: bool = False
     static_token: bool = False
+    web_session: bool = False
     token: str | None = None
     client_id: str | None = None
     user_id: str | None = None
@@ -263,6 +271,16 @@ class AuthUserUpdateRequest(BaseModel):
     display_name: str | None = None
     email: str | None = None
     superuser: bool | None = None
+
+
+class LoginRequest(BaseModel):
+    user_id: str
+    password: str
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 
 class MergeEntitiesRequest(BaseModel):
@@ -1516,11 +1534,88 @@ async def revoke(request: Request) -> Response:
     return await oauth_provider.revoke(request)
 
 
+@app.post("/login")
+async def login(payload: LoginRequest, request: Request) -> Response:
+    if not settings.brain_auth_enabled:
+        raise HTTPException(status_code=404, detail="Auth is not enabled")
+    rate_limit_oauth(request, "login")
+    user_id = normalize_user_id(payload.user_id)
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    user = users.get(user_id)
+    if user is None or not hmac.compare_digest(payload.password, str(user.get("password") or "")):
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
+    session = create_web_session(user_id=user_id)
+    response = JSONResponse(
+        {
+            "user": public_auth_user(user),
+            "csrf_token": session["csrf_token"],
+            "expires_at": session["expires_at"],
+        }
+    )
+    set_web_session_cookie(response, session["session_id"])
+    return response
+
+
+@app.post("/logout")
+async def logout(
+    request: Request,
+    brain_web_session: str | None = Cookie(default=None),
+) -> Response:
+    if brain_web_session:
+        delete_web_session(brain_web_session)
+    response = JSONResponse({"status": "logged_out"})
+    response.delete_cookie(WEB_SESSION_COOKIE, path="/")
+    return response
+
+
+@app.get("/api/session")
+async def web_session_endpoint(
+    request: Request,
+    brain_web_session: str | None = Cookie(default=None),
+) -> dict[str, Any]:
+    auth_context, session_record = require_web_session(request, brain_web_session)
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    user_id = normalize_user_id(auth_context.user_id)
+    user = users.get(user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="Session user no longer exists.")
+    return {
+        "user": public_auth_user(user),
+        "csrf_token": session_record["csrf_token"],
+        "expires_at": session_record["expires_at"],
+    }
+
+
+@app.put("/account/password")
+async def change_own_password(
+    payload: PasswordChangeRequest,
+    request: Request,
+    brain_web_session: str | None = Cookie(default=None),
+) -> dict[str, Any]:
+    auth_context, _session_record = require_web_session(request, brain_web_session, require_csrf=True)
+    user_id = normalize_user_id(auth_context.user_id)
+    if not payload.new_password:
+        raise HTTPException(status_code=400, detail="New password cannot be blank.")
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    user = users.get(user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found.")
+    if not hmac.compare_digest(payload.current_password, str(user.get("password") or "")):
+        raise HTTPException(status_code=401, detail="Current password is incorrect.")
+    user["password"] = payload.new_password
+    users[user_id] = user
+    write_auth_users(settings, users)
+    reload_oauth_users()
+    return {"user": public_auth_user(user)}
+
+
 @app.get("/admin/users")
 async def list_auth_users_endpoint(
+    request: Request,
     authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
 ) -> dict[str, Any]:
-    auth_context = require_superuser_auth(authorization)
+    auth_context = require_superuser_auth(authorization, request=request, session_cookie=brain_web_session)
     payload = auth_users_admin_payload(settings, default_password=auth_admin_password())
     return {
         **payload,
@@ -1531,9 +1626,11 @@ async def list_auth_users_endpoint(
 @app.post("/admin/users", status_code=201)
 async def create_auth_user_endpoint(
     payload: AuthUserCreateRequest,
+    request: Request,
     authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
 ) -> dict[str, Any]:
-    require_superuser_auth(authorization)
+    require_superuser_auth(authorization, request=request, session_cookie=brain_web_session, require_csrf=True)
     user_id = normalize_user_id(payload.id)
     if not user_id:
         raise HTTPException(status_code=400, detail="User id is required.")
@@ -1558,9 +1655,16 @@ async def create_auth_user_endpoint(
 async def update_auth_user_endpoint(
     user_id: str,
     payload: AuthUserUpdateRequest,
+    request: Request,
     authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
 ) -> dict[str, Any]:
-    require_superuser_auth(authorization)
+    auth_context = require_superuser_auth(
+        authorization,
+        request=request,
+        session_cookie=brain_web_session,
+        require_csrf=True,
+    )
     normalized = normalize_user_id(user_id)
     users = load_auth_users(settings, default_password=auth_admin_password())
     if normalized not in users:
@@ -1575,7 +1679,7 @@ async def update_auth_user_endpoint(
     if payload.email is not None:
         updated["email"] = payload.email
     if payload.superuser is not None:
-        if not payload.superuser and normalized == require_superuser_auth(authorization).user_id:
+        if not payload.superuser and normalized == auth_context.user_id:
             raise HTTPException(status_code=400, detail="Cannot remove superuser from the current user.")
         updated["superuser"] = str(payload.superuser).lower()
     users[normalized] = updated
@@ -1588,9 +1692,16 @@ async def update_auth_user_endpoint(
 @app.delete("/admin/users/{user_id}")
 async def delete_auth_user_endpoint(
     user_id: str,
+    request: Request,
     authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
 ) -> dict[str, Any]:
-    auth_context = require_superuser_auth(authorization)
+    auth_context = require_superuser_auth(
+        authorization,
+        request=request,
+        session_cookie=brain_web_session,
+        require_csrf=True,
+    )
     normalized = normalize_user_id(user_id)
     if normalized == (auth_context.user_id or settings.brain_user_id):
         raise HTTPException(status_code=400, detail="Cannot delete the current user.")
@@ -1845,6 +1956,7 @@ async def mcp_route(
     path: str,
     request: Request,
     authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
 ) -> Response:
     requested_path = "/" + path.strip("/")
     if requested_path == settings.brain_mcp_path:
@@ -1874,13 +1986,13 @@ async def mcp_route(
         )
 
     payload = await request.json()
-    auth_context = mcp_auth_context(
-        authorization,
-        settings,
-        remote_addr=request.client.host if request.client else None,
-    )
+    auth_context = mcp_auth_context(authorization, settings, request=request, session_cookie=brain_web_session)
     if settings.brain_auth_enabled and not auth_context.authenticated:
         return auth_challenge(settings, public_path)
+    if auth_context.web_session:
+        if surface == MCP_SURFACE_INTERNAL and not auth_user_is_superuser(auth_context.user_id):
+            raise HTTPException(status_code=403, detail="Superuser privileges are required.")
+        require_web_csrf(request, brain_web_session)
     request_context = McpRequestContext(
         auth=auth_context,
         remote_addr=request.client.host if request.client else None,
@@ -1905,9 +2017,12 @@ def mcp_auth_context(
     header_value: str | None,
     active_settings: Settings,
     *,
+    request: Request | None = None,
+    session_cookie: str | None = None,
     remote_addr: str | None = None,
     required_scopes: list[str] | None = None,
 ) -> McpAuthContext:
+    remote = remote_addr or (request.client.host if request and request.client else None)
     required = required_scopes or []
     if active_settings.brain_auth_token:
         expected = f"Bearer {active_settings.brain_auth_token}"
@@ -1917,7 +2032,7 @@ def mcp_auth_context(
                 static_token=True,
                 user_id=active_settings.brain_user_id,
                 scopes=tuple(active_settings.brain_auth_scope_list),
-                remote_addr=remote_addr,
+                remote_addr=remote,
             )
     token = parse_bearer(header_value)
     if oauth_provider and token:
@@ -1929,9 +2044,19 @@ def mcp_auth_context(
                 client_id=record.get("client_id"),
                 user_id=record.get("user_id") or active_settings.brain_user_id,
                 scopes=tuple(record.get("scopes") or ()),
-                remote_addr=remote_addr,
+                remote_addr=remote,
             )
-    return McpAuthContext(remote_addr=remote_addr)
+    if request is not None and session_cookie:
+        session_record = web_session_record(session_cookie)
+        if session_record is not None:
+            return McpAuthContext(
+                authenticated=True,
+                web_session=True,
+                user_id=session_record["user_id"],
+                scopes=tuple(active_settings.brain_auth_scope_list),
+                remote_addr=remote,
+            )
+    return McpAuthContext(remote_addr=remote)
 
 
 def auth_challenge(active_settings: Settings, resource_path: str | None = None) -> Response:
@@ -1987,10 +2112,18 @@ def require_api_auth(header_value: str | None, active_settings: Settings) -> Set
     return settings_for_auth_context(active_settings, auth_context)
 
 
-def require_superuser_auth(header_value: str | None) -> McpAuthContext:
+def require_superuser_auth(
+    header_value: str | None,
+    *,
+    request: Request | None = None,
+    session_cookie: str | None = None,
+    require_csrf: bool = False,
+) -> McpAuthContext:
     auth_context = mcp_auth_context(
         header_value,
         settings,
+        request=request,
+        session_cookie=session_cookie,
         required_scopes=settings.brain_auth_scope_list,
     )
     if settings.brain_auth_enabled and not auth_context.authenticated:
@@ -1999,10 +2132,12 @@ def require_superuser_auth(header_value: str | None) -> McpAuthContext:
             detail=authentication_required_payload(settings),
             headers=auth_challenge_headers(settings),
         )
+    if require_csrf and auth_context.web_session:
+        require_web_csrf(request, session_cookie)
     user_id = auth_context.user_id or settings.brain_user_id
     users = load_auth_users(settings, default_password=auth_admin_password())
     record = users.get(normalize_user_id(user_id))
-    if not record or str(record.get("superuser", "")).lower() != "true":
+    if not record or not auth_record_is_superuser(record):
         raise HTTPException(status_code=403, detail="Superuser privileges are required.")
     return auth_context
 
@@ -2019,8 +2154,154 @@ def reload_oauth_users() -> None:
 
 
 def ensure_at_least_one_superuser(users: dict[str, dict[str, Any]]) -> None:
-    if not any(str(record.get("superuser", "")).lower() == "true" for record in users.values()):
+    if not any(auth_record_is_superuser(record) for record in users.values()):
         raise HTTPException(status_code=400, detail="At least one superuser is required.")
+
+
+def auth_user_is_superuser(user_id: str | None) -> bool:
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    record = users.get(normalize_user_id(user_id))
+    return auth_record_is_superuser(record)
+
+
+def auth_record_is_superuser(record: dict[str, Any] | None) -> bool:
+    return bool(record and str(record.get("superuser", "")).lower() == "true")
+
+
+def web_sessions_path() -> Path:
+    return Path(settings.brain_auth_state_path).expanduser().with_name("brain-web-sessions.json")
+
+
+def session_hash(session_id: str) -> str:
+    return hashlib.sha256(session_id.encode("utf-8")).hexdigest()
+
+
+def load_web_sessions() -> dict[str, Any]:
+    path = web_sessions_path()
+    if not path.exists():
+        return {"sessions": {}}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"sessions": {}}
+    if not isinstance(payload, dict) or not isinstance(payload.get("sessions"), dict):
+        return {"sessions": {}}
+    return payload
+
+
+def save_web_sessions(payload: dict[str, Any]) -> None:
+    path = web_sessions_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+        json.dump(payload, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+        temp_name = handle.name
+    temp_path = Path(temp_name)
+    try:
+        temp_path.chmod(0o600)
+    except OSError:
+        pass
+    temp_path.replace(path)
+
+
+def prune_web_sessions(payload: dict[str, Any]) -> None:
+    now = time.time()
+    sessions = payload.setdefault("sessions", {})
+    for key, record in list(sessions.items()):
+        expires_at = record.get("expires_at_epoch") if isinstance(record, dict) else None
+        if expires_at is None or float(expires_at) <= now:
+            sessions.pop(key, None)
+
+
+def create_web_session(*, user_id: str) -> dict[str, str]:
+    session_id = secrets.token_urlsafe(32)
+    csrf_token = secrets.token_urlsafe(32)
+    now = time.time()
+    expires_at_epoch = now + WEB_SESSION_SECONDS
+    expires_at = datetime.fromtimestamp(expires_at_epoch, UTC).isoformat()
+    payload = load_web_sessions()
+    prune_web_sessions(payload)
+    payload["sessions"][session_hash(session_id)] = {
+        "user_id": normalize_user_id(user_id),
+        "csrf_token": csrf_token,
+        "created_at": datetime.fromtimestamp(now, UTC).isoformat(),
+        "last_seen_at": datetime.fromtimestamp(now, UTC).isoformat(),
+        "expires_at": expires_at,
+        "expires_at_epoch": expires_at_epoch,
+    }
+    save_web_sessions(payload)
+    return {"session_id": session_id, "csrf_token": csrf_token, "expires_at": expires_at}
+
+
+def web_session_record(session_id: str | None) -> dict[str, Any] | None:
+    if not session_id:
+        return None
+    payload = load_web_sessions()
+    prune_web_sessions(payload)
+    key = session_hash(session_id)
+    record = payload["sessions"].get(key)
+    if not isinstance(record, dict):
+        save_web_sessions(payload)
+        return None
+    users = load_auth_users(settings, default_password=auth_admin_password())
+    if normalize_user_id(record.get("user_id")) not in users:
+        payload["sessions"].pop(key, None)
+        save_web_sessions(payload)
+        return None
+    record["last_seen_at"] = datetime.now(UTC).isoformat()
+    save_web_sessions(payload)
+    return record
+
+
+def delete_web_session(session_id: str) -> None:
+    payload = load_web_sessions()
+    payload.get("sessions", {}).pop(session_hash(session_id), None)
+    save_web_sessions(payload)
+
+
+def set_web_session_cookie(response: Response, session_id: str) -> None:
+    response.set_cookie(
+        WEB_SESSION_COOKIE,
+        session_id,
+        max_age=WEB_SESSION_SECONDS,
+        httponly=True,
+        secure=settings.brain_public_base_url.startswith("https://"),
+        samesite="lax",
+        path="/",
+    )
+
+
+def require_web_session(
+    request: Request,
+    session_cookie: str | None,
+    *,
+    require_csrf: bool = False,
+) -> tuple[McpAuthContext, dict[str, Any]]:
+    record = web_session_record(session_cookie)
+    if record is None:
+        raise HTTPException(status_code=401, detail="Login required.")
+    if require_csrf:
+        require_web_csrf(request, session_cookie)
+    return (
+        McpAuthContext(
+            authenticated=True,
+            web_session=True,
+            user_id=record["user_id"],
+            scopes=tuple(settings.brain_auth_scope_list),
+            remote_addr=request.client.host if request.client else None,
+        ),
+        record,
+    )
+
+
+def require_web_csrf(request: Request | None, session_cookie: str | None) -> None:
+    if request is None:
+        raise HTTPException(status_code=403, detail="CSRF validation failed.")
+    record = web_session_record(session_cookie)
+    provided = request.headers.get("x-brain-csrf", "")
+    expected = str(record.get("csrf_token") if record else "")
+    if not expected or not hmac.compare_digest(provided, expected):
+        raise HTTPException(status_code=403, detail="CSRF validation failed.")
 
 
 def authenticated_model_response(authorization: str | None, factory: Any) -> dict[str, Any]:

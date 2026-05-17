@@ -177,8 +177,8 @@ Local development usually runs with:
 BRAIN_AUTH_ENABLED=false
 ```
 
-When auth is enabled, HTTP and MCP requests require a bearer token accepted by
-one of these paths:
+When auth is enabled, HTTP and MCP client requests require a bearer token
+accepted by one of these paths:
 
 - Static token: `BRAIN_AUTH_TOKEN`
 - Brain OAuth access token from the built-in authorization flow
@@ -212,6 +212,21 @@ POST /token
 POST /revoke
 ```
 
+The browser dashboard uses cookie-based auth instead of pasted bearer tokens:
+
+```text
+POST /login
+POST /logout
+GET  /api/session
+PUT  /account/password
+```
+
+`/login` verifies the selected user id and password, creates an opaque
+server-side session under the Brain secrets directory, and sets a `Secure`,
+`HttpOnly`, `SameSite=Lax` cookie. `/api/session` returns the public current-user
+record plus a CSRF token. Dashboard MCP and admin writes sent with the session
+cookie must include that token in `X-Brain-CSRF`.
+
 Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, and token lifetime settings. See
 [Production Secrets](production-secrets.md) for secret handling.
@@ -227,7 +242,8 @@ original single-user `default` data to `daniele` while keeping `default` as the
 root superuser.
 
 Superusers can manage users from the Brain dashboard's User Admin tab. The
-dashboard calls the admin HTTP endpoints below with the user's bearer token:
+dashboard calls the admin HTTP endpoints below with the user's web session and
+CSRF token; MCP/API clients may still use an OAuth bearer token:
 
 ```text
 GET    /admin/users

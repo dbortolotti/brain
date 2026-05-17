@@ -72,7 +72,8 @@ def test_brain_app_ui_routes() -> None:
     assert support_response.status_code == 200
     assert "Brain Support" in support_response.text
     assert "mcpCall" in js_response.text
-    assert "startOAuth" in js_response.text
+    assert "loginUser" in js_response.text
+    assert "csrfHeader" in js_response.text
     assert "showMemoryDetails" in js_response.text
     assert "refreshPrompt" in js_response.text
     assert "refreshControls" in js_response.text
@@ -249,7 +250,7 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
     try:
-        client = TestClient(app)
+        client = TestClient(app, base_url="https://testserver")
         context_response = client.post(
             "/app/mcp",
             json={
@@ -320,7 +321,7 @@ def test_chatgpt_app_profile_context_remember_requires_confirmation(tmp_path) ->
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
     try:
-        client = TestClient(app)
+        client = TestClient(app, base_url="https://testserver")
         unconfirmed_response = client.post(
             "/app/mcp",
             json={
@@ -364,7 +365,7 @@ def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> 
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
     try:
-        client = TestClient(app)
+        client = TestClient(app, base_url="https://testserver")
         confirmed_response = client.post(
             "/app/mcp",
             json={
@@ -412,7 +413,7 @@ def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
     try:
-        client = TestClient(app)
+        client = TestClient(app, base_url="https://testserver")
         preview_response = client.post(
             "/app/mcp",
             json={
@@ -584,7 +585,7 @@ def test_brain_session_returns_configured_identity(tmp_path) -> None:
         brain_cognee_agent_memory_dataset="agent_memory_test",
     )
     try:
-        client = TestClient(app)
+        client = TestClient(app, base_url="https://testserver")
         response = client.post(
             "/mcp",
             json={
@@ -615,7 +616,7 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
     try:
-        client = TestClient(app)
+        client = TestClient(app, base_url="https://testserver")
         remember_response = client.post(
             "/mcp",
             json={
@@ -1606,6 +1607,107 @@ def test_superuser_cannot_delete_self_or_last_superuser(tmp_path) -> None:
 
     assert delete_response.status_code == 400
     assert demote_response.status_code == 400
+
+
+def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps([{"id": "daniele", "password": "pass-a", "display_name": "Daniele"}]),
+        encoding="utf-8",
+    )
+    with oauth_settings(
+        tmp_path,
+        brain_auth_users_file=str(users_file),
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    ):
+        client = TestClient(app, base_url="https://testserver")
+        login_response = client.post("/login", json={"user_id": "daniele", "password": "pass-a"})
+        csrf = login_response.json()["csrf_token"]
+        no_csrf_response = client.post(
+            "/app/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+        session_response = client.post(
+            "/app/mcp",
+            headers={"X-Brain-CSRF": csrf},
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+        internal_response = client.post(
+            "/mcp",
+            headers={"X-Brain-CSRF": csrf},
+            json={
+                "jsonrpc": "2.0",
+                "id": 3,
+                "method": "tools/list",
+            },
+        )
+        session_info = client.get("/api/session")
+
+    assert login_response.status_code == 200
+    assert "brain_web_session" in login_response.headers["set-cookie"]
+    assert "httponly" in login_response.headers["set-cookie"].lower()
+    assert no_csrf_response.status_code == 403
+    assert session_response.status_code == 200
+    assert session_response.json()["result"]["structuredContent"]["user_id"] == "daniele"
+    assert internal_response.status_code == 403
+    assert session_info.status_code == 200
+    assert session_info.json()["user"]["id"] == "daniele"
+
+
+def test_dashboard_cookie_session_can_change_own_password(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps([{"id": "daniele", "password": "old-pass", "display_name": "Daniele"}]),
+        encoding="utf-8",
+    )
+    with oauth_settings(tmp_path, brain_auth_users_file=str(users_file)):
+        client = TestClient(app, base_url="https://testserver")
+        login_response = client.post("/login", json={"user_id": "daniele", "password": "old-pass"})
+        csrf = login_response.json()["csrf_token"]
+        change_response = client.put(
+            "/account/password",
+            headers={"X-Brain-CSRF": csrf},
+            json={"current_password": "old-pass", "new_password": "new-pass"},
+        )
+        old_login_response = client.post("/login", json={"user_id": "daniele", "password": "old-pass"})
+        new_login_response = client.post("/login", json={"user_id": "daniele", "password": "new-pass"})
+
+    assert change_response.status_code == 200
+    assert old_login_response.status_code == 401
+    assert new_login_response.status_code == 200
+
+
+def test_superuser_cookie_session_can_manage_users(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps([{"id": "root", "password": "root-pass", "display_name": "Root", "superuser": True}]),
+        encoding="utf-8",
+    )
+    with oauth_settings(tmp_path, brain_auth_users_file=str(users_file), brain_user_id="root"):
+        client = TestClient(app, base_url="https://testserver")
+        login_response = client.post("/login", json={"user_id": "root", "password": "root-pass"})
+        csrf = login_response.json()["csrf_token"]
+        create_response = client.post(
+            "/admin/users",
+            headers={"X-Brain-CSRF": csrf},
+            json={"id": "daniele", "password": "pass-a", "display_name": "Daniele"},
+        )
+        list_response = client.get("/admin/users")
+
+    assert create_response.status_code == 201
+    assert list_response.status_code == 200
+    assert {user["id"] for user in list_response.json()["users"]} == {"root", "daniele"}
 
 
 def test_chatgpt_app_write_rate_limit(tmp_path) -> None:
