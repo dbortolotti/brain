@@ -171,4 +171,4 @@ Explain these points in the submission:
 - Confirm the verifier reports the curated public app MCP surface, OAuth metadata, the app component resource, and the browser security headers.
 - Confirm `resources/read` for `ui://brain/review.v2.html` returns `text/html;profile=mcp-app` and includes `_meta.ui.csp` plus `_meta.ui.domain`.
 
-<!-- brain-doc-source-hash: d9ec8e289cd1a2966e70524e8b1582e5d2c61f496695dfe5b00d6caece64bfb0 -->
+<!-- brain-doc-source-hash: 76bf04a6bd82a2df7c8f328d1d74674ab4619e57658ecac957566c7a84d148c5 -->

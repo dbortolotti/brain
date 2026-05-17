@@ -2159,7 +2159,6 @@ async def mcp_route(
             }
         )
 
-    payload = await request.json()
     auth_context = mcp_auth_context(authorization, settings, request=request, session_cookie=brain_web_session)
     if settings.brain_auth_enabled and not auth_context.authenticated:
         return auth_challenge(settings, public_path)
@@ -2172,6 +2171,17 @@ async def mcp_route(
         raise HTTPException(status_code=403, detail="Superuser privileges are required.")
     if auth_context.web_session:
         require_web_csrf(request, brain_web_session)
+    try:
+        payload = await request.json()
+    except ValueError:
+        return JSONResponse(
+            {
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32700, "message": "Parse error"},
+            },
+            status_code=400,
+        )
     request_context = McpRequestContext(
         auth=auth_context,
         remote_addr=request.client.host if request.client else None,

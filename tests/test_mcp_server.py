@@ -1524,6 +1524,16 @@ def test_auth_enabled_app_mcp_fails_closed_with_app_resource(tmp_path) -> None:
     assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
 
 
+def test_auth_enabled_app_mcp_post_without_json_fails_closed(tmp_path) -> None:
+    with oauth_settings(tmp_path):
+        client = TestClient(app)
+        response = client.post("/mcp", content=b"")
+
+    assert response.status_code == 401
+    assert "Brain" in response.headers["www-authenticate"]
+    assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
+
+
 def test_auth_enabled_datasources_fail_closed(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
