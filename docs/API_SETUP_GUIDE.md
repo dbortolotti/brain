@@ -122,6 +122,45 @@ POST /memory/rebuild_cognee
 POST /memory/merge_entities
 ```
 
+OAuth, auth, and browser session endpoints:
+
+```text
+GET  /.well-known/oauth-protected-resource
+GET  /.well-known/oauth-protected-resource/{resource_path}
+GET  /.well-known/oauth-authorization-server
+POST /register
+GET|POST /authorize
+POST /token
+POST /revoke
+POST /login
+POST /logout
+GET  /auth/session
+GET  /api/session
+PUT  /account/password
+```
+
+The dashboard and public app pages are also served by the Brain HTTP process:
+
+```text
+GET /app
+GET /privacy
+GET /terms
+GET /support
+GET /docs
+GET /redoc
+GET /openapi.json
+GET /healthz
+```
+
+Admin user-management endpoints:
+
+```text
+GET    /admin/users
+POST   /admin/users
+PUT    /admin/users/{user_id}
+DELETE /admin/users/{user_id}
+```
+
 Legacy/Cognee datasource endpoints are also present:
 
 ```text
@@ -177,14 +216,22 @@ brain_profile_context_list
 brain_profile_context_remember
 brain_profile_context_forget
 brain_app_data_controls
+brain_ingest_source
+brain_palate_describe_item
+brain_palate_query
+brain_palate_evaluate_options
+brain_palate_confirm
+brain_palate_cancel
+brain_palate_correct_proposal
 ```
 
 Read-only app tools require `brain.memory.read`; write tools require
-`brain.memory.write` as well and are rate-limited. Destructive app-surface calls
-such as `brain_undo_last` and `brain_profile_context_forget` require
-confirmation. Admin tools, raw Cognee projection tools, agent-memory clear, and
-Palate writes are not listed or callable on `/mcp` or the legacy `/app/mcp`
-alias.
+`brain.memory.write` as well and are rate-limited by
+`BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`.
+Destructive app-surface calls such as `brain_undo_last` and
+`brain_profile_context_forget` require confirmation. The app surface includes
+selected Palate read/interaction tools; internal Palate persistence tools stay
+on `/admin/mcp`.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
@@ -241,23 +288,20 @@ GET  /api/session
 PUT  /account/password
 ```
 
-`/login` verifies the selected user id and password, creates an opaque
-server-side session under the Brain secrets directory, and sets a `Secure`,
-`HttpOnly`, `SameSite=Lax` cookie. `/auth/session` returns the public
-current-user record plus a CSRF token. Dashboard MCP and admin writes sent with
-the session cookie must include that token in `X-Brain-CSRF`. `/api/session`
-remains a compatibility alias.
+`/auth/session` and `/api/session` return the public current-user record and a
+CSRF token for dashboard write requests. `/api/session` remains a compatibility
+alias.
 
-The Cognee UI proxy also uses the Brain user registry. `/cognee-login` accepts
-the same user id and password, sets an `HttpOnly`, `SameSite=Lax` UI session
-cookie, and redirects to `/cognee`. `/admin/cognee` requires a superuser user
-record. `/ui-login`, `/ui-logout`, `/ui`, and `/ui-api` remain compatibility
-aliases.
+The Cognee UI proxy also uses the Brain user registry. `/cognee-login` and
+`/ui-login` are login routes; `/cognee-logout` and `/ui-logout` are logout
+routes. `/admin/cognee` requires a superuser user record. `/ui`, `/ui-api`,
+`/cognee`, `/cognee-api`, and their path variants remain compatibility aliases.
 
 Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`,
-`BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, and `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`. See
-[Production Secrets](production-secrets.md) for secret handling.
+`BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, and
+`BRAIN_AUTH_SUPERUSER_IDS`. See [Production Secrets](production-secrets.md) for
+secret handling.
 
 For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
 records with `id`/`user_id`, `password`, optional `display_name`, optional
@@ -265,9 +309,7 @@ records with `id`/`user_id`, `password`, optional `display_name`, optional
 `user_id` in issued tokens; HTTP and MCP memory operations then scope Brain DB
 rows, profile context files, Palate data, recall logs, and app audit records to
 that user. Auth-enabled deployments fail closed if the configured users file is
-missing or empty. Use `scripts/migrate_default_user_to_daniele.py` to move the
-original single-user `default` data to `daniele` while keeping `default` as the
-root superuser.
+missing or empty.
 
 Superusers can manage users from the Brain dashboard's User Admin tab. The
 dashboard calls the admin HTTP endpoints below with the user's web session and
@@ -582,9 +624,11 @@ Verify public Cloudflare routing:
 ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make cloudflare-verify
 ```
 
-The production verifier checks health, release metadata, MCP route behavior,
-OAuth metadata when auth is enabled, and backup manifests unless
-`--skip-backups` is used.
+The production verifier checks runtime paths, health, release metadata, MCP
+route behavior, OAuth metadata when auth is enabled, and backup manifests unless
+`--skip-backups` is used. The Cloudflare verifier checks DNS/TLS, public curated
+and admin MCP URLs, dashboard and public support pages, OAuth protected-resource
+metadata, and the authenticated public app MCP surface when auth is enabled.
 
 ## Troubleshooting
 
@@ -605,8 +649,8 @@ pointing at the right HTTP URL and path.
 Writes succeed but recall misses new data.
 
 Brain DB is authoritative, but optional Cognee/vector projection may be pending.
-Use `brain_recall` with direct Brain evidence first, then inspect
-`cognee_sync_status` or run `brain_sync_cognee` if projection is enabled.
+Use `brain_recall` with direct Brain evidence first, then run
+`brain_sync_cognee` if projection is enabled.
 
 Slack routes hit the MCP server.
 

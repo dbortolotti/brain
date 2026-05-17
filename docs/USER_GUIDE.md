@@ -1,27 +1,22 @@
 # Brain User Guide
 
-Brain is a personal memory system. Use it to save durable facts, decisions,
-preferences, open questions, useful source material, and reminders of things you
-want to recall later.
+Brain is a personal memory and taste system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, and reminders of things you want to recall later.
 
-Most users should interact with Brain through Slack, through an LLM client that
-has Brain tools enabled, or through the browser user dashboard. You do not need
-to think in database terms while using it: write clear memory requests, confirm
-them when asked, and use recall when you need the saved context back.
+Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard. You do not need to think in database terms while using it: write clear memory requests, confirm them when asked, and use recall or review when you need the saved context back.
+
+Palate is Brain's taste layer. Use it for wine, restaurants, media, cigars, experiences, and other taste-related preferences.
 
 ## Main Workflows
 
-Use Brain for four day-to-day jobs:
+Use Brain and Palate for these day-to-day jobs:
 
 - Save a memory: `remember this...`
 - Save source material: `ingest this note/article/transcript...`
 - Recall stored context: `what do we know about...`
-- Review or correct memory: `show recent writes`, `undo the last one`, or
-  `actually, replace the old fact with...`
+- Review or correct memory: `show recent writes`, `undo the last one`, or `actually, replace the old fact with...`
+- Save or rank taste-related preferences with Palate.
 
-Slack is the strictest interface. It dry-runs writes and asks for confirmation
-by default. An LLM client can use the same Brain tools directly, usually with
-more natural phrasing.
+Slack is the strictest interface. It dry-runs writes and asks for confirmation by default. An LLM client can use the same Brain tools directly, usually with more natural phrasing.
 
 ## Using Brain From Slack
 
@@ -81,9 +76,7 @@ Show available commands:
 /brain help
 ```
 
-Help includes buttons for common command templates. Slack does not allow Brain
-to insert text directly into your message box from those buttons, so pressing
-one shows a copyable command template.
+Help includes buttons for common command templates. Slack does not allow Brain to insert text directly into your message box from those buttons, so pressing one shows a copyable command template.
 
 Profile an entity:
 
@@ -121,46 +114,35 @@ Confirm a proposed write:
 /brain confirm Sam from Goldman prefers morning calls.
 ```
 
-Slack may ask for confirmation or clarification when a memory is ambiguous,
-sensitive, low-confidence, or potentially conflicts with an existing memory.
+Slack may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
 ## Using the User Dashboard
 
-The browser dashboard is for reviewing and managing your memory. It opens with a
-sign-in overlay and a session line that says Connect to review memory.
+The browser dashboard is for reviewing and managing your memory. It opens with a sign-in overlay and a session line that says Connect to review memory.
 
 The top bar links to User, Admin, and Cognee views.
 
 Main tabs:
 
-- Review: Recent Cards, Open Loops, and Memory Contents. Click a memory card to
-  inspect it.
+- Review: Recent Cards, Open Loops, and Memory Contents. Click a memory card to inspect it.
 - Recall: search Brain with a query and an optional limit.
-- Remember: preview a memory before saving it. The input type menu includes
-  auto, note, fact, thought, open question, and chat conclusion.
-- Profile: add standing answer-tailoring context. The default scope is
-  `answer_tailoring`.
-- Prompt: inspect Personal Info In Session, Custom Preprompt Instructions, Latest
-  Session Data, Bias Protocol, and Agent Memory Protocol.
-- Data Controls: view App Write Audit, Export Preview, Profile Data, and Recent
-  Memory Data.
+- Remember: preview a memory before saving it. The input type menu includes auto, note, fact, thought, open question, and chat conclusion.
+- Profile: add standing answer-tailoring context. The default scope is `answer_tailoring`.
+- Prompt: inspect Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
+- Data Controls: view App Write Audit, Export Preview, Profile Data, and Recent Memory Data.
 - Account: change your password.
 - Users: available to superusers for user administration.
 - Help: command and usage help.
 
-Use Review before trusting a recall result. It is a safe place to inspect recent
-memory and open loops without changing data.
+Use Review before trusting a recall result. It is a safe place to inspect recent memory and open loops without changing data.
 
 ## Using Brain Through An LLM
 
-When an LLM has Brain tools available, ask it to use Brain explicitly. Good
-prompts tell the LLM whether to save, recall, profile, or review.
+When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
-In the ChatGPT app surface, common tools include `brain_session`,
-`brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`,
-`brain_profile_context_forget`, `brain_app_data_controls`, `brain_recall`,
-`brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`,
-`brain_review_recent`, and `brain_undo_last`.
+In the ChatGPT app surface, common tools include `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
+
+Tool availability varies by surface. The internal/admin surface also exposes tools such as `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
 
 Save one durable memory:
 
@@ -193,9 +175,7 @@ Context: this came from the May architecture review.
 Preserve chat/session context for handover:
 
 ```text
-Use brain_session to get my user-scoped session id. If my client exposes an
-agent-memory workflow, use it to preserve this chat handover. Do not use
-brain_remember unless there is a separate durable user fact or decision.
+Use brain_session to get my user-scoped session id. If my client exposes an agent-memory workflow, use it to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
 ```
 
 Recall context:
@@ -228,6 +208,40 @@ For important writes, ask the LLM to dry-run first:
 Use Brain to dry-run this memory before committing it: Maya prefers written briefs before vendor calls.
 ```
 
+## Using Palate
+
+Palate is Brain's taste layer. It normalizes messy user input into structured items, enriches those items, stores taste signals, and ranks recommendations.
+
+The ChatGPT app surface exposes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. Internal/admin surfaces also expose `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
+
+Palate is best for:
+
+- Wine: producers, vintages, regions, grapes, style, oak, body, acidity, drinking windows, and personal signals.
+- Restaurants: cuisine, city, price, occasion, atmosphere, service, and personal fit.
+- Media: films, series, books, music, podcasts, and watch/listen/read signals.
+- Cigars and experiences: structured preferences, dislikes, and contexts.
+
+Describe an item without storing it:
+
+```text
+Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not store it yet. Fetch external ratings if available, but do not use broad web search unless needed.
+```
+
+Remember a wine:
+
+```text
+Use Brain Palate to remember:
+I want to try Chateau Musar 2016. Sam recommended it. Treat it as a wine.
+Notes: likely savory, mature, complex Lebanese red. I am curious but have not tried it.
+```
+
+Remember a restaurant:
+
+```text
+Use Brain Palate to remember:
+Noble Rot is a restaurant I like for wine-led dinners in London. I like the wine list, classic food, and relaxed but serious atmosphere.
+```
+
 ## What To Save
 
 Good Brain memories are durable, specific, and useful later.
@@ -244,6 +258,7 @@ Save:
 - Research questions: `I wonder whether vector search improves this recall path?`
 - Source summaries, meeting notes, transcripts, articles, and small tables.
 - Corrections that clearly replace older facts.
+- Taste preferences and ranking signals when the information belongs in Palate.
 
 Do not save:
 
@@ -252,9 +267,7 @@ Do not save:
 - Temporary chatter: `that was funny.`
 - Guesses as facts: `Maybe Sam likes Bill Evans.`
 - Sensitive personal facts unless there is a clear reason and permission.
-- Chat-session handovers, conversation summaries, or agent workflow learnings;
-  use the dedicated agent-memory workflow in clients that expose it, and keep
-  those handovers separate from ordinary durable facts.
+- Chat-session handovers, conversation summaries, or agent workflow learnings; use the dedicated agent-memory workflow in clients that expose it, and keep those handovers separate from ordinary durable facts.
 - Full raw dumps when only a concise memory is needed.
 
 ## Supported Memory Types
@@ -296,34 +309,24 @@ chat_conclusion
 table
 ```
 
-Brain may then classify the final stored card as a more specific memory kind,
-such as `preference`, `person_fact`, `project_state`, or `source_summary`.
-For chat-session continuity and handovers, prefer the dedicated
-`brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion`
-when your client exposes that workflow.
+Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
+For chat-session continuity and handovers, prefer the dedicated `brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
 
 ## How Memories Are Stored
 
-Every write creates an ingestion run. The ingestion run records what kind of
-input Brain received, a preview of the input, status, source id if there is one,
-and context such as Slack provenance.
+Every write creates an ingestion run. The ingestion run records what kind of input Brain received, a preview of the input, status, source id if there is one, and context such as Slack provenance.
 
 Brain can store several related objects:
 
-- `memory_cards`: the durable memory statement, memory kind, confidence, status,
-  optional summary, source quote, and source link.
-- `sources`: raw or summarized source material such as articles, transcripts,
-  markdown, emails, PDFs, chat logs, and tables.
-- `entities`: people, organizations, places, concepts, projects, and artifacts
-  mentioned by memories.
+- `memory_cards`: the durable memory statement, memory kind, confidence, status, optional summary, source quote, and source link.
+- `sources`: raw or summarized source material such as articles, transcripts, markdown, emails, PDFs, chat logs, and tables.
+- `entities`: people, organizations, places, concepts, projects, and artifacts mentioned by memories.
 - `relationships`: links between entities, backed by a memory as evidence.
 - `open_loops`: open questions and research questions that should be revisited.
-- `memory_links`: duplicate, contradiction, and supersession links between
-  memory cards.
+- `memory_links`: duplicate, contradiction, and supersession links between memory cards.
 - `cognee_sync`: projection state for optional Cognee sync.
 
-Brain DB is the source of truth. Cognee and vector data are projections that can
-be rebuilt.
+Brain DB is the source of truth. Cognee and vector data are projections that can be rebuilt.
 
 ## Source Policy
 
@@ -339,16 +342,14 @@ Use this for short durable statements. Example:
 
 `source_and_memory`
 
-Use this when the original source matters and Brain should also extract durable
-memories. Example for an LLM:
+Use this when the original source matters and Brain should also extract durable memories. Example for an LLM:
 
 ```text
 Use Brain to ingest this as source material and extract memories:
 <meeting notes>
 ```
 
-`source_only` exists for keeping source material without extracting memory cards,
-but it is mainly an API/tooling option rather than a normal Slack workflow.
+`source_only` exists for keeping source material without extracting memory cards, but it is mainly an API or tooling option rather than a normal Slack workflow.
 
 ## Writing Good Memories
 
@@ -451,8 +452,7 @@ Worse:
 /brain recall model eval confidence intervals
 ```
 
-The second example asks Brain to answer now; it does not save a future learning
-goal.
+The second example asks Brain to answer now; it does not save a future learning goal.
 
 ## Recall Best Practices
 
@@ -480,8 +480,7 @@ Ask for evidence when using an LLM:
 Use Brain to recall what we know about Cognee projection, including evidence and conflicts.
 ```
 
-If a recall answer looks wrong, review recent writes in Slack or in the browser
-Review tab before trusting the result:
+If a recall answer looks wrong, review recent writes in Slack or in the browser Review tab before trusting the result:
 
 ```text
 /brain review
@@ -501,9 +500,7 @@ Brain tries not to silently overwrite memories. Corrections should be explicit:
 /brain remember Actually, Slack writes require confirmation by default; replace any older memory saying they auto-commit.
 ```
 
-When Brain detects a possible conflict, Slack may refuse to commit until you
-confirm whether to keep both facts, supersede the old fact, or clarify the
-subject.
+When Brain detects a possible conflict, Slack may refuse to commit until you confirm whether to keep both facts, supersede the old fact, or clarify the subject.
 
 ## Privacy And Safety
 
@@ -516,8 +513,7 @@ Never ask Brain to store:
 - recovery codes
 - full credential files
 
-Be careful with personal facts. Save them only when they are useful,
-appropriate, and allowed. Prefer attribution when a fact came from someone else.
+Be careful with personal facts. Save them only when they are useful, appropriate, and allowed. Prefer attribution when a fact came from someone else.
 
 ## Quick Examples
 
@@ -546,12 +542,24 @@ Use Brain to ingest these meeting notes as source material and extract durable m
 Use Brain to recall the current project state for Slack intake and include any conflicts.
 ```
 
+```text
+Use Brain Palate to remember:
+I want to try Chateau Musar 2016. Sam recommended it. Treat it as a wine.
+```
+
+```text
+Use Brain Palate to suggest an oaky wine I said I want to try. Explain the ranking.
+```
+
+```text
+Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not store it yet.
+```
+
 ## Related Docs
 
 - [API Setup](API_SETUP_GUIDE.md) explains how to connect HTTP and MCP clients.
 - [Slack Setup](SLACK_SETUP.md) explains how to configure the Slack app.
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
-- [Production Secrets](production-secrets.md) explains production secret
-  handling.
+- [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 9f144862cb89214a3891538b4dbd440cf21f07a19ebf421a87c7e344f2e8f99c -->
+<!-- brain-doc-source-hash: fb0caea0b5b72e4abaa3d41a0a27a86d90044b49c6f196dbdc16de6d4fbf46d4 -->

@@ -9,16 +9,19 @@ Brain is a local personal memory control plane exposed through a small MCP surfa
 - [Slack Setup Guide](docs/SLACK_SETUP.md) - Slack app configuration, routes, allowlists, and troubleshooting.
 - [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification, Google Drive replication, and restore outline.
 - [Production Secrets](docs/production-secrets.md) - staging/prod release flow, secret, and variable handling.
+- [ChatGPT App Hardening](docs/chatgpt-app-hardening.md) - app review hardening model and post-merge production verification checklist.
 - [Runtime Flow Diagrams](docs/role_flow_diagram.md) - current runtime flow and model-role topology notes.
 
 ## Local Dev Setup
 
 ```bash
-cp .env.openai.example .env
+cp .env.example .env
 make setup
 make check
 uv run pytest
 ```
+
+If you want the smaller local/OpenAI-oriented example, use `.env.openai.example` instead of `.env.example`.
 
 If you need the local compose stack:
 
@@ -53,14 +56,24 @@ Selected user-facing HTTP endpoints include:
 - `GET /auth/session` and `GET /api/session` for the web session endpoint
 - `POST /login` and `POST /logout`
 - `PUT /account/password`
+- `GET|POST /authorize`
+- `POST /register`
+- `POST /token`
+- `POST /revoke`
+- `GET /.well-known/oauth-authorization-server`
+- `GET /.well-known/oauth-protected-resource`
+- `GET /.well-known/oauth-protected-resource/{resource_path:path}`
+- `GET /admin/users`, `POST /admin/users`, `PUT /admin/users/{user_id}`, and `DELETE /admin/users/{user_id}`
 - `GET|POST /mcp` for the curated user/app MCP surface
 - `GET|POST /admin/mcp` for the full admin MCP surface
 - `GET|POST /app/mcp` for the legacy ChatGPT App MCP alias
-- `GET /cognee` and `GET /admin/cognee` for Cognee UI entry points
-- `GET|POST /ui` and `GET|POST /ui-api/{path:path}` compatibility aliases
 - `GET /docs`, `GET /redoc`, and `GET /openapi.json`
 - `GET /privacy`, `GET /terms`, and `GET /support`
 - `GET /datasources`, `POST /datasources`, and `DELETE /datasources/{datasource}`
+- `POST /create_datasource`
+- `GET /list_datasources`
+- `POST /delete_datasource`
+- `DELETE /delete_datasource/{datasource}`
 - `POST /memory/remember`
 - `POST /memory/ingest_source`
 - `POST /memory/recall`
@@ -75,10 +88,33 @@ Selected user-facing HTTP endpoints include:
 - `POST /memory/rebuild_cognee`
 - `POST /memory/merge_entities`
 
-The high-level MCP tools are grouped by purpose:
+The high-level MCP tools are grouped by surface:
 
-Core memory:
+Public ChatGPT App surface:
 
+- `brain_session`
+- `brain_remember`
+- `brain_ingest_source`
+- `brain_recall`
+- `brain_profile_entity`
+- `brain_list_open_loops`
+- `brain_get_memory`
+- `brain_review_recent`
+- `brain_undo_last`
+- `brain_profile_context_remember`
+- `brain_profile_context_list`
+- `brain_profile_context_forget`
+- `brain_app_data_controls`
+- `brain_palate_describe_item`
+- `brain_palate_query`
+- `brain_palate_evaluate_options`
+- `brain_palate_confirm`
+- `brain_palate_cancel`
+- `brain_palate_correct_proposal`
+
+Internal admin surface:
+
+- `brain_session`
 - `brain_remember`
 - `brain_ingest_source`
 - `brain_recall`
@@ -90,24 +126,18 @@ Core memory:
 - `brain_forget`
 - `brain_review_recent`
 - `brain_undo_last`
-- `brain_merge_entities`
-
-Session and profile context:
-
-- `brain_session`
 - `brain_profile_context_remember`
 - `brain_profile_context_list`
 - `brain_profile_context_forget`
 - `brain_profile_context_sync`
-
-Agent memory:
-
+- `brain_app_data_controls`
+- `brain_sync_cognee`
+- `brain_rebuild_cognee`
+- `cognee_improve`
 - `brain_agent_memory`
 - `brain_agent_memory_recall`
 - `brain_agent_memory_clear`
-
-Palate:
-
+- `brain_merge_entities`
 - `brain_palate_describe_item`
 - `brain_palate_remember`
 - `brain_palate_query`
@@ -118,13 +148,39 @@ Palate:
 - `brain_palate_correct_proposal`
 - `brain_palate_refresh_enrichment`
 
-Curated Cognee/admin operations:
-
-- `brain_sync_cognee`
-- `brain_rebuild_cognee`
-- `cognee_improve`
-
 Raw SQL and arbitrary Cognee primitives are intentionally not exposed as public MCP tools. Brain exposes curated Cognee/admin operations such as sync, rebuild, and configured improve.
+
+## Running The Cognee UI Proxy
+
+The Cognee UI proxy is a separate HTTP service. It does not serve `/mcp`, and UI paths should be routed to its own port:
+
+```bash
+make ui-proxy
+```
+
+Equivalent command:
+
+```bash
+uv run python -m uvicorn memory_stack.ui_proxy:app --host 127.0.0.1 --port 8002
+```
+
+Routes include:
+
+- `GET /cognee`
+- `GET|POST|PUT|PATCH|DELETE /cognee/{path:path}`
+- `GET|POST|PUT|PATCH|DELETE /cognee-api/{path:path}`
+- `GET /admin/cognee`
+- `GET|POST|PUT|PATCH|DELETE /admin/cognee/{path:path}`
+- `GET|POST|PUT|PATCH|DELETE /admin/cognee-api/{path:path}`
+- `GET /ui`
+- `GET|POST|PUT|PATCH|DELETE /ui/{path:path}`
+- `GET|POST|PUT|PATCH|DELETE /ui-api/{path:path}`
+- `GET|POST /ui-login`
+- `POST /ui-logout`
+- `GET|POST /cognee-login`
+- `POST /cognee-logout`
+
+The proxy also serves `GET /healthz`, `GET /docs`, `GET /redoc`, `GET /openapi.json`, `GET /favicon.ico`, `GET /icon.png`, `GET /apple-touch-icon.png`, and the frontend root routes.
 
 ## ChatGPT App Surface
 
@@ -134,6 +190,7 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 
 - `brain_session`
 - `brain_remember`
+- `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
 - `brain_list_open_loops`
@@ -144,12 +201,18 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_app_data_controls`
+- `brain_palate_describe_item`
+- `brain_palate_query`
+- `brain_palate_evaluate_options`
+- `brain_palate_confirm`
+- `brain_palate_cancel`
+- `brain_palate_correct_proposal`
 
-Admin, raw projection, hard-delete, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember` previews by default; a client may save only after explicit user confirmation by calling it with `context.confirmed_by_user=true`. App-surface write tools accept either top-level `confirmed_by_user=true` or `context.confirmed_by_user=true`. Read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and append a redacted audit record visible in the dashboard Data Controls tab. Destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
+Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember` previews by default; a client may save only after explicit user confirmation by calling it with `context.confirmed_by_user=true`. App-surface write tools accept either top-level `confirmed_by_user=true` or `context.confirmed_by_user=true`. Read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and append a redacted audit record visible in the dashboard Data Controls tab. Destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
 
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a `Secure`, `HttpOnly`, `SameSite=Lax` cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
 
-The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; root users can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes are compatibility aliases.
+The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; root users can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes, plus `/cognee-login`, `/cognee-logout`, `/ui-login`, and `/ui-logout`, are compatibility aliases.
 
 Public app support pages:
 
@@ -226,9 +289,11 @@ Every deploy writes runtime release metadata into:
 /Volumes/xpg_usb4/{staging|prod}/brain/shared/current-version
 ```
 
-Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA.
+The release metadata records the app name, environment, version, SHA, deployment directory, deploy time, and source. The source is `github-actions` for workflow runs and `local` for local runs.
 
-Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, then deploys production with the same `BRAIN_RELEASE_VERSION`.
+Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA when the version starts with `v`. If the tag already exists at a different SHA, the staging run fails instead of retagging.
+
+Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION`.
 
 ## Conflict Rule
 
@@ -251,11 +316,22 @@ else:
   fail deploy
 ```
 
+The renderer ignores metadata keys when it compares configs. The metadata set includes:
+
+```text
+BRAIN_CONFIG_RENDER_SHA
+BRAIN_CONFIG_RENDERED_AT
+BRAIN_CONFIG_RENDER_SOURCE
+BRAIN_RELEASE_ENV
+BRAIN_RELEASE_SHA
+BRAIN_RELEASE_VERSION
+```
+
 After a successful render, both `brain.env` and `brain.env.last-deployed` are updated to the proposed config.
 
-The GitHub Actions staging, production, and release workflows expose `force_config_override` only as an explicit manual-dispatch option, and it defaults to `false`. Normal push deploys and manual deploys without that option enabled use the conflict rule above.
+`force_config_override=true` bypasses the three-way conflict check and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline. Otherwise, resolve a conflict by propagating the live change back to GitHub Secrets/Variables or by intentionally reconciling the environment back to the last deployed baseline before redeploying.
 
-Use `force_config_override=true` only for an intentional bootstrap or re-baseline. Otherwise, resolve a conflict by propagating the live change back to GitHub Secrets/Variables or by intentionally reconciling the environment back to the last deployed baseline before redeploying.
+`BRAIN_AUTH_PASSWORD` is handled similarly, but it is written to the environment's `shared/secrets/brain-auth-password` with a matching `brain-auth-password.last-deployed` snapshot.
 
 ## Live Model Smoke and Operational Checks
 
@@ -290,6 +366,8 @@ make palate-probe
 make backup
 make reset
 make reset-hard
+make agent-memory
+make maintenance
 ```
 
 Use `make reset-hard` only when you intend to delete the local stores.
@@ -347,48 +425,137 @@ The pytest live E2E gate is opt-in because it makes provider calls:
 BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 ```
 
-For live staging acceptance, use the staging E2E suite. It creates or updates the
-dedicated `brain-e2e` user, signs in through the cookie/CSRF UI auth path, primes
-staging organically through MCP tool calls, confirms Palate proposals, checks
-user isolation, and scores usage results with `gpt-5.5` high reasoning.
+For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie/CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-5.5` high reasoning.
 
 ```bash
 ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env \
   uv run python scripts/staging_e2e_suite.py
 ```
 
-The default target is the local staging service at `http://127.0.0.1:18100`,
-which avoids public proxy routing for admin user-management APIs.
+The default target is the local staging service at `http://127.0.0.1:18100`, which avoids public proxy routing for admin user-management APIs.
 
-The runner writes JSON reports under `.reports/staging-e2e/` by default. It is
-not part of normal `pytest` because it mutates staging and makes live provider
-calls.
+The runner writes JSON reports under `.reports/staging-e2e/` by default. It is not part of normal `pytest` because it mutates staging and makes live provider calls.
 
 ## Environment Variables
 
-Deployment, routing, and auth-related settings worth calling out:
+Deployment, routing, auth-related settings worth calling out:
 
-- `BRAIN_APP_MCP_PATH=/app/mcp`
-- `BRAIN_ADMIN_MCP_PATH=/admin/mcp`
-- `BRAIN_PUBLIC_BASE_URL`
-- `BRAIN_PUBLIC_MCP_PATH`
-- `BRAIN_PUBLIC_ADMIN_MCP_PATH`
-- `BRAIN_PUBLIC_APP_MCP_PATH`
-- `BRAIN_PUBLIC_UI_PATH`
-- `BRAIN_PUBLIC_UI_API_PATH`
-- `BRAIN_RELEASE_ENV`
-- `BRAIN_RELEASE_SHA`
-- `BRAIN_RELEASE_VERSION`
-- `BRAIN_AUTH_PASSWORD_FILE`
-- `BRAIN_AUTH_STATE_PATH`
+- `ALLOW_EMBEDDING_DIMENSION_CHANGE`
+- `BRAIN_ADMIN_MCP_PATH`
+- `BRAIN_AGENT_MEMORY_SESSION_ID`
+- `BRAIN_APP_MCP_PATH`
+- `BRAIN_APP_WRITE_RATE_LIMIT_COUNT`
+- `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`
 - `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`
+- `BRAIN_AUTH_ENABLED`
+- `BRAIN_AUTH_PASSWORD_FILE`
 - `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`
 - `BRAIN_AUTH_REQUIRE_PKCE`
 - `BRAIN_AUTH_SCOPES`
-- `BRAIN_APP_WRITE_RATE_LIMIT_COUNT`
-- `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`
-- `BRAIN_COGNEE_PALATE_DATASET`
+- `BRAIN_AUTH_STATE_PATH`
+- `BRAIN_AUTH_SUPERUSER_IDS`
+- `BRAIN_AUTH_USERS_FILE`
+- `BRAIN_BACKUP_DIR`
+- `BRAIN_CONFIG_RENDER_SHA`
+- `BRAIN_CONFIG_RENDERED_AT`
+- `BRAIN_CONFIG_RENDER_SOURCE`
+- `BRAIN_HEALTH_PATH`
+- `BRAIN_LAUNCHD_LABEL`
+- `BRAIN_MCP_HOST`
+- `BRAIN_MCP_PATH`
+- `BRAIN_MCP_PORT`
+- `BRAIN_NEO4J_BREW_SERVICE`
+- `BRAIN_NEO4J_DOCKER_CONTAINER`
+- `BRAIN_NEO4J_DUMP_ENABLED`
+- `BRAIN_NEO4J_LAUNCHD_LABEL`
+- `BRAIN_NEO4J_STOP_FOR_DUMP`
+- `BRAIN_OWNER_FULL_NAME`
+- `BRAIN_OWNER_NAME`
+- `BRAIN_PROD_ROOT`
+- `BRAIN_PROFILE_CONTEXT_PATH`
+- `BRAIN_PROVIDER_AUTH_PROFILES_PATH`
+- `BRAIN_PROVIDER_AUTH_STATE_DIR`
+- `BRAIN_PUBLIC_ADMIN_MCP_PATH`
+- `BRAIN_PUBLIC_APP_MCP_PATH`
+- `BRAIN_PUBLIC_BASE_URL`
+- `BRAIN_PUBLIC_MCP_PATH`
+- `BRAIN_PUBLIC_UI_API_PATH`
+- `BRAIN_PUBLIC_UI_PATH`
+- `BRAIN_RELEASE_ENV`
+- `BRAIN_RELEASE_SHA`
+- `BRAIN_RELEASE_VERSION`
+- `BRAIN_REQUEST_LOG_ENABLED`
+- `BRAIN_REQUEST_LOG_MAX_BODY_BYTES`
+- `BRAIN_REQUEST_LOG_PATH`
+- `BRAIN_REQUEST_LOG_RETENTION_DAYS`
+- `BRAIN_ROUTING_LOG_ENABLED`
+- `BRAIN_ROUTING_LOG_PATH`
+- `BRAIN_ROUTING_LOG_RETENTION_DAYS`
+- `BRAIN_SERVICE_NAME`
+- `BRAIN_SLACK_ADMIN_USER_IDS`
+- `BRAIN_SLACK_AGENT_ENABLED`
+- `BRAIN_SLACK_AGENT_HOST`
+- `BRAIN_SLACK_AGENT_PORT`
+- `BRAIN_SLACK_ALLOWED_CHANNEL_IDS`
+- `BRAIN_SLACK_ALLOWED_TEAM_IDS`
+- `BRAIN_SLACK_ALLOWED_USER_IDS`
+- `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`
+- `BRAIN_SLACK_ENABLED`
+- `BRAIN_TASTE_AUTO_ENRICH_ENABLED`
+- `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`
 - `BRAIN_TASTE_CANONICAL_STORE`
+- `BRAIN_TASTE_CONFIRMATION_THRESHOLD`
+- `BRAIN_TASTE_ENABLED`
+- `BRAIN_TASTE_LLM_MODEL`
+- `BRAIN_TASTE_LLM_REASONING_EFFORT`
+- `BRAIN_TASTE_LLM_ROUTING_ENABLED`
+- `BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD`
+- `BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD`
+- `BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS`
+- `BRAIN_TASTE_WEB_ENRICHMENT_ENABLED`
+- `BRAIN_UI_BACKEND_PORT`
+- `BRAIN_UI_ENABLED`
+- `BRAIN_UI_FRONTEND_PORT`
+- `BRAIN_UI_HOST`
+- `BRAIN_UI_LAUNCHD_LABEL`
+- `BRAIN_UI_PROXY_PORT`
+- `BRAIN_UI_SESSION_SECONDS`
+- `BRAIN_USER_ID`
+- `DATA_ROOT_DIRECTORY`
+- `DB_HOST`
+- `DB_NAME`
+- `DB_PASSWORD`
+- `DB_PORT`
+- `DB_PROVIDER`
+- `DB_USERNAME`
+- `EMBEDDING_DIMENSIONS`
+- `EMBEDDING_MODEL`
+- `EMBEDDING_PROVIDER`
+- `ENABLE_BACKEND_ACCESS_CONTROL`
+- `GOOGLE_FREE_TIER`
+- `GRAPH_DATABASE_NAME`
+- `GRAPH_DATABASE_PASSWORD`
+- `GRAPH_DATABASE_PROVIDER`
+- `GRAPH_DATABASE_URL`
+- `GRAPH_DATABASE_USERNAME`
+- `LLM_MAX_TOKENS`
+- `LLM_MODEL`
+- `LLM_PROVIDER`
+- `LLM_TEMPERATURE`
+- `OPENAI_AUTH_MODE`
+- `OPENAI_CODEX_AUTH_PROFILE`
+- `OPENAI_CODEX_BASE_URL`
+- `PROFILE`
+- `SYSTEM_ROOT_DIRECTORY`
+- `VECTOR_DATASET_DATABASE_HANDLER`
+- `VECTOR_DB_HOST`
+- `VECTOR_DB_KEY`
+- `VECTOR_DB_NAME`
+- `VECTOR_DB_PASSWORD`
+- `VECTOR_DB_PORT`
+- `VECTOR_DB_PROVIDER`
+- `VECTOR_DB_URL`
+- `VECTOR_DB_USERNAME`
 
 Core Brain settings:
 
@@ -423,6 +590,7 @@ Cognee projection settings:
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
 - `BRAIN_COGNEE_AGENT_MEMORY_DATASET=agent_memory`
+- `BRAIN_COGNEE_PALATE_DATASET=palate`
 - `BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
 - `GRAPH_DATABASE_PROVIDER=ladybug`
@@ -506,4 +674,4 @@ uv run brain models auth login --provider openai-codex
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 34452d71d93528031e8a9c014c500ff237ef529202c210ef98252f8ae60ffa5a -->
+<!-- brain-doc-source-hash: 1df8e14374ea6487ac8c1ceba921a0b6887c47c6c8d6b49ecca7ac11fed84ed1 -->

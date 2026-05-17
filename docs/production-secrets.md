@@ -1,6 +1,6 @@
 # Production Secrets
 
-Deploys run on the self-hosted `brain-prod` runner with three environments:
+The staging and production workflows run on the self-hosted `brain-prod` runner. The deployment model has three environments:
 
 - `dev`: local developer runs.
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
@@ -10,12 +10,17 @@ Deploys run on the self-hosted `brain-prod` runner with three environments:
   `/Volumes/xpg_usb4/prod/brain`.
 
 `.github/workflows/deploy-local-production.yml` remains available as a manual
-production deploy escape hatch. It is not triggered by pushes to `main`.
+production deploy escape hatch. It is not triggered by pushes to `main`; the
+workflow-dispatch run resolves a `prod-<12-char-sha>` build version.
 
 The staging, production, and release workflows render each environment's
 `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with
 `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh`
 with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
+
+The staging workflow-dispatch `version` input is optional, the release
+workflow-dispatch `version` input is required, and the manual production deploy
+escape hatch only exposes `force_config_override`.
 
 `force_config_override` is available only on workflow-dispatch runs for staging,
 production, and release. It defaults to `false`. Push-based staging deploys do
@@ -30,9 +35,27 @@ Every deploy writes runtime release metadata into:
 /Volumes/xpg_usb4/{staging|prod}/brain/shared/release.json
 ```
 
-The release metadata records the app name, environment, version, SHA,
-deployment directory, deploy time, and source. The source is `github-actions`
-for workflow runs and `local` for local runs.
+The release metadata records the app name, environment, version, SHA, release
+directory, `deployed_at`, and source. The source is `github-actions` for
+workflow runs and `local` for local runs.
+
+The release metadata keys are:
+
+```text
+BRAIN_RELEASE_ENV
+BRAIN_RELEASE_SHA
+BRAIN_RELEASE_VERSION
+```
+
+The renderer also writes config-render metadata keys:
+
+```text
+BRAIN_CONFIG_RENDER_SHA
+BRAIN_CONFIG_RENDERED_AT
+BRAIN_CONFIG_RENDER_SOURCE
+```
+
+The conflict checker ignores both metadata families.
 
 Normal pushes to `main` deploy staging with an automatic build version such as
 `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
@@ -72,20 +95,9 @@ else:
   fail deploy
 ```
 
-The renderer ignores metadata keys when it compares configs. The metadata set
-includes:
-
-```text
-BRAIN_CONFIG_RENDER_SHA
-BRAIN_CONFIG_RENDERED_AT
-BRAIN_CONFIG_RENDER_SOURCE
-BRAIN_RELEASE_ENV
-BRAIN_RELEASE_SHA
-BRAIN_RELEASE_VERSION
-```
-
-After a successful render, both `brain.env` and `brain.env.last-deployed` are
-updated to the proposed config.
+The renderer ignores metadata keys when it compares configs. After a successful
+render, both `brain.env` and `brain.env.last-deployed` are updated to the
+proposed config.
 
 `force_config_override=true` bypasses the three-way conflict check and
 establishes a new baseline. Use it only for an intentional bootstrap or
@@ -101,10 +113,10 @@ environment's `shared/secrets/brain-auth-password` with a matching
 
 Deployment also configures `BRAIN_AUTH_USERS_FILE` under
 `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`.
-If the users file does not exist yet, deployment creates one with `default` as a
-root superuser and `daniele` as a regular user using the existing shared auth
-password. Auth-enabled Brain instances fail closed when the configured registry
-is missing. A superuser can create, edit, and delete user records from the
+If the users file does not exist yet, deployment creates one with `default` as
+a root superuser and a regular user using the existing shared auth password.
+Auth-enabled Brain instances fail closed when the configured registry is
+missing. A superuser can create, edit, and delete user records from the
 dashboard User Admin tab without restarting the service.
 
 The deployed auth and dashboard surfaces include these route families:
@@ -128,15 +140,64 @@ The deployed auth and dashboard surfaces include these route families:
 /.well-known/oauth-protected-resource/{resource_path:path}
 /auth/session         session endpoint
 /api/session          session endpoint
-/mcp                  curated user/app MCP surface
-/admin/mcp            full admin MCP surface
-/cognee               user Cognee UI entry point
-/admin/cognee         root Cognee UI entry point
+/app-assets/{asset_name}
+/app/oauth/callback
+/create_datasource
+/datasources
+/datasources/{datasource}
+/delete_datasource
+/delete_datasource/{datasource}
+/docs
+/docs/oauth2-redirect
+/favicon.ico
+/healthz
+/icon.png
+/list_datasources
+/memory/forget
+/memory/ingest_source
+/memory/merge_entities
+/memory/open_loops
+/memory/profile_entity
+/memory/rebuild_cognee
+/memory/recall
+/memory/remember
+/memory/resolve_conflict
+/memory/review_recent
+/memory/sync_cognee
+/memory/undo_last
+/memory/{memory_id}
+/openapi.json
+/privacy
+/redoc
+/support
+/terms
+/{path:path}          MCP route fallback
 ```
+
+The workflows set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`,
+`BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`,
+`BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`,
+`BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
 
 `/app/mcp`, `/ui`, and `/ui-api` remain compatibility aliases, and the Cognee
 UI proxy also exposes `/ui-login`, `/ui-logout`, `/cognee-login`, and
-`/cognee-logout`.
+`/cognee-logout`. The Cognee UI proxy surfaces also remain available at:
+
+```text
+/admin/cognee
+/admin/cognee/{path:path}
+/admin/cognee-api/{path:path}
+/cognee
+/cognee/{path:path}
+/cognee-api/{path:path}
+/cognee-login
+/cognee-logout
+/ui
+/ui/{path:path}
+/ui-api/{path:path}
+/ui-login
+/ui-logout
+```
 
 ## Required Secrets
 
@@ -149,10 +210,11 @@ BRAIN_AUTH_PASSWORD
 BRAIN_AUTH_TOKEN
 ```
 
-`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer. `BRAIN_AUTH_PASSWORD`
-is written to each deployed environment's `shared/secrets/brain-auth-password`.
-The staging and production workflows also pass `BRAIN_AUTH_TOKEN` into
-`render_prod_env.py`.
+`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer.
+`BRAIN_AUTH_PASSWORD` is written to each deployed environment's
+`shared/secrets/brain-auth-password`. The staging and production workflows also
+pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`. The renderer rejects empty
+or placeholder values for `OPENAI_API_KEY` and `BRAIN_AUTH_PASSWORD`.
 
 ## Optional Taste Integration Secrets
 
@@ -165,9 +227,9 @@ Set these only when the corresponding Taste integrations are enabled.
 
 ## Optional Eval Provider Secrets
 
-Runtime uses the configured LLM and embedding provider/model settings.
-Set these only when you want explicit eval or smoke experiments against
-additional `provider:model` refs:
+Runtime uses the configured LLM and embedding provider/model settings. Set
+these only when you want explicit eval or smoke experiments against additional
+`provider:model` refs:
 
 ```text
 OPENROUTER_API_KEY
@@ -198,28 +260,44 @@ Use GitHub repository variables for non-secret deployment settings:
 
 ```text
 PROFILE
+CONFIG_ENV
+ALLOW_EMBEDDING_DIMENSION_CHANGE
 LLM_PROVIDER
 LLM_MODEL
+LLM_TEMPERATURE
+LLM_MAX_TOKENS
+BRAIN_LLM_ENABLED
 EMBEDDING_PROVIDER
 EMBEDDING_MODEL
 EMBEDDING_DIMENSIONS
+OPENAI_AUTH_MODE
+OPENAI_CODEX_AUTH_PROFILE
+OPENAI_CODEX_BASE_URL
+BRAIN_DATABASE_URL
 AWS_REGION
 AWS_DEFAULT_REGION
 AWS_PROFILE
 BRAIN_PUBLIC_BASE_URL
+BRAIN_HEALTH_PATH
+BRAIN_LAUNCHD_LABEL
+BRAIN_MCP_HOST
+BRAIN_MCP_PORT
 BRAIN_APP_MCP_PATH
+BRAIN_ADMIN_MCP_PATH
 BRAIN_PUBLIC_MCP_PATH
-BRAIN_PUBLIC_APP_MCP_PATH
 BRAIN_PUBLIC_ADMIN_MCP_PATH
+BRAIN_PUBLIC_APP_MCP_PATH
 BRAIN_PUBLIC_UI_PATH
 BRAIN_PUBLIC_UI_API_PATH
-BRAIN_MCP_PATH
-BRAIN_ADMIN_MCP_PATH
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED
+BRAIN_GOOGLE_DRIVE_REMOTE
 BRAIN_GOOGLE_DRIVE_FOLDER
 BRAIN_GOOGLE_DRIVE_LOCAL_PATH
 BRAIN_NEO4J_DUMP_ENABLED
 BRAIN_NEO4J_STOP_FOR_DUMP
+BRAIN_NEO4J_BREW_SERVICE
+BRAIN_NEO4J_DOCKER_CONTAINER
+BRAIN_NEO4J_LAUNCHD_LABEL
 BRAIN_REQUEST_LOG_ENABLED
 BRAIN_REQUEST_LOG_PATH
 BRAIN_REQUEST_LOG_MAX_BODY_BYTES
@@ -228,11 +306,21 @@ BRAIN_ROUTING_LOG_ENABLED
 BRAIN_ROUTING_LOG_PATH
 BRAIN_ROUTING_LOG_RETENTION_DAYS
 BRAIN_UI_ENABLED
+BRAIN_UI_HOST
+BRAIN_UI_PROXY_PORT
+BRAIN_UI_FRONTEND_PORT
+BRAIN_UI_BACKEND_PORT
+BRAIN_UI_LAUNCHD_LABEL
+BRAIN_UI_SESSION_SECONDS
+BRAIN_SLACK_ENABLED
 BRAIN_SLACK_AGENT_ENABLED
+BRAIN_SLACK_AGENT_HOST
+BRAIN_SLACK_AGENT_PORT
 BRAIN_SLACK_ALLOWED_TEAM_IDS
 BRAIN_SLACK_ALLOWED_CHANNEL_IDS
 BRAIN_SLACK_ALLOWED_USER_IDS
 BRAIN_SLACK_ADMIN_USER_IDS
+BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE
 BRAIN_AUTH_ENABLED
 BRAIN_AUTH_ACCESS_TOKEN_SECONDS
 BRAIN_AUTH_REFRESH_TOKEN_SECONDS
@@ -242,16 +330,28 @@ BRAIN_AUTH_STATE_PATH
 BRAIN_AUTH_USERS_FILE
 BRAIN_AUTH_PASSWORD_FILE
 BRAIN_AUTH_SUPERUSER_IDS
+BRAIN_AGENT_MEMORY_SESSION_ID
 BRAIN_BACKUP_DIR
 BRAIN_COGNEE_ENABLED
-BRAIN_LOG_LEVEL
-BRAIN_OWNER_FULL_NAME
-BRAIN_OWNER_NAME
-BRAIN_PROFILE_CONTEXT_PATH
-BRAIN_PROVIDER_AUTH_PROFILES_PATH
-BRAIN_PROVIDER_AUTH_STATE_DIR
-BRAIN_SERVICE_NAME
-BRAIN_USER_ID
+BRAIN_COGNEE_AGENT_MEMORY_DATASET
+BRAIN_COGNEE_DATA_DATASET
+BRAIN_COGNEE_MEMORY_DATASET
+BRAIN_COGNEE_PALATE_DATASET
+BRAIN_COGNEE_RECALL_ENABLED
+BRAIN_COGNEE_RECALL_TOP_K
+BRAIN_COGNEE_SOURCES_DATASET
+BRAIN_TASTE_ENABLED
+BRAIN_TASTE_LLM_MODEL
+BRAIN_TASTE_LLM_REASONING_EFFORT
+BRAIN_TASTE_LLM_ROUTING_ENABLED
+BRAIN_TASTE_AUTO_ENRICH_ENABLED
+BRAIN_TASTE_CANONICAL_STORE
+BRAIN_TASTE_AUTO_WRITE_THRESHOLD
+BRAIN_TASTE_CONFIRMATION_THRESHOLD
+BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD
+BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD
+BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS
+BRAIN_TASTE_WEB_ENRICHMENT_ENABLED
 DATA_ROOT_DIRECTORY
 DB_HOST
 DB_NAME
@@ -266,11 +366,6 @@ GRAPH_DATABASE_PASSWORD
 GRAPH_DATABASE_PROVIDER
 GRAPH_DATABASE_URL
 GRAPH_DATABASE_USERNAME
-LLM_MAX_TOKENS
-LLM_TEMPERATURE
-OPENAI_AUTH_MODE
-OPENAI_CODEX_AUTH_PROFILE
-OPENAI_CODEX_BASE_URL
 SYSTEM_ROOT_DIRECTORY
 VECTOR_DATASET_DATABASE_HANDLER
 VECTOR_DB_HOST
@@ -281,13 +376,26 @@ VECTOR_DB_PORT
 VECTOR_DB_PROVIDER
 VECTOR_DB_URL
 VECTOR_DB_USERNAME
+BRAIN_OWNER_FULL_NAME
+BRAIN_OWNER_NAME
+BRAIN_PROFILE_CONTEXT_PATH
+BRAIN_PROVIDER_AUTH_PROFILES_PATH
+BRAIN_PROVIDER_AUTH_STATE_DIR
+BRAIN_SERVICE_NAME
+BRAIN_USER_ID
+BRAIN_LOG_LEVEL
+BRAIN_PROD_ROOT
+BRAIN_APP_WRITE_RATE_LIMIT_COUNT
+BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 ```
 
 The renderer also reads additional environment variables in staging and prod,
-including the broader `BRAIN_COGNEE_*` family and other deployment keys such as
-`BRAIN_LAUNCHD_LABEL`, `BRAIN_MCP_HOST`, `BRAIN_MCP_PORT`,
-`BRAIN_PROD_ROOT`, `BRAIN_PUBLIC_ADMIN_MCP_PATH`, `BRAIN_TASTE_*`, and the
-`BRAIN_SLACK_*` allow-list controls shown above.
+including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`,
+`BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`,
+`BRAIN_NEO4J_*` service and container labels, `BRAIN_SLACK_ENABLED`,
+`BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
+`BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls, and the
+`BRAIN_UI_*` runtime settings shown above.
 
 ## Local Backup
 

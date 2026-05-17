@@ -65,9 +65,9 @@ neo4j-counts.json
 ```
 
 Some directories are omitted when the corresponding source does not exist or is
-disabled. In current production, `VECTOR_DATASET_DATABASE_HANDLER=pgvector`, so
-`pgvector/` is the expected vector-store archive directory; `lancedb/` is used
-when LanceDB is the configured vector backend.
+disabled. Current production uses `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/`
+is the expected vector-store archive directory; `lancedb/` is used when
+LanceDB is the configured vector backend.
 
 ## Running A Backup
 
@@ -90,25 +90,23 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make backup
 Override the backup root for a one-off run:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
-  uv run python scripts/backup_stores.py \
-  --backup-dir /Volumes/xpg_usb4/prod/brain/shared/backups/manual
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --backup-dir /Volumes/xpg_usb4/prod/brain/shared/backups/manual
 ```
 
 Override the shared data root:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
-  uv run python scripts/backup_stores.py \
-  --data-dir /Volumes/xpg_usb4/prod/brain/shared/data
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --data-dir /Volumes/xpg_usb4/prod/brain/shared/data
 ```
 
 Skip Google Drive replication for a local test:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
-  uv run python scripts/backup_stores.py --skip-google-drive
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --skip-google-drive
 ```
+
+If `--skip-google-drive` is used while Google Drive backup is enabled, the
+manifest records that replication as skipped instead of verified.
 
 ## Manifest Contract
 
@@ -130,8 +128,9 @@ Every backup writes `manifest.json` with this shape:
 }
 ```
 
-`blockers` means the run finished but missed something operationally important.
-Production verification treats blockers as failures.
+`google_drive` is populated after the local manifest is written when Drive
+replication runs. `blockers` means the run finished but missed something
+operationally important. Production verification treats blockers as failures.
 
 ## SQLite Backups
 
@@ -183,21 +182,20 @@ If `DATA_ROOT_DIRECTORY` is missing, the manifest receives a blocker.
 
 ## Vector Store Backups
 
-The script backs up exactly one vector-store family based on configuration.
+The script backs up exactly one vector-store family based on `VECTOR_DB_PROVIDER`.
 
 ### pgvector Backup
 
-When `VECTOR_DATASET_DATABASE_HANDLER=pgvector` or `VECTOR_DB_PROVIDER=pgvector`,
-the backup script creates a Postgres dump of the configured vector database.
-The dump is written to:
+When `VECTOR_DB_PROVIDER=pgvector`, the backup script creates a Postgres dump
+of the configured vector database. The dump is written to:
 
 ```text
 pgvector/<db-name>.sql
 ```
 
-The dump is produced with `docker exec ... pg_dump` when Docker is available.
-The manifest entry records the dump method, database name, return code,
-captured stderr, and whether the dump was verified as non-empty.
+The dump is produced with `docker exec brain-prod-postgres pg_dump` when Docker
+is available. The manifest entry records the dump method, database name, return
+code, captured stderr, and whether the dump was verified as non-empty.
 
 If Docker is not available, the manifest receives a blocker and the pgvector
 backup does not complete.
@@ -238,8 +236,9 @@ secrets/secrets.tar.gz
 The archive mode is set to `0600`.
 
 If no secret files are found, the manifest receives a blocker. The deployed auth
-registry file is rendered by production deploys; do not assume it is captured by
-this backup unless you have added it to the backup inputs.
+registry file (`BRAIN_AUTH_USERS_FILE`) is rendered by production deploys; do not
+assume it is captured by this backup unless you have added it to the backup
+inputs.
 
 Production secret rendering and conflict rules are documented in
 [Production Secrets](production-secrets.md).
@@ -323,6 +322,9 @@ or:
 {"method": "rclone", "remote": "...", "verified": true}
 ```
 
+If `--skip-google-drive` is used, the manifest records the Drive step as
+skipped when Google Drive backup is enabled.
+
 Production verification requires Google Drive verification when
 `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`.
 
@@ -352,8 +354,7 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 Use this only when intentionally skipping backup validation:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
-  uv run python scripts/verify_mcp_production.py --skip-backups
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_mcp_production.py --skip-backups
 ```
 
 ## Restore Outline
@@ -370,8 +371,7 @@ Restore secrets:
 
 ```bash
 mkdir -p /Volumes/xpg_usb4/prod/brain/shared/secrets
-tar -xzf BACKUP_DIR/secrets/secrets.tar.gz \
-  -C /Volumes/xpg_usb4/prod/brain/shared/secrets
+tar -xzf BACKUP_DIR/secrets/secrets.tar.gz -C /Volumes/xpg_usb4/prod/brain/shared/secrets
 chmod 600 /Volumes/xpg_usb4/prod/brain/shared/secrets/*
 ```
 
@@ -409,4 +409,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: a4ca7afca10bb2f55654d933fb82e1874f767d71057d3277d14b248c7bcf50a2 -->
+<!-- brain-doc-source-hash: fac95be470505dd5db82db9b184e3b8de7ff76d9dd96565be8148e0618690314 -->

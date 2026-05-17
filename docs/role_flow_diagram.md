@@ -11,9 +11,11 @@ The fine-grained topology is useful for model evaluation and deployment planning
 - an optional taste-routing / taste-proposal model when `BRAIN_TASTE_ENABLED=true` and the taste branch is active
 - an optional broad memory compiler fallback when `BRAIN_LLM_ENABLED=true` and deterministic rule compilation is not already high-confidence
 
+`SlackMemoryAgent` and `compile_memory()` both load shared prompt-contract blocks from `src/memory_stack/agents/prompt_contracts.py` plus the role docs under `src/memory_stack/agents/shared/`.
+
 ## Current Runtime Flow
 
-Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, and `src/memory_stack/agents/shared/*`.
+Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_store.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, `src/memory_stack/agents/prompt_contracts.py`, and `src/memory_stack/agents/shared/*`.
 
 ```mermaid
 flowchart LR
@@ -25,13 +27,13 @@ flowchart LR
     USER[/User or client/]:::ext
     SLACK[/Slack events<br/>commands<br/>interactions/]:::ext
     HTTP[/HTTP or MCP tools/]:::ext
-    DB[(Brain DB)]:::store
+    DB[(Brain DB<br/>memory cards · sources · entities · relationships<br/>open loops · ingestion runs · recall logs · cognee sync)]:::store
     COGNEE[(Cognee projection)]:::store
 
     SLACK --> SAUTH[verify Slack signature<br/>allowlists]:::det
-    SAUTH --> SPARSE[parse Slack intent]:::det
-    SPARSE --> SREMEMBER[remember / confirm]:::det
-    SPARSE --> SREAD[recall / profile / open loops / debug]:::det
+    SAUTH --> SPARSE[normalize text<br/>parse Slack intent]:::det
+    SPARSE --> SREMEMBER[remember / confirm / cancel / correct]:::det
+    SPARSE --> SREAD[recall / profile / open loops / get_memory / review / undo_last / debug]:::det
 
     SREMEMBER --> SPROPOSE[proposal + guardrails<br/>dry run + confirmation]:::det
     SPROPOSE -. optional injected LLM .-> SLLM[Slack proposal model]:::opt
@@ -84,12 +86,15 @@ flowchart LR
 ## Runtime Notes
 
 1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
-2. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation.
-3. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when LLMs are enabled and the rule result is not already sufficient high-confidence.
-4. **Fine-grained extractor roles are not separate runtime calls.** Roles such as `atomic_card_extractor`, `entity_mention_extractor`, `relationship_extractor`, `open_loop_detector`, and `source_takeaway_extractor` are currently represented by deterministic rule compiler behavior, or by the optional broad compiler fallback.
-5. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships/open loops, then runs deterministic duplicate/conflict/supersession handling.
-6. **Recall is deterministic.** Recall mode inference, retrieval, status filtering, evidence construction, and answer rendering are code paths, not a fine-grained `recall_synthesizer` model call.
-7. **Eval and embeddings remain model-backed outside this flow.** `eval_judge` is used by eval tooling. Embedding models are used when vector/Cognee paths are enabled.
+2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text, splits intent, and dispatches commands such as `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `get_memory`, and `review`.
+3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`.
+4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when LLMs are enabled and the rule result is not already sufficient high-confidence.
+5. **Fine-grained extractor roles are not separate runtime calls.** Roles such as `atomic_card_extractor`, `entity_mention_extractor`, `relationship_extractor`, `open_loop_detector`, `table_policy_handler`, and `source_takeaway_extractor` are currently represented by deterministic rule compiler behavior, or by the optional broad compiler fallback.
+6. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships/open loops, then runs deterministic duplicate/conflict/supersession handling.
+7. **Recall is deterministic.** Recall mode inference, retrieval, status filtering, evidence construction, and answer rendering are code paths, not a fine-grained `recall_synthesizer` model call.
+8. **Background ingest helpers exist.** The service can queue ingestion work onto a thread pool and return a queued ingestion receipt before the background future completes.
+9. **Slack provenance belongs in request context metadata.** Team id, channel id, user id, thread timestamp, message timestamp, and permalink belong in Brain request context metadata, not in the memory statement itself.
+10. **Eval and embeddings remain model-backed outside this flow.** `eval_judge` is used by eval tooling. Embedding models are used when vector/Cognee paths are enabled.
 
 ## Runtime Role Status
 
@@ -110,6 +115,7 @@ The table below describes current runtime behavior, not eval-topology intent.
 | `open_loop_detector` | Deterministic rules |
 | `table_policy_handler` | Deterministic table handling |
 | `source_takeaway_extractor` | Deterministic source summary/card creation by default; optional broad compiler fallback |
+| `source_loader` | Deterministic source loading and fetch-status handling; not a normal model call |
 | `zero_tolerance_validator` | Deterministic hard gate before writes |
 | `entity_candidate_ranker` | Not a runtime model role; entity resolution is deterministic |
 | `entity_final_resolver` | Deterministic at current runtime; promoted to eval-first model role for future semantic final resolution |
@@ -329,6 +335,7 @@ flowchart TD
 5. **Ask/reject paths are first-class outputs, not errors.** Ambiguity, no-durable-value input, unsafe conflicts, and entity uncertainty should flow to user clarification or rejection rather than being forced into a write.
 6. **Recall has two safety layers.** Backend status visibility removes deleted/superseded records before `recall_relevance_filter`; the relevance role then prunes semantically irrelevant records before synthesis.
 7. **Out-of-band roles are separate.** `eval_judge` scores fixtures offline, and `embeddings` supplies vector/projection data. Neither owns normal memory write policy.
+8. **Prompt contracts mirror the runtime bundles.** The Slack intake flow and the compiler flow both share the prompt-contract blocks used by the tests, so the topology should stay aligned with `SLACK_RUNTIME_ROLES` and `MEMORY_COMPILER_RUNTIME_ROLES`.
 
 ### Fine-Grained Role Function Reference
 
@@ -346,6 +353,7 @@ flowchart TD
 | `relationship_extractor` | Extract explicit relationships attached to memory cards. | Candidate cards and entity mentions. | relationship edges such as daughter_of, twin_of, likes, works_at, associated_with. |
 | `open_loop_detector` | Detect questions, pending tasks, and follow-up loops. | Candidate cards/source text. | open_loop cards or no open loop. |
 | `table_policy_handler` | Decide how tabular input should be handled. | Table shape, row count, source context. | small table to extraction; large table/source-only handling; no-table pass-through. |
+| `source_loader` | Load source payloads and preserve fetch/status metadata. | URL, PDF, chat transcript, pasted text, metadata. | loaded source candidate, fetch-failure note, or raw source text for downstream extraction. |
 | `source_takeaway_extractor` | Extract source-level takeaways while preserving source-memory boundaries. | Loaded source text, fetch status, URL/PDF/chat/table metadata. | source summary/takeaways, source-only warning, or fetch-failure note. |
 | `entity_candidate_ranker` | Rank candidate entities only when evidence distinguishes one candidate. | Entity mention, candidate list, aliases, types, context. | ranked candidate/use_existing evidence; ambiguous/shared-name result; no candidate/new entity path. |
 | `entity_final_resolver` | Make the final entity action safely. | Mention, candidate ranking, aliases, IDs, contextual evidence. | use_existing, create_new, ambiguous, needs_clarification, needs_user_choice. |
@@ -365,7 +373,7 @@ flowchart TD
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | router             | intent_router                                                                                                                   | —                                                                         |
 | slack_intake       | source_classifier, durability_filter, memory_kind_classifier, repair_option_generator, commit_policy_decider, success_receipt_generator | zero_tolerance_validator                                                  |
-| memory_compiler    | atomic_card_extractor, entity_mention_extractor, relationship_extractor, open_loop_detector, table_policy_handler, source_takeaway_extractor | table_parser, source_loader, zero_tolerance_validator         |
+| memory_compiler    | atomic_card_extractor, entity_mention_extractor, relationship_extractor, open_loop_detector, table_policy_handler, source_takeaway_extractor | source_loader, zero_tolerance_validator                                  |
 | entity_resolution  | entity_mention_extractor, entity_candidate_ranker, entity_final_resolver                                                        | —                                                                         |
 | conflict_handling  | conflict_candidate_detector, conflict_explainer, conflict_policy_decider                                                        | —                                                                         |
 | recall             | recall_planner, recall_relevance_filter, recall_synthesizer                                                                     | —                                                                         |
