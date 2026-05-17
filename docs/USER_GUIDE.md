@@ -193,7 +193,7 @@ Context: this came from the May architecture review.
 Preserve chat/session context for handover:
 
 ```text
-Use brain_session to get the standard session id. If my client exposes an
+Use brain_session to get my user-scoped session id. If my client exposes an
 agent-memory workflow, use it to preserve this chat handover. Do not use
 brain_remember unless there is a separate durable user fact or decision.
 ```
@@ -554,4 +554,4 @@ Use Brain to recall the current project state for Slack intake and include any c
 - [Production Secrets](production-secrets.md) explains production secret
   handling.
 
-<!-- brain-doc-source-hash: a44e4e32154bc17b65e929a63c833052d17ae8da13ae80c25c775607d98a305e -->
+<!-- brain-doc-source-hash: 6db683991653cc528b18aae4b168ae846cf73828a9a35e4f1bae9510bc399239 -->

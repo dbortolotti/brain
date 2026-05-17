@@ -41,7 +41,8 @@ Load my preferences from Brain before answering.
 ```
 
 ```text
-Use Brain's agent-memory workflow for this chat with session_id portable_agent_session.
+Call brain_session, then use Brain's agent-memory workflow with the returned
+user-scoped session_id.
 ```
 
 ## What Brain Is Good For
@@ -79,7 +80,7 @@ Most agents should use these tools rather than lower-level storage details.
 
 | Tool | Use it for |
 | --- | --- |
-| `brain_session` | Resolve the configured Brain session identity agents should use for durable memory, bias/preferences, and portable agent-memory calls. |
+| `brain_session` | Resolve the active user's Brain session identity agents should use for durable memory, bias/preferences, and portable agent-memory calls. |
 | `brain_profile_context_remember` | Store stable user-profile context for answer tailoring. |
 | `brain_profile_context_list` | List stable user-profile context. |
 | `brain_profile_context_forget` | Remove one stable user-profile context item. |
@@ -277,18 +278,20 @@ with better context fit over the one with a higher generic score.
 
 ## Agent Memory
 
-Agent memory is for continuity between agent chats. It uses a dedicated Cognee
-dataset so it can be cleaned up separately if it becomes noisy.
+Agent memory is for continuity between agent chats. It uses a dedicated,
+user-scoped Cognee dataset so it can be cleaned up separately if it becomes
+noisy.
 
-The default session id is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. A
-common example used in this document is:
+The default session id base is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. A
+common base used in this document is:
 
 ```text
 portable_agent_session
 ```
 
-Agents do not have to hardcode that value. The `brain_session` tool resolves the
-configured default session and returns the related Brain workflow names.
+Agents must not hardcode that value. The `brain_session` tool derives the active
+user's session id from that base, resolves the matching user-scoped
+agent-memory dataset, and returns the related Brain workflow names.
 
 Minimal agent preprompt:
 
@@ -323,32 +326,33 @@ instructions into an agent. The protocol tells the agent to:
 Prompt to start a chat with portable memory:
 
 ```text
-Use Brain's agent-memory workflow with session_id portable_agent_session.
-Before answering, recall relevant memory from that session. During the chat,
-preserve chat-session context through brain_agent_memory without narrating tool
-calls. Use brain_remember only for durable user facts and decisions that should
-live in Brain's durable memory graph.
+Call brain_session, then use Brain's agent-memory workflow with the returned
+user-scoped session_id. Before answering, recall relevant memory from that
+session. During the chat, preserve chat-session context through
+brain_agent_memory without narrating tool calls. Use brain_remember only for
+durable user facts and decisions that should live in Brain's durable memory
+graph.
 ```
 
 Prompt to preserve the session at the end:
 
 ```text
-Record this chat using Brain's agent-memory workflow with session_id
-portable_agent_session. Store only durable decisions, project facts, and open
-questions.
+Call brain_session, then record this chat using Brain's agent-memory workflow
+with the returned user-scoped session_id. Store only durable decisions, project
+facts, and open questions.
 ```
 
 Useful tools:
 
 | Tool | Use it for |
 | --- | --- |
-| `brain_session` | Resolve the configured default session id and Brain workflow names. |
+| `brain_session` | Resolve the active user's default session id and Brain workflow names. |
 | `brain_profile_context_remember` | Store standing user-profile context returned by `brain_session`. |
 | `brain_profile_context_list` | List standing user-profile context. |
 | `brain_profile_context_forget` | Remove one standing user-profile context item by id. |
 | `brain_profile_context_sync` | Sync standing user-profile context to the configured projection. |
-| `brain_agent_memory` | Bridge one Cognee session into the dedicated agent-memory dataset. |
-| `brain_agent_memory_recall` | Search the dedicated agent-memory dataset. |
+| `brain_agent_memory` | Bridge the active user's Cognee session into their dedicated agent-memory dataset. |
+| `brain_agent_memory_recall` | Search the active user's dedicated agent-memory dataset. |
 | `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. |
 
 ## Configuration, Auth, Backups, and Release Notes
@@ -542,8 +546,8 @@ the retrieval backend.
 Run native improve on a dataset:
 
 ```text
-Use cognee_improve on dataset agent_memory with session_ids
-[portable_agent_session]. Run it in the background if supported.
+Call brain_session, then use cognee_improve on dataset agent_memory with the
+returned session_id. Run it in the background if supported.
 ```
 
 Manually sync Brain projections:
@@ -667,11 +671,12 @@ store it with brain_remember.
 Brain plus portable agent memory:
 
 ```text
-Use brain_agent_memory workflow with session_id portable_agent_session. Recall
-relevant session memory before answering. During the conversation, preserve
-handover-worthy chat context with brain_agent_memory; use brain_remember only
-for durable user facts, stable preferences, explicit constraints, durable
-decisions, open questions, research questions, and Palate/taste memories.
+Call brain_session, then use brain_agent_memory with the returned user-scoped
+session_id. Recall relevant session memory before answering. During the
+conversation, preserve handover-worthy chat context with brain_agent_memory; use
+brain_remember only for durable user facts, stable preferences, explicit
+constraints, durable decisions, open questions, research questions, and
+Palate/taste memories.
 ```
 
 Brain plus Palate:
@@ -744,9 +749,10 @@ in London. Prefer places I liked or wanted to try. Exclude avoid/disliked.
 ### Continue Work In A New Agent Chat
 
 ```text
-Use brain_agent_memory workflow with session_id portable_agent_session.
-Load my preferences from Brain. Then use brain_agent_memory_recall to recall
-what we decided about the Brain palate migration before proposing next steps.
+Call brain_session, then use brain_agent_memory with the returned user-scoped
+session_id. Load my preferences from Brain. Then use brain_agent_memory_recall
+to recall what we decided about the Brain palate migration before proposing next
+steps.
 ```
 
 ### End A Session Cleanly
@@ -791,7 +797,7 @@ If portable session memory becomes messy:
 
 ```text
 Use brain_agent_memory_recall to inspect what is being retrieved for this topic.
-If it is not useful, clear the dedicated agent-memory dataset with
+If it is not useful, clear your dedicated agent-memory dataset with
 brain_agent_memory_clear confirm=true.
 ```
 
@@ -824,4 +830,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: d3d4472de64cccd5e6a680aff77d7da455f09c10afc35770069ffd0ebc419bbe -->
+<!-- brain-doc-source-hash: a6ffe11d3967695bd62481b8c274ec03b2630cc6e567bcf3ff851fa3ac8dd650 -->

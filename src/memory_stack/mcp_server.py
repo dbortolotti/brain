@@ -79,7 +79,11 @@ from memory_stack.profile_context import (
     sync_profile_context,
 )
 from memory_stack.request_logging import RequestResponseLogMiddleware
-from memory_stack.session import brain_session_payload
+from memory_stack.session import (
+    agent_memory_dataset_for_user,
+    agent_memory_session_id_for_user,
+    brain_session_payload,
+)
 from memory_stack.taste.models import (
     TasteDescribeRequest,
     TasteLogDecisionRequest,
@@ -295,7 +299,7 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
         {
             "name": "brain_session",
             "description": (
-                "Resolve the configured Brain session identity agents should use "
+                "Resolve the active user's Brain session identity agents should use "
                 "for durable memory, bias/preferences, and portable agent-memory calls."
             ),
             "inputSchema": {
@@ -649,7 +653,10 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
         },
         {
             "name": "brain_agent_memory",
-            "description": "Bridge one Cognee agent session into the dedicated, removable agent-memory dataset.",
+            "description": (
+                "Bridge the active user's Brain session into their dedicated, removable "
+                "agent-memory dataset. Use the session_id returned by brain_session."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -1222,7 +1229,7 @@ def prompt_definitions() -> list[dict[str, Any]]:
                     "name": "session_id",
                     "description": (
                         "Brain agent-memory session ID to use consistently. Defaults to the "
-                        "configured Brain agent-memory session."
+                        "active user's resolved Brain agent-memory session."
                     ),
                     "required": False,
                 }
@@ -1245,9 +1252,11 @@ def prompt_definitions() -> list[dict[str, Any]]:
     ]
 
 
-def get_prompt(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+def get_prompt(name: str, arguments: dict[str, Any], active_settings: Settings | None = None) -> dict[str, Any]:
+    prompt_settings = active_settings or settings
     if name == "brain_agent_memory_protocol":
-        session_id = str(arguments.get("session_id") or settings.brain_agent_memory_session_id).strip()
+        default_session_id = agent_memory_session_id_for_user(prompt_settings)
+        session_id = str(arguments.get("session_id") or default_session_id).strip()
         if not session_id:
             raise ValueError("session_id must not be blank.")
         return prompt_response(
@@ -1255,7 +1264,7 @@ def get_prompt(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             text=agent_memory_protocol_prompt(session_id),
         )
     if name == "brain_bias_protocol":
-        profile_name = str(arguments.get("profile_name") or settings.brain_owner_name).strip()
+        profile_name = str(arguments.get("profile_name") or prompt_settings.brain_owner_name).strip()
         if not profile_name:
             raise ValueError("profile_name must not be blank.")
         return prompt_response(
@@ -2417,9 +2426,11 @@ async def handle_json_rpc(
             result = {"prompts": prompt_definitions()}
         elif method == "prompts/get":
             require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
+            prompt_settings = settings_for_request_context(request_context)
             result = get_prompt(
                 str(params.get("name", "")),
                 params.get("arguments") or {},
+                prompt_settings,
             )
         elif method == "resources/list":
             require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
@@ -2819,7 +2830,10 @@ async def call_tool_dispatch(
         session_id = request.session_id.strip()
         if not session_id:
             raise ValueError("session_id must not be blank.")
-        dataset = settings.brain_cognee_agent_memory_dataset
+        expected_session_id = agent_memory_session_id_for_user(settings)
+        if session_id != expected_session_id:
+            raise ValueError("session_id must match the active user's session_id returned by brain_session.")
+        dataset = agent_memory_dataset_for_user(settings)
         result = await improve_cognee(
             dataset=dataset,
             node_name=request.node_name,
@@ -2842,7 +2856,7 @@ async def call_tool_dispatch(
 
     if name == "brain_agent_memory_recall":
         request = BrainAgentMemoryRecallRequest.model_validate(arguments)
-        dataset = settings.brain_cognee_agent_memory_dataset
+        dataset = agent_memory_dataset_for_user(settings)
         result = await recall_text(
             query=request.query,
             dataset=dataset,
@@ -2862,7 +2876,7 @@ async def call_tool_dispatch(
         request = BrainAgentMemoryClearRequest.model_validate(arguments)
         if not request.confirm:
             raise ValueError("brain_agent_memory_clear requires confirm=true.")
-        dataset = settings.brain_cognee_agent_memory_dataset
+        dataset = agent_memory_dataset_for_user(settings)
         result = await delete_cognee_datasource(dataset, settings=settings)
         payload = {
             "dataset": "agent_memory",
@@ -3161,7 +3175,7 @@ def configured_cognee_dataset(dataset: str, active_settings: Settings) -> str:
         "sources": active_settings.brain_cognee_sources_dataset,
         "data": active_settings.brain_cognee_data_dataset,
         "palate": active_settings.brain_cognee_palate_dataset,
-        "agent_memory": active_settings.brain_cognee_agent_memory_dataset,
+        "agent_memory": agent_memory_dataset_for_user(active_settings),
     }
     if dataset not in mapping:
         raise ValueError(f"dataset must be one of: {', '.join(COGNEE_IMPROVE_DATASETS)}")

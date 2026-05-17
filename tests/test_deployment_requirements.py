@@ -254,7 +254,7 @@ def test_agent_memory_launchd_runs_nightly_at_3am() -> None:
     assert "scripts/brain_agent_memory.py" in plist
     assert "--env prod" in plist
     assert "--env-file /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env" in plist
-    assert "--session-id portable_agent_session" in plist
+    assert "--session-id portable_agent_session" not in plist
     assert "<key>StartCalendarInterval</key>" in plist
     assert "<key>Hour</key>" in plist
     assert "<integer>3</integer>" in plist

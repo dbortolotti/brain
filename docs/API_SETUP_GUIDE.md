@@ -298,7 +298,7 @@ curl -s http://127.0.0.1:8000/mcp \
 ```
 
 Call `brain_session` first when an agent needs Brain workflow names or the
-standard portable session id:
+active user's portable session id:
 
 ```bash
 curl -s http://127.0.0.1:8000/mcp \
@@ -337,7 +337,9 @@ curl -s http://127.0.0.1:8000/mcp \
 
 Use `brain_agent_memory`, not `brain_remember`, for chat-session handovers,
 conversation summaries, agent workflow learnings, and preserved chat context.
-Pass the `session_id` returned by `brain_session`.
+Pass the `session_id` returned by `brain_session`. Brain derives that session id
+and the backing Cognee agent-memory dataset from the authenticated user id, and
+`brain_agent_memory` rejects session ids that do not match the active user.
 
 If auth is enabled, add:
 
@@ -618,4 +620,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 563e4b25c733a46f04098c9e908f6012ec76f79249f116f8d3caa6938232e11e -->
+<!-- brain-doc-source-hash: f0d4156dd25b51b5a70ca3dd502bcd364edd187d5b9d5f41e9849c50cdf054e2 -->

@@ -26,8 +26,8 @@ The ChatGPT App surface includes exactly these tools:
 
 Read-only tools advertise and require `brain.memory.read`:
 
-- `brain_session` — resolves the configured Brain session identity for durable
-  memory, bias/preferences, and portable agent-memory calls.
+- `brain_session` — resolves the active user's Brain session identity for
+  durable memory, bias/preferences, and portable agent-memory calls.
 - `brain_recall`
 - `brain_profile_entity`
 - `brain_list_open_loops`
@@ -90,4 +90,4 @@ For a production release:
 3. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
 4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the tagged release.
 
-<!-- brain-doc-source-hash: d586b722c4e29b21ec3104baa5bfcd73c3498cb0def26155beb9681c92b1725b -->
+<!-- brain-doc-source-hash: da0764f414ef42092071302a16a75ddb27a068cd0a15ba539e0a522d61edf52e -->

@@ -1,16 +1,41 @@
 from __future__ import annotations
 
+import hashlib
 from typing import Any
 
+from memory_stack.brain_store import normalize_user_id
 from memory_stack.cfg import Settings
 from memory_stack.profile_context import list_profile_context
 
 
-def brain_session_payload(settings: Settings, *, user_id: str | None = None) -> dict[str, Any]:
-    session_id = settings.brain_agent_memory_session_id.strip()
-    if not session_id:
+USER_SCOPE_HASH_LENGTH = 16
+
+
+def user_scope_suffix(user_id: str | None) -> str:
+    active_user_id = normalize_user_id(user_id)
+    digest = hashlib.sha256(active_user_id.encode("utf-8")).hexdigest()[:USER_SCOPE_HASH_LENGTH]
+    return f"u_{digest}"
+
+
+def agent_memory_session_id_for_user(settings: Settings, *, user_id: str | None = None) -> str:
+    base_session_id = settings.brain_agent_memory_session_id.strip()
+    if not base_session_id:
         raise ValueError("BRAIN_AGENT_MEMORY_SESSION_ID must not be blank.")
-    active_user_id = user_id or settings.brain_user_id
+    active_user_id = normalize_user_id(user_id or settings.brain_user_id)
+    return f"{base_session_id}:{user_scope_suffix(active_user_id)}"
+
+
+def agent_memory_dataset_for_user(settings: Settings, *, user_id: str | None = None) -> str:
+    base_dataset = settings.brain_cognee_agent_memory_dataset.strip()
+    if not base_dataset:
+        raise ValueError("BRAIN_COGNEE_AGENT_MEMORY_DATASET must not be blank.")
+    active_user_id = normalize_user_id(user_id or settings.brain_user_id)
+    return f"{base_dataset}__{user_scope_suffix(active_user_id)}"
+
+
+def brain_session_payload(settings: Settings, *, user_id: str | None = None) -> dict[str, Any]:
+    active_user_id = normalize_user_id(user_id or settings.brain_user_id)
+    session_id = agent_memory_session_id_for_user(settings, user_id=active_user_id)
     profile_context_records = list_profile_context(settings, user_id=active_user_id)
     return {
         "user_id": active_user_id,
@@ -30,5 +55,5 @@ def brain_session_payload(settings: Settings, *, user_id: str | None = None) -> 
         "agent_memory_recall_tool": "brain_agent_memory_recall",
         "agent_memory_clear_tool": "brain_agent_memory_clear",
         "agent_memory_dataset": "agent_memory",
-        "resolved_agent_memory_dataset": settings.brain_cognee_agent_memory_dataset,
+        "resolved_agent_memory_dataset": agent_memory_dataset_for_user(settings, user_id=active_user_id),
     }

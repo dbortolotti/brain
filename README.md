@@ -414,6 +414,8 @@ Cognee projection settings:
 - `DB_PROVIDER=postgres`
 - `ENABLE_BACKEND_ACCESS_CONTROL=false`
 
+`BRAIN_AGENT_MEMORY_SESSION_ID` and `BRAIN_COGNEE_AGENT_MEMORY_DATASET` are base names. At runtime, authenticated users receive a derived session id and Cognee agent-memory dataset scoped to their Brain user id, so one user cannot recall or improve another user's chat-session memory.
+
 Brain defaults Cognee's rebuildable projection to Postgres/pgvector for vector storage and Postgres for Cognee metadata. The configured Postgres role must be able to create the `vector` extension; with Cognee's pgvector dataset handler it also needs permission to create per-dataset databases.
 
 Brain Taste settings:
@@ -487,4 +489,4 @@ uv run brain models auth login --provider openai-codex
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: e31fb5b836c44fa0794d693ea1bfac5d41cae6d4482fac08953b9a74630f0c17 -->
+<!-- brain-doc-source-hash: d38e141293ddbb464408b90b646f0b64f1c0742ed8628f5ee4d671761f13027d -->

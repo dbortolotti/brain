@@ -17,6 +17,7 @@ from memory_stack import mcp_server
 from memory_stack import brain_service
 from memory_stack.oauth import BrainOAuthProvider
 from memory_stack.request_logging import RequestResponseLogMiddleware, redact_text, redact_url
+from memory_stack.session import agent_memory_dataset_for_user, agent_memory_session_id_for_user
 
 
 def test_healthz() -> None:
@@ -582,7 +583,7 @@ def test_palate_describe_tool_description_covers_read_only_restaurant_requests()
 
 def test_brain_session_returns_configured_identity(tmp_path) -> None:
     previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
+    active_settings = Settings(
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
         brain_owner_full_name="Daniele Bortolotti",
         brain_owner_name="Daniele",
@@ -590,6 +591,7 @@ def test_brain_session_returns_configured_identity(tmp_path) -> None:
         brain_agent_memory_session_id="portable_agent_session",
         brain_cognee_agent_memory_dataset="agent_memory_test",
     )
+    mcp_server.settings = active_settings
     try:
         client = TestClient(app, base_url="https://testserver")
         response = client.post(
@@ -606,13 +608,13 @@ def test_brain_session_returns_configured_identity(tmp_path) -> None:
 
     assert response.status_code == 200
     payload = response.json()["result"]["structuredContent"]
-    assert payload["session_id"] == "portable_agent_session"
+    assert payload["session_id"] == agent_memory_session_id_for_user(active_settings)
     assert payload["profile_name"] == "Daniele"
     assert payload["profile_full_name"] == "Daniele Bortolotti"
     assert payload["profile_context"] == []
     assert payload["bias_prompt"] == "brain_bias_protocol"
     assert payload["agent_memory_workflow"] == "brain_agent_memory"
-    assert payload["resolved_agent_memory_dataset"] == "agent_memory_test"
+    assert payload["resolved_agent_memory_dataset"] == agent_memory_dataset_for_user(active_settings)
 
 
 def test_profile_context_tools_update_brain_session(tmp_path) -> None:
@@ -808,10 +810,13 @@ def test_brain_agent_memory_uses_single_session_and_dedicated_dataset(tmp_path, 
 
     monkeypatch.setattr(mcp_server, "improve_cognee", fake_improve_cognee)
     previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
+    active_settings = Settings(
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
         brain_cognee_agent_memory_dataset="agent_memory_test",
     )
+    mcp_server.settings = active_settings
+    session_id = agent_memory_session_id_for_user(active_settings)
+    resolved_dataset = agent_memory_dataset_for_user(active_settings)
     try:
         client = TestClient(app)
         response = client.post(
@@ -823,7 +828,22 @@ def test_brain_agent_memory_uses_single_session_and_dedicated_dataset(tmp_path, 
                 "params": {
                     "name": "brain_agent_memory",
                     "arguments": {
-                        "session_id": "session-1",
+                        "session_id": session_id,
+                        "node_name": ["project-x"],
+                    },
+                },
+            },
+        )
+        rejected = client.post(
+            "/admin/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_agent_memory",
+                    "arguments": {
+                        "session_id": "portable_agent_session:u_not_this_user",
                         "node_name": ["project-x"],
                     },
                 },
@@ -834,11 +854,14 @@ def test_brain_agent_memory_uses_single_session_and_dedicated_dataset(tmp_path, 
 
     assert response.status_code == 200
     payload = response.json()["result"]["structuredContent"]
-    assert payload["session_id"] == "session-1"
-    assert payload["resolved_dataset"] == "agent_memory_test"
-    assert calls[0]["dataset"] == "agent_memory_test"
-    assert calls[0]["session_ids"] == ["session-1"]
+    assert payload["session_id"] == session_id
+    assert payload["resolved_dataset"] == resolved_dataset
+    assert calls[0]["dataset"] == resolved_dataset
+    assert calls[0]["session_ids"] == [session_id]
     assert calls[0]["node_name"] == ["project-x"]
+    assert rejected.status_code == 200
+    assert "active user's session_id" in rejected.json()["error"]["message"]
+    assert len(calls) == 1
 
 
 def test_brain_agent_memory_recall_uses_dedicated_dataset(tmp_path, monkeypatch) -> None:
@@ -850,10 +873,12 @@ def test_brain_agent_memory_recall_uses_dedicated_dataset(tmp_path, monkeypatch)
 
     monkeypatch.setattr(mcp_server, "recall_text", fake_recall_text)
     previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
+    active_settings = Settings(
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
         brain_cognee_agent_memory_dataset="agent_memory_test",
     )
+    mcp_server.settings = active_settings
+    resolved_dataset = agent_memory_dataset_for_user(active_settings)
     try:
         client = TestClient(app)
         response = client.post(
@@ -873,9 +898,9 @@ def test_brain_agent_memory_recall_uses_dedicated_dataset(tmp_path, monkeypatch)
 
     assert response.status_code == 200
     payload = response.json()["result"]["structuredContent"]
-    assert payload["resolved_dataset"] == "agent_memory_test"
+    assert payload["resolved_dataset"] == resolved_dataset
     assert payload["result"] == [{"text": "remembered agent context"}]
-    assert calls[0]["dataset"] == "agent_memory_test"
+    assert calls[0]["dataset"] == resolved_dataset
     assert calls[0]["search_type"] == "GRAPH_COMPLETION"
 
 
@@ -888,10 +913,12 @@ def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -
 
     monkeypatch.setattr(mcp_server, "delete_cognee_datasource", fake_delete_datasource)
     previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
+    active_settings = Settings(
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
         brain_cognee_agent_memory_dataset="agent_memory_test",
     )
+    mcp_server.settings = active_settings
+    resolved_dataset = agent_memory_dataset_for_user(active_settings)
     try:
         client = TestClient(app)
         rejected = client.post(
@@ -924,7 +951,7 @@ def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -
     assert rejected.status_code == 200
     assert "confirm=true" in rejected.json()["error"]["message"]
     assert accepted.status_code == 200
-    assert calls[0]["datasource"] == "agent_memory_test"
+    assert calls[0]["datasource"] == resolved_dataset
 
 
 def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
@@ -1017,7 +1044,8 @@ def test_agent_memory_protocol_prompt_defaults_to_portable_session() -> None:
 
     assert response.status_code == 200
     text = response.json()["result"]["messages"][0]["content"]["text"]
-    assert 'Use session_id="portable_agent_session" consistently' in text
+    expected_session_id = agent_memory_session_id_for_user(mcp_server.settings)
+    assert f'Use session_id="{expected_session_id}" consistently' in text
 
 
 def test_bias_protocol_prompt_can_be_inserted_with_profile_name() -> None:
@@ -1496,11 +1524,7 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
         )
 
     assert session_response.status_code == 200
-    assert session_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
-    assert profile_response.status_code == 200
-    assert profile_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
-    assert http_response.status_code == 200
-
+    session_payload = session_response.json()["result"]["structuredContent"]
     user_b_settings = Settings(
         brain_database_url=db_url,
         brain_user_id="user_b",
@@ -1511,6 +1535,15 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
         brain_user_id="default",
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
+    assert session_payload["user_id"] == "user_b"
+    assert session_payload["session_id"] == agent_memory_session_id_for_user(user_b_settings)
+    assert session_payload["resolved_agent_memory_dataset"] == agent_memory_dataset_for_user(user_b_settings)
+    assert session_payload["session_id"] != agent_memory_session_id_for_user(default_settings)
+    assert session_payload["resolved_agent_memory_dataset"] != agent_memory_dataset_for_user(default_settings)
+    assert profile_response.status_code == 200
+    assert profile_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
+    assert http_response.status_code == 200
+
     assert BrainStore(user_b_settings).search_memory("tenant scoped coffee")
     assert BrainStore(user_b_settings).search_memory("tenant scoped profile context")
     assert BrainStore(default_settings).search_memory("tenant scoped coffee") == []
