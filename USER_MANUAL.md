@@ -2,13 +2,13 @@
 
 Brain is a personal memory, taste, and portable agent-memory system for agents.
 
-Use Brain when you want an agent to remember durable facts, decisions, preferences, project state, open loops, source material, standing profile context, palate/taste signals, or chat-session continuity. Use Cognee-backed agent memory when you want continuity between agent chats. Use Palate when the memory is about taste: wine, restaurants, media, music, cigars, experiences, and other supported preference categories.
+Use Brain when you want an agent to remember durable facts, decisions, preferences, project state, open loops, research questions, source material, standing profile context, palate or taste signals, or chat-session continuity. Use Cognee-backed agent memory when you want continuity between agent chats and a dedicated portable session memory. Use Palate when the memory is about taste: wine, restaurants, media, music, cigars, experiences, and other supported preference categories.
 
 The practical rule is simple:
 
-- Brain owns memory policy, durable preferences, cleanup, ranking, and palate decisions.
-- Cognee owns semantic recall and session-memory retrieval.
-- Palate owns taste normalization, enrichment, and recommendation ranking.
+- Brain owns memory policy, durable preferences, cleanup, ranking policy, and palate decisions.
+- Cognee owns semantic recall and rebuildable projections.
+- Palate owns taste normalization, enrichment, recommendation ranking, and feedback on taste choices.
 - Agent memory is a dedicated user-scoped Cognee dataset for chat-session continuity; it is not the canonical store for everything.
 
 ## Quick Start
@@ -47,9 +47,10 @@ Good memories:
 
 - Daniele prefers short answers unless implementation detail is needed.
 - The Brain production and dev services run on the same host and must use separate ports.
-- We decided palate-approved records should live primarily in Cognee DataPoints.
+- We decided Brain keeps policy and ranking logic while Cognee keeps rebuildable projections and retrieval.
 - Sam recommended Chateau Musar 2016 and Daniele wants to try it.
 - Standing profile context for answer tailoring, such as a stable name, background, work context, or communication need.
+- Durable project facts, decisions, constraints, open questions, and research questions.
 
 Poor memories:
 
@@ -63,38 +64,38 @@ Poor memories:
 
 ## Core MCP Tools
 
-Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal/admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset.
+Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset.
 
 Most agents should use these tools rather than lower-level storage details.
 
 | Tool | Use it for |
 | --- | --- |
-| `brain_session` | Resolve the active user's Brain session identity and user-scoped session_id for durable memory and portable agent-memory calls. Available on ChatGPT app and internal/admin surfaces. |
-| `brain_profile_context_remember` | Store stable user-profile context for answer tailoring. Available on ChatGPT app and internal/admin surfaces. |
-| `brain_profile_context_list` | List stable user-profile context. Available on ChatGPT app and internal/admin surfaces. |
-| `brain_profile_context_forget` | Remove one stable user-profile context item. Available on ChatGPT app and internal/admin surfaces. |
-| `brain_app_data_controls` | Inspect app data controls and related dashboard state. Available on ChatGPT app and internal/admin surfaces. |
+| `brain_session` | Resolve the active user's Brain session identity and user-scoped session_id for durable memory and portable agent-memory calls. Available on ChatGPT app and internal or admin surfaces. |
+| `brain_profile_context_remember` | Store stable user-profile context for answer tailoring. Available on ChatGPT app and internal or admin surfaces. |
+| `brain_profile_context_list` | List stable user-profile context. Available on ChatGPT app and internal or admin surfaces. |
+| `brain_profile_context_forget` | Remove one stable user-profile context item. Available on ChatGPT app and internal or admin surfaces. |
+| `brain_app_data_controls` | Inspect app data controls and related dashboard state. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_remember` | Store a durable memory, fact, preference, decision, open question, research question, or short note. |
 | `brain_ingest_source` | Store longer source material and optionally extract memories. |
 | `brain_recall` | Answer a memory query with evidence. |
 | `brain_profile_entity` | Build a profile for a person, project, place, or other entity. |
 | `brain_list_open_loops` | List open questions, reminders, and parked research threads. |
 | `brain_get_memory` | Read one memory card by id. |
-| `brain_get_source` | Read source metadata and optionally source text. Internal/admin only. |
+| `brain_get_source` | Read source metadata and optionally source text. Internal or admin only. |
 | `brain_review_recent` | Review recent writes and ingestion runs. |
 | `brain_undo_last` | Undo the latest ingestion run by soft-deleting its objects. |
-| `brain_forget` | Soft-delete or, with confirmation, hard-delete a Brain object. Internal/admin only. |
-| `brain_resolve_conflict` | Resolve contradictions or duplicates between memories. Internal/admin only. |
-| `brain_merge_entities` | Merge duplicate entities after confirmation. Internal/admin only. |
+| `brain_forget` | Soft-delete or, with confirmation, hard-delete a Brain object. Internal or admin only. |
+| `brain_resolve_conflict` | Resolve contradictions or duplicates between memories. Internal or admin only. |
+| `brain_merge_entities` | Merge duplicate entities after confirmation. Internal or admin only. |
 
 Maintenance tools:
 
 | Tool | Use it for |
 | --- | --- |
-| `brain_profile_context_sync` | Sync standing profile context to the configured projection. Internal/admin only. |
-| `brain_sync_cognee` | Manually sync pending Brain projections to Cognee. Internal/admin only. |
-| `brain_rebuild_cognee` | Mark Cognee projections stale so they can be rebuilt. Internal/admin only. |
-| `cognee_improve` | Run Cognee native improve on a configured dataset. Internal/admin only. |
+| `brain_profile_context_sync` | Sync standing profile context to the configured projection. Internal or admin only. |
+| `brain_sync_cognee` | Manually sync pending Brain projections to Cognee. Internal or admin only. |
+| `brain_rebuild_cognee` | Mark Cognee projections stale so they can be rebuilt. Internal or admin only. |
+| `cognee_improve` | Run Cognee native improve on a configured dataset. Internal or admin only. |
 
 Normal users rarely need maintenance tools. Use them when operating the system, debugging projections, or intentionally improving a Cognee dataset.
 
@@ -107,6 +108,7 @@ Brain also exposes HTTP endpoints and browser pages. Use them when you are not t
 - UI pages: `/app`, `/app-assets/{asset_name}`, `/app/oauth/callback`, `/user`, `/admin`, `/privacy`, `/support`, `/terms`
 - Memory endpoints: `/memory/remember`, `/memory/ingest_source`, `/memory/recall`, `/memory/profile_entity`, `/memory/open_loops`, `/memory/{memory_id}`, `/memory/review_recent`, `/memory/undo_last`, `/memory/forget`, `/memory/resolve_conflict`, `/memory/sync_cognee`, `/memory/rebuild_cognee`, `/memory/merge_entities`
 - Datasource endpoints: `/datasources`, `/create_datasource`, `/delete_datasource`, `/list_datasources`, `/datasources/{datasource}`, `/delete_datasource/{datasource}`
+- Cognee UI proxy routes: `/cognee`, `/cognee-api/{path:path}`, `/cognee-login`, `/cognee-logout`, `/ui`, `/ui-api/{path:path}`, `/ui-login`, `/ui-logout`, `/admin/cognee`, `/admin/cognee-api/{path:path}`, `/admin/cognee/{path:path}`
 - The MCP catch-all route is `/{path:path}`
 
 The browser dashboard ships with `index.html`, `privacy.html`, `support.html`, and `terms.html`.
@@ -117,25 +119,25 @@ The dashboard surfaces Review, Recall, Remember, Profile, Prompt, Data Controls,
 
 Palate is Brain's taste layer. It normalizes messy user input into structured items, enriches those items, stores taste signals, and ranks recommendations.
 
-The ChatGPT app surface exposes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. The internal/admin surface additionally exposes `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
+The ChatGPT app surface exposes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. The internal or admin surface additionally exposes `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
 
 | Tool | Use it for |
 | --- | --- |
 | `brain_palate_describe_item` | Normalize and enrich an item without storing it. |
-| `brain_palate_remember` | Store an approved palate item and its signals. Internal/admin only. |
+| `brain_palate_remember` | Store an approved palate item and its signals. Internal or admin only. |
 | `brain_palate_query` | Rank stored palate records for a recommendation query. |
 | `brain_palate_evaluate_options` | Rank only the options supplied by the user. |
-| `brain_palate_log_decision` | Record which recommendation was chosen. Internal/admin only. |
+| `brain_palate_log_decision` | Record which recommendation was chosen. Internal or admin only. |
 | `brain_palate_confirm` | Confirm a pending palate proposal. |
 | `brain_palate_cancel` | Cancel a pending palate proposal. |
 | `brain_palate_correct_proposal` | Correct a pending palate proposal before storing it. |
-| `brain_palate_refresh_enrichment` | Refresh enrichment for one stored palate item. Internal/admin only. |
+| `brain_palate_refresh_enrichment` | Refresh enrichment for one stored palate item. Internal or admin only. |
 
 Palate is best for:
 
 - Wine: producers, vintages, regions, grapes, style, oak, body, acidity, drinking windows, and personal signals.
 - Restaurants: cuisine, city, price, occasion, atmosphere, service, and personal fit.
-- Media: films, series, books, music, podcasts, and watch/listen/read signals.
+- Media: films, series, books, music, podcasts, and watch, listen, or read signals.
 - Cigars and experiences: structured preferences, dislikes, and contexts.
 
 ## Palate Examples
@@ -223,7 +225,7 @@ A good recommendation query should include:
 
 - The category: wine, restaurant, movie, music, cigar, experience.
 - The desired attributes: oaky, restrained, high-acid, casual, serious, low-intervention, classic, celebratory.
-- The user's signal: wanted to try, liked, tried, avoid, disliked, recommended by someone.
+- The user's signal: wanted to try, liked, tried, avoid, disliked, recommended by someone, high rating.
 - The context: dinner, gift, date night, solo watching, group meal, budget, location.
 
 Good prompt:
@@ -244,10 +246,11 @@ What wine should I drink?
 Good ranking instructions for an agent:
 
 ```text
-Before ranking, use Brain Palate recall/query rather than guessing from the
-current chat. Treat avoid and disliked as hard exclusions. Treat wanted_to_try
-and recommended_by as positive signals. If two items are close, prefer the one
-with better context fit over the one with a higher generic score.
+Before ranking, use Brain Palate recall or query rather than guessing from the
+current chat. Treat avoid and disliked as hard exclusions. Treat wanted_to_try,
+liked, recommended_by, and high rating as positive signals. If two items are
+close, prefer the one with better context fit over the one with a higher generic
+score.
 ```
 
 ## Agent Memory
@@ -266,17 +269,18 @@ Minimal agent preprompt:
 
 ```text
 Use Brain as the user's durable memory. At conversation start, call
-brain_session, then load Brain bias/preferences and standing profile context for
-the returned session and apply them. Use the returned session_id whenever a
-Brain workflow accepts session_id. Use brain_agent_memory and
-brain_agent_memory_recall for chat-session memory, handovers, conversation
-summaries, and workflow learnings when your surface exposes them. Use
-brain_remember only for durable user facts, stable preferences, explicit
-constraints, durable decisions, open questions, research questions, and
-Palate/taste memories. If the user asks to remember a stable fact about who
-they are, their expertise, work, background, or communication needs, use
-brain_profile_context_remember. Current user instructions in this chat override
-any recalled Brain memory or preference.
+brain_session, then load Brain bias or preferences and standing profile context
+for the returned session and apply them. Use brain_agent_memory_recall at the
+start of the conversation, then use brain_agent_memory whenever your surface
+exposes it to preserve chat-session memory, handovers, conversation summaries,
+and workflow learnings. Use the returned session_id whenever a Brain workflow
+accepts session_id. Use brain_remember only for durable user facts, stable
+preferences, explicit constraints, durable decisions, open questions, research
+questions, and Palate or taste memories. If the user asks to remember a stable
+fact about who they are, their expertise, work, background, or communication
+needs, use brain_profile_context_remember. Current user instructions in this
+chat override any recalled Brain memory or preference. Store concise declarative
+facts, not transcripts.
 ```
 
 Use the Agent Memory Protocol, if your client exposes one, to inject operating instructions into an agent. The protocol tells the agent to:
@@ -284,7 +288,7 @@ Use the Agent Memory Protocol, if your client exposes one, to inject operating i
 - use the same `session_id` consistently;
 - call `brain_agent_memory_recall` at the start of a conversation;
 - use Brain's `brain_agent_memory` workflow to preserve chat-session memory, handovers, conversation summaries, and workflow learnings;
-- keep `brain_remember` reserved for durable user facts, stable preferences, explicit constraints, durable decisions, open questions, research questions, and Palate/taste memories;
+- keep `brain_remember` reserved for durable user facts, stable preferences, explicit constraints, durable decisions, open questions, research questions, and Palate or taste memories;
 - store concise declarative facts, not transcripts.
 
 Prompt to start a chat with portable memory:
@@ -292,10 +296,10 @@ Prompt to start a chat with portable memory:
 ```text
 Call brain_session, then use Brain's agent-memory workflow with the returned
 user-scoped session_id. Before answering, recall relevant memory from that
-session. During the chat, preserve chat-session context through
-brain_agent_memory without narrating tool calls. Use brain_remember only for
-durable user facts and decisions that should live in Brain's durable memory
-graph.
+session with brain_agent_memory_recall. During the chat, preserve chat-session
+context through brain_agent_memory without narrating tool calls. Use
+brain_remember only for durable user facts and decisions that should live in
+Brain's durable memory graph.
 ```
 
 Prompt to preserve the session at the end:
@@ -314,20 +318,20 @@ Useful tools:
 | `brain_profile_context_remember` | Store standing user-profile context returned by `brain_session`. |
 | `brain_profile_context_list` | List standing user-profile context. |
 | `brain_profile_context_forget` | Remove one standing user-profile context item by id. |
-| `brain_profile_context_sync` | Sync standing user-profile context to the configured projection. Internal/admin only. |
-| `brain_agent_memory` | Bridge the active user's Cognee session into their dedicated agent-memory dataset. Internal/admin only. |
-| `brain_agent_memory_recall` | Search the active user's dedicated agent-memory dataset. Internal/admin only. |
-| `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. Internal/admin only. |
+| `brain_profile_context_sync` | Sync standing user-profile context to the configured projection. Internal or admin only. |
+| `brain_agent_memory` | Bridge the active user's Cognee session into their dedicated agent-memory dataset. Internal or admin only. |
+| `brain_agent_memory_recall` | Search the active user's dedicated agent-memory dataset. Internal or admin only. |
+| `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. Internal or admin only. |
 
 ## Configuration, Auth, Backups, and Release Notes
 
-Brain is configured through environment variables. Common groups include `BRAIN_AUTH_*`, `BRAIN_APP_MCP_PATH`, `BRAIN_ADMIN_MCP_PATH`, `BRAIN_AGENT_MEMORY_SESSION_ID`, `BRAIN_BACKUP_DIR`, `BRAIN_COGNEE_*`, `BRAIN_TASTE_*`, `BRAIN_UI_*`, `BRAIN_PUBLIC_*`, `BRAIN_REQUEST_LOG_*`, `BRAIN_ROUTING_LOG_*`, `BRAIN_SLACK_*`, `BRAIN_RELEASE_*`, `BRAIN_PROFILE_CONTEXT_PATH`, `BRAIN_PROVIDER_AUTH_*`, `BRAIN_HEALTH_PATH`, `BRAIN_LAUNCHD_LABEL`, `BRAIN_LOG_LEVEL`, `DB_*`, `GRAPH_DATABASE_*`, `VECTOR_DB_*`, `LLM_*`, `EMBEDDING_*`, `OPENAI_*`, `DATA_ROOT_DIRECTORY`, `SYSTEM_ROOT_DIRECTORY`, and `PROFILE`.
+Brain is configured through environment variables. Common groups include `ALLOW_EMBEDDING_DIMENSION_CHANGE`, `BRAIN_ADMIN_MCP_PATH`, `BRAIN_AGENT_MEMORY_SESSION_ID`, `BRAIN_APP_MCP_PATH`, `BRAIN_APP_WRITE_RATE_LIMIT_COUNT`, `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`, `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_ENABLED`, `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_REQUIRE_PKCE`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_USERS_FILE`, `BRAIN_BACKUP_DIR`, `BRAIN_COGNEE_AGENT_MEMORY_DATASET`, `BRAIN_COGNEE_DATA_DATASET`, `BRAIN_COGNEE_ENABLED`, `BRAIN_COGNEE_MEMORY_DATASET`, `BRAIN_COGNEE_PALATE_DATASET`, `BRAIN_COGNEE_RECALL_ENABLED`, `BRAIN_COGNEE_RECALL_TOP_K`, `BRAIN_COGNEE_SOURCES_DATASET`, `BRAIN_DATABASE_URL`, `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED`, `BRAIN_GOOGLE_DRIVE_FOLDER`, `BRAIN_GOOGLE_DRIVE_LOCAL_PATH`, `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LAUNCHD_LABEL`, `BRAIN_LLM_ENABLED`, `BRAIN_MCP_HOST`, `BRAIN_MCP_PATH`, `BRAIN_MCP_PORT`, `BRAIN_NEO4J_BREW_SERVICE`, `BRAIN_NEO4J_DOCKER_CONTAINER`, `BRAIN_NEO4J_DUMP_ENABLED`, `BRAIN_NEO4J_LAUNCHD_LABEL`, `BRAIN_NEO4J_STOP_FOR_DUMP`, `BRAIN_OWNER_FULL_NAME`, `BRAIN_OWNER_NAME`, `BRAIN_PROD_ROOT`, `BRAIN_PROFILE_CONTEXT_PATH`, `BRAIN_PROVIDER_AUTH_PROFILES_PATH`, `BRAIN_PROVIDER_AUTH_STATE_DIR`, `BRAIN_PUBLIC_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_UI_API_PATH`, `BRAIN_PUBLIC_UI_PATH`, `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, `BRAIN_RELEASE_VERSION`, `BRAIN_REQUEST_LOG_ENABLED`, `BRAIN_REQUEST_LOG_MAX_BODY_BYTES`, `BRAIN_REQUEST_LOG_PATH`, `BRAIN_REQUEST_LOG_RETENTION_DAYS`, `BRAIN_ROUTING_LOG_ENABLED`, `BRAIN_ROUTING_LOG_PATH`, `BRAIN_ROUTING_LOG_RETENTION_DAYS`, `BRAIN_SERVICE_NAME`, `BRAIN_SLACK_ADMIN_USER_IDS`, `BRAIN_SLACK_AGENT_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_ALLOWED_CHANNEL_IDS`, `BRAIN_SLACK_ALLOWED_TEAM_IDS`, `BRAIN_SLACK_ALLOWED_USER_IDS`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_SLACK_ENABLED`, `BRAIN_TASTE_AUTO_ENRICH_ENABLED`, `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `BRAIN_TASTE_CANONICAL_STORE`, `BRAIN_TASTE_CONFIRMATION_THRESHOLD`, `BRAIN_TASTE_ENABLED`, `BRAIN_TASTE_LLM_MODEL`, `BRAIN_TASTE_LLM_REASONING_EFFORT`, `BRAIN_TASTE_LLM_ROUTING_ENABLED`, `BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD`, `BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD`, `BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS`, `BRAIN_TASTE_WEB_ENRICHMENT_ENABLED`, `BRAIN_UI_BACKEND_PORT`, `BRAIN_UI_ENABLED`, `BRAIN_UI_FRONTEND_PORT`, `BRAIN_UI_HOST`, `BRAIN_UI_LAUNCHD_LABEL`, `BRAIN_UI_PROXY_PORT`, `BRAIN_UI_SESSION_SECONDS`, `BRAIN_USER_ID`, `CONFIG_ENV`, `DATA_ROOT_DIRECTORY`, `DB_HOST`, `DB_NAME`, `DB_PASSWORD`, `DB_PORT`, `DB_PROVIDER`, `DB_USERNAME`, `EMBEDDING_DIMENSIONS`, `EMBEDDING_MODEL`, `EMBEDDING_PROVIDER`, `ENABLE_BACKEND_ACCESS_CONTROL`, `GOOGLE_FREE_TIER`, `GRAPH_DATABASE_NAME`, `GRAPH_DATABASE_PASSWORD`, `GRAPH_DATABASE_PROVIDER`, `GRAPH_DATABASE_URL`, `GRAPH_DATABASE_USERNAME`, `LLM_MAX_TOKENS`, `LLM_MODEL`, `LLM_PROVIDER`, `LLM_TEMPERATURE`, `OPENAI_AUTH_MODE`, `OPENAI_CODEX_AUTH_PROFILE`, `OPENAI_CODEX_BASE_URL`, `PROFILE`, `SYSTEM_ROOT_DIRECTORY`, `VECTOR_DATASET_DATABASE_HANDLER`, `VECTOR_DB_HOST`, `VECTOR_DB_KEY`, `VECTOR_DB_NAME`, `VECTOR_DB_PASSWORD`, `VECTOR_DB_PORT`, `VECTOR_DB_PROVIDER`, `VECTOR_DB_URL`, `VECTOR_DB_USERNAME`.
 
 Key reminders:
 
 - `BRAIN_AGENT_MEMORY_SESSION_ID` sets the default agent-memory session id used by `brain_session`.
-- `BRAIN_APP_MCP_PATH`, `BRAIN_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, `BRAIN_PUBLIC_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_UI_PATH`, and `BRAIN_PUBLIC_UI_API_PATH` control the app, admin, and public MCP/UI paths.
-- `BRAIN_AUTH_ENABLED` controls auth; related settings include access token lifetime, refresh token lifetime, password file, users file, state path, scopes, PKCE, and `BRAIN_AUTH_SUPERUSER_IDS` in prod/staging.
+- `BRAIN_APP_MCP_PATH`, `BRAIN_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, `BRAIN_PUBLIC_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_UI_PATH`, and `BRAIN_PUBLIC_UI_API_PATH` control the app, admin, and public MCP or UI paths.
+- `BRAIN_AUTH_ENABLED` controls auth; related settings include access token lifetime, refresh token lifetime, password file, users file, state path, scopes, PKCE, and `BRAIN_AUTH_SUPERUSER_IDS` in prod and staging.
 - `BRAIN_COGNEE_*_DATASET` settings separate memory, data, sources, palate, and agent memory. `BRAIN_COGNEE_ENABLED`, `BRAIN_COGNEE_RECALL_ENABLED`, and `BRAIN_COGNEE_RECALL_TOP_K` control Cognee availability and recall.
 - `BRAIN_BACKUP_DIR` and Google Drive backup settings control backups.
 - `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, and `release.yml`, intentionally when promoting changes.
@@ -338,7 +342,7 @@ Never store secrets, passwords, API keys, OAuth tokens, or credentials in Brain.
 
 ## Bias And Preference Prompt
 
-Bias memory is for durable user preferences: answer length, formatting, engineering taste, naming conventions, default tools, and always/never instructions.
+Bias memory is for durable user preferences: answer length, formatting, engineering taste, naming conventions, default tools, and always or never instructions.
 
 Use the Bias Protocol when you want an agent to load and maintain those preferences.
 
@@ -467,8 +471,8 @@ Resolve a contradiction:
 
 ```text
 Use brain_resolve_conflict:
-The newer memory saying Palate approved records are canonical in Cognee
-should replace the older memory saying SQLite is canonical for palate.
+The newer memory saying Brain keeps policy and ranking logic should replace the
+older memory saying SQLite is canonical for palate.
 ```
 
 Merge duplicates:
@@ -523,8 +527,8 @@ Good:
 
 ```text
 Use Brain to remember this as a durable architecture decision:
-Approved palate items are stored as Cognee DataPoints; Brain keeps policy and
-ranking logic.
+Brain keeps policy and ranking logic; Cognee keeps rebuildable retrieval and
+portable agent-memory projections.
 ```
 
 Weak:
@@ -560,7 +564,7 @@ Good:
 
 ```text
 Use Brain Palate to recommend a restaurant for Friday in London.
-Prefer places I liked or wanted to try. Exclude avoid/disliked. Prioritize
+Prefer places I liked or wanted to try. Exclude avoid or disliked. Prioritize
 serious wine, relaxed atmosphere, and not too formal.
 ```
 
@@ -599,10 +603,10 @@ General Brain-aware agent:
 You have Brain MCP tools. At the start, use brain_recall for relevant project
 context if my request depends on prior decisions. Use brain_remember only for
 durable user facts, stable preferences, explicit constraints, durable decisions,
-Palate/taste memories, open questions, and research questions. Use brain_session
-plus brain_agent_memory for chat-session handovers and workflow continuity.
-Store one declarative sentence per fact. Do not store temporary scratch or
-transcripts.
+Palate or taste memories, open questions, and research questions. Use
+brain_session plus brain_agent_memory for chat-session handovers and workflow
+continuity. Store one declarative sentence per fact. Do not store temporary
+scratch or transcripts.
 ```
 
 Brain plus preferences:
@@ -618,17 +622,17 @@ Brain plus portable agent memory:
 ```text
 Call brain_session, then use brain_agent_memory with the returned user-scoped
 session_id. Recall relevant session memory before answering. During the
-conversation, preserve handover-worthy chat context with brain_agent_memory; use
-brain_remember only for durable user facts, stable preferences, explicit
+conversation, preserve handover-worthy chat context with brain_agent_memory;
+use brain_remember only for durable user facts, stable preferences, explicit
 constraints, durable decisions, open questions, research questions, and
-Palate/taste memories.
+Palate or taste memories.
 ```
 
 Brain plus Palate:
 
 ```text
 Use Brain Palate for taste-related memories and recommendations. Normalize and
-enrich items before storing. Treat avoid/disliked as hard exclusions. Treat
+enrich items before storing. Treat avoid or disliked as hard exclusions. Treat
 wanted_to_try, liked, high rating, and recommended_by as positive signals.
 After I choose an option, log the decision.
 ```
@@ -655,8 +659,8 @@ Palate recommendation agent:
 
 ```text
 Use Brain Palate to answer taste questions. If the user asks for a suggestion,
-retrieve candidate palate records, exclude avoid/disliked items, rank by fit to
-the query and user signals, and explain the top result briefly. If the user
+retrieve candidate palate records, exclude avoid or disliked items, rank by fit
+to the query and user signals, and explain the top result briefly. If the user
 chooses something, call brain_palate_log_decision.
 ```
 
@@ -688,7 +692,7 @@ I tried Noble Rot and liked it for serious but relaxed wine dinners in London.
 
 ```text
 Use Brain Palate to suggest a restaurant for a relaxed but serious wine dinner
-in London. Prefer places I liked or wanted to try. Exclude avoid/disliked.
+in London. Prefer places I liked or wanted to try. Exclude avoid or disliked.
 ```
 
 ### Continue Work In A New Agent Chat
@@ -771,4 +775,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: 98dd42701c3e596b2c48e77d292c8f14ce0ae6241bacf6adbc576de33d070302 -->
+<!-- brain-doc-source-hash: be05790fd8ebf8e4e0c6e56265047e9fc729a03062a07849bea8e8972dc7c0de -->

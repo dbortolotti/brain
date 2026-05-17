@@ -16,7 +16,7 @@ Use Brain and Palate for these day-to-day jobs:
 - Review or correct memory: `show recent writes`, `undo the last one`, or `actually, replace the old fact with...`
 - Save or rank taste-related preferences with Palate.
 
-Slack is the strictest interface. It dry-runs writes and asks for confirmation by default. An LLM client can use the same Brain tools directly, usually with more natural phrasing.
+Slack is the strictest interface. It may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
 ## Using Brain From Slack
 
@@ -120,7 +120,7 @@ Slack may ask for confirmation or clarification when a memory is ambiguous, sens
 
 The browser dashboard is for reviewing and managing your memory. It opens with a sign-in overlay and a session line that says Connect to review memory.
 
-The top bar links to User, Admin, and Cognee views.
+The dashboard is available at `/` and `/user`. The top bar links to User, Admin, and Cognee views.
 
 Main tabs:
 
@@ -136,13 +136,43 @@ Main tabs:
 
 Use Review before trusting a recall result. It is a safe place to inspect recent memory and open loops without changing data.
 
+## HTTP and Browser Surfaces
+
+Brain also exposes browser pages and HTTP endpoints directly.
+
+Useful browser pages:
+
+- `/` and `/user` — memory dashboard
+- `/admin` — admin dashboard
+- `/cognee` — user Cognee UI
+- `/cognee-login` — Cognee UI sign-in
+- `/privacy`, `/support`, `/terms`
+
+Useful memory endpoints:
+
+- `/memory/remember`
+- `/memory/ingest_source`
+- `/memory/recall`
+- `/memory/profile_entity`
+- `/memory/open_loops`
+- `/memory/{memory_id}`
+- `/memory/review_recent`
+- `/memory/undo_last`
+- `/memory/forget`
+- `/memory/resolve_conflict`
+- `/memory/sync_cognee`
+- `/memory/rebuild_cognee`
+- `/memory/merge_entities`
+
+Other common endpoints include `/healthz`, `/docs`, `/redoc`, and `/openapi.json`.
+
 ## Using Brain Through An LLM
 
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
 In the ChatGPT app surface, common tools include `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
 
-Tool availability varies by surface. The internal/admin surface also exposes tools such as `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
+Tool availability varies by surface. The internal/admin surface also exposes tools such as `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
 
 Save one durable memory:
 
@@ -502,6 +532,12 @@ Brain tries not to silently overwrite memories. Corrections should be explicit:
 
 When Brain detects a possible conflict, Slack may refuse to commit until you confirm whether to keep both facts, supersede the old fact, or clarify the subject.
 
+If you need to remove or revert data, prefer the safest available action:
+
+- `undo-last` reverts the latest ingestion run.
+- `forget` is available on internal/admin surfaces for soft-delete, and with confirmation can hard-delete a Brain object.
+- `resolve_conflict` is for choosing how to handle contradictions or duplicates between memories.
+
 ## Privacy And Safety
 
 Never ask Brain to store:
@@ -514,6 +550,27 @@ Never ask Brain to store:
 - full credential files
 
 Be careful with personal facts. Save them only when they are useful, appropriate, and allowed. Prefer attribution when a fact came from someone else.
+
+Do not use ordinary memory writes as a substitute for backup or release workflows. Production backups and production promotion are operator tasks handled separately from normal user memory editing.
+
+## Safe Review And Recovery
+
+Use Review before trusting a recall result.
+
+For safe review:
+
+- inspect Recent Cards and Open Loops first
+- click a memory card to inspect its contents and evidence
+- use `brain_get_memory` when you already have a memory id
+- use `brain_review_recent` before assuming a recall output is correct
+- use `undo-last` for the latest write when you need to reverse a mistake
+- use the browser Review tab when you want to inspect data without changing it
+
+For destructive operations, be careful:
+
+- `brain_forget` and `delete`-style actions are not the same as a normal correction
+- `brain_undo_last` only targets the latest ingestion run
+- deletion, conflict resolution, and rebuild workflows should be used deliberately and only when you understand the effect on stored memory and projections
 
 ## Quick Examples
 
@@ -562,4 +619,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: fb0caea0b5b72e4abaa3d41a0a27a86d90044b49c6f196dbdc16de6d4fbf46d4 -->
+<!-- brain-doc-source-hash: c1d4402db11cb3e56aa97aa3645e9f317c0b5c5412ba60f905e05594903cdf41 -->

@@ -185,21 +185,15 @@ configured improve.
 ## ChatGPT App Surface
 
 Use `/mcp` for a ChatGPT App or any user-facing client that should not see
-admin tools. In production its public URL is:
-
-```text
-https://brain.dceb.net/mcp
-```
+admin tools. In production the public app MCP URL is the configured public base
+URL plus `BRAIN_PUBLIC_MCP_PATH`.
 
 `/app/mcp` remains a compatibility alias for older clients. Public deployment
 URLs are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`,
 `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
-The browser dashboard is served by the same MCP process at:
-
-```text
-https://brain.dceb.net/
-```
+The browser dashboard is served by the same HTTP process at the configured
+public base URL.
 
 The curated app tool set is:
 
@@ -380,8 +374,7 @@ curl -s http://127.0.0.1:8000/mcp \
 Use `brain_agent_memory`, not `brain_remember`, for chat-session handovers,
 conversation summaries, agent workflow learnings, and preserved chat context.
 Pass the `session_id` returned by `brain_session`. Brain derives that session id
-and the backing Cognee agent-memory dataset from the authenticated user id, and
-`brain_agent_memory` rejects session ids that do not match the active user.
+and the backing Cognee agent-memory dataset from the authenticated user id.
 
 If auth is enabled, add:
 
@@ -664,4 +657,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 69c9f3880be6eb5ca3e0accef9bdba68bfc0e7a49b8b06ffcf55cce2ea30fb55 -->
+<!-- brain-doc-source-hash: 2ecb0ea9ca5bd4fe9bbc14e1c1133c8aa8b639c73d386dd64a0896b68f02f6d4 -->

@@ -1,6 +1,6 @@
 # Production Secrets
 
-The staging and production workflows run on the self-hosted `brain-prod` runner. The deployment model has three environments:
+The staging, production, and release workflows run on the self-hosted `brain-prod` runner. The deployment model has three environments:
 
 - `dev`: local developer runs.
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
@@ -113,8 +113,6 @@ environment's `shared/secrets/brain-auth-password` with a matching
 
 Deployment also configures `BRAIN_AUTH_USERS_FILE` under
 `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`.
-If the users file does not exist yet, deployment creates one with `default` as
-a root superuser and a regular user using the existing shared auth password.
 Auth-enabled Brain instances fail closed when the configured registry is
 missing. A superuser can create, edit, and delete user records from the
 dashboard User Admin tab without restarting the service.
@@ -141,6 +139,7 @@ The deployed auth and dashboard surfaces include these route families:
 /auth/session         session endpoint
 /api/session          session endpoint
 /app-assets/{asset_name}
+/apple-touch-icon.png
 /app/oauth/callback
 /create_datasource
 /datasources
@@ -214,7 +213,8 @@ BRAIN_AUTH_TOKEN
 `BRAIN_AUTH_PASSWORD` is written to each deployed environment's
 `shared/secrets/brain-auth-password`. The staging and production workflows also
 pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`. The renderer rejects empty
-or placeholder values for `OPENAI_API_KEY` and `BRAIN_AUTH_PASSWORD`.
+or placeholder values for `OPENAI_API_KEY` (``, `replace-me`, `sk-...`, `...`)
+and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
 
 ## Optional Taste Integration Secrets
 
@@ -345,7 +345,6 @@ BRAIN_TASTE_LLM_MODEL
 BRAIN_TASTE_LLM_REASONING_EFFORT
 BRAIN_TASTE_LLM_ROUTING_ENABLED
 BRAIN_TASTE_AUTO_ENRICH_ENABLED
-BRAIN_TASTE_CANONICAL_STORE
 BRAIN_TASTE_AUTO_WRITE_THRESHOLD
 BRAIN_TASTE_CONFIRMATION_THRESHOLD
 BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD

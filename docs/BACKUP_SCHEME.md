@@ -41,6 +41,7 @@ BRAIN_BACKUP_DIR=/Volumes/xpg_usb4/prod/brain/shared/backups
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true
 BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
 BRAIN_GOOGLE_DRIVE_LOCAL_PATH=
+BRAIN_GOOGLE_DRIVE_REMOTE=
 BRAIN_NEO4J_DUMP_ENABLED=false
 BRAIN_NEO4J_STOP_FOR_DUMP=false
 ```
@@ -129,8 +130,10 @@ Every backup writes `manifest.json` with this shape:
 ```
 
 `google_drive` is populated after the local manifest is written when Drive
-replication runs. `blockers` means the run finished but missed something
-operationally important. Production verification treats blockers as failures.
+replication runs. If `--skip-google-drive` is used while Google Drive backup is
+enabled, the manifest records `{"skipped": true}` for that step. `blockers`
+means the run finished but missed something operationally important. Production
+verification treats blockers as failures.
 
 ## SQLite Backups
 
@@ -233,8 +236,6 @@ The archive is written to:
 secrets/secrets.tar.gz
 ```
 
-The archive mode is set to `0600`.
-
 If no secret files are found, the manifest receives a blocker. The deployed auth
 registry file (`BRAIN_AUTH_USERS_FILE`) is rendered by production deploys; do not
 assume it is captured by this backup unless you have added it to the backup
@@ -303,7 +304,7 @@ The script copies the complete run directory to:
 $BRAIN_GOOGLE_DRIVE_LOCAL_PATH/$BRAIN_GOOGLE_DRIVE_FOLDER/YYYYMMDD_HHMMSS/
 ```
 
-If no local path is configured, the script uses `rclone`:
+If no local path is configured, the script uses `rclone` and targets:
 
 ```text
 $BRAIN_GOOGLE_DRIVE_REMOTE:$BRAIN_GOOGLE_DRIVE_FOLDER/YYYYMMDD_HHMMSS/
@@ -399,8 +400,8 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 
 ## Operating Rules
 
-- Run a backup before any destructive migration, production deploy, or manual
-  data repair.
+- Run a backup before any destructive migration, production deploy, production
+  promotion, or manual data repair.
 - Treat `manifest.json` as the source of truth for what was captured.
 - Do not rely on raw live Neo4j archives for restore.
 - Keep `ENV_FILE`, `BRAIN_AUTH_PASSWORD_FILE`, and `BRAIN_AUTH_STATE_PATH` in
@@ -409,4 +410,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: fac95be470505dd5db82db9b184e3b8de7ff76d9dd96565be8148e0618690314 -->
+<!-- brain-doc-source-hash: 9360f1f1b02b7e0a90e7edc83ce3d8cba177d6e14cd67af922df12c669b73779 -->

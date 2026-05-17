@@ -10,7 +10,16 @@ Ingestion timing for the Manetti corpus:
 
 The ingestion data strongly separates the candidates before answer quality is scored. The `gpt-5.4-mini` ingestion run completed in about 43 seconds. The `gpt-5.5` low-effort run took about 4.7 minutes, and the high-effort run took about 14.8 minutes. For this corpus, high effort is about 20x slower than `gpt-5.4-mini` ingestion.
 
-This benchmark sits alongside the repository's durable model-eval fixtures in `tests/model_eval_tests/`. That fixture set includes a balanced Manetti question bank (`tests/model_eval_tests/manetti_100_questions.json` and `tests/model_eval_tests/manetti_100_questions.md`) generated from `manetti_document.md`, plus an organic recall fixture (`tests/model_eval_tests/organic_recall_100_cases.json`) with 47 service-layer seed inserts and 100 recall cases balanced across difficulties 1 through 5. The live runner (`tests/model_eval_tests/run_model_eval.py`) creates a fresh dataset, ingests the full Manetti document followed by the ordered organic seed inserts, asks all 200 fixture questions, and scores every answer with a judge model.
+This benchmark sits alongside the repository's durable model-eval fixtures in `tests/model_eval_tests/`. That fixture set includes a balanced Manetti question bank (`tests/model_eval_tests/manetti_100_questions.json` and `tests/model_eval_tests/manetti_100_questions.md`) generated from `manetti_document.md`, plus an organic recall fixture (`tests/model_eval_tests/organic_recall_100_cases.json`) with 47 service-layer seed inserts and 100 recall cases balanced across difficulties 1 through 5. The fixture integrity test `tests/model_eval_tests/test_fixture_integrity.py` checks the JSON fixture shapes and the copied Manetti materials. The live runner (`tests/model_eval_tests/run_model_eval.py`) creates a fresh dataset, ingests the full Manetti document followed by the ordered organic seed inserts, asks all 200 fixture questions, and scores every answer with a judge model.
+
+Example:
+
+```bash
+uv run python tests/model_eval_tests/run_model_eval.py \
+  --judge-model gpt-5.5 \
+  --remember-model gpt-5.4-mini \
+  --recall-model gpt-5.5
+```
 
 ## Latest GPT-5.5 Retrieval Results
 
@@ -419,4 +428,4 @@ The current data does not justify `menotti-55-high` as a default. Its ingestion 
 2. Compare low-score clusters across the `gpt-5.5`, `gpt-5.5` low, and `gpt-5.4-mini` retrieval runs.
 3. Select the cheaper ingestion and retrieval combination unless the slower model clearly fixes structural and interpretive retrieval errors.
 
-<!-- brain-doc-source-hash: b90ffb925ab0f4a692868dc8f097dfeaeb757e033f4ac077d81a45f77ff5ed62 -->
+<!-- brain-doc-source-hash: 9babaccea4bb3b5570790f71c765a02d2648cee99918efdcde7a950baed8e0aa -->

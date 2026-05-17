@@ -212,7 +212,7 @@ Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, an
 
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a `Secure`, `HttpOnly`, `SameSite=Lax` cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
 
-The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; root users can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes, plus `/cognee-login`, `/cognee-logout`, `/ui-login`, and `/ui-logout`, are compatibility aliases.
+The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; root users can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes, plus `/cognee-api`, `/cognee-login`, `/cognee-logout`, `/ui-login`, and `/ui-logout`, are compatibility aliases.
 
 Public app support pages:
 
@@ -243,7 +243,7 @@ Routes:
 - `POST /slack/commands`
 - `POST /slack/interactions`
 
-The agent verifies Slack signatures, timestamp freshness, team/channel/user allowlists, and admin-only debug access before it touches Brain internals. Write requests use the same role contracts in `src/memory_stack/agents/` that the model eval harness tests, plus deterministic guardrails and a dry-run before commit. By default, Slack writes require confirmation.
+The agent verifies Slack signatures, timestamp freshness, team/channel/user allowlists, and admin-only debug access before it touches Brain internals. Write requests use the same role contracts in `src/memory_stack/agents/` that the model eval harness tests, plus deterministic guardrails. By default, Slack writes require confirmation.
 
 Supported Slack commands:
 
@@ -268,7 +268,7 @@ Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
-`.github/workflows/deploy-local-production.yml` remains available as a manual production deploy escape hatch. It is not triggered by pushes to `main`.
+`.github/workflows/deploy-local-production.yml` remains available as a manual production deploy escape hatch. It is not triggered by pushes to `main`; its workflow-dispatch run resolves a `prod-<12-char-sha>` build version.
 
 The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables before running `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
 
@@ -278,6 +278,10 @@ Workflow model:
 - `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
 - `.github/workflows/deploy-local-production.yml` is manual only and accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
+
+Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`. If the users file does not exist yet, deployment creates one with `default` as a root superuser and a regular user using the existing shared auth password. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
+
+GitHub Secrets and GitHub Variables are the source of truth; direct emergency edits to live config must be propagated back before the next deploy.
 
 ## Release Versioning
 
@@ -382,7 +386,7 @@ make test
 Equivalent commands:
 
 ```bash
-uv run ruff check src tests
+uv run ruff check .
 uv run pytest
 ```
 
@@ -453,14 +457,24 @@ Deployment, routing, auth-related settings worth calling out:
 - `BRAIN_AUTH_REQUIRE_PKCE`
 - `BRAIN_AUTH_SCOPES`
 - `BRAIN_AUTH_STATE_PATH`
-- `BRAIN_AUTH_SUPERUSER_IDS`
 - `BRAIN_AUTH_USERS_FILE`
 - `BRAIN_BACKUP_DIR`
-- `BRAIN_CONFIG_RENDER_SHA`
-- `BRAIN_CONFIG_RENDERED_AT`
-- `BRAIN_CONFIG_RENDER_SOURCE`
+- `BRAIN_COGNEE_AGENT_MEMORY_DATASET`
+- `BRAIN_COGNEE_DATA_DATASET`
+- `BRAIN_COGNEE_ENABLED`
+- `BRAIN_COGNEE_MEMORY_DATASET`
+- `BRAIN_COGNEE_PALATE_DATASET`
+- `BRAIN_COGNEE_RECALL_ENABLED`
+- `BRAIN_COGNEE_RECALL_TOP_K`
+- `BRAIN_COGNEE_SOURCES_DATASET`
+- `BRAIN_DATABASE_URL`
+- `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED`
+- `BRAIN_GOOGLE_DRIVE_FOLDER`
+- `BRAIN_GOOGLE_DRIVE_LOCAL_PATH`
+- `BRAIN_GOOGLE_DRIVE_REMOTE`
 - `BRAIN_HEALTH_PATH`
 - `BRAIN_LAUNCHD_LABEL`
+- `BRAIN_LLM_ENABLED`
 - `BRAIN_MCP_HOST`
 - `BRAIN_MCP_PATH`
 - `BRAIN_MCP_PORT`
@@ -570,7 +584,14 @@ Brain data is scoped by `BRAIN_USER_ID`. OAuth deployments must set `BRAIN_AUTH_
 
 Production auth also relies on `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_REQUIRE_PKCE`, and `BRAIN_AUTH_SCOPES`.
 
-LLM compiler settings, disabled by default. When enabled, it uses the same fixed runtime LLM as the rest of Brain/Cognee: `openai:gpt-5.4-mini`.
+Google Drive backup settings:
+
+- `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED`
+- `BRAIN_GOOGLE_DRIVE_FOLDER`
+- `BRAIN_GOOGLE_DRIVE_LOCAL_PATH`
+- `BRAIN_GOOGLE_DRIVE_REMOTE`
+
+LLM compiler settings are disabled by default. When enabled, it uses the same fixed runtime LLM as the rest of Brain/Cognee:
 
 - `BRAIN_LLM_ENABLED=false`
 - `LLM_PROVIDER`
@@ -674,4 +695,4 @@ uv run brain models auth login --provider openai-codex
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 6c955e1aadc6f64c46790fd3a960e158c63ee1f1d17d31703f8e5eae9bbd868e -->
+<!-- brain-doc-source-hash: de642c95c8e86bedfb0a4baf5b55564cce607aa9b9430e7b9ffe85c4fbe455dd -->

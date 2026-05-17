@@ -1,6 +1,6 @@
 # ChatGPT App Hardening
 
-Brain exposes the public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias. In production, the public app and admin MCP paths are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read/interaction tools and `brain_ingest_source` are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`.
+Brain exposes the public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias. In production, the public app and admin MCP paths are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read/interaction tools and `brain_ingest_source` are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`.
 
 ## Public App Tools
 
@@ -28,7 +28,7 @@ The ChatGPT App surface includes exactly these tools:
 
 Read-only tools advertise and require `brain.memory.read`:
 
-- `brain_session` — resolves the active user's Brain session identity for durable memory, bias/preferences, and portable agent-memory calls.
+- `brain_session` — resolves the active user's Brain session identity.
 - `brain_recall`
 - `brain_profile_entity`
 - `brain_list_open_loops`
@@ -55,7 +55,7 @@ Write or mutating tools advertise and require `brain.memory.write` as well:
 
 `brain_remember` opens in preview mode on `/mcp`. Saving the preview requires explicit user confirmation before the write is committed.
 
-Profile context writes, profile context deletes, and undo also require explicit confirmation. App-surface write attempts are rate-limited using `BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`, and append a redacted audit record with the tool name, OAuth client id when available, request id, target id, confirmation flag, status, and short summary. Raw memory text is not stored in the app write audit table.
+Destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require explicit confirmation. Profile context writes and profile context deletes also require explicit confirmation. App-surface write attempts are rate-limited using `BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`, and append a redacted audit record with the tool name, OAuth client id when available, request id, target id, confirmation flag, status, and short summary. Raw memory text is not stored in the app write audit table.
 
 ## User Controls
 
@@ -84,4 +84,4 @@ For a production release:
 3. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
 4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the tagged release.
 
-<!-- brain-doc-source-hash: 9e7dc3f2a82025b29cf42c367d5e3cbc07bf9286d23e97b7ed4a7c1301094fd8 -->
+<!-- brain-doc-source-hash: bac3bbbe622913198985bbe8df0a368328ded87163b033ee24380e7982063300 -->

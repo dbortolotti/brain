@@ -13,6 +13,8 @@ The fine-grained topology is useful for model evaluation and deployment planning
 
 `SlackMemoryAgent` and `compile_memory()` both load shared prompt-contract blocks from `src/memory_stack/agents/prompt_contracts.py` plus the role docs under `src/memory_stack/agents/shared/`.
 
+Slack and MCP are separate ingress paths, but they share the same core Brain service layer. Slack is not an MCP client.
+
 ## Current Runtime Flow
 
 Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_store.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, `src/memory_stack/agents/prompt_contracts.py`, and `src/memory_stack/agents/shared/*`.
@@ -25,12 +27,12 @@ flowchart LR
     classDef ext fill:#fef3c7,stroke:#a16207,color:#3f2d05;
 
     USER[/User or client/]:::ext
-    SLACK[/Slack events<br/>commands<br/>interactions/]:::ext
+    SLACK[/Slack commands<br/>events<br/>interactions/]:::ext
     HTTP[/HTTP or MCP tools/]:::ext
     DB[(Brain DB<br/>memory cards · sources · entities · relationships<br/>open loops · ingestion runs · recall logs · cognee sync)]:::store
     COGNEE[(Cognee projection)]:::store
 
-    SLACK --> SAUTH[verify Slack signature<br/>allowlists]:::det
+    SLACK --> SAUTH[apply Slack allowlists<br/>normalize request metadata]:::det
     SAUTH --> SPARSE[normalize text<br/>parse Slack intent]:::det
     SPARSE --> SREMEMBER[remember / confirm / cancel / correct]:::det
     SPARSE --> SREAD[recall / profile / open loops / get_memory / review / undo_last / debug]:::det
@@ -45,7 +47,7 @@ flowchart LR
     TASTECHK -- no taste branch --> COMPILE[compile_memory]:::det
     TASTESVC --> TASTEREC[return taste receipt or proposal]:::det
 
-    HTTP --> HROUTE[FastAPI endpoint<br/>MCP tool dispatch]:::det
+    HTTP --> HROUTE[FastAPI /memory/* endpoints<br/>MCP tool dispatch]:::det
     HROUTE --> REMEMBER
     HROUTE --> INGEST[brain_service.ingest_source]:::det
     HROUTE --> RECALL[brain_service.recall]:::det
@@ -85,9 +87,9 @@ flowchart LR
 
 ## Runtime Notes
 
-1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
-2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text, splits intent, and dispatches commands such as `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `get_memory`, and `review`.
-3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`.
+1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests arrive through `/slack/commands`, `/slack/events`, and `/slack/interactions`, then are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
+2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text with `normalize_agent_text()`, splits intent with `split_intent()`, and dispatches commands such as `help_template`, `help`, `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `open`, `get_memory`, and `review`.
+3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`.
 4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when LLMs are enabled and the rule result is not already sufficient high-confidence.
 5. **Fine-grained extractor roles are not separate runtime calls.** Roles such as `atomic_card_extractor`, `entity_mention_extractor`, `relationship_extractor`, `open_loop_detector`, `table_policy_handler`, and `source_takeaway_extractor` are currently represented by deterministic rule compiler behavior, or by the optional broad compiler fallback.
 6. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships/open loops, then runs deterministic duplicate/conflict/supersession handling.
