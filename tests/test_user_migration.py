@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import migrate_default_user_to_daniele
+import migrate_user_scoped_data
 from memory_stack.brain_service import RecallRequest, RememberRequest, recall, remember
 from memory_stack.cfg import Settings
 from memory_stack.oauth import ensure_auth_password, load_auth_users
@@ -126,3 +127,69 @@ def test_migrate_default_user_to_daniele_moves_data_and_creates_root_registry(
     assert state["clients"] == {"client": {"client_id": "client"}}
     assert state["access_tokens"] == {}
     assert state["refresh_tokens"] == {}
+
+
+def test_migrate_user_scoped_data_only_moves_database_rows(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    env_file = tmp_path / "brain.env"
+    db_path = tmp_path / "brain.db"
+    profile_context_path = tmp_path / "profile_context.json"
+    profile_context_path.write_text("[]\n", encoding="utf-8")
+    env_file.write_text(
+        "\n".join(
+            [
+                f"BRAIN_DATABASE_URL=sqlite:///{db_path}",
+                f"BRAIN_PROFILE_CONTEXT_PATH={profile_context_path}",
+                "BRAIN_USER_ID=default",
+                "BRAIN_OWNER_NAME=Daniele",
+                "BRAIN_OWNER_FULL_NAME=Daniele Bortolotti",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    default_settings = Settings(
+        brain_database_url=f"sqlite:///{db_path}",
+        brain_profile_context_path=str(profile_context_path),
+        brain_user_id="default",
+        brain_owner_name="Daniele",
+        brain_owner_full_name="Daniele Bortolotti",
+    )
+    daniele_settings = Settings(
+        brain_database_url=f"sqlite:///{db_path}",
+        brain_profile_context_path=str(profile_context_path),
+        brain_user_id="daniele",
+        brain_owner_name="Daniele",
+        brain_owner_full_name="Daniele Bortolotti",
+    )
+    remember(RememberRequest(input="Default-scoped memory should move."), default_settings)
+    remember(RememberRequest(input="Daniele-scoped memory should stay."), daniele_settings)
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "migrate_user_scoped_data.py",
+            "--env-file",
+            str(env_file),
+            "--env",
+            "prod",
+            "--from-user",
+            "default",
+            "--to-user",
+            "daniele",
+            "--allow-target-existing",
+            "--apply",
+        ],
+    )
+    assert migrate_user_scoped_data.main() == 0
+
+    assert recall(RecallRequest(query="Default-scoped memory"), default_settings).facts == []
+    daniele_facts = recall(RecallRequest(query="scoped memory"), daniele_settings).facts
+    statements = [str(fact["statement"]) for fact in daniele_facts]
+    assert any("Default-scoped memory should move." in statement for statement in statements)
+    assert any("Daniele-scoped memory should stay." in statement for statement in statements)
+    assert profile_context_path.read_text(encoding="utf-8") == "[]\n"
