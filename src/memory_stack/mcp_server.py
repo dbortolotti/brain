@@ -105,6 +105,7 @@ DEFAULT_MCP_PROTOCOL_VERSION = "2024-11-05"
 MCP_SURFACE_INTERNAL = "internal"
 MCP_SURFACE_CHATGPT_APP = "chatgpt_app"
 CHATGPT_APP_TOOLS = {
+    "brain_app_open_review_panel",
     "brain_session",
     "brain_recall",
     "brain_remember",
@@ -126,6 +127,7 @@ CHATGPT_APP_TOOLS = {
     "brain_palate_correct_proposal",
 }
 APP_READ_ONLY_TOOLS = {
+    "brain_app_open_review_panel",
     "brain_session",
     "brain_recall",
     "brain_profile_entity",
@@ -152,7 +154,8 @@ APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
 APP_TOOL_READ_SCOPE = "brain.memory.read"
 APP_TOOL_WRITE_SCOPE = "brain.memory.write"
 APP_STATIC_DIR = Path(__file__).resolve().parent / "static" / "brain_app"
-APP_COMPONENT_RESOURCE_URI = "ui://brain/review.html"
+APP_COMPONENT_RESOURCE_URI = "ui://brain/review.v2.html"
+APP_COMPONENT_MIME_TYPE = "text/html;profile=mcp-app"
 WEB_SESSION_COOKIE = "brain_web_session"
 WEB_SESSION_SECONDS = 12 * 60 * 60
 OAUTH_RATE_LIMITS = {
@@ -331,6 +334,18 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
             "description": (
                 "Resolve the active user's Brain session identity agents should use "
                 "for durable memory, bias/preferences, and portable agent-memory calls."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_app_open_review_panel",
+            "description": (
+                "Render the Brain review and data-controls panel in ChatGPT. "
+                "This opens the app UI and does not directly read or change memory data."
             ),
             "inputSchema": {
                 "type": "object",
@@ -978,7 +993,7 @@ def tool_descriptor_with_runtime_metadata(
     descriptor = {
         **tool,
         "icons": icons,
-        "outputSchema": tool_output_schema(tool_name),
+        "outputSchema": tool_output_schema(tool_name, surface=surface),
     }
     if surface == MCP_SURFACE_CHATGPT_APP:
         descriptor.update(app_tool_metadata(tool_name))
@@ -988,7 +1003,7 @@ def tool_descriptor_with_runtime_metadata(
 def app_tool_metadata(tool_name: str) -> dict[str, Any]:
     security_schemes = [{"type": "oauth2", "scopes": app_tool_required_scopes(tool_name)}]
     ui_meta: dict[str, Any] = {"visibility": ["model"]}
-    if tool_name in {"brain_session", "brain_review_recent", "brain_app_data_controls"}:
+    if tool_name == "brain_app_open_review_panel":
         ui_meta = {"visibility": ["model", "app"], "resourceUri": APP_COMPONENT_RESOURCE_URI}
     return {
         "securitySchemes": security_schemes,
@@ -1021,6 +1036,7 @@ def app_tool_required_scopes(tool_name: str) -> list[str]:
 
 def tool_invocation_status(tool_name: str, *, done: bool) -> str:
     statuses = {
+        "brain_app_open_review_panel": ("Opening Brain review panel", "Brain review panel ready"),
         "brain_session": ("Loading Brain session", "Brain session loaded"),
         "brain_recall": ("Searching Brain", "Brain recall complete"),
         "brain_remember": ("Preparing memory", "Memory preview ready"),
@@ -1094,7 +1110,13 @@ def rate_limit_oauth(request: Request, bucket: str) -> None:
     hits.append(now)
 
 
-def tool_output_schema(tool_name: str) -> dict[str, Any]:
+def tool_output_schema(
+    tool_name: str,
+    *,
+    surface: str = MCP_SURFACE_INTERNAL,
+) -> dict[str, Any]:
+    if surface == MCP_SURFACE_CHATGPT_APP and tool_name in APP_STRUCTURED_OUTPUT_SCHEMAS:
+        return APP_STRUCTURED_OUTPUT_SCHEMAS[tool_name]
     return STRUCTURED_OUTPUT_SCHEMAS.get(tool_name, ANY_OBJECT_SCHEMA)
 
 
@@ -1159,6 +1181,13 @@ PALATE_QUERY_OUTPUT_SCHEMA = object_schema(
 )
 
 STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
+    "brain_app_open_review_panel": object_schema(
+        {
+            "status": {"type": "string"},
+            "panel": {"type": "string"},
+        },
+        required=["status", "panel"],
+    ),
     "brain_session": object_schema(
         {
             "session_id": {"type": "string"},
@@ -1265,12 +1294,31 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
 }
 
 
+APP_STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
+    "brain_app_open_review_panel": STRUCTURED_OUTPUT_SCHEMAS["brain_app_open_review_panel"],
+    "brain_session": object_schema(
+        {
+            "profile_name": {"type": "string"},
+            "profile_full_name": {"type": "string"},
+            "profile_context": OBJECT_ARRAY_SCHEMA,
+            "profile_context_records": OBJECT_ARRAY_SCHEMA,
+            "memory_tool": {"type": "string"},
+            "recall_tool": {"type": "string"},
+            "profile_context_remember_tool": {"type": "string"},
+            "profile_context_list_tool": {"type": "string"},
+            "profile_context_forget_tool": {"type": "string"},
+            "bias_prompt": {"type": "string"},
+        },
+    ),
+}
+
+
 def resource_definitions() -> list[dict[str, str]]:
     return [
         {
             "uri": APP_COMPONENT_RESOURCE_URI,
             "name": "Brain review and data controls",
-            "mimeType": "text/html+skybridge",
+            "mimeType": APP_COMPONENT_MIME_TYPE,
         },
         {
             "uri": "brain://schema/memory-card",
@@ -2608,6 +2656,12 @@ async def call_tool_dispatch(
     settings = settings_for_request_context(request_context)
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
+    if name == "brain_app_open_review_panel":
+        return json_tool_response(
+            {"status": "ready", "panel": "brain_review"},
+            summary="Brain review panel ready.",
+        )
+
     if name == "brain_session":
         payload = brain_session_payload(settings)
         return json_tool_response(
@@ -3335,10 +3389,14 @@ def source_without_text(source: dict[str, Any] | None) -> dict[str, Any] | None:
 
 
 APP_FORBIDDEN_KEYS = {
+    "session_id",
     "user_id",
     "client_id",
     "request_id",
     "remote_addr",
+    "created_at",
+    "updated_at",
+    "expires_at",
     "metadata_json",
     "source_metadata_json",
     "content_hash",
@@ -3368,8 +3426,6 @@ APP_SAFE_RECORD_KEYS = {
     "source",
     "created",
     "dry_run",
-    "created_at",
-    "updated_at",
     "type",
     "canonical_name",
     "description",
@@ -3395,6 +3451,8 @@ def app_safe_tool_response(tool_name: str, response: dict[str, Any]) -> dict[str
         if isinstance(item, dict) and item.get("type") == "text" and item.get("text"):
             summary = str(item["text"])
             break
+    if tool_name == "brain_session":
+        summary = "Brain session resolved."
     return {
         "content": [{"type": "text", "text": summary}],
         "structuredContent": safe_structured,
@@ -3405,9 +3463,13 @@ def app_safe_tool_response(tool_name: str, response: dict[str, Any]) -> dict[str
 def app_safe_payload(tool_name: str, payload: Any) -> Any:
     if not isinstance(payload, dict):
         return redact_app_value(payload)
+    if tool_name == "brain_app_open_review_panel":
+        return {
+            "status": payload.get("status"),
+            "panel": payload.get("panel"),
+        }
     if tool_name == "brain_session":
         return {
-            "session_id": payload.get("session_id"),
             "profile_name": payload.get("profile_name"),
             "profile_full_name": payload.get("profile_full_name"),
             "profile_context": payload.get("profile_context") or [],
@@ -3422,9 +3484,6 @@ def app_safe_payload(tool_name: str, payload: Any) -> Any:
             "profile_context_list_tool": payload.get("profile_context_list_tool"),
             "profile_context_forget_tool": payload.get("profile_context_forget_tool"),
             "bias_prompt": payload.get("bias_prompt"),
-            "agent_memory_prompt": payload.get("agent_memory_prompt"),
-            "agent_memory_workflow": payload.get("agent_memory_workflow"),
-            "agent_memory_recall_tool": payload.get("agent_memory_recall_tool"),
         }
     if tool_name == "brain_app_data_controls":
         return {
@@ -3595,18 +3654,30 @@ def normalize_conflict_resolution(payload: dict[str, Any]) -> dict[str, Any]:
 
 def read_resource(uri: str, *, request_context: McpRequestContext | None = None) -> dict[str, Any]:
     if uri == APP_COMPONENT_RESOURCE_URI:
+        origin = settings.brain_public_base_url.rstrip("/") or "https://brain.dceb.net"
+        app_csp = {
+            "connectDomains": [origin],
+            "resourceDomains": [origin],
+        }
         return {
             "contents": [
                 {
                     "uri": uri,
-                    "mimeType": "text/html+skybridge",
+                    "mimeType": APP_COMPONENT_MIME_TYPE,
                     "text": brain_app_component_html(),
                     "_meta": {
+                        "ui": {
+                            "csp": app_csp,
+                            "domain": origin,
+                            "prefersBorder": True,
+                        },
                         "openai/widgetDescription": "Review recent Brain memories, open loops, profile context, and app write activity.",
                         "openai/widgetCSP": {
-                            "connect_domains": [settings.brain_public_base_url.rstrip("/")],
-                            "resource_domains": [settings.brain_public_base_url.rstrip("/")],
+                            "connect_domains": [origin],
+                            "resource_domains": [origin],
                         },
+                        "openai/widgetDomain": origin,
+                        "openai/widgetPrefersBorder": True,
                     },
                 }
             ]
@@ -3685,7 +3756,7 @@ def brain_app_component_html() -> str:
       try {
         const session = await callTool("brain_session", {});
         const controls = await callTool("brain_app_data_controls", { limit: 20 });
-        document.getElementById("session").textContent = `Session ${text(session.session_id)} · ${text(session.profile_name)}`;
+        document.getElementById("session").textContent = `Brain profile ${text(session.profile_name || "ready")}`;
         renderList("memories", controls.recent_memory_cards, (m) => `<strong>${text(m.kind || "memory")}</strong><pre>${text(m.statement || m.summary)}</pre><div class="muted">${text(m.id)}</div>`);
         renderList("profile", controls.profile_context, (p) => `<pre>${text(p.statement)}</pre><div class="muted">${text(p.scope)} · ${text(p.id)}</div>`);
         renderList("loops", controls.open_loops, (l) => `<pre>${text(l.statement || l.summary)}</pre><div class="muted">${text(l.status)} · ${text(l.id)}</div>`);

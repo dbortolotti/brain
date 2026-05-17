@@ -70,7 +70,8 @@ Most agents should use these tools rather than lower-level storage details.
 
 | Tool | Use it for |
 | --- | --- |
-| `brain_session` | Resolve the active user's Brain session identity and user-scoped session_id for durable memory and portable agent-memory calls. Available on ChatGPT app and internal or admin surfaces. |
+| `brain_session` | Resolve the active user's Brain profile and standing context. Internal or admin surfaces also return the user-scoped session_id for portable agent-memory calls; the ChatGPT app surface hides session ids. |
+| `brain_app_open_review_panel` | Open the ChatGPT app review panel. Available on the ChatGPT app surface. |
 | `brain_profile_context_remember` | Store stable user-profile context for answer tailoring. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_profile_context_list` | List stable user-profile context. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_profile_context_forget` | Remove one stable user-profile context item. Available on ChatGPT app and internal or admin surfaces. |
@@ -825,4 +826,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: 1e7bc3756cacc9be16e0966ecbc6d802447733f5025992ff48eb8323230885ab -->
+<!-- brain-doc-source-hash: 6474f4482ca7f50348d6a7df4dec7c915c31de4dfc3c8efbc7f4ca443b048ca5 -->

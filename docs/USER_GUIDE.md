@@ -210,7 +210,7 @@ MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated al
 
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
-In the ChatGPT app surface, common tools include `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
+In the ChatGPT app surface, common tools include `brain_session`, `brain_app_open_review_panel`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
 
 Tool availability varies by surface. The internal/admin surface also exposes tools such as `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
 
@@ -659,4 +659,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: d60c252cd61e3674fe7b1ed45d6fea9efc9028cd04b82bb206b623efa5152e0d -->
+<!-- brain-doc-source-hash: 5462576d2426a99a5511f1d1307f0971a6c1eaf1487162dcd5841487bb3c3d1d -->

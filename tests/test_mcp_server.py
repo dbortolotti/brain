@@ -146,6 +146,7 @@ def test_datasource_tools_are_listed() -> None:
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
     expected_tools = {
+        "brain_app_open_review_panel",
         "brain_session",
         "brain_profile_context_remember",
         "brain_profile_context_list",
@@ -233,14 +234,15 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     palate_confirm = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_confirm")
     for tool in response.json()["result"]["tools"]:
         assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
-        if tool["name"] in {"brain_session", "brain_review_recent", "brain_app_data_controls"}:
+        if tool["name"] == "brain_app_open_review_panel":
             assert tool["_meta"]["ui"] == {
                 "visibility": ["model", "app"],
-                "resourceUri": "ui://brain/review.html",
+                "resourceUri": mcp_server.APP_COMPONENT_RESOURCE_URI,
             }
-            assert tool["_meta"]["openai/outputTemplate"] == "ui://brain/review.html"
+            assert tool["_meta"]["openai/outputTemplate"] == mcp_server.APP_COMPONENT_RESOURCE_URI
         else:
             assert tool["_meta"]["ui"] == {"visibility": ["model"]}
+            assert "openai/outputTemplate" not in tool["_meta"]
         assert tool["_meta"]["openai/visibility"] == "public"
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoking"], str)
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoked"], str)
@@ -265,6 +267,8 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     assert recall["_meta"]["brain/requiresUserConfirmation"] is False
     data_controls = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_app_data_controls")
     assert data_controls["annotations"]["readOnlyHint"] is True
+    render_tool = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_app_open_review_panel")
+    assert render_tool["annotations"]["readOnlyHint"] is True
     undo = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_undo_last")
     assert undo["annotations"]["destructiveHint"] is True
 
@@ -284,6 +288,24 @@ def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
     assert response.status_code == 200
     assert response.json()["error"]["code"] == -32000
     assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
+
+
+def test_chatgpt_app_render_tool_opens_panel_without_data() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "brain_app_open_review_panel", "arguments": {}},
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()["result"]
+    assert result["content"] == [{"type": "text", "text": "Brain review panel ready."}]
+    assert result["structuredContent"] == {"status": "ready", "panel": "brain_review"}
 
 
 def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
@@ -456,6 +478,10 @@ def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> 
         "client_id",
         "request_id",
         "remote_addr",
+        "session_id",
+        "created_at",
+        "updated_at",
+        "expires_at",
         "resolved_agent_memory_dataset",
     ]:
         assert forbidden not in controls_json
@@ -1083,7 +1109,7 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
             "jsonrpc": "2.0",
             "id": 4,
             "method": "resources/read",
-            "params": {"uri": "ui://brain/review.html"},
+            "params": {"uri": mcp_server.APP_COMPONENT_RESOURCE_URI},
         },
     )
 
@@ -1091,7 +1117,7 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
     assert {
         resource["uri"] for resource in list_response.json()["result"]["resources"]
     } == {
-        "ui://brain/review.html",
+        mcp_server.APP_COMPONENT_RESOURCE_URI,
         "brain://schema/memory-card",
         "brain://schema/source",
         "brain://schema/entity",
@@ -1109,8 +1135,11 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
     assert json.loads(content["text"])["schema"] == "memory-card"
     assert component_response.status_code == 200
     component = component_response.json()["result"]["contents"][0]
-    assert component["mimeType"] == "text/html+skybridge"
+    assert component["mimeType"] == mcp_server.APP_COMPONENT_MIME_TYPE
     assert "window.openai.callTool" in component["text"]
+    assert component["_meta"]["ui"]["csp"]["connectDomains"]
+    assert component["_meta"]["ui"]["csp"]["resourceDomains"]
+    assert component["_meta"]["ui"]["domain"] == mcp_server.settings.brain_public_base_url.rstrip("/")
     assert component["_meta"]["openai/widgetCSP"]["connect_domains"]
 
 
@@ -1660,9 +1689,8 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
     assert "user_id" not in session_payload
-    assert session_payload["session_id"] == agent_memory_session_id_for_user(user_b_settings)
+    assert "session_id" not in session_payload
     assert "resolved_agent_memory_dataset" not in session_payload
-    assert session_payload["session_id"] != agent_memory_session_id_for_user(default_settings)
     assert profile_response.status_code == 200
     assert "user_id" not in profile_response.json()["result"]["structuredContent"]
     assert http_response.status_code == 200

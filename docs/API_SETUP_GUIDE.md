@@ -237,13 +237,14 @@ on `/admin/mcp`.
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
 The app surface also exposes the embedded Apps SDK component resource
-`ui://brain/review.html`. `brain_session`, `brain_review_recent`, and
-`brain_app_data_controls` advertise that resource as their OpenAI output
-template so ChatGPT can render a compact review panel. Tool-call responses on
-this surface are minimized to one short text content item plus redacted
-structured content; internal user ids, OAuth client ids, request ids, datasets,
-tokens, raw metadata JSON, and password fields are stripped from the app-facing
-payload.
+`ui://brain/review.v2.html`. Only `brain_app_open_review_panel` advertises that
+resource as its OpenAI output template, so ChatGPT renders the compact review
+panel from a render-only tool while data tools stay model-only. The component is
+served as `text/html;profile=mcp-app` with standard `_meta.ui.csp` and
+`_meta.ui.domain` metadata. Tool-call responses on this surface are minimized to
+one short text content item plus redacted structured content; internal user ids,
+session ids, OAuth client ids, request ids, datasets, timestamps, tokens, raw
+metadata JSON, and password fields are stripped from the app-facing payload.
 
 ## Authentication
 
@@ -683,4 +684,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: bd80734aa237c3c7b19796d771f7edb685f57e78fe3f9b5b4923c0443a26e3f5 -->
+<!-- brain-doc-source-hash: 84aba55fea18b6ca4a8832b21d8c7b576bf69257d8b8080b2ee10d06a2e9a3b0 -->

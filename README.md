@@ -96,6 +96,7 @@ The high-level MCP tools are grouped by surface:
 Public ChatGPT App surface:
 
 - `brain_session`
+- `brain_app_open_review_panel`
 - `brain_remember`
 - `brain_ingest_source`
 - `brain_recall`
@@ -213,7 +214,7 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 
 Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember` previews by default; a client may save only after explicit user confirmation by calling it with `context.confirmed_by_user=true`. Read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
 
-`brain_session`, `brain_review_recent`, and `brain_app_data_controls` advertise the embedded ChatGPT Apps SDK component at `ui://brain/review.html`. App-surface tool responses are minimized to one short text item plus redacted structured content; internal user ids, OAuth client ids, request ids, raw metadata JSON, datasets, tokens, and password fields are stripped before they are returned to ChatGPT.
+`brain_app_open_review_panel` advertises the embedded ChatGPT Apps SDK component at `ui://brain/review.v2.html` using the current `text/html;profile=mcp-app` resource MIME type. Data tools remain model-only. App-surface tool responses are minimized to one short text item plus redacted structured content; internal user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields are stripped before they are returned to ChatGPT.
 
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
 
@@ -713,4 +714,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: a8a6b58f78f5549c3b25f74000003d2ce9b6ce2974d311d3b8ce01973839ee2a -->
+<!-- brain-doc-source-hash: 8049416ff225aa7ff331ecd76a3b4290089e8b865fed52224c4c199ca82d9511 -->

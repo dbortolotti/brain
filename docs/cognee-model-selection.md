@@ -428,4 +428,4 @@ The current data does not justify `menotti-55-high` as a default. Its ingestion 
 2. Compare low-score clusters across the `gpt-5.5`, `gpt-5.5` low, and `gpt-5.4-mini` retrieval runs.
 3. Select the cheaper ingestion and retrieval combination unless the slower model clearly fixes structural and interpretive retrieval errors.
 
-<!-- brain-doc-source-hash: 4d1ef431638c6f6bfe4f9316e5b5c6965c6b5436a60a62e8059642581802fa5f -->
+<!-- brain-doc-source-hash: b5038fd6fc33ffa16dad444075e9c2ebfb125c0b752cbb7f7d2291eb7e2cc827 -->

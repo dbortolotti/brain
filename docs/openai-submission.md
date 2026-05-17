@@ -12,7 +12,7 @@ the remaining non-code work.
 - Privacy URL: `https://brain.dceb.net/privacy`
 - Terms URL: `https://brain.dceb.net/terms`
 - Support URL: `https://brain.dceb.net/support`
-- App component resource: `ui://brain/review.html`
+- App component resource: `ui://brain/review.v2.html`
 
 Run these checks after promoting the staged release:
 
@@ -64,7 +64,8 @@ Explain these points in the submission:
 - Confirm `https://brain.dceb.net/privacy`, `/terms`, and `/support` load over
   HTTPS with security headers.
 - Confirm `tools/list` on `/mcp` lists only the curated ChatGPT App tools.
-- Confirm `resources/read` for `ui://brain/review.html` returns
-  `text/html+skybridge`.
+- Confirm `resources/read` for `ui://brain/review.v2.html` returns
+  `text/html;profile=mcp-app` and includes `_meta.ui.csp` plus
+  `_meta.ui.domain`.
 
-<!-- brain-doc-source-hash: 1c172c584290a9e26d32123d8d6bf07624eece57c02674582119f668d81e9d61 -->
+<!-- brain-doc-source-hash: 663c5ff1dc231de048a73114740d369b200000745c7f4da828565744f5469877 -->

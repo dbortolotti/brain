@@ -2,13 +2,14 @@
 
 Brain exposes the public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`.
 
-The app surface now also exposes an embedded Apps SDK component resource at `ui://brain/review.html`. `brain_session`, `brain_review_recent`, and `brain_app_data_controls` advertise that component through `_meta["openai/outputTemplate"]` and app-visible UI metadata. Other public tools stay model-only. ChatGPT App responses are minimized on this surface: they return a short text summary plus redacted `structuredContent` and strip internal identifiers such as user ids, OAuth client ids, request ids, raw metadata JSON, datasets, tokens, and password fields.
+The app surface now also exposes an embedded Apps SDK component resource at `ui://brain/review.v2.html`. Only `brain_app_open_review_panel` advertises that component through `_meta["openai/outputTemplate"]` and app-visible UI metadata; data tools stay model-only. The component is served as `text/html;profile=mcp-app` with standard `_meta.ui.csp` and `_meta.ui.domain` metadata. ChatGPT App responses are minimized on this surface: they return a short summary plus redacted `structuredContent` and strip internal identifiers such as user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields.
 
 ## Public App Tools
 
 The ChatGPT App surface includes exactly these tools:
 
 - `brain_session`
+- `brain_app_open_review_panel`
 - `brain_remember`
 - `brain_ingest_source`
 - `brain_profile_context_remember`
@@ -120,4 +121,4 @@ For a production release:
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 4. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 695024d5a5f383ac7e6095e557cd5f3946a1f10e193622967afc08cfde4dc549 -->
+<!-- brain-doc-source-hash: 9db2106b62607655cf51d92d92e51553c8f548eb6869eb72eab5e4969939d9ec -->
