@@ -5,6 +5,7 @@ import argparse
 import base64
 import hashlib
 import json
+import os
 import re
 import secrets
 import socket
@@ -103,13 +104,20 @@ def main() -> int:
         "public Brain dashboard",
         failures,
         require_text="Brain",
+        require_security_headers=True,
     )
     for path, label in [
         ("/privacy", "public privacy page"),
         ("/terms", "public terms page"),
         ("/support", "public support page"),
     ]:
-        check_url(f"https://{hostname}{path}", label, failures, require_text="Brain")
+        check_url(
+            f"https://{hostname}{path}",
+            label,
+            failures,
+            require_text="Brain",
+            require_security_headers=True,
+        )
     check_protected_resource_metadata(
         f"https://{hostname}/.well-known/oauth-protected-resource{settings.brain_public_mcp_path}",
         settings,
@@ -237,8 +245,9 @@ def check_url(
     *,
     require_brain: bool = False,
     require_text: str | None = None,
+    require_security_headers: bool = False,
 ) -> None:
-    status, _headers, body = fetch(url)
+    status, headers, body = fetch(url)
     if status is None:
         failures.append(f"{label} failed: {body}")
         return
@@ -255,7 +264,26 @@ def check_url(
     if require_text and require_text not in body:
         failures.append(f"{label} did not include expected text {require_text!r}")
         return
+    if require_security_headers:
+        check_security_headers(headers, label, failures)
     console.print(f"[green][OK][/green] {label}: {url}")
+
+
+def check_security_headers(headers: dict[str, str], label: str, failures: list[str]) -> None:
+    lower = {key.lower(): value for key, value in headers.items()}
+    required = [
+        "content-security-policy",
+        "strict-transport-security",
+        "referrer-policy",
+        "permissions-policy",
+        "x-content-type-options",
+    ]
+    missing = [key for key in required if key not in lower]
+    if missing:
+        failures.append(f"{label} is missing security headers: {', '.join(missing)}")
+    csp = lower.get("content-security-policy", "")
+    if "frame-ancestors" not in csp or "chatgpt.com" not in csp:
+        failures.append(f"{label} CSP does not allow ChatGPT framing explicitly: {csp}")
 
 
 def check_protected_resource_metadata(
@@ -315,6 +343,7 @@ def check_authenticated_public_app_mcp(settings, hostname: str, failures: list[s
             )
         for tool in tools:
             validate_app_tool_descriptor(tool, failures)
+        verify_app_component_resource(settings, token, failures)
 
         blocked_admin = rpc_call(
             settings.public_app_mcp_url,
@@ -403,6 +432,8 @@ def verify_confirmed_write_cleanup(settings, token: str, failures: list[str]) ->
     )
     if controls and context_id not in json.dumps(controls):
         failures.append("ChatGPT App data controls did not include verifier test context")
+    if controls:
+        assert_app_safe_response("brain_app_data_controls", controls, failures)
 
     cleanup = rpc_call(
         settings.public_app_mcp_url,
@@ -435,8 +466,16 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
     expected_scopes = ["brain.memory.read", "brain.memory.write"] if name in APP_MUTATING_TOOLS else ["brain.memory.read"]
     if tool.get("securitySchemes") != [{"type": "oauth2", "scopes": expected_scopes}]:
         failures.append(f"{name} has wrong securitySchemes: {tool.get('securitySchemes')}")
-    if meta.get("ui") != {"visibility": ["model"]}:
+    expected_ui = (
+        {"visibility": ["model", "app"], "resourceUri": "ui://brain/review.html"}
+        if name in {"brain_session", "brain_review_recent", "brain_app_data_controls"}
+        else {"visibility": ["model"]}
+    )
+    if meta.get("ui") != expected_ui:
         failures.append(f"{name} has wrong UI visibility metadata: {meta}")
+    if name in {"brain_session", "brain_review_recent", "brain_app_data_controls"}:
+        if meta.get("openai/outputTemplate") != "ui://brain/review.html":
+            failures.append(f"{name} is missing app component output template metadata")
     if meta.get("openai/visibility") != "public":
         failures.append(f"{name} is missing public OpenAI visibility metadata")
     if not isinstance(meta.get("openai/toolInvocation/invoking"), str):
@@ -451,6 +490,62 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
         failures.append(f"{name} has wrong destructiveHint: {annotations}")
     if meta.get("brain/requiresUserConfirmation") is not (name in APP_MUTATING_TOOLS):
         failures.append(f"{name} has wrong confirmation metadata: {meta}")
+
+
+def verify_app_component_resource(settings, token: str, failures: list[str]) -> None:
+    resource_list = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {"jsonrpc": "2.0", "id": 7, "method": "resources/list"},
+        "authenticated ChatGPT App resources/list",
+        failures,
+    )
+    resources = ((resource_list or {}).get("result") or {}).get("resources") or []
+    if not any(resource.get("uri") == "ui://brain/review.html" for resource in resources if isinstance(resource, dict)):
+        failures.append(f"ChatGPT App component resource is not listed: {resources}")
+        return
+    resource_read = rpc_call(
+        settings.public_app_mcp_url,
+        token,
+        {
+            "jsonrpc": "2.0",
+            "id": 8,
+            "method": "resources/read",
+            "params": {"uri": "ui://brain/review.html"},
+        },
+        "authenticated ChatGPT App resources/read",
+        failures,
+    )
+    contents = ((resource_read or {}).get("result") or {}).get("contents") or []
+    if not contents:
+        failures.append(f"ChatGPT App component resource did not return contents: {resource_read}")
+        return
+    content = contents[0]
+    if content.get("mimeType") != "text/html+skybridge":
+        failures.append(f"ChatGPT App component resource has wrong MIME type: {content}")
+    if "window.openai.callTool" not in str(content.get("text") or ""):
+        failures.append("ChatGPT App component does not use the Apps SDK tool bridge")
+
+
+def assert_app_safe_response(label: str, payload: dict, failures: list[str]) -> None:
+    result = payload.get("result") or {}
+    text = json.dumps(result.get("content") or [])
+    structured = json.dumps(result.get("structuredContent") or {})
+    forbidden = [
+        "password",
+        "password_hash",
+        "access_token",
+        "refresh_token",
+        "client_id",
+        "request_id",
+        "remote_addr",
+        "resolved_agent_memory_dataset",
+    ]
+    for needle in forbidden:
+        if needle in text or needle in structured:
+            failures.append(f"{label} app response leaks forbidden field {needle}")
+    if len(result.get("content") or []) > 1:
+        failures.append(f"{label} app response should not echo full structured JSON as text")
 
 
 def issue_oauth_token(
@@ -546,6 +641,19 @@ def issue_oauth_token(
 
 
 def verifier_oauth_user(settings, failures: list[str]) -> tuple[str, str] | None:
+    configured_user_id = os.getenv("BRAIN_VERIFIER_USER_ID") or os.getenv(
+        "BRAIN_AUTH_VERIFIER_USER_ID"
+    )
+    configured_password_file = os.getenv("BRAIN_VERIFIER_PASSWORD_FILE") or os.getenv(
+        "BRAIN_AUTH_VERIFIER_PASSWORD_FILE"
+    )
+    if configured_user_id and configured_password_file:
+        path = Path(configured_password_file).expanduser()
+        if not path.exists():
+            failures.append(f"Brain verifier password file does not exist: {path}")
+            return None
+        return configured_user_id, path.read_text(encoding="utf-8").strip()
+
     password_path = settings.auth_password_path
     if not password_path.exists():
         failures.append(f"Brain auth password file does not exist: {password_path}")
@@ -561,17 +669,52 @@ def verifier_oauth_user(settings, failures: list[str]) -> tuple[str, str] | None
         return None
     payload = json.loads(path.read_text(encoding="utf-8"))
     records = payload.values() if isinstance(payload, dict) else payload
-    usable = [
+    plaintext_users = [
         record
         for record in records
         if isinstance(record, dict) and record.get("id") and record.get("password")
     ]
-    regular_users = [record for record in usable if not parse_bool(record.get("superuser"))]
-    selected = (regular_users or usable)[0] if usable else None
+    if plaintext_users:
+        failures.append(
+            f"Brain auth users file still contains plaintext password fields: "
+            f"{[record.get('id') for record in plaintext_users]}"
+        )
+    usable = [
+        record
+        for record in records
+        if isinstance(record, dict)
+        and record.get("id")
+        and (record.get("password") or record.get("password_hash"))
+    ]
+    selected = None
+    if configured_user_id:
+        selected = next(
+            (record for record in usable if str(record.get("id")) == configured_user_id),
+            None,
+        )
+        if selected is None:
+            failures.append(f"Brain verifier user {configured_user_id!r} was not found in {path}")
+            return None
+    else:
+        legacy_password_users = [record for record in usable if record.get("password")]
+        regular_users = [
+            record
+            for record in legacy_password_users
+            if not parse_bool(record.get("superuser"))
+        ]
+        selected = (regular_users or legacy_password_users)[0] if legacy_password_users else None
+        if selected is None:
+            selected = next(
+                (record for record in usable if str(record.get("id")) == settings.brain_user_id),
+                None,
+            )
     if selected is None:
-        failures.append(f"Brain auth users file contains no usable verifier user: {path}")
+        failures.append(
+            "Brain auth users file contains only hashed users and no verifier credentials "
+            "were configured. Set BRAIN_VERIFIER_USER_ID and BRAIN_VERIFIER_PASSWORD_FILE."
+        )
         return None
-    return str(selected["id"]), str(selected["password"])
+    return str(selected["id"]), str(selected.get("password") or fallback_password)
 
 
 def parse_bool(value: object) -> bool:

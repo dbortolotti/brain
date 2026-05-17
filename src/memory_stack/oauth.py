@@ -7,12 +7,15 @@ import json
 import secrets
 import tempfile
 import time
+from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
 from threading import RLock
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
 from fastapi import HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
@@ -22,6 +25,8 @@ from memory_stack.cfg import Settings
 
 AUTH_REQUEST_SECONDS = 10 * 60
 AUTH_CODE_SECONDS = 5 * 60
+PASSWORD_SCHEME_ARGON2ID = "argon2id"
+PASSWORD_HASHER = PasswordHasher(time_cost=2, memory_cost=19456, parallelism=1)
 
 
 class BrainOAuthProvider:
@@ -425,11 +430,63 @@ def ensure_auth_password(settings: Settings) -> str:
     return password
 
 
+def hash_password(password: str) -> str:
+    return PASSWORD_HASHER.hash(password)
+
+
+def set_user_password(record: dict[str, Any], password: str) -> dict[str, Any]:
+    updated = dict(record)
+    updated.pop("password", None)
+    updated["password_hash"] = hash_password(password)
+    updated["password_scheme"] = PASSWORD_SCHEME_ARGON2ID
+    updated["password_updated_at"] = datetime.now(UTC).isoformat()
+    return updated
+
+
+def verify_password(password: str, record: dict[str, Any]) -> bool:
+    password_hash = str(record.get("password_hash") or "")
+    if password_hash:
+        try:
+            return PASSWORD_HASHER.verify(password_hash, password)
+        except (InvalidHashError, VerificationError, VerifyMismatchError):
+            return False
+    legacy_password = str(record.get("password") or "")
+    return bool(legacy_password) and hmac.compare_digest(password, legacy_password)
+
+
+def needs_password_migration(record: dict[str, Any]) -> bool:
+    password_hash = str(record.get("password_hash") or "")
+    if record.get("password"):
+        return True
+    if not password_hash:
+        return True
+    if str(record.get("password_scheme") or "") != PASSWORD_SCHEME_ARGON2ID:
+        return True
+    try:
+        return PASSWORD_HASHER.check_needs_rehash(password_hash)
+    except (InvalidHashError, VerificationError):
+        return True
+
+
+def migrate_verified_password(
+    settings: Settings,
+    users: dict[str, dict[str, Any]],
+    user_id: str,
+    password: str,
+) -> bool:
+    user = users.get(user_id)
+    if user is None or not needs_password_migration(user):
+        return False
+    users[user_id] = set_user_password(user, password)
+    write_auth_users(settings, users)
+    return True
+
+
 def load_auth_users(
     settings: Settings,
     *,
     default_password: str,
-) -> dict[str, dict[str, str]]:
+) -> dict[str, dict[str, Any]]:
     configured_superusers = set(settings.brain_auth_superuser_id_list)
     users_file = settings.brain_auth_users_file
     if not users_file:
@@ -445,15 +502,26 @@ def load_auth_users(
             continue
         user_id = normalize_user_id(str(record.get("id") or record.get("user_id") or ""))
         password = str(record.get("password") or "")
-        if not user_id or not password:
+        password_hash = str(record.get("password_hash") or "")
+        if not user_id or (not password and not password_hash):
             continue
         users[user_id] = {
             "id": user_id,
-            "password": password,
             "display_name": str(record.get("display_name") or record.get("name") or user_id),
             "email": str(record.get("email") or ""),
             "superuser": str(parse_bool(record.get("superuser")) or user_id in configured_superusers).lower(),
         }
+        if password_hash:
+            users[user_id]["password_hash"] = password_hash
+            users[user_id]["password_scheme"] = str(
+                record.get("password_scheme") or PASSWORD_SCHEME_ARGON2ID
+            )
+            if record.get("password_updated_at"):
+                users[user_id]["password_updated_at"] = str(record.get("password_updated_at"))
+        if password:
+            users[user_id]["password"] = password
+        if record.get("must_change_password") is not None:
+            users[user_id]["must_change_password"] = str(parse_bool(record.get("must_change_password"))).lower()
     if not users:
         raise ValueError(f"BRAIN_AUTH_USERS_FILE contains no usable users: {path}")
     return users
@@ -481,6 +549,9 @@ def public_auth_user(record: dict[str, Any]) -> dict[str, Any]:
         "display_name": str(record.get("display_name") or ""),
         "email": str(record.get("email") or ""),
         "superuser": parse_bool(record.get("superuser")),
+        "password_scheme": str(record.get("password_scheme") or ("legacy" if record.get("password") else "")),
+        "password_migration_required": needs_password_migration(record),
+        "must_change_password": parse_bool(record.get("must_change_password")),
     }
 
 
@@ -489,16 +560,24 @@ def write_auth_users(settings: Settings, users: dict[str, dict[str, Any]]) -> Pa
     if path is None:
         raise ValueError("BRAIN_AUTH_USERS_FILE must be configured before users can be managed.")
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = [
-        {
-            "id": user_id,
-            "password": str(record["password"]),
-            "display_name": str(record.get("display_name") or user_id),
-            "email": str(record.get("email") or ""),
-            "superuser": parse_bool(record.get("superuser")),
-        }
-        for user_id, record in sorted(users.items())
-    ]
+    payload = []
+    for user_id, record in sorted(users.items()):
+        normalized = dict(record)
+        if "password_hash" not in normalized and normalized.get("password"):
+            normalized = set_user_password(normalized, str(normalized["password"]))
+        normalized.pop("password", None)
+        payload.append(
+            {
+                "id": user_id,
+                "password_hash": str(normalized["password_hash"]),
+                "password_scheme": str(normalized.get("password_scheme") or PASSWORD_SCHEME_ARGON2ID),
+                "password_updated_at": str(normalized.get("password_updated_at") or ""),
+                "display_name": str(normalized.get("display_name") or user_id),
+                "email": str(normalized.get("email") or ""),
+                "superuser": parse_bool(normalized.get("superuser")),
+                "must_change_password": parse_bool(normalized.get("must_change_password")),
+            }
+        )
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
         json.dump(payload, handle, indent=2, sort_keys=True)
         handle.write("\n")
@@ -739,7 +818,7 @@ async def complete_authorization(provider: BrainOAuthProvider, request: Request)
     requested_user_id = normalize_user_id(form.get("user_id") or provider.default_user_id)
     user = provider.users.get(requested_user_id)
     password = form.get("password", "")
-    if user is None or not hmac.compare_digest(password, user["password"]):
+    if user is None or not verify_password(password, user):
         return auth_form(
             service_name=provider.service_name,
             request_id=request_id,
@@ -747,6 +826,8 @@ async def complete_authorization(provider: BrainOAuthProvider, request: Request)
             users=provider.users,
             error="Invalid or expired authorization.",
         )
+    if migrate_verified_password(provider.settings, provider.users, requested_user_id, password):
+        provider.reload_users()
 
     with provider._lock:
         state = provider._load_state()

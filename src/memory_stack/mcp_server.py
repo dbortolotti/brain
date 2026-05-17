@@ -69,8 +69,11 @@ from memory_stack.oauth import (
     auth_users_admin_payload,
     ensure_auth_password,
     load_auth_users,
+    migrate_verified_password,
     parse_bearer,
     public_auth_user,
+    set_user_password,
+    verify_password,
     write_auth_users,
 )
 from memory_stack.profile_context import (
@@ -149,6 +152,7 @@ APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
 APP_TOOL_READ_SCOPE = "brain.memory.read"
 APP_TOOL_WRITE_SCOPE = "brain.memory.write"
 APP_STATIC_DIR = Path(__file__).resolve().parent / "static" / "brain_app"
+APP_COMPONENT_RESOURCE_URI = "ui://brain/review.html"
 WEB_SESSION_COOKIE = "brain_web_session"
 WEB_SESSION_SECONDS = 12 * 60 * 60
 OAUTH_RATE_LIMITS = {
@@ -169,8 +173,11 @@ if settings.brain_request_log_enabled:
 async def redirect_public_http_to_https(request: Request, call_next):
     redirect_url = public_https_redirect_url(request)
     if redirect_url is not None:
-        return RedirectResponse(redirect_url, status_code=307)
-    return await call_next(request)
+        response = RedirectResponse(redirect_url, status_code=307)
+    else:
+        response = await call_next(request)
+    add_security_headers(response)
+    return response
 
 
 class CreateDatasourceRequest(BaseModel):
@@ -980,6 +987,9 @@ def tool_descriptor_with_runtime_metadata(
 
 def app_tool_metadata(tool_name: str) -> dict[str, Any]:
     security_schemes = [{"type": "oauth2", "scopes": app_tool_required_scopes(tool_name)}]
+    ui_meta: dict[str, Any] = {"visibility": ["model"]}
+    if tool_name in {"brain_session", "brain_review_recent", "brain_app_data_controls"}:
+        ui_meta = {"visibility": ["model", "app"], "resourceUri": APP_COMPONENT_RESOURCE_URI}
     return {
         "securitySchemes": security_schemes,
         "annotations": {
@@ -989,11 +999,16 @@ def app_tool_metadata(tool_name: str) -> dict[str, Any]:
         },
         "_meta": {
             "securitySchemes": security_schemes,
-            "ui": {"visibility": ["model"]},
+            "ui": ui_meta,
             "openai/toolInvocation/invoking": tool_invocation_status(tool_name, done=False),
             "openai/toolInvocation/invoked": tool_invocation_status(tool_name, done=True),
             "openai/visibility": "public",
             "brain/requiresUserConfirmation": tool_name in APP_MUTATING_TOOLS,
+            **(
+                {"openai/outputTemplate": APP_COMPONENT_RESOURCE_URI}
+                if "resourceUri" in ui_meta
+                else {}
+            ),
         },
     }
 
@@ -1030,8 +1045,32 @@ def brain_app_file(filename: str, media_type: str) -> FileResponse:
     return FileResponse(
         path,
         media_type=media_type,
-        headers={"Cache-Control": "no-store"},
+        headers={**security_headers(), "Cache-Control": "no-store"},
     )
+
+
+def security_headers() -> dict[str, str]:
+    base = settings.brain_public_base_url.rstrip("/") or "'self'"
+    return {
+        "Content-Security-Policy": (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://persistent.oaistatic.com; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "connect-src 'self' "
+            f"{base}; "
+            "frame-ancestors https://chatgpt.com https://*.chatgpt.com https://chat.openai.com"
+        ),
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        "Referrer-Policy": "no-referrer",
+        "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+        "X-Content-Type-Options": "nosniff",
+    }
+
+
+def add_security_headers(response: Response) -> None:
+    for key, value in security_headers().items():
+        response.headers.setdefault(key, value)
 
 
 def rate_limit_oauth(request: Request, bucket: str) -> None:
@@ -1228,6 +1267,11 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
 
 def resource_definitions() -> list[dict[str, str]]:
     return [
+        {
+            "uri": APP_COMPONENT_RESOURCE_URI,
+            "name": "Brain review and data controls",
+            "mimeType": "text/html+skybridge",
+        },
         {
             "uri": "brain://schema/memory-card",
             "name": "Brain memory-card schema",
@@ -1598,8 +1642,11 @@ async def login(payload: LoginRequest, request: Request) -> Response:
     user_id = normalize_user_id(payload.user_id)
     users = load_auth_users(settings, default_password=auth_admin_password())
     user = users.get(user_id)
-    if user is None or not hmac.compare_digest(payload.password, str(user.get("password") or "")):
+    if user is None or not verify_password(payload.password, user):
         raise HTTPException(status_code=401, detail="Invalid username or password.")
+    if migrate_verified_password(settings, users, user_id, payload.password):
+        reload_oauth_users()
+        user = users[user_id]
     session = create_web_session(user_id=user_id)
     response = JSONResponse(
         {
@@ -1657,13 +1704,12 @@ async def change_own_password(
     user = users.get(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found.")
-    if not hmac.compare_digest(payload.current_password, str(user.get("password") or "")):
+    if not verify_password(payload.current_password, user):
         raise HTTPException(status_code=401, detail="Current password is incorrect.")
-    user["password"] = payload.new_password
-    users[user_id] = user
+    users[user_id] = set_user_password(user, payload.new_password)
     write_auth_users(settings, users)
     reload_oauth_users()
-    return {"user": public_auth_user(user)}
+    return {"user": public_auth_user(users[user_id])}
 
 
 @app.get("/admin/users")
@@ -1698,11 +1744,11 @@ async def create_auth_user_endpoint(
         raise HTTPException(status_code=409, detail="User already exists.")
     users[user_id] = {
         "id": user_id,
-        "password": payload.password,
         "display_name": payload.display_name or user_id,
         "email": payload.email or "",
         "superuser": str(payload.superuser).lower(),
     }
+    users[user_id] = set_user_password(users[user_id], payload.password)
     write_auth_users(settings, users)
     reload_oauth_users()
     return {"user": public_auth_user(users[user_id])}
@@ -1730,7 +1776,7 @@ async def update_auth_user_endpoint(
     if payload.password is not None:
         if not payload.password:
             raise HTTPException(status_code=400, detail="Password cannot be blank.")
-        updated["password"] = payload.password
+        updated = set_user_password(updated, payload.password)
     if payload.display_name is not None:
         updated["display_name"] = payload.display_name or normalized
     if payload.email is not None:
@@ -2548,6 +2594,8 @@ async def call_tool(
         status="succeeded",
         response=result,
     )
+    if surface == MCP_SURFACE_CHATGPT_APP:
+        return app_safe_tool_response(name, result)
     return result
 
 
@@ -3286,6 +3334,245 @@ def source_without_text(source: dict[str, Any] | None) -> dict[str, Any] | None:
     return {key: value for key, value in source.items() if key != "text"}
 
 
+APP_FORBIDDEN_KEYS = {
+    "user_id",
+    "client_id",
+    "request_id",
+    "remote_addr",
+    "metadata_json",
+    "source_metadata_json",
+    "content_hash",
+    "projection_hash",
+    "input_hash",
+    "agent_memory_dataset",
+    "resolved_agent_memory_dataset",
+    "dataset",
+    "resolved_dataset",
+    "token",
+    "access_token",
+    "refresh_token",
+    "password",
+    "password_hash",
+}
+
+APP_SAFE_RECORD_KEYS = {
+    "id",
+    "context_id",
+    "proposal_id",
+    "source_id",
+    "status",
+    "statement",
+    "summary",
+    "kind",
+    "scope",
+    "source",
+    "created",
+    "dry_run",
+    "created_at",
+    "updated_at",
+    "type",
+    "canonical_name",
+    "description",
+    "attributes",
+    "rating",
+    "tried",
+    "wanted",
+    "watched",
+    "listened",
+    "notes",
+    "confidence",
+    "tool_name",
+    "confirmed_by_user",
+    "target_id",
+}
+
+
+def app_safe_tool_response(tool_name: str, response: dict[str, Any]) -> dict[str, Any]:
+    structured = to_jsonable(response.get("structuredContent") if isinstance(response, dict) else {})
+    safe_structured = app_safe_payload(tool_name, structured)
+    summary = "Brain tool call complete."
+    for item in response.get("content", []) if isinstance(response, dict) else []:
+        if isinstance(item, dict) and item.get("type") == "text" and item.get("text"):
+            summary = str(item["text"])
+            break
+    return {
+        "content": [{"type": "text", "text": summary}],
+        "structuredContent": safe_structured,
+        "isError": bool(response.get("isError")) if isinstance(response, dict) else False,
+    }
+
+
+def app_safe_payload(tool_name: str, payload: Any) -> Any:
+    if not isinstance(payload, dict):
+        return redact_app_value(payload)
+    if tool_name == "brain_session":
+        return {
+            "session_id": payload.get("session_id"),
+            "profile_name": payload.get("profile_name"),
+            "profile_full_name": payload.get("profile_full_name"),
+            "profile_context": payload.get("profile_context") or [],
+            "profile_context_records": [
+                app_safe_record(item)
+                for item in payload.get("profile_context_records", [])
+                if isinstance(item, dict)
+            ],
+            "memory_tool": payload.get("memory_tool"),
+            "recall_tool": payload.get("recall_tool"),
+            "profile_context_remember_tool": payload.get("profile_context_remember_tool"),
+            "profile_context_list_tool": payload.get("profile_context_list_tool"),
+            "profile_context_forget_tool": payload.get("profile_context_forget_tool"),
+            "bias_prompt": payload.get("bias_prompt"),
+            "agent_memory_prompt": payload.get("agent_memory_prompt"),
+            "agent_memory_workflow": payload.get("agent_memory_workflow"),
+            "agent_memory_recall_tool": payload.get("agent_memory_recall_tool"),
+        }
+    if tool_name == "brain_app_data_controls":
+        return {
+            "app_write_audit": [
+                app_safe_record(item)
+                for item in payload.get("app_write_audit", [])
+                if isinstance(item, dict)
+            ],
+            "profile_context": [
+                app_safe_record(item)
+                for item in payload.get("profile_context", [])
+                if isinstance(item, dict)
+            ],
+            "preprompt_items": [
+                app_safe_record(item)
+                for item in payload.get("preprompt_items", [])
+                if isinstance(item, dict)
+            ],
+            "recent_memory_cards": [
+                app_safe_record(item)
+                for item in payload.get("recent_memory_cards", [])
+                if isinstance(item, dict)
+            ],
+            "open_loops": [
+                app_safe_record(item)
+                for item in payload.get("open_loops", [])
+                if isinstance(item, dict)
+            ],
+        }
+    if tool_name in {"brain_profile_context_list"}:
+        return {
+            "profile_context": [
+                app_safe_record(item)
+                for item in payload.get("profile_context", [])
+                if isinstance(item, dict)
+            ]
+        }
+    if tool_name == "brain_remember":
+        return {
+            "classification": payload.get("classification"),
+            "dry_run": bool(payload.get("dry_run")),
+            "memory_cards": [
+                app_safe_record(item)
+                for item in payload.get("memory_cards", [])
+                if isinstance(item, dict)
+            ],
+            "open_loops": [
+                app_safe_record(item)
+                for item in payload.get("open_loops", [])
+                if isinstance(item, dict)
+            ],
+            "conflicts": [
+                app_safe_record(item)
+                for item in payload.get("conflicts", [])
+                if isinstance(item, dict)
+            ],
+            "taste": app_safe_taste(payload.get("taste")),
+        }
+    if tool_name == "brain_ingest_source":
+        return {
+            "source_id": payload.get("source_id"),
+            "status": payload.get("status"),
+            "summary": payload.get("summary"),
+            "memory_cards_created": payload.get("memory_cards_created") or [],
+            "cognee_sync_status": payload.get("cognee_sync_status"),
+            "ingestion": app_safe_record(payload.get("ingestion") or {}),
+        }
+    if tool_name in {"brain_recall", "brain_profile_entity"}:
+        return {
+            "answer": payload.get("answer"),
+            "facts": [app_safe_record(item) for item in payload.get("facts", []) if isinstance(item, dict)],
+            "evidence": [
+                app_safe_record(item)
+                for item in payload.get("evidence", [])
+                if isinstance(item, dict)
+            ],
+            "open_loops": [
+                app_safe_record(item)
+                for item in payload.get("open_loops", [])
+                if isinstance(item, dict)
+            ],
+            "taste": redact_app_value(payload.get("taste")),
+        }
+    if tool_name == "brain_review_recent":
+        return {
+            "ingestion_runs": [
+                app_safe_record(item)
+                for item in payload.get("ingestion_runs", [])
+                if isinstance(item, dict)
+            ],
+            "sources": [app_safe_record(item) for item in payload.get("sources", []) if isinstance(item, dict)],
+            "memory_cards": [
+                app_safe_record(item)
+                for item in payload.get("memory_cards", [])
+                if isinstance(item, dict)
+            ],
+            "conflicts": [
+                app_safe_record(item)
+                for item in payload.get("conflicts", [])
+                if isinstance(item, dict)
+            ],
+        }
+    if tool_name == "brain_get_memory":
+        memory = payload.get("memory")
+        return {"memory": app_safe_record(memory) if isinstance(memory, dict) else None}
+    return redact_app_value(payload)
+
+
+def app_safe_record(record: dict[str, Any]) -> dict[str, Any]:
+    safe: dict[str, Any] = {}
+    for key in APP_SAFE_RECORD_KEYS:
+        if key in record:
+            safe[key] = redact_app_value(record[key])
+    if not safe and isinstance(record, dict):
+        return redact_app_value(record)
+    return safe
+
+
+def app_safe_taste(value: Any) -> Any:
+    if not isinstance(value, dict):
+        return redact_app_value(value)
+    proposal = value.get("proposal") if isinstance(value.get("proposal"), dict) else {}
+    return {
+        "requires_confirmation": value.get("requires_confirmation"),
+        "proposal_id": value.get("proposal_id") or proposal.get("proposal_id"),
+        "warnings": value.get("warnings") or proposal.get("warnings") or [],
+        "route": redact_app_value(proposal.get("route")),
+        "proposed_taste_records": [
+            app_safe_record(item)
+            for item in proposal.get("proposed_taste_records", [])
+            if isinstance(item, dict)
+        ],
+        "allowed_actions": proposal.get("allowed_actions") or value.get("allowed_actions") or [],
+    }
+
+
+def redact_app_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: redact_app_value(item)
+            for key, item in value.items()
+            if key not in APP_FORBIDDEN_KEYS and not key.endswith("_json")
+        }
+    if isinstance(value, list):
+        return [redact_app_value(item) for item in value]
+    return value
+
+
 def normalize_conflict_resolution(payload: dict[str, Any]) -> dict[str, Any]:
     normalized = {
         "status": "resolved",
@@ -3307,6 +3594,23 @@ def normalize_conflict_resolution(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def read_resource(uri: str, *, request_context: McpRequestContext | None = None) -> dict[str, Any]:
+    if uri == APP_COMPONENT_RESOURCE_URI:
+        return {
+            "contents": [
+                {
+                    "uri": uri,
+                    "mimeType": "text/html+skybridge",
+                    "text": brain_app_component_html(),
+                    "_meta": {
+                        "openai/widgetDescription": "Review recent Brain memories, open loops, profile context, and app write activity.",
+                        "openai/widgetCSP": {
+                            "connect_domains": [settings.brain_public_base_url.rstrip("/")],
+                            "resource_domains": [settings.brain_public_base_url.rstrip("/")],
+                        },
+                    },
+                }
+            ]
+        }
     payload = resource_payload(uri, request_context=request_context)
     if payload is None:
         raise ValueError(f"Unknown Brain resource: {uri}")
@@ -3319,6 +3623,82 @@ def read_resource(uri: str, *, request_context: McpRequestContext | None = None)
             }
         ]
     }
+
+
+def brain_app_component_html() -> str:
+    return """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; padding: 14px; background: #f7f8fa; color: #18202a; }
+    main { display: grid; gap: 12px; }
+    h1 { margin: 0; font-size: 18px; }
+    h2 { margin: 0 0 6px; font-size: 13px; color: #526071; text-transform: uppercase; letter-spacing: .04em; }
+    section { border: 1px solid #d8dee8; background: #fff; border-radius: 8px; padding: 12px; }
+    button { border: 1px solid #c9d1dd; border-radius: 6px; background: #fff; padding: 7px 10px; font: inherit; cursor: pointer; }
+    .toolbar { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+    .list { display: grid; gap: 8px; }
+    .item { border-top: 1px solid #edf0f5; padding-top: 8px; }
+    .muted { color: #657386; font-size: 12px; }
+    pre { white-space: pre-wrap; word-break: break-word; margin: 0; font-size: 12px; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #101114; color: #f3f4f6; }
+      section, button { background: #191b20; border-color: #333946; color: #f3f4f6; }
+      .item { border-top-color: #333946; }
+      .muted { color: #a9b1bd; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="toolbar">
+      <h1>Brain</h1>
+      <button id="refresh" type="button">Refresh</button>
+    </div>
+    <section><h2>Session</h2><div id="session" class="muted">Loading...</div></section>
+    <section><h2>Recent Memory</h2><div id="memories" class="list"></div></section>
+    <section><h2>Profile Context</h2><div id="profile" class="list"></div></section>
+    <section><h2>Open Loops</h2><div id="loops" class="list"></div></section>
+    <section><h2>App Writes</h2><div id="audit" class="list"></div></section>
+  </main>
+  <script>
+    const callTool = async (name, arguments_ = {}) => {
+      if (!window.openai || !window.openai.callTool) throw new Error("ChatGPT app bridge is unavailable.");
+      return await window.openai.callTool(name, arguments_);
+    };
+    const text = (value) => String(value ?? "");
+    const renderList = (id, items, formatter) => {
+      const el = document.getElementById(id);
+      el.innerHTML = "";
+      if (!items || !items.length) { el.innerHTML = '<div class="muted">No records.</div>'; return; }
+      for (const item of items.slice(0, 12)) {
+        const row = document.createElement("div");
+        row.className = "item";
+        row.innerHTML = formatter(item);
+        el.appendChild(row);
+      }
+    };
+    async function refresh() {
+      try {
+        const session = await callTool("brain_session", {});
+        const controls = await callTool("brain_app_data_controls", { limit: 20 });
+        document.getElementById("session").textContent = `Session ${text(session.session_id)} · ${text(session.profile_name)}`;
+        renderList("memories", controls.recent_memory_cards, (m) => `<strong>${text(m.kind || "memory")}</strong><pre>${text(m.statement || m.summary)}</pre><div class="muted">${text(m.id)}</div>`);
+        renderList("profile", controls.profile_context, (p) => `<pre>${text(p.statement)}</pre><div class="muted">${text(p.scope)} · ${text(p.id)}</div>`);
+        renderList("loops", controls.open_loops, (l) => `<pre>${text(l.statement || l.summary)}</pre><div class="muted">${text(l.status)} · ${text(l.id)}</div>`);
+        renderList("audit", controls.app_write_audit, (a) => `<strong>${text(a.tool_name)}</strong><div>${text(a.status)} · confirmed ${text(a.confirmed_by_user)}</div><div class="muted">${text(a.summary)}</div>`);
+      } catch (error) {
+        document.getElementById("session").textContent = error.message || String(error);
+      }
+    }
+    document.getElementById("refresh").addEventListener("click", refresh);
+    refresh();
+  </script>
+</body>
+</html>"""
 
 
 def resource_payload(uri: str, *, request_context: McpRequestContext | None = None) -> Any:

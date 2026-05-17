@@ -75,6 +75,12 @@ def test_brain_app_ui_routes() -> None:
     assert "Brain Terms" in terms_response.text
     assert support_response.status_code == 200
     assert "Brain Support" in support_response.text
+    for page_response in (root_response, privacy_response, terms_response, support_response):
+        assert "frame-ancestors" in page_response.headers["content-security-policy"]
+        assert "chatgpt.com" in page_response.headers["content-security-policy"]
+        assert page_response.headers["strict-transport-security"].startswith("max-age=")
+        assert page_response.headers["referrer-policy"] == "no-referrer"
+        assert page_response.headers["x-content-type-options"] == "nosniff"
     assert "mcpCall" in js_response.text
     assert "loginUser" in js_response.text
     assert "csrfHeader" in js_response.text
@@ -227,7 +233,14 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     palate_confirm = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_confirm")
     for tool in response.json()["result"]["tools"]:
         assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
-        assert tool["_meta"]["ui"] == {"visibility": ["model"]}
+        if tool["name"] in {"brain_session", "brain_review_recent", "brain_app_data_controls"}:
+            assert tool["_meta"]["ui"] == {
+                "visibility": ["model", "app"],
+                "resourceUri": "ui://brain/review.html",
+            }
+            assert tool["_meta"]["openai/outputTemplate"] == "ui://brain/review.html"
+        else:
+            assert tool["_meta"]["ui"] == {"visibility": ["model"]}
         assert tool["_meta"]["openai/visibility"] == "public"
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoking"], str)
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoked"], str)
@@ -426,6 +439,7 @@ def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> 
     assert confirmed_response.status_code == 200
     context_id = confirmed_response.json()["result"]["structuredContent"]["id"]
     assert controls_response.status_code == 200
+    assert len(controls_response.json()["result"]["content"]) == 1
     controls = controls_response.json()["result"]["structuredContent"]
     assert any(item["id"] == context_id for item in controls["profile_context"])
     assert any(
@@ -434,6 +448,17 @@ def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> 
         and item["confirmed_by_user"] == 1
         for item in controls["app_write_audit"]
     )
+    controls_json = json.dumps(controls)
+    for forbidden in [
+        "user_id",
+        "password",
+        "password_hash",
+        "client_id",
+        "request_id",
+        "remote_addr",
+        "resolved_agent_memory_dataset",
+    ]:
+        assert forbidden not in controls_json
 
 
 def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
@@ -1052,11 +1077,21 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
             "params": {"uri": "brain://schema/memory-card"},
         },
     )
+    component_response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "resources/read",
+            "params": {"uri": "ui://brain/review.html"},
+        },
+    )
 
     assert list_response.status_code == 200
     assert {
         resource["uri"] for resource in list_response.json()["result"]["resources"]
     } == {
+        "ui://brain/review.html",
         "brain://schema/memory-card",
         "brain://schema/source",
         "brain://schema/entity",
@@ -1072,6 +1107,11 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
     content = read_response.json()["result"]["contents"][0]
     assert content["uri"] == "brain://schema/memory-card"
     assert json.loads(content["text"])["schema"] == "memory-card"
+    assert component_response.status_code == 200
+    component = component_response.json()["result"]["contents"][0]
+    assert component["mimeType"] == "text/html+skybridge"
+    assert "window.openai.callTool" in component["text"]
+    assert component["_meta"]["openai/widgetCSP"]["connect_domains"]
 
 
 def test_agent_memory_protocol_prompt_can_be_inserted_with_session_id() -> None:
@@ -1619,13 +1659,12 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
         brain_user_id="default",
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
-    assert session_payload["user_id"] == "user_b"
+    assert "user_id" not in session_payload
     assert session_payload["session_id"] == agent_memory_session_id_for_user(user_b_settings)
-    assert session_payload["resolved_agent_memory_dataset"] == agent_memory_dataset_for_user(user_b_settings)
+    assert "resolved_agent_memory_dataset" not in session_payload
     assert session_payload["session_id"] != agent_memory_session_id_for_user(default_settings)
-    assert session_payload["resolved_agent_memory_dataset"] != agent_memory_dataset_for_user(default_settings)
     assert profile_response.status_code == 200
-    assert profile_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
+    assert "user_id" not in profile_response.json()["result"]["structuredContent"]
     assert http_response.status_code == 200
 
     assert BrainStore(user_b_settings).search_memory("tenant scoped coffee")
@@ -1692,17 +1731,18 @@ def test_superuser_can_manage_auth_users_without_restart(tmp_path) -> None:
     assert list_response.json()["current_user_id"] == "admin"
     assert all("password" not in user for user in list_response.json()["users"])
     assert create_response.status_code == 201
-    assert create_response.json()["user"] == {
-        "id": "user_b",
-        "display_name": "User B",
-        "email": "user-b@example.com",
-        "superuser": False,
-    }
+    assert create_response.json()["user"]["id"] == "user_b"
+    assert create_response.json()["user"]["display_name"] == "User B"
+    assert create_response.json()["user"]["email"] == "user-b@example.com"
+    assert create_response.json()["user"]["superuser"] is False
+    assert create_response.json()["user"]["password_scheme"] == "argon2id"
     assert update_response.status_code == 200
     assert update_response.json()["user"]["display_name"] == "User Bee"
     assert forbidden_response.status_code == 403
     stored = json.loads(users_file.read_text(encoding="utf-8"))
-    assert any(record["id"] == "user_b" and record["password"] == "pass-b" for record in stored)
+    user_b = next(record for record in stored if record["id"] == "user_b")
+    assert "password" not in user_b
+    assert user_b["password_hash"].startswith("$argon2id$")
 
 
 def test_superuser_cannot_delete_self_or_last_superuser(tmp_path) -> None:
@@ -1782,7 +1822,7 @@ def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> N
     assert "httponly" in login_response.headers["set-cookie"].lower()
     assert no_csrf_response.status_code == 403
     assert session_response.status_code == 200
-    assert session_response.json()["result"]["structuredContent"]["user_id"] == "daniele"
+    assert "user_id" not in session_response.json()["result"]["structuredContent"]
     assert internal_response.status_code == 403
     assert session_info.status_code == 200
     assert session_info.json()["user"]["id"] == "daniele"

@@ -236,6 +236,15 @@ on `/admin/mcp`.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
+The app surface also exposes the embedded Apps SDK component resource
+`ui://brain/review.html`. `brain_session`, `brain_review_recent`, and
+`brain_app_data_controls` advertise that resource as their OpenAI output
+template so ChatGPT can render a compact review panel. Tool-call responses on
+this surface are minimized to one short text content item plus redacted
+structured content; internal user ids, OAuth client ids, request ids, datasets,
+tokens, raw metadata JSON, and password fields are stripped from the app-facing
+payload.
+
 ## Authentication
 
 Local development usually runs with:
@@ -305,12 +314,16 @@ Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 secret handling.
 
 For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
-records with `id`/`user_id`, `password`, optional `display_name`, optional
-`email`, and optional `superuser` fields. OAuth authorization stores the selected
-`user_id` in issued tokens; HTTP and MCP memory operations then scope Brain DB
-rows, profile context files, Palate data, recall logs, and app audit records to
-that user. Auth-enabled deployments fail closed if the configured users file is
-missing or empty.
+records with `id`/`user_id`, an Argon2id `password_hash`, optional
+`password_scheme`, optional `password_updated_at`, optional `display_name`,
+optional `email`, and optional `superuser` fields. Legacy records with a
+plaintext `password` are accepted only for migration; after successful login, or
+after running `scripts/migrate_auth_user_passwords.py`, Brain rewrites the
+registry without plaintext password fields. OAuth authorization stores the
+selected `user_id` in issued tokens; HTTP and MCP memory operations then scope
+Brain DB rows, profile context files, Palate data, recall logs, and app audit
+records to that user. Auth-enabled deployments fail closed if the configured
+users file is missing or empty.
 
 Superusers can manage users from the Brain dashboard's User Admin tab. The
 dashboard calls the admin HTTP endpoints below with the user's web session and
@@ -325,6 +338,7 @@ DELETE /admin/users/{user_id}
 
 These endpoints require full Brain auth plus a superuser user record. They never
 return passwords and refresh the in-process OAuth user registry after edits.
+Created or changed passwords are stored as Argon2id hashes.
 
 ## MCP Over HTTP
 
@@ -629,7 +643,11 @@ route behavior, OAuth metadata when auth is enabled, and backup manifests unless
 `--skip-backups` is used. The Cloudflare verifier checks DNS/TLS, public curated
 and admin MCP URLs, dashboard, privacy, terms, and support pages, OAuth
 protected-resource metadata, and the authenticated public app MCP surface when
-auth is enabled.
+auth is enabled. It also checks browser security headers, ChatGPT App tool
+descriptor metadata, and the embedded component resource. For authenticated
+verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and
+`BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and
+`BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 ## Troubleshooting
 
@@ -665,4 +683,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 232f75068a187bf88cc398e9312f145b4f96508ed5f8a13f6d102ee612e83c83 -->
+<!-- brain-doc-source-hash: bd80734aa237c3c7b19796d771f7edb685f57e78fe3f9b5b4923c0443a26e3f5 -->

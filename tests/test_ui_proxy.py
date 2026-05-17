@@ -115,6 +115,12 @@ def load_ui_proxy(monkeypatch):
     monkeypatch.setenv("BRAIN_AUTH_PASSWORD", "test-password")
     monkeypatch.setenv("BRAIN_PUBLIC_BASE_URL", "https://brain.dceb.net")
     monkeypatch.setenv("BRAIN_PUBLIC_UI_API_PATH", "/ui-api")
+    monkeypatch.setenv("BRAIN_UI_BACKEND_PROTOCOL", "https")
+    monkeypatch.setenv("BRAIN_UI_BACKEND_HOST", "127.0.0.1")
+    monkeypatch.setenv("BRAIN_UI_BACKEND_PORT", "8001")
+    monkeypatch.setenv("BRAIN_UI_FRONTEND_PROTOCOL", "http")
+    monkeypatch.setenv("BRAIN_UI_FRONTEND_HOST", "127.0.0.1")
+    monkeypatch.setenv("BRAIN_UI_FRONTEND_PORT", "3000")
 
     import memory_stack.ui_proxy as ui_proxy
 

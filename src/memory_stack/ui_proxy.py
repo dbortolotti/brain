@@ -18,7 +18,14 @@ from memory_stack.icon_assets import (
     BRAIN_FAVICON_PATH,
     BRAIN_ICON_PATH,
 )
-from memory_stack.oauth import ensure_auth_password, load_auth_users, parse_bool, read_form
+from memory_stack.oauth import (
+    ensure_auth_password,
+    load_auth_users,
+    migrate_verified_password,
+    parse_bool,
+    read_form,
+    verify_password,
+)
 
 settings = load_settings()
 auth_password = ensure_auth_password(settings)
@@ -189,7 +196,10 @@ def authenticate_user(user_id: str, password: str) -> dict[str, str] | None:
         except Exception:
             users = {}
         user = users.get(user_id)
-        if user and hmac.compare_digest(password, str(user.get("password") or "")):
+        if user and verify_password(password, user):
+            if migrate_verified_password(settings, users, user_id, password):
+                users = load_auth_users(settings, default_password=auth_password)
+                user = users.get(user_id)
             return user
         return None
     if hmac.compare_digest(password, auth_password):

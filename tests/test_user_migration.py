@@ -7,10 +7,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import migrate_default_user_to_daniele
+import migrate_auth_user_passwords
 import migrate_user_scoped_data
 from memory_stack.brain_service import RecallRequest, RememberRequest, recall, remember
 from memory_stack.cfg import Settings
-from memory_stack.oauth import ensure_auth_password, load_auth_users
+from memory_stack.oauth import ensure_auth_password, load_auth_users, verify_password
 from memory_stack.profile_context import list_profile_context, remember_profile_context
 
 
@@ -29,6 +30,57 @@ def test_auth_users_file_is_required_when_configured(tmp_path: Path) -> None:
         assert "missing-users.json" in str(exc)
     else:
         raise AssertionError("missing BRAIN_AUTH_USERS_FILE should fail closed")
+
+
+def test_migrate_auth_user_passwords_rewrites_legacy_passwords(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    env_file = tmp_path / "brain.env"
+    auth_password_file = tmp_path / "brain-auth-password"
+    auth_users_file = tmp_path / "brain-auth-users.json"
+    auth_password_file.write_text("fallback-pass\n", encoding="utf-8")
+    auth_users_file.write_text(
+        json.dumps([{"id": "daniele", "password": "pass-a", "display_name": "Daniele"}]),
+        encoding="utf-8",
+    )
+    env_file.write_text(
+        "\n".join(
+            [
+                f"BRAIN_AUTH_PASSWORD_FILE={auth_password_file}",
+                f"BRAIN_AUTH_USERS_FILE={auth_users_file}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["migrate_auth_user_passwords.py", "--env-file", str(env_file), "--check"],
+    )
+    assert migrate_auth_user_passwords.main() == 1
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["migrate_auth_user_passwords.py", "--env-file", str(env_file)],
+    )
+    assert migrate_auth_user_passwords.main() == 0
+
+    stored = json.loads(auth_users_file.read_text(encoding="utf-8"))
+    assert stored[0]["password_scheme"] == "argon2id"
+    assert "password" not in stored[0]
+    assert stored[0]["password_hash"].startswith("$argon2id$")
+    assert verify_password("pass-a", stored[0])
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["migrate_auth_user_passwords.py", "--env-file", str(env_file), "--check"],
+    )
+    assert migrate_auth_user_passwords.main() == 0
 
 
 def test_migrate_default_user_to_daniele_moves_data_and_creates_root_registry(
@@ -119,10 +171,12 @@ def test_migrate_default_user_to_daniele_moves_data_and_creates_root_registry(
         "daniele": False,
         "default": True,
     }
-    assert next(record for record in users if record["id"] == "daniele")["password"] == "daniele-pass"
-    assert next(record for record in users if record["id"] == "default")["password"] == root_password_path.read_text(
-        encoding="utf-8"
-    ).strip()
+    daniele_user = next(record for record in users if record["id"] == "daniele")
+    root_user = next(record for record in users if record["id"] == "default")
+    assert "password" not in daniele_user
+    assert "password" not in root_user
+    assert verify_password("daniele-pass", daniele_user)
+    assert verify_password(root_password_path.read_text(encoding="utf-8").strip(), root_user)
     state = json.loads(oauth_state_path.read_text(encoding="utf-8"))
     assert state["clients"] == {"client": {"client_id": "client"}}
     assert state["access_tokens"] == {}
