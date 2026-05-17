@@ -178,6 +178,7 @@ def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> No
         tmp_path,
         {
             "LLM_MODEL": "gpt-5.5",
+            "BRAIN_LLM_ENABLED": "true",
             "LLM_TEMPERATURE": "0.9",
             "LLM_MAX_TOKENS": "123",
             "EMBEDDING_MODEL": "text-embedding-3-small",
@@ -188,6 +189,7 @@ def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> No
     )
 
     values = parse_rendered_env(output.read_text(encoding="utf-8"))
+    assert values["BRAIN_LLM_ENABLED"] == "true"
     assert values["LLM_MODEL"] == "gpt-5.4-mini"
     assert values["LLM_TEMPERATURE"] == "0.0"
     assert values["LLM_MAX_TOKENS"] == "8192"

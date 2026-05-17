@@ -190,6 +190,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
     assert 'enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"' in script
     assert 'enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"' in script
+    assert 'ensure_env_var "BRAIN_LLM_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script

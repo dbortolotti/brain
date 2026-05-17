@@ -280,6 +280,7 @@ if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   log "creating starter $DEPLOY_ENV env at $SECRETS_DIR/brain.env"
   cat >"$SECRETS_DIR/brain.env" <<EOF
 PROFILE=openai
+BRAIN_LLM_ENABLED=false
 LLM_PROVIDER=openai
 LLM_MODEL=gpt-5.4-mini
 LLM_TEMPERATURE=0.0
@@ -449,6 +450,7 @@ set_env_var "DB_HOST" "127.0.0.1"
 set_env_var "DB_PORT" "$DB_PORT"
 set_env_var "DB_USERNAME" "cognee"
 set_env_var "DB_PASSWORD" "cognee"
+ensure_env_var "BRAIN_LLM_ENABLED" "false"
 ensure_env_var "BRAIN_TASTE_ENABLED" "true"
 ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"
 ensure_env_var "BRAIN_TASTE_AUTO_ENRICH_ENABLED" "true"
