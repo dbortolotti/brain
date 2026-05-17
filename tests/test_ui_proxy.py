@@ -97,6 +97,20 @@ def test_cognee_login_uses_user_registry_and_admin_requires_superuser(monkeypatc
     assert client.get("/admin/cognee", follow_redirects=False).status_code == 403
 
 
+def test_cognee_login_asks_for_username_without_autosuggest(monkeypatch) -> None:
+    ui_proxy = load_ui_proxy(monkeypatch)
+    client = TestClient(ui_proxy.app)
+
+    response = client.get("/cognee-login")
+
+    assert response.status_code == 200
+    assert '<label for="user_id">Username</label>' in response.text
+    assert 'placeholder="username"' in response.text
+    assert 'autocomplete="off"' in response.text
+    assert 'autocomplete="username"' not in response.text
+    assert 'value="default"' not in response.text
+
+
 def load_ui_proxy(monkeypatch):
     monkeypatch.setenv("BRAIN_AUTH_PASSWORD", "test-password")
     monkeypatch.setenv("BRAIN_PUBLIC_BASE_URL", "https://brain.dceb.net")

@@ -532,14 +532,10 @@ def auth_form(
     error_html = f'<p class="error">{escape(error)}</p>' if error else ""
     user_values = list((users or {}).values())
     user_html = ""
-    if len(user_values) > 1:
-        options = "\n".join(
-            f'<option value="{escape(user["id"], quote=True)}">{escape(user.get("display_name") or user["id"])}</option>'
-            for user in user_values
-        )
+    if user_values:
         user_html = f"""
-        <label for="user_id">User</label>
-        <select id="user_id" name="user_id">{options}</select>
+        <label for="user_id">Username</label>
+        <input id="user_id" name="user_id" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="username">
         """
     html = f"""<!doctype html>
 <html lang="en">
@@ -601,11 +597,11 @@ def auth_form(
       <h1>Authorize {safe_service}</h1>
       <p>Enter the {safe_service} auth password to connect this MCP client.</p>
       {error_html}
-      <form method="post" action="{safe_action}">
+      <form method="post" action="{safe_action}" autocomplete="off">
         <input type="hidden" name="request_id" value="{safe_request_id}">
         {user_html}
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" autofocus>
+        <input id="password" name="password" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus>
         <button type="submit">Authorize</button>
       </form>
     </main>

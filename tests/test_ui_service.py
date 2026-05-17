@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from memory_stack.ui_service import isolate_frontend_cache
 
 
@@ -35,3 +37,13 @@ def test_isolate_frontend_cache_refreshes_on_version_change(tmp_path) -> None:
 
     assert (target / "package.json").read_text(encoding="utf-8") == '{"version":"new"}'
     assert (cache_root / "version.txt").read_text(encoding="utf-8").strip() == "new"
+
+
+def test_dashboard_login_asks_for_username_without_autosuggest() -> None:
+    html = Path("src/memory_stack/static/brain_app/index.html").read_text(encoding="utf-8")
+
+    assert 'id="loginForm" class="login-panel" autocomplete="off"' in html
+    assert 'id="loginUserId"' in html
+    assert 'aria-label="Username"' in html
+    assert 'placeholder="username"' in html
+    assert 'autocomplete="username"' not in html

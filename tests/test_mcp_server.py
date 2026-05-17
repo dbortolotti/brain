@@ -1464,6 +1464,11 @@ def test_oauth_authorization_code_flow(tmp_path) -> None:
             },
         )
         assert authorize_response.status_code == 200
+        assert '<label for="user_id">Username</label>' in authorize_response.text
+        assert 'placeholder="username"' in authorize_response.text
+        assert 'autocomplete="off"' in authorize_response.text
+        assert "Daniele Bortolotti" not in authorize_response.text
+        assert "autocomplete=\"username\"" not in authorize_response.text
         request_id_match = re.search(
             r'name="request_id" value="([^"]+)"',
             authorize_response.text,

@@ -329,12 +329,12 @@ def login_form(*, next_path: str, error: str | None = None) -> HTMLResponse:
       <h1>Brain UI</h1>
       <p>Sign in with your Brain user to open the Cognee web UI.</p>
       {error_html}
-      <form method="post" action="/cognee-login">
+      <form method="post" action="/cognee-login" autocomplete="off">
         <input type="hidden" name="next" value="{safe_next}">
-        <label for="user_id">User ID</label>
-        <input id="user_id" name="user_id" type="text" autocomplete="username" value="{escape(settings.brain_user_id, quote=True)}" autofocus>
+        <label for="user_id">Username</label>
+        <input id="user_id" name="user_id" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="username" autofocus>
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password">
+        <input id="password" name="password" type="password" autocomplete="off" autocapitalize="none" spellcheck="false">
         <button type="submit">Open UI</button>
       </form>
     </main>
