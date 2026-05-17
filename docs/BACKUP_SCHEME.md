@@ -75,7 +75,10 @@ Local prod and staging deploys install a daily launchd backup job from
 `deployment/launchd/com.brain.backup.plist.template`. The rendered production
 label is `com.brain.prod.backup`; staging renders as `com.brain.staging.backup`.
 The job runs `scripts/backup_stores.py` against the environment's shared
-`brain.env` at 02:15.
+`brain.env` at 03:30, after the daily agent-memory/Cognee improvement job starts
+at 03:00. Before taking the snapshot, the backup job waits for the corresponding
+agent-memory launchd job to stop; if that job is still running after three
+hours, backup exits non-zero instead of snapshotting mid-cognify.
 
 Use the configured environment:
 
@@ -405,4 +408,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: bf4ce5934c7e6be6e789dd506fc1e13db1aac40238bcc5d90177a0bf4222450d -->
+<!-- brain-doc-source-hash: 665e2bc3641f402e755f081f8cb0c9866015986bb59ddff56b7cf385b9dd009b -->

@@ -10,7 +10,7 @@
   <array>
     <string>/bin/zsh</string>
     <string>-lc</string>
-    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python scripts/backup_stores.py</string>
+    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; deadline=$((SECONDS+10800)); while launchctl print gui/$(id -u)/com.brain.prod.agent-memory 2&gt;/dev/null | /usr/bin/grep -q 'state = running'; do if [ "$SECONDS" -ge "$deadline" ]; then echo 'agent-memory still running after timeout; skipping backup' &gt;&amp;2; exit 1; fi; /bin/sleep 60; done; exec /opt/homebrew/bin/uv run python scripts/backup_stores.py</string>
   </array>
 
   <key>WorkingDirectory</key>
@@ -19,9 +19,9 @@
   <key>StartCalendarInterval</key>
   <dict>
     <key>Hour</key>
-    <integer>2</integer>
+    <integer>3</integer>
     <key>Minute</key>
-    <integer>15</integer>
+    <integer>30</integer>
   </dict>
 
   <key>EnvironmentVariables</key>

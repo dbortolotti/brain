@@ -290,14 +290,17 @@ def test_backup_launchd_runs_daily_after_agent_memory() -> None:
 
     assert "com.brain.prod.backup" in plist
     assert "scripts/backup_stores.py" in plist
+    assert "com.brain.prod.agent-memory" in plist
+    assert "state = running" in plist
+    assert "agent-memory still running after timeout; skipping backup" in plist
     assert "/Volumes/xpg_usb4/prod/brain/current" in plist
     assert "ENV_FILE" in plist
     assert "/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env" in plist
     assert "<key>StartCalendarInterval</key>" in plist
     assert "<key>Hour</key>" in plist
-    assert "<integer>2</integer>" in plist
+    assert "<integer>3</integer>" in plist
     assert "<key>Minute</key>" in plist
-    assert "<integer>15</integer>" in plist
+    assert "<integer>30</integer>" in plist
 
 
 def test_cognee_ui_verifier_retries_backend_health() -> None:
