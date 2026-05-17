@@ -437,11 +437,10 @@ def issue_oauth_token(
     hostname: str,
     failures: list[str],
 ) -> tuple[str, str | None, str] | None:
-    password_path = settings.auth_password_path
-    if not password_path.exists():
-        failures.append(f"Brain auth password file does not exist: {password_path}")
+    verifier_user = verifier_oauth_user(settings, failures)
+    if verifier_user is None:
         return None
-    password = password_path.read_text(encoding="utf-8").strip()
+    user_id, password = verifier_user
     redirect_uri = f"https://{hostname}/app/oauth/callback"
     scope = " ".join(settings.oauth_scopes)
     register_payload = {
@@ -490,7 +489,7 @@ def issue_oauth_token(
         method="POST",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         body=urllib.parse.urlencode(
-            {"request_id": request_id_match.group(1), "password": password}
+            {"request_id": request_id_match.group(1), "user_id": user_id, "password": password}
         ).encode("utf-8"),
         follow_redirects=False,
     )
@@ -523,6 +522,41 @@ def issue_oauth_token(
         return None
     refresh_token = token.get("refresh_token")
     return access_token, refresh_token if isinstance(refresh_token, str) else None, client_id
+
+
+def verifier_oauth_user(settings, failures: list[str]) -> tuple[str, str] | None:
+    password_path = settings.auth_password_path
+    if not password_path.exists():
+        failures.append(f"Brain auth password file does not exist: {password_path}")
+        return None
+    fallback_password = password_path.read_text(encoding="utf-8").strip()
+    users_file = getattr(settings, "brain_auth_users_file", None)
+    if not users_file:
+        return settings.brain_user_id, fallback_password
+
+    path = Path(users_file).expanduser()
+    if not path.exists():
+        failures.append(f"Brain auth users file does not exist: {path}")
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    records = payload.values() if isinstance(payload, dict) else payload
+    usable = [
+        record
+        for record in records
+        if isinstance(record, dict) and record.get("id") and record.get("password")
+    ]
+    regular_users = [record for record in usable if not parse_bool(record.get("superuser"))]
+    selected = (regular_users or usable)[0] if usable else None
+    if selected is None:
+        failures.append(f"Brain auth users file contains no usable verifier user: {path}")
+        return None
+    return str(selected["id"]), str(selected["password"])
+
+
+def parse_bool(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
 def revoke_oauth_token(
