@@ -220,6 +220,22 @@ uv run pytest
 Unit tests use clean SQLite databases under `tmp_path`. They do not require live
 network, live LLM calls, live Slack, or live Cognee.
 
+## Docs Automation
+
+Documentation has a deterministic source-of-truth check plus a manual LLM
+refresh path:
+
+```bash
+make docs-generate  # refresh docs/generated/facts.json
+make docs-check     # fail if facts or managed docs are stale
+make docs-llm       # manually rewrite managed docs with the configured LLM
+make docs-hash      # refresh source hashes after manual doc review
+```
+
+The default pre-commit hook and GitHub workflows run `make docs-check`. The LLM
+rewrite hook is manual so normal commits and deploys do not depend on network
+availability or model credentials.
+
 Production deploys additionally run a pre-promotion live model smoke check. The
 default scope is `active`, which makes tiny provider calls to the configured LLM
 and embedding models from the new release before `current` is updated, launchd is
@@ -409,3 +425,5 @@ OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI
 embedding credential. Use API-key mode when you want embeddings to use
 `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for
 explicit eval/smoke experiments.
+
+<!-- brain-doc-source-hash: 758caac6c34615e8576b5d1cd0c2b9ad64300623cc52b9dd80030483134d63ac -->

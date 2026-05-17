@@ -1,0 +1,54 @@
+docs:
+  - path: README.md
+    audience: "Developers and operators getting oriented in the Brain repo."
+    purpose: "Keep the top-level overview, setup, deployment, and release model accurate."
+    sources:
+      - Makefile
+      - pyproject.toml
+      - .github/workflows/deploy-local-staging.yml
+      - .github/workflows/release.yml
+      - docs/production-secrets.md
+      - docs/API_SETUP_GUIDE.md
+  - path: docs/USER_GUIDE.md
+    audience: "End users and ChatGPT/Slack users of Brain."
+    purpose: "Explain how to use Brain, Palate, the user dashboard, and safe memory review."
+    sources:
+      - src/memory_stack/static/brain_app/index.html
+      - src/memory_stack/static/brain_app/app.js
+      - src/memory_stack/mcp_server.py
+      - USER_MANUAL.md
+  - path: USER_MANUAL.md
+    audience: "Advanced users and agents using Brain MCP tools."
+    purpose: "Explain the practical tool model, Brain/Palate/Cognee split, and agent-memory guidance."
+    sources:
+      - src/memory_stack/mcp_server.py
+      - src/memory_stack/agents/shared/memory_agent_rules.md
+      - src/memory_stack/agents/shared/agent_architecture.md
+      - docs/USER_GUIDE.md
+  - path: docs/API_SETUP_GUIDE.md
+    audience: "Developers configuring HTTP, MCP, OAuth, and ChatGPT app access."
+    purpose: "Keep API setup, endpoint, auth, and production verification guidance accurate."
+    sources:
+      - src/memory_stack/mcp_server.py
+      - src/memory_stack/oauth.py
+      - scripts/verify_mcp_production.py
+      - scripts/verify_cloudflare_mcp.py
+      - deployment/mcp/claude_desktop_config.template.json
+  - path: docs/production-secrets.md
+    audience: "Operators managing staging/prod deploys and release promotion."
+    purpose: "Document secrets, config conflict policy, deployment metadata, and release versioning."
+    sources:
+      - scripts/render_prod_env.py
+      - scripts/deploy-local-production.sh
+      - scripts/verify_mcp_production.py
+      - .github/workflows/deploy-local-staging.yml
+      - .github/workflows/release.yml
+      - .github/workflows/deploy-local-production.yml
+  - path: docs/SLACK_SETUP.md
+    audience: "Operators configuring Slack and users invoking /brain."
+    purpose: "Keep Slack routes, verification, and command behavior aligned with code."
+    sources:
+      - src/memory_stack/slack_agent_server.py
+      - src/memory_stack/slack_agent.py
+      - scripts/verify_slack_agent.py
+      - docs/USER_GUIDE.md

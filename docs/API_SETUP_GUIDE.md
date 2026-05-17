@@ -606,3 +606,5 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Slack Setup](SLACK_SETUP.md) covers Slack app and route configuration.
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
+
+<!-- brain-doc-source-hash: 5b0ec394b8dc2af674915bb7c8f9df52966f56a5901141989c9af4d1d24cf6bb -->

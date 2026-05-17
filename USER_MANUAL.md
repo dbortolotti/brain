@@ -764,3 +764,5 @@ Use Palate for taste.
 Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
+
+<!-- brain-doc-source-hash: 877e06ec6ddfe3efb7ace3a5ac6e9d3fde6c60145757dd652986e5e142361684 -->

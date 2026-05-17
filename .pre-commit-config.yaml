@@ -1,0 +1,19 @@
+repos:
+  - repo: local
+    hooks:
+      - id: docs-check
+        name: Check generated docs are current
+        entry: make docs-check
+        language: system
+        pass_filenames: false
+      - id: ruff
+        name: Ruff
+        entry: uv run ruff check src tests scripts
+        language: system
+        pass_filenames: false
+      - id: docs-llm-generate
+        name: Generate LLM docs
+        entry: make docs-llm
+        language: system
+        pass_filenames: false
+        stages: [manual]

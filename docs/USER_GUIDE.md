@@ -515,3 +515,5 @@ Use Brain to recall the current project state for Slack intake and include any c
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret
   handling.
+
+<!-- brain-doc-source-hash: 0b3cb44bff63c96215fc0c6826627fab36f86ec205466a3a85fc9f975ec8baa5 -->

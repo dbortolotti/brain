@@ -1,4 +1,4 @@
-.PHONY: setup up down check model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup agent-memory cloudflare-verify test lint
+.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup agent-memory cloudflare-verify test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_active.json
 MODEL_SMOKE_ARGS ?=
@@ -14,6 +14,18 @@ down:
 
 check:
 	uv run python scripts/check_env.py
+
+docs-generate:
+	uv run python scripts/docs_check.py --update-facts
+
+docs-check:
+	uv run python scripts/docs_check.py
+
+docs-hash:
+	uv run python scripts/docs_llm_generate.py --hash-only
+
+docs-llm:
+	uv run python scripts/docs_llm_generate.py
 
 model-smoke:
 	uv run python scripts/live_model_smoke.py --scope active --json-output $(MODEL_SMOKE_OUTPUT) $(MODEL_SMOKE_ARGS)
