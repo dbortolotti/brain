@@ -56,5 +56,7 @@ def test_dashboard_layout_constrains_work_surface_width() -> None:
     assert "--content-max: 1280px;" in css
     assert "max-width: var(--content-max);" in css
     assert "margin-inline: auto;" in css
+    assert ".content-head > div" in css
+    assert "overflow-wrap: anywhere;" in css
     assert ".form-row > .field.inline" in css
     assert "flex-basis: 100%;" in css
