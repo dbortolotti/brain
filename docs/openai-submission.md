@@ -14,6 +14,15 @@ the remaining non-code work.
 - Support URL: `https://brain.dceb.net/support`
 - App component resource: `ui://brain/review.v2.html`
 
+The current verified production release is:
+
+- Version: `v2.0.4`
+- Commit: `906f26f00fdb6490123080f1e48e66a8928f70ab`
+- Staging workflow:
+  `https://github.com/dbortolotti/brain/actions/runs/26003993400`
+- Release workflow:
+  `https://github.com/dbortolotti/brain/actions/runs/26004028449`
+
 Run these checks after promoting the staged release:
 
 ```bash
@@ -25,9 +34,12 @@ For authenticated app verification against hashed user registries, configure a
 dedicated non-admin verifier account:
 
 ```bash
-export BRAIN_VERIFIER_USER_ID=brain-verifier
+export BRAIN_VERIFIER_USER_ID=brain_verifier
 export BRAIN_VERIFIER_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password
 ```
+
+Submission-ready copy, reviewer instructions, and screenshots are stored under
+`docs/openai-submission-assets/`.
 
 ## App Review Narrative
 
