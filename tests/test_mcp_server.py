@@ -62,6 +62,7 @@ def test_brain_app_ui_routes() -> None:
     assert "Custom Preprompt Instructions" in root_response.text
     assert "Data Controls" in root_response.text
     assert "User Admin" in root_response.text
+    assert "Endpoint Help" in root_response.text
     assert app_response.status_code == 200
     assert callback_response.status_code == 200
     assert css_response.status_code == 200
@@ -80,6 +81,9 @@ def test_brain_app_ui_routes() -> None:
     assert "refreshPrompt" in js_response.text
     assert "refreshControls" in js_response.text
     assert "refreshUsers" in js_response.text
+    assert "refreshEndpointHelp" in js_response.text
+    assert "/admin/cognee-api/{path}" in js_response.text
+    assert "/slack/commands" in js_response.text
     assert "brain_preprompt" in js_response.text
 
 

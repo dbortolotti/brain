@@ -426,4 +426,4 @@ embedding credential. Use API-key mode when you want embeddings to use
 `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for
 explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 758caac6c34615e8576b5d1cd0c2b9ad64300623cc52b9dd80030483134d63ac -->
+<!-- brain-doc-source-hash: 41c06942ddbb73dd86def2b697ae4d25c5bec8aae9d25c81a55bc1c6b50c4eb7 -->

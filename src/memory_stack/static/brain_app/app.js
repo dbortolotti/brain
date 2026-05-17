@@ -1,9 +1,87 @@
 const state = {
   previewArgs: null,
   latestSession: null,
+  latestHealth: null,
   csrfToken: "",
   currentUser: null,
 };
+
+const endpointGroups = [
+  {
+    title: "User UI",
+    endpoints: [
+      { method: "GET", path: "/", label: "Memory dashboard" },
+      { method: "GET", path: "/user", label: "Memory dashboard alias" },
+      { method: "GET", path: "/cognee", label: "User Cognee UI" },
+      { method: "GET", path: "/cognee-login", label: "Cognee UI sign-in" },
+      { method: "GET", path: "/privacy", label: "Privacy" },
+      { method: "GET", path: "/terms", label: "Terms" },
+      { method: "GET", path: "/support", label: "Support" },
+    ],
+  },
+  {
+    title: "Brain MCP",
+    endpoints: [
+      { method: "GET/POST", path: "/mcp", label: "Curated ChatGPT App MCP" },
+      { method: "GET/POST", path: "/admin/mcp", label: "Admin MCP surface" },
+      { method: "GET/POST", path: "/app/mcp", label: "Legacy curated MCP alias" },
+    ],
+  },
+  {
+    title: "Auth And Account",
+    endpoints: [
+      { method: "POST", path: "/login", label: "Cookie session login" },
+      { method: "POST", path: "/logout", label: "Cookie session logout" },
+      { method: "GET", path: "/auth/session", label: "Current UI session" },
+      { method: "PUT", path: "/account/password", label: "Change own password" },
+      { method: "POST", path: "/register", label: "OAuth client registration" },
+      { method: "POST", path: "/token", label: "OAuth token exchange" },
+      { method: "POST", path: "/revoke", label: "OAuth token revoke" },
+    ],
+  },
+  {
+    title: "Admin",
+    endpoints: [
+      { method: "GET", path: "/admin", label: "Admin dashboard" },
+      { method: "GET/POST", path: "/admin/users", label: "List or create users" },
+      { method: "PUT/DELETE", path: "/admin/users/{user_id}", label: "Update or delete user" },
+      { method: "GET", path: "/admin/cognee", label: "Admin Cognee UI" },
+      { method: "ANY", path: "/admin/cognee-api/{path}", label: "Admin Cognee API proxy" },
+    ],
+  },
+  {
+    title: "Memory HTTP",
+    endpoints: [
+      { method: "POST", path: "/memory/remember", label: "Store memory" },
+      { method: "POST", path: "/memory/ingest_source", label: "Ingest source" },
+      { method: "POST", path: "/memory/recall", label: "Recall memories" },
+      { method: "POST", path: "/memory/profile_entity", label: "Profile entity" },
+      { method: "GET", path: "/memory/open_loops", label: "List open loops" },
+      { method: "GET", path: "/memory/{memory_id}", label: "Read memory" },
+      { method: "POST", path: "/memory/review_recent", label: "Review recent writes" },
+      { method: "POST", path: "/memory/undo_last", label: "Undo latest write" },
+    ],
+  },
+  {
+    title: "Discovery And Health",
+    endpoints: [
+      { method: "GET", path: "/healthz", label: "Brain service health" },
+      { method: "GET", path: "/.well-known/oauth-protected-resource/mcp", label: "MCP resource metadata" },
+      { method: "GET", path: "/.well-known/oauth-protected-resource/admin/mcp", label: "Admin MCP resource metadata" },
+      { method: "GET", path: "/.well-known/oauth-authorization-server", label: "OAuth authorization metadata" },
+      { method: "GET", path: "/icon.png", label: "App icon" },
+    ],
+  },
+  {
+    title: "Slack Agent",
+    endpoints: [
+      { method: "GET", path: "/slack/healthz", label: "Slack service health" },
+      { method: "POST", path: "/slack/events", label: "Slack events" },
+      { method: "POST", path: "/slack/commands", label: "Slash commands" },
+      { method: "POST", path: "/slack/interactions", label: "Block interactions" },
+    ],
+  },
+];
 
 const $ = (id) => document.getElementById(id);
 
@@ -104,6 +182,16 @@ async function refreshSession() {
   }
   setLoggedIn(payload);
   return true;
+}
+
+async function refreshHealth() {
+  const response = await fetch("/healthz");
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.detail || `HTTP ${response.status}`);
+  }
+  state.latestHealth = payload;
+  return payload;
 }
 
 async function loginUser() {
@@ -386,6 +474,31 @@ function promptText(promptPayload) {
   return promptPayload?.messages?.[0]?.content?.text || JSON.stringify(promptPayload, null, 2);
 }
 
+async function refreshEndpointHelp() {
+  setStatus("Loading endpoint help...");
+  const health = await refreshHealth();
+  const baseUrl = (health.public_mcp_url || "").replace(/\/mcp$/, "") || window.location.origin;
+  $("endpointHelp").innerHTML = endpointGroups.map((group) => `
+    <article class="endpoint-group">
+      <h3>${safe(group.title)}</h3>
+      <div class="endpoint-list">
+        ${group.endpoints.map((endpoint) => `
+          <div class="endpoint-row">
+            <span class="endpoint-method">${safe(endpoint.method)}</span>
+            <code>${safe(endpoint.path)}</code>
+            <span>${safe(endpoint.label)}</span>
+          </div>
+        `).join("")}
+      </div>
+    </article>
+  `).join("");
+  $("endpointHelp").insertAdjacentHTML(
+    "afterbegin",
+    `<div class="endpoint-base">Public base: <code>${safe(baseUrl)}</code></div>`,
+  );
+  setStatus("Endpoint help loaded.");
+}
+
 function renderEditableProfileItems(target, rows, emptyText) {
   target.innerHTML = "";
   if (!rows || rows.length === 0) {
@@ -461,6 +574,9 @@ function showTab(tabName) {
   if (tabName === "users" && state.currentUser?.superuser) {
     refreshUsers().catch((error) => setStatus(error.message, true));
   }
+  if (tabName === "help") {
+    refreshEndpointHelp().catch((error) => setStatus(error.message, true));
+  }
 }
 
 async function loadInitialData() {
@@ -491,6 +607,7 @@ function wireEvents() {
   $("refreshPrompt").addEventListener("click", () => refreshPrompt().catch((error) => setStatus(error.message, true)));
   $("refreshControls").addEventListener("click", () => refreshControls().catch((error) => setStatus(error.message, true)));
   $("refreshUsers").addEventListener("click", () => refreshUsers().catch((error) => setStatus(error.message, true)));
+  $("refreshEndpointHelp").addEventListener("click", () => refreshEndpointHelp().catch((error) => setStatus(error.message, true)));
   $("passwordForm").addEventListener("submit", (event) => {
     event.preventDefault();
     changePassword().catch((error) => setStatus(error.message, true));
