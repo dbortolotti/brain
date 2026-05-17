@@ -83,7 +83,7 @@ def test_brain_app_ui_routes() -> None:
 
 def test_mcp_initialize() -> None:
     client = TestClient(app)
-    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
+    response = client.post("/admin/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
     assert response.status_code == 200
     assert response.json()["result"]["protocolVersion"] == "2024-11-05"
     server_info = response.json()["result"]["serverInfo"]
@@ -101,7 +101,7 @@ def test_mcp_initialize() -> None:
 def test_mcp_initialize_negotiates_requested_protocol_version() -> None:
     client = TestClient(app)
     response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 1,
@@ -115,7 +115,7 @@ def test_mcp_initialize_negotiates_requested_protocol_version() -> None:
 
 def test_datasource_tools_are_listed() -> None:
     client = TestClient(app)
-    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    response = client.post("/admin/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
 
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
@@ -186,7 +186,7 @@ def test_datasource_tools_are_listed() -> None:
 
 def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     client = TestClient(app)
-    response = client.post("/app/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
 
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
@@ -229,7 +229,7 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
 def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
     client = TestClient(app)
     response = client.post(
-        "/app/mcp",
+        "/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 1,
@@ -252,7 +252,7 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
     try:
         client = TestClient(app, base_url="https://testserver")
         context_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -268,7 +268,7 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
         )
         context_id = context_response.json()["result"]["structuredContent"]["id"]
         unconfirmed_forget = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -280,7 +280,7 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
             },
         )
         confirmed_forget = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 3,
@@ -295,7 +295,7 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
             },
         )
         unconfirmed_undo = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 4,
@@ -323,7 +323,7 @@ def test_chatgpt_app_profile_context_remember_requires_confirmation(tmp_path) ->
     try:
         client = TestClient(app, base_url="https://testserver")
         unconfirmed_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -335,7 +335,7 @@ def test_chatgpt_app_profile_context_remember_requires_confirmation(tmp_path) ->
             },
         )
         confirmed_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -367,7 +367,7 @@ def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> 
     try:
         client = TestClient(app, base_url="https://testserver")
         confirmed_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": "ctx-confirm",
@@ -382,7 +382,7 @@ def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> 
             },
         )
         controls_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -415,7 +415,7 @@ def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
     try:
         client = TestClient(app, base_url="https://testserver")
         preview_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -430,7 +430,7 @@ def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
             },
         )
         confirmed_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -462,7 +462,7 @@ def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
 
 def test_memory_tools_expose_node_set_and_search_options() -> None:
     client = TestClient(app)
-    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    response = client.post("/admin/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
 
     assert response.status_code == 200
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
@@ -551,7 +551,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
 def test_palate_describe_tool_description_covers_read_only_restaurant_requests() -> None:
     client = TestClient(app)
-    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    response = client.post("/admin/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
 
     assert response.status_code == 200
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
@@ -587,7 +587,7 @@ def test_brain_session_returns_configured_identity(tmp_path) -> None:
     try:
         client = TestClient(app, base_url="https://testserver")
         response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -618,7 +618,7 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
     try:
         client = TestClient(app, base_url="https://testserver")
         remember_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -633,7 +633,7 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
             },
         )
         session_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -642,7 +642,7 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
             },
         )
         list_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 3,
@@ -652,7 +652,7 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
         )
         context_id = remember_response.json()["result"]["structuredContent"]["id"]
         forget_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 4,
@@ -690,7 +690,7 @@ def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp
     try:
         client = TestClient(app)
         remember_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -704,7 +704,7 @@ def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp
             },
         )
         sync_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -713,7 +713,7 @@ def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp
             },
         )
         profile_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 3,
@@ -766,7 +766,7 @@ def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch)
     try:
         client = TestClient(app)
         response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -809,7 +809,7 @@ def test_brain_agent_memory_uses_single_session_and_dedicated_dataset(tmp_path, 
     try:
         client = TestClient(app)
         response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -851,7 +851,7 @@ def test_brain_agent_memory_recall_uses_dedicated_dataset(tmp_path, monkeypatch)
     try:
         client = TestClient(app)
         response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -889,7 +889,7 @@ def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -
     try:
         client = TestClient(app)
         rejected = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -901,7 +901,7 @@ def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -
             },
         )
         accepted = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -924,15 +924,15 @@ def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -
 def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
     client = TestClient(app)
     list_response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={"jsonrpc": "2.0", "id": 1, "method": "resources/list"},
     )
     templates_response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={"jsonrpc": "2.0", "id": 2, "method": "resources/templates/list"},
     )
     read_response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 3,
@@ -965,11 +965,11 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
 def test_agent_memory_protocol_prompt_can_be_inserted_with_session_id() -> None:
     client = TestClient(app)
     list_response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={"jsonrpc": "2.0", "id": 1, "method": "prompts/list"},
     )
     get_response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 2,
@@ -1000,7 +1000,7 @@ def test_agent_memory_protocol_prompt_can_be_inserted_with_session_id() -> None:
 def test_agent_memory_protocol_prompt_defaults_to_portable_session() -> None:
     client = TestClient(app)
     response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 1,
@@ -1017,7 +1017,7 @@ def test_agent_memory_protocol_prompt_defaults_to_portable_session() -> None:
 def test_bias_protocol_prompt_can_be_inserted_with_profile_name() -> None:
     client = TestClient(app)
     response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 1,
@@ -1041,7 +1041,7 @@ def test_bias_protocol_prompt_can_be_inserted_with_profile_name() -> None:
 def test_bias_protocol_prompt_defaults_to_owner_name() -> None:
     client = TestClient(app)
     response = client.post(
-        "/mcp",
+        "/admin/mcp",
         json={
             "jsonrpc": "2.0",
             "id": 1,
@@ -1061,7 +1061,7 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
     try:
         client = TestClient(app)
         remember_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -1075,7 +1075,7 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
             },
         )
         recall_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -1113,7 +1113,7 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
     try:
         client = TestClient(app)
         ingest_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -1131,7 +1131,7 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
         ingest_payload = ingest_response.json()["result"]["structuredContent"]
         source_id = ingest_payload["source_id"]
         source_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -1174,7 +1174,7 @@ def test_brain_ingest_source_mcp_background_returns_queued(tmp_path, monkeypatch
     try:
         client = TestClient(app)
         response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -1292,7 +1292,7 @@ def test_low_level_legacy_mcp_tools_are_rejected() -> None:
     ]
     for idx, name in enumerate(stale_names, start=1):
         response = client.post(
-            "/mcp",
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": idx,
@@ -1307,21 +1307,21 @@ def test_low_level_legacy_mcp_tools_are_rejected() -> None:
 def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
-        response = client.get("/mcp")
+        response = client.get("/admin/mcp")
 
     assert response.status_code == 401
     assert "Brain" in response.headers["www-authenticate"]
-    assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
+    assert "oauth-protected-resource/admin/mcp" in response.headers["www-authenticate"]
 
 
 def test_auth_enabled_app_mcp_fails_closed_with_app_resource(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
-        response = client.get("/app/mcp")
+        response = client.get("/mcp")
 
     assert response.status_code == 401
     assert "Brain" in response.headers["www-authenticate"]
-    assert "oauth-protected-resource/app/mcp" in response.headers["www-authenticate"]
+    assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
 
 
 def test_auth_enabled_datasources_fail_closed(tmp_path) -> None:
@@ -1394,7 +1394,7 @@ def test_oauth_authorization_code_flow(tmp_path) -> None:
         assert token_response.status_code == 200
         access_token = token_response.json()["access_token"]
 
-        mcp_response = client.get("/mcp", headers={"Authorization": f"Bearer {access_token}"})
+        mcp_response = client.get("/admin/mcp", headers={"Authorization": f"Bearer {access_token}"})
         assert mcp_response.status_code == 200
         assert mcp_response.json()["service"] == "Brain"
 
@@ -1404,12 +1404,12 @@ def test_chatgpt_app_requires_write_scope_for_mutating_tools(tmp_path) -> None:
         client = TestClient(app, follow_redirects=False)
         access_token = issue_test_oauth_token(client, tmp_path, scope="brain.memory.read")
         read_response = client.post(
-            "/app/mcp",
+            "/mcp",
             headers={"Authorization": f"Bearer {access_token}"},
             json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
         )
         write_response = client.post(
-            "/app/mcp",
+            "/mcp",
             headers={"Authorization": f"Bearer {access_token}"},
             json={
                 "jsonrpc": "2.0",
@@ -1458,7 +1458,7 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
         )
         headers = {"Authorization": f"Bearer {access_token}"}
         session_response = client.post(
-            "/app/mcp",
+            "/mcp",
             headers=headers,
             json={
                 "jsonrpc": "2.0",
@@ -1468,7 +1468,7 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
             },
         )
         profile_response = client.post(
-            "/app/mcp",
+            "/mcp",
             headers=headers,
             json={
                 "jsonrpc": "2.0",
@@ -1625,7 +1625,7 @@ def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> N
         login_response = client.post("/login", json={"user_id": "daniele", "password": "pass-a"})
         csrf = login_response.json()["csrf_token"]
         no_csrf_response = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -1634,7 +1634,7 @@ def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> N
             },
         )
         session_response = client.post(
-            "/app/mcp",
+            "/mcp",
             headers={"X-Brain-CSRF": csrf},
             json={
                 "jsonrpc": "2.0",
@@ -1644,7 +1644,7 @@ def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> N
             },
         )
         internal_response = client.post(
-            "/mcp",
+            "/admin/mcp",
             headers={"X-Brain-CSRF": csrf},
             json={
                 "jsonrpc": "2.0",
@@ -1722,7 +1722,7 @@ def test_chatgpt_app_write_rate_limit(tmp_path) -> None:
     try:
         client = TestClient(app)
         first = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
@@ -1737,7 +1737,7 @@ def test_chatgpt_app_write_rate_limit(tmp_path) -> None:
             },
         )
         second = client.post(
-            "/app/mcp",
+            "/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -1923,6 +1923,7 @@ class oauth_settings:
             brain_auth_state_path=str(self.tmp_path / "brain-oauth.json"),
             brain_public_base_url="https://brain.dceb.net",
             brain_public_mcp_path="/mcp",
+            brain_public_admin_mcp_path="/admin/mcp",
             **overrides,
         )
         mcp_server.settings = settings

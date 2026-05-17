@@ -45,9 +45,11 @@ make mcp-http
 Selected user-facing HTTP endpoints include:
 
 - `GET /healthz`
-- `GET /` and `GET /app` for the Brain dashboard
-- `GET|POST /mcp`
-- `GET|POST /app/mcp`
+- `GET /` and `GET /user` for the Brain user dashboard
+- `GET /admin` for the root/admin dashboard view
+- `GET|POST /mcp` for the curated user/app MCP surface
+- `GET|POST /admin/mcp` for the full admin MCP surface
+- `GET /cognee` and `GET /admin/cognee` for Cognee UI entry points
 - `POST /memory/remember`
 - `POST /memory/ingest_source`
 - `POST /memory/recall`
@@ -117,8 +119,9 @@ and configured improve.
 
 ## ChatGPT App Surface
 
-Brain exposes a curated MCP surface for a ChatGPT App at `/app/mcp`, with the
-public URL `https://brain.dceb.net/app/mcp`. The root dashboard is available at
+Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at
+`/mcp`, with the public URL `https://brain.dceb.net/mcp`. `/app/mcp` remains a
+legacy alias. The root dashboard is available at
 `https://brain.dceb.net/` and uses the same curated surface through a browser
 session cookie. Browser users sign in with user id and password; the dashboard
 does not store OAuth bearer tokens in local storage.
@@ -139,7 +142,7 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_app_data_controls`
 
 Admin, raw projection, hard-delete, agent-memory-clear, and Palate write tools
-remain on the internal `/mcp` surface only. On `/app/mcp`, `brain_remember`
+remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember`
 previews by default; a client may save only after explicit user confirmation by
 calling it with `context.confirmed_by_user=true`. App-surface write tools accept
 either top-level `confirmed_by_user=true` or `context.confirmed_by_user=true`.
@@ -154,6 +157,10 @@ user-registry password, creates an opaque server-side session, and sets a
 `Secure`, `HttpOnly`, `SameSite=Lax` cookie. Mutating dashboard requests must
 include the per-session CSRF token returned by `/auth/session`. MCP clients still
 use OAuth bearer tokens.
+
+The Cognee UI proxy also uses Brain user/password login. Regular users enter
+through `/cognee`; root users can use `/admin/cognee` for system-level Cognee
+inspection. The older `/ui` and `/ui-api` routes are compatibility aliases.
 
 Public app support pages:
 

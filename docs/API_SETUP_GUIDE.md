@@ -34,6 +34,7 @@ BRAIN_DATABASE_URL=sqlite:///.data/brain/brain.db
 BRAIN_MCP_HOST=127.0.0.1
 BRAIN_MCP_PORT=8000
 BRAIN_MCP_PATH=/mcp
+BRAIN_ADMIN_MCP_PATH=/admin/mcp
 BRAIN_APP_MCP_PATH=/app/mcp
 BRAIN_AUTH_ENABLED=false
 ```
@@ -70,13 +71,19 @@ Health check:
 curl http://127.0.0.1:8000/healthz
 ```
 
-The MCP endpoint is:
+The curated user/app MCP endpoint is:
 
 ```text
 GET|POST /mcp
 ```
 
-The curated ChatGPT App MCP endpoint is:
+The full admin MCP endpoint is:
+
+```text
+GET|POST /admin/mcp
+```
+
+The legacy ChatGPT App MCP alias is:
 
 ```text
 GET|POST /app/mcp
@@ -86,6 +93,7 @@ The path is controlled by:
 
 ```env
 BRAIN_MCP_PATH=/mcp
+BRAIN_ADMIN_MCP_PATH=/admin/mcp
 BRAIN_APP_MCP_PATH=/app/mcp
 ```
 
@@ -95,7 +103,10 @@ Core memory endpoints:
 
 ```text
 GET  /
-GET  /app
+GET  /user
+GET  /admin
+GET  /cognee
+GET  /admin/cognee
 POST /memory/remember
 POST /memory/ingest_source
 POST /memory/recall
@@ -125,12 +136,14 @@ configured improve.
 
 ## ChatGPT App Surface
 
-Use `/app/mcp` for a ChatGPT App or any user-facing client that should not see
+Use `/mcp` for a ChatGPT App or any user-facing client that should not see
 admin tools. In production its public URL is:
 
 ```text
-https://brain.dceb.net/app/mcp
+https://brain.dceb.net/mcp
 ```
+
+`/app/mcp` remains a compatibility alias for older clients.
 
 The browser dashboard is served by the same MCP process at:
 
@@ -155,7 +168,7 @@ brain_profile_context_forget
 brain_app_data_controls
 ```
 
-`brain_remember` is confirmation-first on `/app/mcp`. Without explicit
+`brain_remember` is confirmation-first on `/mcp`. Without explicit
 confirmation it is forced to `dry_run=true`; after the user confirms, call it
 again with `context.confirmed_by_user=true` to save. App-surface write tools
 accept either top-level `confirmed_by_user=true` or
@@ -165,7 +178,7 @@ rate-limited, and append a redacted app write audit record. Destructive
 app-surface calls such as `brain_undo_last` and
 `brain_profile_context_forget` require confirmation. Admin tools, raw Cognee
 projection tools, agent-memory clear, and Palate writes are not listed or
-callable on `/app/mcp`.
+callable on `/mcp` or the legacy `/app/mcp` alias.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
@@ -226,6 +239,11 @@ server-side session under the Brain secrets directory, and sets a `Secure`,
 `HttpOnly`, `SameSite=Lax` cookie. `/auth/session` returns the public current-user
 record plus a CSRF token. Dashboard MCP and admin writes sent with the session
 cookie must include that token in `X-Brain-CSRF`.
+
+The Cognee UI proxy also uses the Brain user registry. `/cognee-login` accepts
+the same user id and password, sets an `HttpOnly`, `SameSite=Lax` UI session
+cookie, and redirects to `/cognee`. `/admin/cognee` requires a superuser user
+record. `/ui-login`, `/ui`, and `/ui-api` remain compatibility aliases.
 
 Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, and token lifetime settings. See
@@ -351,7 +369,7 @@ Brain settings.
 
 ## Internal MCP Tools
 
-The internal `/mcp` surface exposes:
+The internal `/admin/mcp` surface exposes:
 
 ```text
 brain_session
@@ -395,7 +413,7 @@ Use `brain_remember` for short durable statements:
   "input": "Maya prefers written briefs before vendor calls.",
   "input_type": "auto",
   "source_policy": "memory_only",
-  "dry_run": false
+  "context": {"confirmed_by_user": true}
 }
 ```
 

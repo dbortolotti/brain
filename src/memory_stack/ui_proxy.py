@@ -11,13 +11,14 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
+from memory_stack.brain_store import normalize_user_id
 from memory_stack.cfg import load_settings
 from memory_stack.icon_assets import (
     BRAIN_APPLE_TOUCH_ICON_PATH,
     BRAIN_FAVICON_PATH,
     BRAIN_ICON_PATH,
 )
-from memory_stack.oauth import ensure_auth_password, read_form
+from memory_stack.oauth import ensure_auth_password, load_auth_users, parse_bool, read_form
 
 settings = load_settings()
 auth_password = ensure_auth_password(settings)
@@ -81,6 +82,7 @@ async def favicon_ico() -> FileResponse:
     )
 
 
+@app.api_route("/cognee-login", methods=["GET", "POST"])
 @app.api_route("/ui-login", methods=["GET", "POST"])
 async def ui_login(request: Request) -> Response:
     next_path = safe_next_path(request.query_params.get("next"), settings.brain_public_ui_path)
@@ -88,15 +90,17 @@ async def ui_login(request: Request) -> Response:
         return login_form(next_path=next_path)
 
     form = await read_form(request)
+    user_id = normalize_user_id(str(form.get("user_id") or settings.brain_user_id))
     password = str(form.get("password") or "")
     next_path = safe_next_path(str(form.get("next") or ""), settings.brain_public_ui_path)
-    if not hmac.compare_digest(password, auth_password):
+    user = authenticate_user(user_id, password)
+    if user is None:
         return login_form(next_path=next_path, error="Invalid password.")
 
     response = RedirectResponse(next_path, status_code=303)
     response.set_cookie(
         COOKIE_NAME,
-        signed_session_value(),
+        signed_session_value(str(user["id"])),
         max_age=settings.brain_ui_session_seconds,
         httponly=True,
         secure=settings.brain_public_base_url.startswith("https://"),
@@ -106,11 +110,44 @@ async def ui_login(request: Request) -> Response:
     return response
 
 
+@app.post("/cognee-logout")
 @app.post("/ui-logout")
 async def ui_logout() -> Response:
-    response = RedirectResponse("/ui-login", status_code=303)
+    response = RedirectResponse("/cognee-login", status_code=303)
     response.delete_cookie(COOKIE_NAME, path="/")
     return response
+
+
+@app.api_route("/cognee", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
+@app.api_route("/cognee/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
+async def proxy_cognee(request: Request, path: str = "") -> Response:
+    require_session(request)
+    return await proxy_request(request, frontend_base_url(), "/" + path)
+
+
+@app.api_route("/admin/cognee", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
+@app.api_route("/admin/cognee/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
+async def proxy_admin_cognee(request: Request, path: str = "") -> Response:
+    require_session(request, require_superuser=True)
+    return await proxy_request(request, frontend_base_url(), "/" + path)
+
+
+@app.api_route(
+    "/cognee-api/{path:path}",
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+)
+async def proxy_cognee_api(path: str, request: Request) -> Response:
+    require_session(request)
+    return await proxy_request(request, backend_base_url(), "/" + path)
+
+
+@app.api_route(
+    "/admin/cognee-api/{path:path}",
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+)
+async def proxy_admin_cognee_api(path: str, request: Request) -> Response:
+    require_session(request, require_superuser=True)
+    return await proxy_request(request, backend_base_url(), "/" + path)
 
 
 @app.api_route("/ui", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
@@ -142,45 +179,86 @@ async def proxy_frontend_root_paths(path: str, request: Request) -> Response:
     return await proxy_request(request, frontend_base_url(), "/" + path)
 
 
-def require_session(request: Request) -> None:
-    if valid_session(request.cookies.get(COOKIE_NAME)):
-        return
+def authenticate_user(user_id: str, password: str) -> dict[str, str] | None:
+    if settings.brain_auth_enabled:
+        try:
+            users = load_auth_users(settings, default_password=auth_password)
+        except Exception:
+            users = {}
+        user = users.get(user_id)
+        if user and hmac.compare_digest(password, str(user.get("password") or "")):
+            return user
+        return None
+    if hmac.compare_digest(password, auth_password):
+        return {
+            "id": settings.brain_user_id,
+            "display_name": settings.brain_owner_name,
+            "email": "",
+            "superuser": "true",
+        }
+    return None
+
+
+def require_session(request: Request, *, require_superuser: bool = False) -> dict[str, str]:
+    user = valid_session(request.cookies.get(COOKIE_NAME))
+    if user and (not require_superuser or parse_bool(user.get("superuser"))):
+        return user
+    if user and require_superuser:
+        raise HTTPException(status_code=403, detail="Superuser privileges are required.")
     next_path = request.url.path
     if request.url.query:
         next_path += f"?{request.url.query}"
     query = urlencode({"next": next_path})
     raise HTTPException(
         status_code=303,
-        headers={"Location": f"/ui-login?{query}"},
+        headers={"Location": f"/cognee-login?{query}"},
         detail="Authentication required",
     )
 
 
-def signed_session_value() -> str:
+def signed_session_value(user_id: str) -> str:
     issued_at = str(int(time.time()))
-    signature = session_signature(issued_at)
-    payload = f"{issued_at}.{signature}"
+    signature = session_signature(issued_at, user_id)
+    payload = f"{issued_at}.{user_id}.{signature}"
     return base64.urlsafe_b64encode(payload.encode("ascii")).decode("ascii")
 
 
-def valid_session(cookie_value: str | None) -> bool:
+def valid_session(cookie_value: str | None) -> dict[str, str] | None:
     if not cookie_value:
-        return False
+        return None
     try:
         payload = base64.urlsafe_b64decode(cookie_value.encode("ascii")).decode("ascii")
-        issued_at, signature = payload.split(".", 1)
+        parts = payload.split(".", 2)
+        if len(parts) == 2:
+            issued_at, signature = parts
+            user_id = settings.brain_user_id
+        else:
+            issued_at, user_id, signature = parts
         issued_at_int = int(issued_at)
     except Exception:
-        return False
+        return None
     if time.time() - issued_at_int > settings.brain_ui_session_seconds:
-        return False
-    return hmac.compare_digest(signature, session_signature(issued_at))
+        return None
+    if not hmac.compare_digest(signature, session_signature(issued_at, user_id)):
+        return None
+    if settings.brain_auth_enabled:
+        try:
+            users = load_auth_users(settings, default_password=auth_password)
+        except Exception:
+            return None
+        return users.get(user_id)
+    return {
+        "id": user_id,
+        "display_name": settings.brain_owner_name,
+        "email": "",
+        "superuser": "true",
+    }
 
 
-def session_signature(issued_at: str) -> str:
+def session_signature(issued_at: str, user_id: str) -> str:
     return hmac.new(
         auth_password.encode("utf-8"),
-        f"brain-ui:{issued_at}".encode("utf-8"),
+        f"brain-ui:{user_id}:{issued_at}".encode("utf-8"),
         hashlib.sha256,
     ).hexdigest()
 
@@ -246,12 +324,14 @@ def login_form(*, next_path: str, error: str | None = None) -> HTMLResponse:
   <body>
     <main>
       <h1>Brain UI</h1>
-      <p>Enter the Brain auth password to open the Cognee web UI.</p>
+      <p>Sign in with your Brain user to open the Cognee web UI.</p>
       {error_html}
-      <form method="post" action="/ui-login">
+      <form method="post" action="/cognee-login">
         <input type="hidden" name="next" value="{safe_next}">
+        <label for="user_id">User ID</label>
+        <input id="user_id" name="user_id" type="text" autocomplete="username" value="{escape(settings.brain_user_id, quote=True)}" autofocus>
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" autofocus>
+        <input id="password" name="password" type="password" autocomplete="current-password">
         <button type="submit">Open UI</button>
       </form>
     </main>
@@ -282,6 +362,7 @@ def is_mcp_passthrough_path(path: str) -> bool:
     normalized = "/" + path.strip("/")
     if normalized in {
         settings.brain_mcp_path,
+        settings.brain_admin_mcp_path,
         settings.brain_app_mcp_path,
         settings.brain_health_path,
         "/app",

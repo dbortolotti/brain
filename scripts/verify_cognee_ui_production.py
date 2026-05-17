@@ -38,6 +38,7 @@ def main() -> int:
         failures,
     )
     check_ui_requires_auth(f"{base}{settings.brain_public_ui_path}", failures)
+    check_ui_requires_auth(f"{base}/admin/cognee", failures)
     check_api_requires_auth(f"{base}{settings.brain_public_ui_api_path}/api/v1/users/me", failures)
 
     if failures:
@@ -82,10 +83,10 @@ def check_ui_requires_auth(url: str, failures: list[str]) -> None:
     if status not in {303, 307}:
         failures.append(f"UI did not redirect unauthenticated request; status={status}")
         return
-    if "/ui-login" not in headers.get("location", ""):
-        failures.append(f"UI auth redirect does not target /ui-login: {headers}")
+    if "/cognee-login" not in headers.get("location", ""):
+        failures.append(f"UI auth redirect does not target /cognee-login: {headers}")
         return
-    console.print("[green][OK][/green] UI fails closed behind Brain password gate")
+    console.print("[green][OK][/green] UI fails closed behind Brain user login")
 
 
 def check_api_requires_auth(url: str, failures: list[str]) -> None:
@@ -93,10 +94,10 @@ def check_api_requires_auth(url: str, failures: list[str]) -> None:
     if status not in {303, 307}:
         failures.append(f"UI API did not redirect unauthenticated request; status={status}")
         return
-    if "/ui-login" not in headers.get("location", ""):
-        failures.append(f"UI API auth redirect does not target /ui-login: {headers}")
+    if "/cognee-login" not in headers.get("location", ""):
+        failures.append(f"UI API auth redirect does not target /cognee-login: {headers}")
         return
-    console.print("[green][OK][/green] UI API fails closed behind Brain password gate")
+    console.print("[green][OK][/green] UI API fails closed behind Brain user login")
 
 
 def check_launchd(label: str, failures: list[str]) -> None:

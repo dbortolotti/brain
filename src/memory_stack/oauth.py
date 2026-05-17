@@ -30,6 +30,11 @@ class BrainOAuthProvider:
         self.service_name = settings.brain_service_name
         self.issuer_url = settings.brain_public_base_url.rstrip("/")
         self.resource_url = settings.public_mcp_url
+        self.allowed_resource_urls = {
+            settings.public_mcp_url,
+            settings.public_app_mcp_url,
+            settings.public_admin_mcp_url,
+        }
         self.scopes = settings.brain_auth_scope_list
         self.require_pkce = settings.brain_auth_require_pkce
         self.password = ensure_auth_password(settings)
@@ -136,7 +141,7 @@ class BrainOAuthProvider:
         validate_scopes(requested_scopes, self.scopes)
 
         resource = params.get("resource")
-        if resource and resource != self.resource_url:
+        if resource and resource not in self.allowed_resource_urls:
             raise oauth_http_error("invalid_target", f"Unsupported resource: {resource}")
 
         code_challenge = params.get("code_challenge")
@@ -224,7 +229,7 @@ class BrainOAuthProvider:
         if any(scope not in token_scopes for scope in required_scopes or []):
             return None
         token_resource = stored.get("resource")
-        if token_resource not in {None, self.resource_url}:
+        if token_resource not in {None, *self.allowed_resource_urls}:
             return None
         return {
             "client_id": stored.get("client_id"),

@@ -1,6 +1,7 @@
 # ChatGPT App Hardening
 
-Brain exposes the public app MCP surface at `/app/mcp`. This surface is curated
+Brain exposes the public app MCP surface at `/mcp`. `/app/mcp` remains a legacy
+alias. This surface is curated
 for user-facing memory workflows and excludes admin, raw Cognee, hard-delete,
 agent-memory-clear, and Palate write tools.
 
@@ -27,7 +28,7 @@ Write or destructive tools advertise and require `brain.memory.read` and
 
 ## Confirmation And Audit
 
-`brain_remember` previews by default on `/app/mcp`. Saving requires explicit user
+`brain_remember` previews by default on `/mcp`. Saving requires explicit user
 confirmation via either `context.confirmed_by_user=true` or top-level
 `confirmed_by_user=true`.
 

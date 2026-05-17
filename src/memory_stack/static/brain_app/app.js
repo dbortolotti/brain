@@ -28,7 +28,7 @@ async function mcpPrompt(name, args = {}) {
 }
 
 async function mcpRequest(method, params = {}) {
-  const response = await fetch("/app/mcp", {
+  const response = await fetch("/mcp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -618,6 +618,9 @@ wireEvents();
 refreshSession()
   .then((authenticated) => {
     if (authenticated) {
+      if (window.location.pathname.startsWith("/admin") && state.currentUser?.superuser) {
+        showTab("users");
+      }
       return loadInitialData();
     }
     return null;

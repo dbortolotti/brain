@@ -107,10 +107,27 @@ Dashboard browser sessions are stored as opaque server-side records in
 `shared/secrets/brain-web-sessions.json`. The browser receives only a
 `Secure`, `HttpOnly`, `SameSite=Lax` session cookie plus an in-memory CSRF token
 from `/auth/session`; OAuth bearer tokens remain reserved for MCP clients.
+The Cognee UI proxy uses the same user registry for login and sets its own
+`HttpOnly`, `SameSite=Lax` UI session cookie; `/admin/cognee` additionally
+requires a superuser record.
+
+Endpoint routing is intentionally split by audience:
+
+```text
+/                 user dashboard
+/admin            root/admin dashboard view
+/mcp              curated user/app MCP surface
+/admin/mcp        full admin MCP surface
+/cognee           user Cognee UI entry point
+/admin/cognee     root Cognee UI entry point
+```
+
+`/app/mcp`, `/ui`, and `/ui-api` remain compatibility aliases.
 
 ## Optional Eval Provider Secrets
 
-Runtime uses the configured OpenAI LLM and local FastEmbed embedding model.
+Runtime uses the configured OpenAI LLM and OpenAI `text-embedding-3-large`
+embedding model.
 Set these only when you want explicit eval/smoke experiments against additional
 `provider:model` refs:
 

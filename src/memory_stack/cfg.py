@@ -257,9 +257,13 @@ class Settings(BaseSettings):
     brain_mcp_host: str = Field(default_factory=lambda: get("BRAIN_MCP_HOST"))
     brain_mcp_port: int = Field(default_factory=lambda: get("BRAIN_MCP_PORT"))
     brain_mcp_path: str = Field(default_factory=lambda: get("BRAIN_MCP_PATH"))
+    brain_admin_mcp_path: str = Field(default_factory=lambda: get("BRAIN_ADMIN_MCP_PATH", "/admin/mcp"))
     brain_app_mcp_path: str = Field(default_factory=lambda: get("BRAIN_APP_MCP_PATH", "/app/mcp"))
     brain_public_base_url: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_BASE_URL"))
     brain_public_mcp_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_MCP_PATH"))
+    brain_public_admin_mcp_path: str = Field(
+        default_factory=lambda: get("BRAIN_PUBLIC_ADMIN_MCP_PATH", "/admin/mcp")
+    )
     brain_public_app_mcp_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_APP_MCP_PATH", "/app/mcp"))
     brain_backup_dir: str = Field(default_factory=lambda: get("BRAIN_BACKUP_DIR"))
     brain_neo4j_dump_enabled: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_DUMP_ENABLED", False))
@@ -409,8 +413,10 @@ class Settings(BaseSettings):
             )
 
         self.brain_mcp_path = normalize_path(self.brain_mcp_path)
+        self.brain_admin_mcp_path = normalize_path(self.brain_admin_mcp_path)
         self.brain_app_mcp_path = normalize_path(self.brain_app_mcp_path)
         self.brain_public_mcp_path = normalize_path(self.brain_public_mcp_path)
+        self.brain_public_admin_mcp_path = normalize_path(self.brain_public_admin_mcp_path)
         self.brain_public_app_mcp_path = normalize_path(self.brain_public_app_mcp_path)
         self.brain_health_path = normalize_path(self.brain_health_path)
         self.brain_public_ui_path = normalize_path(self.brain_public_ui_path)
@@ -451,6 +457,10 @@ class Settings(BaseSettings):
     @property
     def public_app_mcp_url(self) -> str:
         return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_app_mcp_path}"
+
+    @property
+    def public_admin_mcp_url(self) -> str:
+        return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_admin_mcp_path}"
 
     @property
     def public_ui_url(self) -> str:
@@ -643,9 +653,11 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_MCP_HOST": settings.brain_mcp_host,
         "BRAIN_MCP_PORT": str(settings.brain_mcp_port),
         "BRAIN_MCP_PATH": settings.brain_mcp_path,
+        "BRAIN_ADMIN_MCP_PATH": settings.brain_admin_mcp_path,
         "BRAIN_APP_MCP_PATH": settings.brain_app_mcp_path,
         "BRAIN_PUBLIC_BASE_URL": settings.brain_public_base_url,
         "BRAIN_PUBLIC_MCP_PATH": settings.brain_public_mcp_path,
+        "BRAIN_PUBLIC_ADMIN_MCP_PATH": settings.brain_public_admin_mcp_path,
         "BRAIN_PUBLIC_APP_MCP_PATH": settings.brain_public_app_mcp_path,
         "BRAIN_BACKUP_DIR": settings.brain_backup_dir,
         "BRAIN_NEO4J_DUMP_ENABLED": str(settings.brain_neo4j_dump_enabled).lower(),

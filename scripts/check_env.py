@@ -17,7 +17,7 @@ console = Console()
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check Brain runtime configuration.")
-    parser.add_argument("--env", choices=["dev", "prod"], default=None, help="Config profile to load.")
+    parser.add_argument("--env", choices=["dev", "staging", "prod"], default=None, help="Config profile to load.")
     args = parser.parse_args()
 
     settings = load_settings(config_env=args.env)
@@ -41,8 +41,12 @@ def main() -> int:
     )
     console.print(f"[green][OK][/green] data_root={repo_path(settings.data_root_directory)}")
     console.print(
-        f"[green][OK][/green] mcp=http://{settings.brain_mcp_host}:"
+        f"[green][OK][/green] curated_mcp=http://{settings.brain_mcp_host}:"
         f"{settings.brain_mcp_port}{settings.brain_mcp_path}"
+    )
+    console.print(
+        f"[green][OK][/green] admin_mcp=http://{settings.brain_mcp_host}:"
+        f"{settings.brain_mcp_port}{settings.brain_admin_mcp_path}"
     )
 
     ok, message = check_embedding_dimension_change(settings)

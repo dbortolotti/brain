@@ -226,26 +226,26 @@ def check_http(
 
 
 def check_mcp(settings, failures: list[str]) -> None:
+    url = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_admin_mcp_path}"
+    check_mcp_get(
+        settings,
+        failures,
+        url=url,
+        expected_metadata_url=settings.protected_resource_metadata_url_for_path(
+            settings.brain_public_admin_mcp_path
+        ),
+        label="local admin MCP",
+    )
+
+
+def check_app_mcp(settings, failures: list[str]) -> None:
     url = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_mcp_path}"
     check_mcp_get(
         settings,
         failures,
         url=url,
         expected_metadata_url=settings.protected_resource_metadata_url,
-        label="local MCP",
-    )
-
-
-def check_app_mcp(settings, failures: list[str]) -> None:
-    url = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_app_mcp_path}"
-    check_mcp_get(
-        settings,
-        failures,
-        url=url,
-        expected_metadata_url=settings.protected_resource_metadata_url_for_path(
-            settings.brain_public_app_mcp_path
-        ),
-        label="local ChatGPT App MCP",
+        label="local curated MCP",
     )
 
 
@@ -306,6 +306,20 @@ def check_oauth_metadata(settings, failures: list[str]) -> None:
             failures.append(
                 "protected-resource metadata resource does not match public MCP URL: "
                 f"{protected}"
+            )
+
+    admin_protected = check_http_json(
+        f"{base}/.well-known/oauth-protected-resource{settings.brain_public_admin_mcp_path}",
+        "local OAuth admin protected-resource metadata",
+        failures,
+    )
+    if admin_protected:
+        if admin_protected.get("resource_name") != "Brain":
+            failures.append(f"admin protected-resource metadata is not Brain: {admin_protected}")
+        if admin_protected.get("resource") != settings.public_admin_mcp_url:
+            failures.append(
+                "admin protected-resource metadata resource does not match public admin MCP URL: "
+                f"{admin_protected}"
             )
 
     app_protected = check_http_json(

@@ -1383,8 +1383,10 @@ async def healthz() -> dict[str, Any]:
         "status": "ok",
         "service": settings.brain_service_name,
         "mcp_path": settings.brain_mcp_path,
+        "admin_mcp_path": settings.brain_admin_mcp_path,
         "app_mcp_path": settings.brain_app_mcp_path,
         "public_mcp_url": settings.public_mcp_url,
+        "public_admin_mcp_url": settings.public_admin_mcp_url,
         "public_app_mcp_url": settings.public_app_mcp_url,
         "uptime_seconds": round(time.time() - STARTED_AT, 3),
     }
@@ -1397,6 +1399,16 @@ async def app_root() -> FileResponse:
 
 @app.get("/app", include_in_schema=False)
 async def app_dashboard() -> FileResponse:
+    return brain_app_file("index.html", "text/html; charset=utf-8")
+
+
+@app.get("/user", include_in_schema=False)
+async def user_dashboard() -> FileResponse:
+    return brain_app_file("index.html", "text/html; charset=utf-8")
+
+
+@app.get("/admin", include_in_schema=False)
+async def admin_dashboard() -> FileResponse:
     return brain_app_file("index.html", "text/html; charset=utf-8")
 
 
@@ -1478,6 +1490,8 @@ def protected_resource_metadata_for_path(active_settings: Settings, resource_pat
 
 def normalize_public_resource_path(active_settings: Settings, resource_path: str) -> str:
     requested = normalize_path(resource_path)
+    if requested == active_settings.brain_admin_mcp_path:
+        return active_settings.brain_public_admin_mcp_path
     if requested == active_settings.brain_app_mcp_path:
         return active_settings.brain_public_app_mcp_path
     if requested == active_settings.brain_mcp_path:
@@ -1960,18 +1974,30 @@ async def mcp_route(
     brain_web_session: str | None = Cookie(default=None),
 ) -> Response:
     requested_path = "/" + path.strip("/")
-    if requested_path == settings.brain_mcp_path:
+    if requested_path == settings.brain_admin_mcp_path:
         surface = MCP_SURFACE_INTERNAL
-        public_path = settings.brain_public_mcp_path
-    elif requested_path == settings.brain_app_mcp_path:
+        public_path = settings.brain_public_admin_mcp_path
+    elif requested_path in {settings.brain_mcp_path, settings.brain_app_mcp_path}:
         surface = MCP_SURFACE_CHATGPT_APP
-        public_path = settings.brain_public_app_mcp_path
+        public_path = (
+            settings.brain_public_mcp_path
+            if requested_path == settings.brain_mcp_path
+            else settings.brain_public_app_mcp_path
+        )
     else:
         raise HTTPException(status_code=404, detail="Not found")
 
     if request.method == "GET":
-        if settings.brain_auth_enabled and not valid_bearer(authorization, settings):
+        auth_context = mcp_auth_context(authorization, settings, request=request, session_cookie=brain_web_session)
+        if settings.brain_auth_enabled and not auth_context.authenticated:
             return auth_challenge(settings, public_path)
+        if (
+            settings.brain_auth_enabled
+            and surface == MCP_SURFACE_INTERNAL
+            and not auth_context.static_token
+            and not auth_user_is_superuser(auth_context.user_id)
+        ):
+            raise HTTPException(status_code=403, detail="Superuser privileges are required.")
         return JSONResponse(
             {
                 "service": settings.brain_service_name,
@@ -1990,9 +2016,14 @@ async def mcp_route(
     auth_context = mcp_auth_context(authorization, settings, request=request, session_cookie=brain_web_session)
     if settings.brain_auth_enabled and not auth_context.authenticated:
         return auth_challenge(settings, public_path)
+    if (
+        settings.brain_auth_enabled
+        and surface == MCP_SURFACE_INTERNAL
+        and not auth_context.static_token
+        and not auth_user_is_superuser(auth_context.user_id)
+    ):
+        raise HTTPException(status_code=403, detail="Superuser privileges are required.")
     if auth_context.web_session:
-        if surface == MCP_SURFACE_INTERNAL and not auth_user_is_superuser(auth_context.user_id):
-            raise HTTPException(status_code=403, detail="Superuser privileges are required.")
         require_web_csrf(request, brain_web_session)
     request_context = McpRequestContext(
         auth=auth_context,

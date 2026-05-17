@@ -83,7 +83,7 @@ def main() -> int:
             require_brain=True,
         )
     check_public_mcp(settings, failures)
-    check_public_app_mcp(settings, failures)
+    check_public_admin_mcp(settings, failures)
     check_url(
         f"https://{hostname}/",
         "public Brain dashboard",
@@ -107,6 +107,13 @@ def main() -> int:
         failures,
         expected_resource=settings.public_app_mcp_url,
         label="OAuth app protected-resource metadata",
+    )
+    check_protected_resource_metadata(
+        f"https://{hostname}/.well-known/oauth-protected-resource{settings.brain_public_admin_mcp_path}",
+        settings,
+        failures,
+        expected_resource=settings.public_admin_mcp_url,
+        label="OAuth admin protected-resource metadata",
     )
     check_authorization_server_metadata(
         f"https://{hostname}/.well-known/oauth-authorization-server",
@@ -161,17 +168,17 @@ def check_public_mcp(settings, failures: list[str]) -> None:
         settings.protected_resource_metadata_url,
         settings,
         failures,
-        label="public MCP",
+        label="public curated MCP",
     )
 
 
-def check_public_app_mcp(settings, failures: list[str]) -> None:
+def check_public_admin_mcp(settings, failures: list[str]) -> None:
     check_public_mcp_url(
-        settings.public_app_mcp_url,
-        settings.protected_resource_metadata_url_for_path(settings.brain_public_app_mcp_path),
+        settings.public_admin_mcp_url,
+        settings.protected_resource_metadata_url_for_path(settings.brain_public_admin_mcp_path),
         settings,
         failures,
-        label="public ChatGPT App MCP",
+        label="public admin MCP",
     )
 
 
