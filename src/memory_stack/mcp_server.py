@@ -1388,6 +1388,9 @@ async def healthz() -> dict[str, Any]:
         "public_mcp_url": settings.public_mcp_url,
         "public_admin_mcp_url": settings.public_admin_mcp_url,
         "public_app_mcp_url": settings.public_app_mcp_url,
+        "release_env": settings.brain_release_env,
+        "release_sha": settings.brain_release_sha,
+        "release_version": settings.brain_release_version,
         "uptime_seconds": round(time.time() - STARTED_AT, 3),
     }
 

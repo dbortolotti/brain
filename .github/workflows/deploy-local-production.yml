@@ -25,6 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Resolve production build version
+        id: version
+        run: |
+          echo "version=prod-${GITHUB_SHA:0:12}" >>"$GITHUB_OUTPUT"
+
       - name: Validate repository
         run: |
           uv sync --all-extras
@@ -34,6 +39,9 @@ jobs:
       - name: Render production config from GitHub Secrets
         env:
           BRAIN_DEPLOY_ENV: prod
+          BRAIN_RELEASE_ENV: prod
+          BRAIN_RELEASE_SHA: ${{ github.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
           PROFILE: ${{ vars.PROFILE }}
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
           LLM_MODEL: ${{ vars.LLM_MODEL }}
@@ -108,5 +116,9 @@ jobs:
           uv run python scripts/render_prod_env.py --env prod "${args[@]}"
 
       - name: Deploy to local LaunchAgents
+        env:
+          BRAIN_RELEASE_ENV: prod
+          BRAIN_RELEASE_SHA: ${{ github.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
           BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh

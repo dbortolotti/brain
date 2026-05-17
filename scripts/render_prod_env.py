@@ -21,6 +21,9 @@ METADATA_KEYS = {
     "BRAIN_CONFIG_RENDER_SHA",
     "BRAIN_CONFIG_RENDERED_AT",
     "BRAIN_CONFIG_RENDER_SOURCE",
+    "BRAIN_RELEASE_ENV",
+    "BRAIN_RELEASE_SHA",
+    "BRAIN_RELEASE_VERSION",
 }
 REQUIRED_CONFIG_KEYS = {
     "GRAPH_DATABASE_PASSWORD": {
@@ -76,6 +79,9 @@ ORDERED_KEYS = [
     "BRAIN_CONFIG_RENDER_SHA",
     "BRAIN_CONFIG_RENDERED_AT",
     "BRAIN_CONFIG_RENDER_SOURCE",
+    "BRAIN_RELEASE_ENV",
+    "BRAIN_RELEASE_SHA",
+    "BRAIN_RELEASE_VERSION",
     "PROFILE",
     "LLM_PROVIDER",
     "LLM_MODEL",
@@ -318,7 +324,7 @@ def parse_env_file(path: Path) -> dict[str, str]:
 
 
 def render_values(env_name: str) -> dict[str, str]:
-    metadata = render_metadata()
+    metadata = render_metadata(env_name)
     defaults = cfg.load(env_name)
     values: dict[str, str] = {}
     for key in ORDERED_KEYS:
@@ -357,13 +363,18 @@ def quote_env(value: str) -> str:
     return value
 
 
-def render_metadata() -> dict[str, str]:
+def render_metadata(env_name: str) -> dict[str, str]:
+    release_sha = render_sha()
     return {
-        "BRAIN_CONFIG_RENDER_SHA": render_sha(),
+        "BRAIN_CONFIG_RENDER_SHA": release_sha,
         "BRAIN_CONFIG_RENDERED_AT": datetime.now(UTC).isoformat(timespec="seconds"),
         "BRAIN_CONFIG_RENDER_SOURCE": (
             "github-actions" if os.getenv("GITHUB_ACTIONS") == "true" else "local"
         ),
+        "BRAIN_RELEASE_ENV": os.getenv("BRAIN_RELEASE_ENV") or env_name,
+        "BRAIN_RELEASE_SHA": os.getenv("BRAIN_RELEASE_SHA") or release_sha,
+        "BRAIN_RELEASE_VERSION": os.getenv("BRAIN_RELEASE_VERSION")
+        or f"{env_name}-{release_sha[:12]}",
     }
 
 

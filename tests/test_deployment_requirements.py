@@ -50,6 +50,9 @@ def test_github_staging_action_deploys_main_to_staging() -> None:
     assert "uv run ruff check src tests scripts" in workflow
     assert "uv run pytest" in workflow
     assert "Render staging config from GitHub Secrets" in workflow
+    assert "Resolve staging version" in workflow
+    assert "BRAIN_RELEASE_VERSION" in workflow
+    assert "Tag staged release" in workflow
     assert "BRAIN_DEPLOY_ENV: staging" in workflow
     assert "BRAIN_PUBLIC_BASE_URL: https://brain-staging.dceb.net" in workflow
     assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
@@ -70,18 +73,23 @@ def test_release_action_promotes_staging_sha_to_prod_and_tags() -> None:
     assert "version:" in workflow
     assert "contents: write" in workflow
     assert "/Volumes/xpg_usb4/staging/brain/current" in workflow
+    assert "/Volumes/xpg_usb4/staging/brain/shared/release.json" in workflow
     assert "readlink \"$STAGING_CURRENT\"" in workflow
+    assert "requested version $TAG is not the staged version" in workflow
+    assert "tag $TAG does not exist; deploy it to staging first" in workflow
     assert "git checkout \"$STAGING_SHA\"" in workflow
+    assert "BRAIN_RELEASE_VERSION" in workflow
     assert "scripts/render_prod_env.py --env prod" in workflow
     assert "BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh" in workflow
-    assert "git tag -a" in workflow
-    assert "git push origin" in workflow
+    assert "git tag -a" not in workflow
+    assert "git push origin" not in workflow
+    assert "Verify promoted release tag" in workflow
     assert workflow.index("Resolve staging release") < workflow.index("Validate staged revision")
     assert workflow.index("Validate staged revision") < workflow.index(
         "Render production config from GitHub Secrets"
     )
     assert workflow.index("Promote staging revision to production") < workflow.index(
-        "Tag released revision"
+        "Verify promoted release tag"
     )
 
 
@@ -157,6 +165,9 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "$BRAIN_SLACK_AGENT_PORT"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
     assert 'BRAIN_PROD_ROOT=$PROD_ROOT' in script
+    assert 'BRAIN_RELEASE_VERSION=$FALLBACK_RELEASE_VERSION' in script
+    assert 'write_release_metadata "$RELEASE_DIR/release.json"' in script
+    assert 'write_release_metadata "$SHARED_DIR/release.json"' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
     assert 'BRAIN_AUTH_USERS_FILE=$SECRETS_DIR/brain-auth-users.json' in script
     assert 'BRAIN_AUTH_SUPERUSER_IDS=default' in script

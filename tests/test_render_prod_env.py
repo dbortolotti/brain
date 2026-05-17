@@ -85,6 +85,9 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     rendered = output.read_text(encoding="utf-8")
     base_rendered = output.with_name("brain.env.last-deployed").read_text(encoding="utf-8")
     assert "BRAIN_CONFIG_RENDER_SHA=abc123" in rendered
+    assert "BRAIN_RELEASE_ENV=prod" in rendered
+    assert "BRAIN_RELEASE_SHA=abc123" in rendered
+    assert "BRAIN_RELEASE_VERSION=prod-abc123" in rendered
     assert "OPENAI_AUTH_MODE=oauth" in rendered
     assert "OPENAI_CODEX_AUTH_PROFILE=default" in rendered
     assert "LLM_PROVIDER=openai" in rendered
@@ -281,6 +284,7 @@ def test_render_prod_env_ignores_render_metadata_conflicts(tmp_path) -> None:
     base = output.with_name("brain.env.last-deployed")
     base.write_text(
         "BRAIN_CONFIG_RENDER_SHA=old-sha\n"
+        "BRAIN_RELEASE_VERSION=prod-old-sha\n"
         "PROFILE=openai\n"
         "OPENAI_API_KEY=sk-prod-openai\n"
         "GRAPH_DATABASE_PASSWORD=prod-graph-password\n",
@@ -288,6 +292,7 @@ def test_render_prod_env_ignores_render_metadata_conflicts(tmp_path) -> None:
     )
     output.write_text(
         "BRAIN_CONFIG_RENDER_SHA=hotfix-sha\n"
+        "BRAIN_RELEASE_VERSION=prod-hotfix-sha\n"
         "PROFILE=openai\n"
         "OPENAI_API_KEY=sk-prod-openai\n"
         "GRAPH_DATABASE_PASSWORD=prod-graph-password\n",
@@ -301,6 +306,7 @@ def test_render_prod_env_ignores_render_metadata_conflicts(tmp_path) -> None:
     run_renderer(tmp_path, {"GITHUB_SHA": "new-sha"})
 
     assert "BRAIN_CONFIG_RENDER_SHA=new-sha" in output.read_text(encoding="utf-8")
+    assert "BRAIN_RELEASE_VERSION=prod-new-sha" in output.read_text(encoding="utf-8")
 
 
 def test_render_prod_env_fails_when_last_deployed_snapshot_is_missing(tmp_path) -> None:

@@ -24,6 +24,8 @@ def test_healthz() -> None:
     response = client.get("/healthz")
     assert response.status_code == 200
     assert response.json()["service"] == "Brain"
+    assert response.json()["release_version"]
+    assert response.json()["release_sha"]
 
 
 def test_icon_routes() -> None:

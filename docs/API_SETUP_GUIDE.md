@@ -569,8 +569,9 @@ Verify public Cloudflare routing:
 ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make cloudflare-verify
 ```
 
-The production verifier checks health, MCP route behavior, OAuth metadata when
-auth is enabled, and backup manifests unless `--skip-backups` is used.
+The production verifier checks health, release metadata, MCP route behavior,
+OAuth metadata when auth is enabled, and backup manifests unless
+`--skip-backups` is used.
 
 ## Troubleshooting
 

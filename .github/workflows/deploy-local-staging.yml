@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      version:
+        description: "Optional staged release version, for example v2.1.0-rc.1"
+        required: false
+        type: string
       force_config_override:
         description: "Bypass staging config conflict checks and establish a new baseline"
         required: false
@@ -24,9 +28,33 @@ jobs:
       - ARM64
       - brain-prod
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Resolve staging version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ -z "$VERSION" ]]; then
+            VERSION="staging-${GITHUB_SHA:0:12}"
+          fi
+          if ! [[ "$VERSION" =~ ^(staging-[0-9a-f]{12}|v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?)$ ]]; then
+            echo "version must be staging-<12-char-sha> or look like v2.1.0 / v2.1.0-rc.1" >&2
+            exit 2
+          fi
+          git fetch --tags origin
+          if [[ "$VERSION" =~ ^v ]] && git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            TAG_SHA="$(git rev-list -n 1 "$VERSION")"
+            if [[ "$TAG_SHA" != "$GITHUB_SHA" ]]; then
+              echo "tag $VERSION already points at $TAG_SHA, not $GITHUB_SHA" >&2
+              exit 2
+            fi
+          fi
+          echo "version=$VERSION" >>"$GITHUB_OUTPUT"
 
       - name: Validate repository
         run: |
@@ -37,6 +65,9 @@ jobs:
       - name: Render staging config from GitHub Secrets
         env:
           BRAIN_DEPLOY_ENV: staging
+          BRAIN_RELEASE_ENV: staging
+          BRAIN_RELEASE_SHA: ${{ github.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
           PROFILE: ${{ vars.PROFILE }}
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
           LLM_MODEL: ${{ vars.LLM_MODEL }}
@@ -111,5 +142,21 @@ jobs:
           uv run python scripts/render_prod_env.py --env staging "${args[@]}"
 
       - name: Deploy to local staging LaunchAgents
+        env:
+          BRAIN_RELEASE_ENV: staging
+          BRAIN_RELEASE_SHA: ${{ github.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
           BRAIN_DEPLOY_ENV=staging ./scripts/deploy-local-production.sh
+
+      - name: Tag staged release
+        if: startsWith(steps.version.outputs.version, 'v')
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            echo "staged tag already exists at $(git rev-list -n 1 "$VERSION")"
+            exit 0
+          fi
+          git tag -a "$VERSION" "$GITHUB_SHA" -m "Stage $VERSION"
+          git push origin "$VERSION"

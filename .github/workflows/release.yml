@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release tag to create, for example v2.1.0"
+        description: "Previously staged release version to promote, for example v2.1.0"
         required: true
         type: string
       force_config_override:
@@ -41,8 +41,13 @@ jobs:
             exit 2
           fi
           STAGING_CURRENT="/Volumes/xpg_usb4/staging/brain/current"
+          STAGING_METADATA="/Volumes/xpg_usb4/staging/brain/shared/release.json"
           if [[ ! -L "$STAGING_CURRENT" ]]; then
             echo "staging current symlink is missing: $STAGING_CURRENT" >&2
+            exit 2
+          fi
+          if [[ ! -f "$STAGING_METADATA" ]]; then
+            echo "staging release metadata is missing: $STAGING_METADATA" >&2
             exit 2
           fi
           STAGING_RELEASE="$(readlink "$STAGING_CURRENT")"
@@ -51,9 +56,24 @@ jobs:
             echo "staging current does not point at a 40-char git SHA: $STAGING_RELEASE" >&2
             exit 2
           fi
+          STAGED_VERSION="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("version", ""))' "$STAGING_METADATA")"
+          STAGED_SHA="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("sha", ""))' "$STAGING_METADATA")"
+          if [[ "$STAGED_VERSION" != "$TAG" ]]; then
+            echo "requested version $TAG is not the staged version $STAGED_VERSION" >&2
+            exit 2
+          fi
+          if [[ "$STAGED_SHA" != "$STAGING_SHA" ]]; then
+            echo "staging metadata sha $STAGED_SHA does not match current symlink $STAGING_SHA" >&2
+            exit 2
+          fi
           git fetch --tags origin
-          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-            echo "tag already exists: $TAG" >&2
+          if ! git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "tag $TAG does not exist; deploy it to staging first" >&2
+            exit 2
+          fi
+          TAG_SHA="$(git rev-list -n 1 "$TAG")"
+          if [[ "$TAG_SHA" != "$STAGING_SHA" ]]; then
+            echo "tag $TAG points at $TAG_SHA, not staged sha $STAGING_SHA" >&2
             exit 2
           fi
           git cat-file -e "$STAGING_SHA^{commit}"
@@ -71,6 +91,9 @@ jobs:
         env:
           GITHUB_SHA: ${{ steps.staging.outputs.sha }}
           BRAIN_DEPLOY_ENV: prod
+          BRAIN_RELEASE_ENV: prod
+          BRAIN_RELEASE_SHA: ${{ steps.staging.outputs.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.staging.outputs.tag }}
           PROFILE: ${{ vars.PROFILE }}
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
           LLM_MODEL: ${{ vars.LLM_MODEL }}
@@ -147,10 +170,17 @@ jobs:
       - name: Promote staging revision to production
         env:
           GITHUB_SHA: ${{ steps.staging.outputs.sha }}
+          BRAIN_RELEASE_ENV: prod
+          BRAIN_RELEASE_SHA: ${{ steps.staging.outputs.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.staging.outputs.tag }}
         run: |
           BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh
 
-      - name: Tag released revision
+      - name: Verify promoted release tag
         run: |
-          git tag -a "${{ steps.staging.outputs.tag }}" "${{ steps.staging.outputs.sha }}" -m "Release ${{ steps.staging.outputs.tag }}"
-          git push origin "${{ steps.staging.outputs.tag }}"
+          set -euo pipefail
+          TAG_SHA="$(git rev-list -n 1 "${{ steps.staging.outputs.tag }}")"
+          if [[ "$TAG_SHA" != "${{ steps.staging.outputs.sha }}" ]]; then
+            echo "tag moved during release: $TAG_SHA" >&2
+            exit 2
+          fi

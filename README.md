@@ -367,6 +367,9 @@ Environment examples differ by local setup:
   LanceDB, and SQLite.
 - `cfg/staging.yaml` is the staging override deployed from `main`.
 - `cfg/prod.yaml` is the production override promoted by the release workflow.
+  Promotable releases are versioned in staging first; production verifies and
+  keeps that staged `BRAIN_RELEASE_VERSION` instead of creating a new version at
+  promotion time.
 
 Provider API keys can be stored once and reused across every model for that
 provider:

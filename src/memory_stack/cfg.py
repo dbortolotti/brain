@@ -346,6 +346,9 @@ class Settings(BaseSettings):
     brain_slack_auto_commit_high_confidence: bool = Field(default_factory=lambda: get("BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE", False))
     brain_log_level: str = Field(default_factory=lambda: get("BRAIN_LOG_LEVEL", "INFO"))
     brain_prod_root: str = Field(default_factory=lambda: get("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain"))
+    brain_release_env: str = Field(default_factory=lambda: get("BRAIN_RELEASE_ENV", "dev"))
+    brain_release_sha: str = Field(default_factory=lambda: get("BRAIN_RELEASE_SHA", "unknown"))
+    brain_release_version: str = Field(default_factory=lambda: get("BRAIN_RELEASE_VERSION", "dev"))
     brain_launchd_label: str = Field(default_factory=lambda: get("BRAIN_LAUNCHD_LABEL", "com.brain.mcp"))
     brain_health_path: str = Field(default_factory=lambda: get("BRAIN_HEALTH_PATH", "/healthz"))
     brain_ui_enabled: bool = Field(default_factory=lambda: get("BRAIN_UI_ENABLED", False))
@@ -750,6 +753,9 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_PUBLIC_UI_PATH": settings.brain_public_ui_path,
         "BRAIN_PUBLIC_UI_API_PATH": settings.brain_public_ui_api_path,
         "BRAIN_UI_SESSION_SECONDS": str(settings.brain_ui_session_seconds),
+        "BRAIN_RELEASE_ENV": settings.brain_release_env,
+        "BRAIN_RELEASE_SHA": settings.brain_release_sha,
+        "BRAIN_RELEASE_VERSION": settings.brain_release_version,
     }
     optional_values = {
         "LLM_API_KEY": settings.llm_api_key,

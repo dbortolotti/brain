@@ -55,6 +55,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"
 SHA="${GITHUB_SHA:-$(git -C "$REPO_ROOT" rev-parse HEAD)}"
 SHORT_SHA="${SHA:0:12}"
+FALLBACK_RELEASE_VERSION="$DEPLOY_ENV-$SHORT_SHA"
 RELEASE_DIR="$PROD_ROOT/releases/$SHA"
 CURRENT_LINK="$PROD_ROOT/current"
 SHARED_DIR="$PROD_ROOT/shared"
@@ -123,6 +124,62 @@ for index, existing in enumerate(lines):
 else:
     lines.append(line)
 path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+PY
+}
+
+read_env_var() {
+  local key="$1"
+  local env_file="$SECRETS_DIR/brain.env"
+  if [[ ! -f "$env_file" ]]; then
+    return 0
+  fi
+  python3 - "$env_file" "$key" <<'PY'
+from pathlib import Path
+import shlex
+import sys
+
+path = Path(sys.argv[1])
+key = sys.argv[2]
+for raw in path.read_text(encoding="utf-8").splitlines():
+    line = raw.strip()
+    if not line or line.startswith("#") or "=" not in line:
+        continue
+    existing_key, value = line.split("=", 1)
+    existing_key = existing_key.removeprefix("export ").strip()
+    if existing_key != key:
+        continue
+    try:
+        parsed = shlex.split(value.strip(), comments=False, posix=True)
+        print(parsed[0] if parsed else "")
+    except ValueError:
+        print(value.strip().strip("'\""))
+    break
+PY
+}
+
+write_release_metadata() {
+  local path="$1"
+  python3 - "$path" "$APP_NAME" "$DEPLOY_ENV" "$RELEASE_VERSION" "$RELEASE_SHA" "$RELEASE_DIR" <<'PY'
+from __future__ import annotations
+
+from datetime import UTC, datetime
+import json
+from pathlib import Path
+import sys
+
+path, app, environment, version, sha, release_dir = sys.argv[1:]
+payload = {
+    "app": app,
+    "environment": environment,
+    "version": version,
+    "sha": sha,
+    "release_dir": release_dir,
+    "deployed_at": datetime.now(UTC).isoformat(timespec="seconds"),
+    "source": "github-actions" if "GITHUB_ACTIONS" in __import__("os").environ else "local",
+}
+target = Path(path)
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 PY
 }
 
@@ -317,11 +374,33 @@ BRAIN_SLACK_ALLOWED_USER_IDS=
 BRAIN_SLACK_ADMIN_USER_IDS=
 BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false
 BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session
+BRAIN_RELEASE_ENV=$DEPLOY_ENV
+BRAIN_RELEASE_SHA=$SHA
+BRAIN_RELEASE_VERSION=$FALLBACK_RELEASE_VERSION
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
 fi
 
+FILE_RELEASE_VERSION="$(read_env_var BRAIN_RELEASE_VERSION)"
+FILE_RELEASE_SHA="$(read_env_var BRAIN_RELEASE_SHA)"
+RELEASE_SHA="${BRAIN_RELEASE_SHA:-$SHA}"
+if [[ -n "${BRAIN_RELEASE_VERSION:-}" ]]; then
+  RELEASE_VERSION="$BRAIN_RELEASE_VERSION"
+elif [[ "$FILE_RELEASE_SHA" == "$SHA" && -n "$FILE_RELEASE_VERSION" ]]; then
+  RELEASE_VERSION="$FILE_RELEASE_VERSION"
+else
+  RELEASE_VERSION="$FALLBACK_RELEASE_VERSION"
+fi
+RELEASE_ENV="${BRAIN_RELEASE_ENV:-$DEPLOY_ENV}"
+if [[ "$RELEASE_SHA" != "$SHA" ]]; then
+  printf 'BRAIN_RELEASE_SHA must match deployed GITHUB_SHA: %s != %s\n' "$RELEASE_SHA" "$SHA" >&2
+  exit 2
+fi
+
 ensure_env_var "BRAIN_AUTH_ENABLED" "true"
+set_env_var "BRAIN_RELEASE_ENV" "$RELEASE_ENV"
+set_env_var "BRAIN_RELEASE_SHA" "$RELEASE_SHA"
+set_env_var "BRAIN_RELEASE_VERSION" "$RELEASE_VERSION"
 ensure_env_var "OPENAI_AUTH_MODE" "oauth"
 ensure_env_var "OPENAI_CODEX_AUTH_PROFILE" "default"
 ensure_env_var "OPENAI_CODEX_BASE_URL" "https://chatgpt.com/backend-api/codex"
@@ -561,6 +640,9 @@ else
 fi
 
 log "updating current symlink"
+write_release_metadata "$RELEASE_DIR/release.json"
+write_release_metadata "$SHARED_DIR/release.json"
+printf '%s\n' "$RELEASE_VERSION" >"$SHARED_DIR/current-version"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
 
 if command -v launchctl >/dev/null 2>&1; then
@@ -622,4 +704,4 @@ log "running $DEPLOY_ENV verifier"
   uv run python scripts/verify_slack_agent.py
 )
 
-log "deployed $APP_NAME $SHA"
+log "deployed $APP_NAME $RELEASE_VERSION ($SHA)"

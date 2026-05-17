@@ -6,8 +6,8 @@ Deploys run on the self-hosted `brain-prod` runner with three environments:
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
   to `/Volumes/xpg_usb4/staging/brain`.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml`
-  and deploys the currently deployed staging SHA to `/Volumes/xpg_usb4/prod/brain`,
-  then creates an annotated git tag.
+  and deploys the currently staged release version to
+  `/Volumes/xpg_usb4/prod/brain`.
 
 `.github/workflows/deploy-local-production.yml` remains available as a manual
 production deploy escape hatch. It is not triggered by pushes to `main`.
@@ -15,6 +15,27 @@ production deploy escape hatch. It is not triggered by pushes to `main`.
 The workflows render each environment's `shared/secrets/brain.env` from GitHub
 Secrets and GitHub Variables before running `scripts/deploy-local-production.sh`
 with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
+
+## Release Versioning
+
+Every deploy writes runtime release metadata into:
+
+```text
+/Volumes/xpg_usb4/{staging|prod}/brain/current/release.json
+/Volumes/xpg_usb4/{staging|prod}/brain/shared/release.json
+/Volumes/xpg_usb4/{staging|prod}/brain/shared/current-version
+```
+
+Normal pushes to `main` deploy staging with an automatic build version such as
+`staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
+workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That staged workflow
+deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git
+tag at the staged SHA.
+
+Production promotion does not mint a new version. The release workflow reads
+staging `shared/release.json`, verifies the requested version is the active
+staged version, verifies the git tag already exists at that exact SHA, then
+deploys production with the same `BRAIN_RELEASE_VERSION`.
 
 GitHub Secrets and Variables are the source of truth. Live config can still be
 edited directly for an emergency, but the next deploy for that environment will
@@ -74,6 +95,9 @@ The generated config includes metadata for diagnostics:
 BRAIN_CONFIG_RENDER_SHA
 BRAIN_CONFIG_RENDERED_AT
 BRAIN_CONFIG_RENDER_SOURCE
+BRAIN_RELEASE_ENV
+BRAIN_RELEASE_SHA
+BRAIN_RELEASE_VERSION
 ```
 
 These metadata keys are ignored during conflict comparison.

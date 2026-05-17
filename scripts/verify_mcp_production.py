@@ -37,6 +37,7 @@ def main() -> int:
 
     check_path(current, "current symlink", failures)
     check_path(shared_data, "shared/data", failures)
+    check_release_metadata(prod_root, current, settings, failures)
     check_runtime_paths(settings, shared_data, failures)
     check_palate_retired(failures)
 
@@ -46,12 +47,13 @@ def main() -> int:
         if pid:
             check_process_cwd(pid, prod_root, failures)
 
-    check_http(
+    health_payload = check_http(
         f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_health_path}",
         "local health",
         failures,
         expect_json_service=True,
     )
+    check_health_release(health_payload, settings, failures)
     check_http(
         f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}/",
         "local Brain dashboard",
@@ -79,6 +81,65 @@ def check_path(path: Path, label: str, failures: list[str]) -> None:
         console.print(f"[green][OK][/green] {label}: {path}")
     else:
         failures.append(f"missing {label}: {path}")
+
+
+def check_release_metadata(prod_root: Path, current: Path, settings, failures: list[str]) -> None:
+    if not current.exists():
+        return
+    try:
+        current_target = current.resolve(strict=True)
+    except OSError as exc:
+        failures.append(f"current symlink cannot be resolved: {exc}")
+        return
+    current_sha = current_target.name
+    metadata_paths = [
+        current_target / "release.json",
+        prod_root / "shared" / "release.json",
+    ]
+    for path in metadata_paths:
+        if not path.exists():
+            failures.append(f"missing release metadata: {path}")
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            failures.append(f"invalid release metadata JSON at {path}: {exc}")
+            continue
+        if payload.get("sha") != current_sha:
+            failures.append(
+                f"release metadata sha mismatch at {path}: {payload.get('sha')} != {current_sha}"
+            )
+        if payload.get("version") != settings.brain_release_version:
+            failures.append(
+                "release metadata version mismatch at "
+                f"{path}: {payload.get('version')} != {settings.brain_release_version}"
+            )
+        if payload.get("environment") != settings.brain_release_env:
+            failures.append(
+                "release metadata environment mismatch at "
+                f"{path}: {payload.get('environment')} != {settings.brain_release_env}"
+            )
+    if settings.brain_release_sha != current_sha:
+        failures.append(
+            f"BRAIN_RELEASE_SHA does not match current release: {settings.brain_release_sha} != {current_sha}"
+        )
+
+
+def check_health_release(
+    payload: dict[str, Any] | None,
+    settings,
+    failures: list[str],
+) -> None:
+    if payload is None:
+        return
+    expected = {
+        "release_env": settings.brain_release_env,
+        "release_sha": settings.brain_release_sha,
+        "release_version": settings.brain_release_version,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            failures.append(f"local health {key} mismatch: {payload.get(key)} != {value}")
 
 
 def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> None:

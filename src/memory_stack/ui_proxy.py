@@ -47,6 +47,9 @@ async def healthz() -> dict[str, str | int | bool]:
         "frontend_port": settings.brain_ui_frontend_port,
         "backend_port": settings.brain_ui_backend_port,
         "public_ui_url": settings.public_ui_url,
+        "release_env": settings.brain_release_env,
+        "release_sha": settings.brain_release_sha,
+        "release_version": settings.brain_release_version,
     }
 
 
