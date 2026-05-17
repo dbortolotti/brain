@@ -48,3 +48,13 @@ def test_dashboard_login_asks_for_username_without_autosuggest() -> None:
     assert 'aria-label="Username"' in html
     assert 'placeholder="username"' in html
     assert 'autocomplete="username"' not in html
+
+
+def test_dashboard_layout_constrains_work_surface_width() -> None:
+    css = Path("src/memory_stack/static/brain_app/app.css").read_text(encoding="utf-8")
+
+    assert "--content-max: 1280px;" in css
+    assert "max-width: var(--content-max);" in css
+    assert "margin-inline: auto;" in css
+    assert ".form-row > .field.inline" in css
+    assert "flex-basis: 100%;" in css
