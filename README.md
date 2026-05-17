@@ -262,13 +262,15 @@ Core Brain settings:
 - `BRAIN_AUTH_ENABLED=false`
 - `BRAIN_AUTH_TOKEN`
 
-Brain data is scoped by `BRAIN_USER_ID`. Existing single-user installs use the
-`default` user. For OAuth deployments, `BRAIN_AUTH_USERS_FILE` may point to a
-JSON user registry; issued OAuth tokens carry a `user_id`, and Brain filters
+Brain data is scoped by `BRAIN_USER_ID`. OAuth deployments must set
+`BRAIN_AUTH_USERS_FILE` to a JSON user registry; issued OAuth tokens carry a
+`user_id`, and Brain filters
 memory, profile context, Palate records, audit logs, and recall data to that
 user. Superusers are marked with `superuser: true` or configured through
 `BRAIN_AUTH_SUPERUSER_IDS`; they can manage users from the dashboard User Admin
-tab.
+tab. Use `scripts/migrate_default_user_to_daniele.py` for the one-time migration
+from the original single-user `default` owner to `daniele` plus a separate
+`default` root user.
 
 LLM compiler settings, disabled by default. When enabled, it uses the same fixed
 runtime LLM as the rest of Brain/Cognee: `openai:gpt-5.4-mini`.

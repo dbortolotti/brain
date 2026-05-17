@@ -97,9 +97,11 @@ BRAIN_AUTH_PASSWORD
 
 Deployment also configures `BRAIN_AUTH_USERS_FILE` under
 `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`.
-If the users file does not exist yet, Brain falls back to the default user with
-the shared auth password. A superuser can then create and edit user records from
-the dashboard User Admin tab without restarting the service.
+If the users file does not exist yet, deployment creates one with `default` as a
+root superuser and `daniele` as a regular user using the existing shared auth
+password. Auth-enabled Brain instances fail closed when the configured registry
+is missing. A superuser can create and edit user records from the dashboard User
+Admin tab without restarting the service.
 
 ## Optional Eval Provider Secrets
 

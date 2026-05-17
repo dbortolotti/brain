@@ -1795,13 +1795,33 @@ class oauth_settings:
         self.previous_provider = mcp_server.oauth_provider
 
     def __enter__(self) -> None:
+        overrides = dict(self.overrides)
+        password_file = self.tmp_path / "brain-auth-password"
+        users_file = overrides.get("brain_auth_users_file")
+        if users_file is None:
+            password_file.write_text("test-auth-password\n", encoding="utf-8")
+            users_file = self.tmp_path / "brain-auth-users.json"
+            users_file.write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": overrides.get("brain_user_id", "default"),
+                            "password": "test-auth-password",
+                            "display_name": "Test User",
+                            "superuser": True,
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            overrides["brain_auth_users_file"] = str(users_file)
         settings = Settings(
             brain_auth_enabled=True,
-            brain_auth_password_file=str(self.tmp_path / "brain-auth-password"),
+            brain_auth_password_file=str(password_file),
             brain_auth_state_path=str(self.tmp_path / "brain-oauth.json"),
             brain_public_base_url="https://brain.dceb.net",
             brain_public_mcp_path="/mcp",
-            **self.overrides,
+            **overrides,
         )
         mcp_server.settings = settings
         mcp_server.oauth_provider = BrainOAuthProvider(settings)

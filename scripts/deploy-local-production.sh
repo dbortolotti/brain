@@ -403,6 +403,56 @@ PY
   chmod 600 "$SECRETS_DIR/brain-auth-password"
 fi
 
+if [[ ! -f "$SECRETS_DIR/brain-auth-users.json" ]]; then
+  log "creating Brain OAuth users registry at $SECRETS_DIR/brain-auth-users.json"
+  umask 077
+  BRAIN_AUTH_PASSWORD_PATH="$SECRETS_DIR/brain-auth-password" \
+  BRAIN_AUTH_ROOT_PASSWORD_PATH="$SECRETS_DIR/brain-auth-root-password" \
+  BRAIN_AUTH_USERS_PATH="$SECRETS_DIR/brain-auth-users.json" \
+  python3 - <<'PY'
+import json
+import os
+import secrets
+from pathlib import Path
+
+auth_password = Path(os.environ["BRAIN_AUTH_PASSWORD_PATH"]).read_text(encoding="utf-8").strip()
+root_password_path = Path(os.environ["BRAIN_AUTH_ROOT_PASSWORD_PATH"])
+if root_password_path.exists():
+    root_password = root_password_path.read_text(encoding="utf-8").strip()
+else:
+    root_password = secrets.token_urlsafe(32)
+    root_password_path.write_text(root_password + "\n", encoding="utf-8")
+    root_password_path.chmod(0o600)
+
+users_path = Path(os.environ["BRAIN_AUTH_USERS_PATH"])
+users_path.write_text(
+    json.dumps(
+        [
+            {
+                "id": "default",
+                "password": root_password,
+                "display_name": "Root",
+                "email": "",
+                "superuser": True,
+            },
+            {
+                "id": "daniele",
+                "password": auth_password,
+                "display_name": "Daniele Bortolotti",
+                "email": "",
+                "superuser": False,
+            },
+        ],
+        indent=2,
+        sort_keys=True,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+users_path.chmod(0o600)
+PY
+fi
+
 if [[ ! -d "$RELEASE_DIR" ]]; then
   log "creating release $SHORT_SHA"
   mkdir -p "$RELEASE_DIR"

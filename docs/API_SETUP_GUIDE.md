@@ -221,7 +221,10 @@ records with `id`/`user_id`, `password`, optional `display_name`, optional
 `email`, and optional `superuser` fields. OAuth authorization stores the selected
 `user_id` in issued tokens; HTTP and MCP memory operations then scope Brain DB
 rows, profile context files, Palate data, recall logs, and app audit records to
-that user. Existing single-user data remains under `BRAIN_USER_ID=default`.
+that user. Auth-enabled deployments fail closed if the configured users file is
+missing or empty. Use `scripts/migrate_default_user_to_daniele.py` to move the
+original single-user `default` data to `daniele` while keeping `default` as the
+root superuser.
 
 Superusers can manage users from the Brain dashboard's User Admin tab. The
 dashboard calls the admin HTTP endpoints below with the user's bearer token:

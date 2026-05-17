@@ -425,28 +425,13 @@ def load_auth_users(
     *,
     default_password: str,
 ) -> dict[str, dict[str, str]]:
-    default_user_id = normalize_user_id(settings.brain_user_id)
     configured_superusers = set(settings.brain_auth_superuser_id_list)
     users_file = settings.brain_auth_users_file
     if not users_file:
-        return {
-            default_user_id: {
-                "id": default_user_id,
-                "password": default_password,
-                "display_name": settings.brain_owner_full_name or settings.brain_owner_name or default_user_id,
-                "superuser": "true",
-            }
-        }
+        raise ValueError("BRAIN_AUTH_USERS_FILE must be configured when Brain auth is enabled.")
     path = Path(users_file).expanduser()
     if not path.exists():
-        return {
-            default_user_id: {
-                "id": default_user_id,
-                "password": default_password,
-                "display_name": settings.brain_owner_full_name or settings.brain_owner_name or default_user_id,
-                "superuser": str(default_user_id in configured_superusers or default_user_id == "default").lower(),
-            }
-        }
+        raise FileNotFoundError(f"BRAIN_AUTH_USERS_FILE does not exist: {path}")
     payload = json.loads(path.read_text(encoding="utf-8"))
     records = payload.values() if isinstance(payload, dict) else payload
     users: dict[str, dict[str, str]] = {}
