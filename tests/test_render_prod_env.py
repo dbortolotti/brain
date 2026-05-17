@@ -117,6 +117,8 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     )
     assert "BRAIN_AUTH_USERS_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-users.json" in rendered
     assert "BRAIN_AUTH_SUPERUSER_IDS=default" in rendered
+    assert "BRAIN_ADMIN_MCP_PATH=/admin/mcp" in rendered
+    assert "BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp" in rendered
     assert "BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session" in rendered
     assert "BRAIN_REQUEST_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl" in rendered
     assert "BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192" in rendered
