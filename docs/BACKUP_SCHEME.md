@@ -18,17 +18,18 @@ make prod-check
 The backup scheme must preserve enough state to rebuild Brain after local disk
 loss or a bad deploy:
 
-- Brain DB and Cognee SQLite databases.
+- Brain SQLite databases under the shared data root.
 - Raw source/data directories.
-- LanceDB vector data.
+- Vector-store data, either as a pgvector SQL dump or LanceDB archives,
+  depending on the configured vector backend.
 - Production secret files needed to restart the services.
 - Neo4j graph state when graph data exists.
 - A machine-readable manifest describing what was captured and verified.
 - Optional Google Drive replication.
 
-Brain DB remains the authoritative memory store. Cognee, LanceDB, and Neo4j are
-treated as rebuildable projections where possible, but they are still backed up
-to reduce restore time and preserve debugging context.
+Brain DB remains the authoritative memory store. Cognee, pgvector/LanceDB, and
+Neo4j are treated as rebuildable projections where possible, but they are still
+backed up to reduce restore time and preserve debugging context.
 
 ## Default Locations
 
@@ -56,6 +57,7 @@ A typical run directory contains:
 manifest.json
 sqlite/
 raw_data/
+pgvector/
 lancedb/
 secrets/
 neo4j/
@@ -63,7 +65,9 @@ neo4j-counts.json
 ```
 
 Some directories are omitted when the corresponding source does not exist or is
-disabled.
+disabled. In current production, `VECTOR_DATASET_DATABASE_HANDLER=pgvector`, so
+`pgvector/` is the expected vector-store archive directory; `lancedb/` is used
+when LanceDB is the configured vector backend.
 
 ## Running A Backup
 
@@ -107,6 +111,7 @@ Every backup writes `manifest.json` with this shape:
   "data_root": "/Volumes/xpg_usb4/prod/brain/shared/data",
   "sqlite": [],
   "lancedb": [],
+  "pgvector": [],
   "raw_data": [],
   "secrets": [],
   "neo4j": [],
@@ -149,8 +154,7 @@ Manifest entries look like:
 Production verification requires:
 
 - At least one SQLite backup entry.
-- The configured main Cognee DB at
-  `$SYSTEM_ROOT_DIRECTORY/databases/$DB_NAME`.
+- The configured Brain SQLite database to be included.
 - `integrity_check` equal to `ok`.
 - The backup file still present on disk.
 
@@ -163,13 +167,34 @@ raw_data/<data-root-name>.tar.gz
 ```
 
 This preserves source data and runtime files that are not captured by the
-database-specific paths.
+SQLite- or vector-store-specific paths.
 
 If `DATA_ROOT_DIRECTORY` is missing, the manifest receives a blocker.
 
-## LanceDB Archive
+## Vector Store Backups
 
-The script archives:
+The script backs up exactly one vector-store family based on configuration.
+
+### pgvector Backup
+
+When `VECTOR_DATASET_DATABASE_HANDLER=pgvector` or `VECTOR_DB_PROVIDER=pgvector`,
+the backup script creates a Postgres dump of the configured vector database.
+The dump is written to:
+
+```text
+pgvector/<db-name>.sql
+```
+
+The dump is produced with `docker exec ... pg_dump` when Docker is available.
+The manifest entry records the dump method, database name, return code,
+captured stderr, and whether the dump was verified as non-empty.
+
+If Docker is not available, the manifest receives a blocker and the pgvector
+backup does not complete.
+
+### LanceDB Archive
+
+When the vector backend is LanceDB, the script archives:
 
 - The configured `VECTOR_DB_URL`.
 - Any path under the shared data root whose name contains `lancedb`.
@@ -181,7 +206,8 @@ lancedb/<source-name>.tar.gz
 ```
 
 If no LanceDB path is found, the manifest receives a blocker because production
-verification expects a vector-store archive.
+verification expects a vector-store artifact when LanceDB is the configured
+backend.
 
 ## Secrets Archive
 
@@ -201,8 +227,11 @@ secrets/secrets.tar.gz
 
 The archive mode is set to `0600`.
 
-If no secret files are found, the manifest receives a blocker. Production secret
-rendering and conflict rules are documented in
+If no secret files are found, the manifest receives a blocker. The deployed auth
+registry file is rendered by production deploys; do not assume it is captured by
+this backup unless you have added it to the backup inputs.
+
+Production secret rendering and conflict rules are documented in
 [Production Secrets](production-secrets.md).
 
 ## Neo4j Backup
@@ -226,7 +255,7 @@ BRAIN_NEO4J_DUMP_ENABLED=true
 ```
 
 When Docker is available, the script runs `neo4j-admin database dump` inside the
-`neo4j-cognee` container and copies the dump into:
+configured Neo4j Docker container and copies the dump into:
 
 ```text
 neo4j/neo4j.dump
@@ -298,8 +327,9 @@ It fails when:
 - No `*/manifest.json` files exist.
 - The latest manifest contains blockers.
 - SQLite backups are missing or fail integrity checks.
-- The main Cognee DB was not included.
-- Raw data, LanceDB, or secrets archives are missing.
+- The configured Brain SQLite database was not included.
+- The configured vector-store artifact is missing or unverified.
+- Raw data or secrets archives are missing.
 - No verified Neo4j count or dump exists.
 - Google Drive replication is enabled but not verified.
 
@@ -338,12 +368,12 @@ chmod 600 /Volumes/xpg_usb4/prod/brain/shared/secrets/*
 Restore SQLite databases by copying the selected files from `sqlite/` back to
 their manifest `source` paths.
 
-Restore raw data and LanceDB archives:
+Restore raw data from the matching archive in `raw_data/`.
 
-```bash
-tar -xzf BACKUP_DIR/raw_data/data.tar.gz -C /Volumes/xpg_usb4/prod/brain/shared
-tar -xzf BACKUP_DIR/lancedb/cognee.lancedb.tar.gz -C /Volumes/xpg_usb4/prod/brain/shared/data
-```
+Restore vector data from the matching archive for the configured backend:
+
+- `pgvector/<db-name>.sql` for pgvector deployments.
+- `lancedb/<source-name>.tar.gz` for LanceDB deployments.
 
 Restore Neo4j only from a verified dump:
 
@@ -363,7 +393,10 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   data repair.
 - Treat `manifest.json` as the source of truth for what was captured.
 - Do not rely on raw live Neo4j archives for restore.
-- Keep `BRAIN_SLACK_*`, OAuth, and auth-password files in the secrets archive.
+- Keep `ENV_FILE`, `BRAIN_AUTH_PASSWORD_FILE`, and `BRAIN_AUTH_STATE_PATH` in
+  the secrets archive.
 - Keep at least one verified off-device copy when Google Drive backup is
   enabled.
 - Resolve manifest blockers before considering a backup usable.
+
+<!-- brain-doc-source-hash: 8cfe43a0d81145304dfc40f4bf40257380791af808b265825cc66d72292d1ce5 -->

@@ -130,6 +130,15 @@ POST   /datasources
 DELETE /datasources/{datasource}
 ```
 
+Compatibility aliases also exist:
+
+```text
+POST   /create_datasource
+GET    /list_datasources
+POST   /delete_datasource
+DELETE /delete_datasource/{datasource}
+```
+
 Raw SQL and arbitrary Cognee primitives are not exposed as public MCP tools.
 Brain does expose curated Cognee/admin operations such as sync, rebuild, and
 configured improve.
@@ -143,7 +152,9 @@ admin tools. In production its public URL is:
 https://brain.dceb.net/mcp
 ```
 
-`/app/mcp` remains a compatibility alias for older clients.
+`/app/mcp` remains a compatibility alias for older clients. Public deployment
+URLs are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`,
+`BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
 The browser dashboard is served by the same MCP process at:
 
@@ -168,17 +179,12 @@ brain_profile_context_forget
 brain_app_data_controls
 ```
 
-`brain_remember` is confirmation-first on `/mcp`. Without explicit
-confirmation it is forced to `dry_run=true`; after the user confirms, call it
-again with `context.confirmed_by_user=true` to save. App-surface write tools
-accept either top-level `confirmed_by_user=true` or
-`context.confirmed_by_user=true`. Read-only app tools require
-`brain.memory.read`; write tools require `brain.memory.write` as well, are
-rate-limited, and append a redacted app write audit record. Destructive
-app-surface calls such as `brain_undo_last` and
-`brain_profile_context_forget` require confirmation. Admin tools, raw Cognee
-projection tools, agent-memory clear, and Palate writes are not listed or
-callable on `/mcp` or the legacy `/app/mcp` alias.
+Read-only app tools require `brain.memory.read`; write tools require
+`brain.memory.write` as well and are rate-limited. Destructive app-surface calls
+such as `brain_undo_last` and `brain_profile_context_forget` require
+confirmation. Admin tools, raw Cognee projection tools, agent-memory clear, and
+Palate writes are not listed or callable on `/mcp` or the legacy `/app/mcp`
+alias.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
@@ -231,22 +237,26 @@ The browser dashboard uses cookie-based auth instead of pasted bearer tokens:
 POST /login
 POST /logout
 GET  /auth/session
+GET  /api/session
 PUT  /account/password
 ```
 
 `/login` verifies the selected user id and password, creates an opaque
 server-side session under the Brain secrets directory, and sets a `Secure`,
-`HttpOnly`, `SameSite=Lax` cookie. `/auth/session` returns the public current-user
-record plus a CSRF token. Dashboard MCP and admin writes sent with the session
-cookie must include that token in `X-Brain-CSRF`.
+`HttpOnly`, `SameSite=Lax` cookie. `/auth/session` returns the public
+current-user record plus a CSRF token. Dashboard MCP and admin writes sent with
+the session cookie must include that token in `X-Brain-CSRF`. `/api/session`
+remains a compatibility alias.
 
 The Cognee UI proxy also uses the Brain user registry. `/cognee-login` accepts
 the same user id and password, sets an `HttpOnly`, `SameSite=Lax` UI session
 cookie, and redirects to `/cognee`. `/admin/cognee` requires a superuser user
-record. `/ui-login`, `/ui`, and `/ui-api` remain compatibility aliases.
+record. `/ui-login`, `/ui-logout`, `/ui`, and `/ui-api` remain compatibility
+aliases.
 
 Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
-`BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, and token lifetime settings. See
+`BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`,
+`BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, and `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`. See
 [Production Secrets](production-secrets.md) for secret handling.
 
 For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
@@ -377,6 +387,7 @@ brain_profile_context_remember
 brain_profile_context_list
 brain_profile_context_forget
 brain_profile_context_sync
+brain_app_data_controls
 brain_remember
 brain_ingest_source
 brain_recall

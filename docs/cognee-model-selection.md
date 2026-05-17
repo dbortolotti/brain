@@ -10,12 +10,14 @@ Ingestion timing for the Manetti corpus:
 
 The ingestion data strongly separates the candidates before answer quality is scored. The `gpt-5.4-mini` ingestion run completed in about 43 seconds. The `gpt-5.5` low-effort run took about 4.7 minutes, and the high-effort run took about 14.8 minutes. For this corpus, high effort is about 20x slower than `gpt-5.4-mini` ingestion.
 
+This benchmark sits alongside the repository's durable model-eval fixtures in `tests/model_eval_tests/`. That fixture set includes a balanced Manetti question bank (`tests/model_eval_tests/manetti_100_questions.json` and `tests/model_eval_tests/manetti_100_questions.md`) generated from `manetti_document.md`, plus a live runner that separates `--remember-model`, `--recall-model`, and judge-model responsibilities.
+
 ## Latest GPT-5.5 Retrieval Results
 
 The latest retrieval run completed for all three candidate datasets using `gpt-5.5` as the `GRAPH_COMPLETION` retrieval / answer-synthesis model:
 
 | Candidate dataset | Ingestion model setting | Retrieval / answer model for this run | Scoring judge | Raw answers | Avg score | Avg retrieval-stage time / question |
-|---|---|---|---|---:|---:|---:|
+|---|---:|---:|---:|---:|---:|---:|
 | `menotti-54-mini` | `gpt-5.4-mini` | `gpt-5.5` extra high | `gpt-5.5` extra high | 100/100 | 4.71 | 1.248s |
 | `menotti-55-low` | `gpt-5.5` low-effort run | `gpt-5.5` extra high | `gpt-5.5` extra high | 100/100 | 4.69 | 1.151s |
 | `menotti-55-high` | `gpt-5.5` high-effort run | `gpt-5.5` extra high | `gpt-5.5` extra high | 100/100 | 4.71 | 1.139s |
@@ -58,19 +60,26 @@ The test corpus is:
 
 `/Volumes/xpg_usb4/sandbox/git/banti/md_sources/Secondary Sources/Manetti_DaUnPaeseLontano_Banti.pdf.md`
 
-The artifact logs record it as a 489,900-byte markdown source with 66,726 words. The text contains Lucy Delogu's dissertation, "Chi sono io? Narrazione storica e soggettivita nella Camicia bruciata di Anna Banti", submitted to Rutgers. It analyzes Anna Banti, her historical fiction, feminism, female subjectivity, and especially `La camicia bruciata`.
+The artifact logs record it as a 489,900-byte markdown source with 66,726 words. The text contains Lucy Delogu's dissertation, 'Chi sono io? Narrazione storica e soggettività nella Camicia bruciata di Anna Banti', submitted to Rutgers. It analyzes Anna Banti, her historical fiction, feminism, female subjectivity, and especially `La camicia bruciata`.
 
 This is a good stress test because it is long enough to require multi-hop retrieval and graph structure. The question set covers front-matter facts, chapter titles, named people, historical and literary relationships, interpretive claims, and fine distinctions between documented history and Banti's hypothetical reconstruction.
 
 ## Evaluation Method
 
-The 100-question set was generated from the full line-numbered corpus and saved here:
+The 100-question set was generated from the Manetti markdown source and saved here:
 
 - `artifacts/manetti_candidate_eval_questions_latest.json`
 - `artifacts/manetti_candidate_eval_questions_latest.md`
 - `artifacts/manetti_candidate_eval_questions_latest.txt`
 
-The question distribution is:
+The repository's durable Manetti fixture is separate and balanced across difficulty levels:
+
+- `tests/model_eval_tests/manetti_100_questions.json`
+- `tests/model_eval_tests/manetti_100_questions.md`
+
+That fixture is generated from `tests/model_eval_tests/manetti_document.md` and contains 20 questions at each difficulty level from 1 through 5.
+
+The recorded-run question distribution is:
 
 | Difficulty | Count |
 |---:|---:|
@@ -90,6 +99,8 @@ Each candidate was queried with `artifacts/ask_cognee_dataset.py`, using:
 - the same 100 questions in the same order
 
 The score table has one row per candidate/question with a 1-5 score and a short scoring note. For comparability, every scored run in this series uses `gpt-5.5` extra high as the judge, even when the retrieval/answer model changes.
+
+The repo's live runner follows the same separation of concerns: it creates a fresh dataset, ingests the full Manetti document, then ordered organic seed inserts, then asks all 200 fixture questions and scores every answer with a judge model.
 
 ## Average Score by Difficulty and Recall Model
 
@@ -133,15 +144,15 @@ Good examples:
 
 - `mq001` through `mq009`: correctly answers dissertation author, university, director, date, Banti's real name, dates, focus novel, publication year, and dedication.
 - `mq013`: correctly identifies Hibbert's `The House of Medici` and Acton's `The Last Medici`.
-- `mq032` through `mq050`: mostly handles the women's movement, fascism, Banti's historical interpretation, and "black holes" of history.
+- `mq032` through `mq050`: mostly handles the women's movement, fascism, Banti's historical interpretation, and 'black holes' of history.
 - `mq093` and `mq094`: gives plausible high-level answers about historical truth and the historian/novelist distinction.
 
 Observed failure modes:
 
 - Chapter/title confusion. `mq010` asks for Delogu's Chapter One title, but all three candidates answer with a chapter title from `La camicia bruciata`. `mq012` asks for Delogu's Chapter Four title; `menotti-54-mini` answers with Chapter Three's topic, while the two `gpt-5.5` ingestion runs answer with `La tedeschina`.
-- Theme overgeneralization. `mq021` asks for the central question "Chi sono io?", but all three candidates generalize to the `questione femminile`.
+- Theme overgeneralization. `mq021` asks for the central question 'Chi sono io?', but all three candidates generalize to the `questione femminile`.
 - Named-entity substitution. `mq027` expects Emilio Cecchi as the person who first suggested Marguerite Louise's story. `menotti-54-mini` answers Harold Acton; both `gpt-5.5` ingestion runs answer Roberto Longhi.
-- Plausible but wrong interpretive expansion. `mq072` asks why Marguerite Louise is compared to a mosquito in Delogu's reading; all three answers emphasize generic restlessness or irritation instead of the expected "draw life from the writer" explanation.
+- Plausible but wrong interpretive expansion. `mq072` asks why Marguerite Louise is compared to a mosquito in Delogu's reading; all three answers emphasize generic restlessness or irritation instead of the expected 'draw life from the writer' explanation.
 - Late-source precision misses. `mq098` asks about Anne Louise at Montargis. `menotti-54-mini` shifts to Anna Ludovica, `menotti-55-low` gets closer by identifying Anne Louise's visit, and `menotti-55-high` shifts to Anna Maria Luisa de' Medici.
 
 This means all three ingestion settings are viable enough to answer many questions under `gpt-5.5` extra-high retrieval, but that run does not show that higher-effort ingestion alone fixes chapter structure, named-entity attribution, or fine-grained interpretive retrieval.
@@ -152,7 +163,7 @@ This table uses the completed `20260513_141703` run, where `gpt-5.5` was the ret
 
 | Q | Difficulty | Question | Scores 54/55L/55H | Retrieval s 54/55L/55H |
 |---:|---:|---|---:|---:|
-| `mq001` | 1 | Who wrote the dissertation "Chi sono io? Narrazione storica e soggettività nella Camicia bruciata di Anna Banti"? | 5/5/5 | 3.00/1.96/2.05 |
+| `mq001` | 1 | Who wrote the dissertation 'Chi sono io? Narrazione storica e soggettività nella Camicia bruciata di Anna Banti'? | 5/5/5 | 3.00/1.96/2.05 |
 | `mq002` | 1 | At which university was the dissertation submitted? | 5/5/5 | 1.14/1.92/1.00 |
 | `mq003` | 1 | Who directed the dissertation? | 5/5/5 | 1.09/0.98/1.07 |
 | `mq004` | 1 | In what month and year was the dissertation completed? | 5/5/5 | 0.98/0.99/1.12 |
@@ -198,8 +209,8 @@ This table uses the completed `20260513_141703` run, where `gpt-5.5` was the ret
 | `mq044` | 2 | How does Delogu describe Banti’s protagonists across her narrative works? | 4/5/5 | 1.26/1.26/1.23 |
 | `mq045` | 2 | According to the dissertation, did Banti define herself as a feminist? | 5/5/5 | 1.29/1.27/1.16 |
 | `mq046` | 2 | What two broad contributions does Delogu claim Banti made to Italian literature? | 5/5/5 | 1.07/1.21/1.10 |
-| `mq047` | 2 | What does Banti call her historical writing in the quoted interview: “historical novel” or “historical interpretation”? | 5/5/5 | 1.24/1.22/1.19 |
-| `mq048` | 2 | What are the “black holes” of history in Banti’s historical poetics? | 5/5/5 | 1.18/1.20/1.12 |
+| `mq047` | 2 | What does Banti call her historical writing in the quoted interview: ‘historical novel’ or ‘historical interpretation’? | 5/5/5 | 1.24/1.22/1.19 |
+| `mq048` | 2 | What are the ‘black holes’ of history in Banti’s historical poetics? | 5/5/5 | 1.18/1.20/1.12 |
 | `mq049` | 2 | What phrase does Banti use when urging Marguerite Louise to accept fictional reconstruction? | 5/5/5 | 1.22/1.09/1.11 |
 | `mq050` | 2 | According to Delogu, why does Banti interpret rather than simply remember the past? | 5/5/5 | 1.28/1.31/1.27 |
 | `mq051` | 2 | How does Delogu describe Banti’s autobiographical strategy? | 5/5/5 | 1.30/1.30/1.25 |
@@ -216,7 +227,7 @@ This table uses the completed `20260513_141703` run, where `gpt-5.5` was the ret
 | `mq062` | 2 | What is Lavinia’s story preserved through in Lavinia fuggita? | 5/5/5 | 1.01/0.90/1.07 |
 | `mq063` | 2 | How does Delogu say Banti represents marriage in many works? | 4/5/4 | 1.13/1.26/1.22 |
 | `mq064` | 2 | Which three marriages are discussed in Allarme sul lago? | 5/5/5 | 1.08/1.04/1.05 |
-| `mq065` | 2 | What did Banti say about being called “Anna Banti, wife of Roberto Longhi”? | 5/5/5 | 1.19/1.10/1.40 |
+| `mq065` | 2 | What did Banti say about being called ‘Anna Banti, wife of Roberto Longhi’? | 5/5/5 | 1.19/1.10/1.40 |
 | `mq066` | 2 | How does Delogu qualify Banti’s feminism? | 5/5/5 | 1.10/1.03/0.96 |
 | `mq067` | 2 | What was Banti’s reaction to militant feminism of the 1960s-70s, according to the dissertation? | 5/5/5 | 0.87/1.02/1.02 |
 | `mq068` | 2 | Which Banti essays does Delogu identify as more directly concerned with concrete equality for women? | 5/5/5 | 1.02/0.91/0.86 |
@@ -229,7 +240,7 @@ This table uses the completed `20260513_141703` run, where `gpt-5.5` was the ret
 | `mq075` | 3 | What does Delogu identify as the main reason Marguerite Louise interests Banti? | 4/4/4 | 1.19/1.27/1.21 |
 | `mq076` | 3 | How does Delogu characterize Marguerite Louise as a literary character? | 5/5/5 | 1.31/1.17/1.12 |
 | `mq077` | 3 | What does Marguerite Louise want most as a young girl at Blois? | 5/5/5 | 1.12/1.01/1.09 |
-| `mq078` | 3 | How does Delogu explain Marguerite Louise’s repeated question “Who is Marguerite Louise?” | 5/5/5 | 1.25/1.26/1.24 |
+| `mq078` | 3 | How does Delogu explain Marguerite Louise’s repeated question ‘Who is Marguerite Louise?’ | 5/5/5 | 1.25/1.26/1.24 |
 | `mq079` | 3 | How does Cosimo III appear in the dissertation’s reading of Banti’s novel? | 5/5/5 | 1.20/1.21/1.25 |
 | `mq080` | 3 | What role does Cosimo’s mother play in his development, according to Delogu? | 5/5/5 | 1.34/1.18/1.17 |
 | `mq081` | 3 | How is Ferdinando similar to Marguerite Louise in Banti’s novel? | 5/5/5 | 1.37/1.10/1.09 |
@@ -238,8 +249,8 @@ This table uses the completed `20260513_141703` run, where `gpt-5.5` was the ret
 | `mq084` | 3 | How does Anna Ludovica differ from Marguerite Louise? | 5/5/5 | 1.08/1.10/1.02 |
 | `mq085` | 3 | How does Banti portray Violante in contrast to Marguerite Louise? | 5/5/5 | 1.11/1.04/1.14 |
 | `mq086` | 3 | Why does Violante’s appointment as Governor of Siena matter in Delogu’s interpretation? | 5/5/5 | 8.25/1.08/0.95 |
-| `mq087` | 3 | What does Delogu mean by saying Marguerite Louise and Violante live in a “golden cage”? | 5/5/5 | 1.18/1.15/1.11 |
-| `mq088` | 3 | What does the chapter title “Voi fate la mia infelicità e io la vostra” express? | 5/5/5 | 1.02/0.94/0.91 |
+| `mq087` | 3 | What does Delogu mean by saying Marguerite Louise and Violante live in a ‘golden cage’? | 5/5/5 | 1.18/1.15/1.11 |
+| `mq088` | 3 | What does the chapter title ‘Voi fate la mia infelicità e io la vostra’ express? | 5/5/5 | 1.02/0.94/0.91 |
 | `mq089` | 3 | Why does Delogu say Marguerite Louise’s refusal to abandon French identity undermines her marriage? | 5/5/5 | 1.09/1.66/1.07 |
 | `mq090` | 3 | How do lower-class women in Florence respond to Marguerite Louise’s departure, according to Banti as read by Delogu? | 5/5/5 | 0.99/1.03/0.92 |
 | `mq091` | 3 | How does Delogu interpret Marguerite Louise’s motherhood? | 5/5/5 | 1.12/1.03/0.98 |
@@ -285,7 +296,7 @@ This table uses the completed `20260513_gpt54mini` run, where `gpt-5.4-mini` was
 
 | Q | Difficulty | Question | Scores 54/55L/55H | Retrieval s 54/55L/55H |
 |---:|---:|---|---:|---:|
-| `mq001` | 1 | Who wrote the dissertation "Chi sono io? Narrazione storica e soggettività nella Camicia bruciata di Anna Banti"? | 5/5/5 | 1.21/2.09/1.34 |
+| `mq001` | 1 | Who wrote the dissertation 'Chi sono io? Narrazione storica e soggettività nella Camicia bruciata di Anna Banti'? | 5/5/5 | 1.21/2.09/1.34 |
 | `mq002` | 1 | At which university was the dissertation submitted? | 5/5/5 | 0.98/1.48/0.98 |
 | `mq003` | 1 | Who directed the dissertation? | 5/5/5 | 2.18/0.99/1.01 |
 | `mq004` | 1 | In what month and year was the dissertation completed? | 5/5/5 | 0.92/0.96/1.04 |
@@ -331,8 +342,8 @@ This table uses the completed `20260513_gpt54mini` run, where `gpt-5.4-mini` was
 | `mq044` | 2 | How does Delogu describe Banti’s protagonists across her narrative works? | 4/4/4 | 1.32/1.32/1.27 |
 | `mq045` | 2 | According to the dissertation, did Banti define herself as a feminist? | 5/5/5 | 1.22/1.31/1.24 |
 | `mq046` | 2 | What two broad contributions does Delogu claim Banti made to Italian literature? | 5/5/5 | 0.99/1.04/1.10 |
-| `mq047` | 2 | What does Banti call her historical writing in the quoted interview: “historical novel” or “historical interpretation”? | 5/5/5 | 1.17/1.17/1.13 |
-| `mq048` | 2 | What are the “black holes” of history in Banti’s historical poetics? | 5/4/5 | 1.44/1.23/1.20 |
+| `mq047` | 2 | What does Banti call her historical writing in the quoted interview: ‘historical novel’ or ‘historical interpretation’? | 5/5/5 | 1.17/1.17/1.13 |
+| `mq048` | 2 | What are the ‘black holes’ of history in Banti’s historical poetics? | 5/4/5 | 1.44/1.23/1.20 |
 | `mq049` | 2 | What phrase does Banti use when urging Marguerite Louise to accept fictional reconstruction? | 5/5/5 | 1.13/1.24/1.17 |
 | `mq050` | 2 | According to Delogu, why does Banti interpret rather than simply remember the past? | 5/5/4 | 1.21/1.31/1.29 |
 | `mq051` | 2 | How does Delogu describe Banti’s autobiographical strategy? | 5/5/5 | 1.33/1.28/1.29 |
@@ -349,7 +360,7 @@ This table uses the completed `20260513_gpt54mini` run, where `gpt-5.4-mini` was
 | `mq062` | 2 | What is Lavinia’s story preserved through in Lavinia fuggita? | 5/5/5 | 0.96/1.07/1.08 |
 | `mq063` | 2 | How does Delogu say Banti represents marriage in many works? | 4/5/4 | 1.23/1.20/1.42 |
 | `mq064` | 2 | Which three marriages are discussed in Allarme sul lago? | 5/5/3 | 1.05/1.00/1.01 |
-| `mq065` | 2 | What did Banti say about being called “Anna Banti, wife of Roberto Longhi”? | 5/5/5 | 1.28/1.40/1.19 |
+| `mq065` | 2 | What did Banti say about being called ‘Anna Banti, wife of Roberto Longhi’? | 5/5/5 | 1.28/1.40/1.19 |
 | `mq066` | 2 | How does Delogu qualify Banti’s feminism? | 5/5/5 | 0.99/1.09/1.69 |
 | `mq067` | 2 | What was Banti’s reaction to militant feminism of the 1960s-70s, according to the dissertation? | 5/5/5 | 1.04/0.92/1.01 |
 | `mq068` | 2 | Which Banti essays does Delogu identify as more directly concerned with concrete equality for women? | 5/5/5 | 1.12/1.05/1.02 |
@@ -362,7 +373,7 @@ This table uses the completed `20260513_gpt54mini` run, where `gpt-5.4-mini` was
 | `mq075` | 3 | What does Delogu identify as the main reason Marguerite Louise interests Banti? | 4/4/4 | 1.29/1.25/1.30 |
 | `mq076` | 3 | How does Delogu characterize Marguerite Louise as a literary character? | 5/5/4 | 1.24/1.18/1.24 |
 | `mq077` | 3 | What does Marguerite Louise want most as a young girl at Blois? | 5/5/5 | 1.22/1.15/0.98 |
-| `mq078` | 3 | How does Delogu explain Marguerite Louise’s repeated question “Who is Marguerite Louise?” | 5/5/5 | 1.25/1.26/1.31 |
+| `mq078` | 3 | How does Delogu explain Marguerite Louise’s repeated question ‘Who is Marguerite Louise?’ | 5/5/5 | 1.25/1.26/1.31 |
 | `mq079` | 3 | How does Cosimo III appear in the dissertation’s reading of Banti’s novel? | 5/5/5 | 1.24/1.23/1.21 |
 | `mq080` | 3 | What role does Cosimo’s mother play in his development, according to Delogu? | 5/5/5 | 1.17/1.16/1.20 |
 | `mq081` | 3 | How is Ferdinando similar to Marguerite Louise in Banti’s novel? | 4/5/5 | 1.10/1.10/1.04 |
@@ -371,8 +382,8 @@ This table uses the completed `20260513_gpt54mini` run, where `gpt-5.4-mini` was
 | `mq084` | 3 | How does Anna Ludovica differ from Marguerite Louise? | 5/5/5 | 1.14/1.15/1.12 |
 | `mq085` | 3 | How does Banti portray Violante in contrast to Marguerite Louise? | 5/5/5 | 1.10/1.08/1.24 |
 | `mq086` | 3 | Why does Violante’s appointment as Governor of Siena matter in Delogu’s interpretation? | 5/5/5 | 0.91/0.95/0.96 |
-| `mq087` | 3 | What does Delogu mean by saying Marguerite Louise and Violante live in a “golden cage”? | 4/5/4 | 1.16/1.24/1.15 |
-| `mq088` | 3 | What does the chapter title “Voi fate la mia infelicità e io la vostra” express? | 5/5/5 | 1.01/0.92/1.08 |
+| `mq087` | 3 | What does Delogu mean by saying Marguerite Louise and Violante live in a ‘golden cage’? | 4/5/4 | 1.16/1.24/1.15 |
+| `mq088` | 3 | What does the chapter title ‘Voi fate la mia infelicità e io la vostra’ express? | 5/5/5 | 1.01/0.92/1.08 |
 | `mq089` | 3 | Why does Delogu say Marguerite Louise’s refusal to abandon French identity undermines her marriage? | 5/5/4 | 0.94/0.99/0.96 |
 | `mq090` | 3 | How do lower-class women in Florence respond to Marguerite Louise’s departure, according to Banti as read by Delogu? | 5/5/5 | 0.95/1.04/1.06 |
 | `mq091` | 3 | How does Delogu interpret Marguerite Louise’s motherhood? | 5/5/5 | 1.18/1.12/1.15 |
@@ -401,3 +412,5 @@ The current data does not justify `menotti-55-high` as a default. Its ingestion 
 1. Repeat the same 100-question retrieval run with `gpt-5.5` low as the retrieval/answer model, scored by `gpt-5.5` extra high.
 2. Compare low-score clusters across the `gpt-5.5`, `gpt-5.5` low, and `gpt-5.4-mini` retrieval runs.
 3. Select the cheaper ingestion and retrieval combination unless the slower model clearly fixes structural and interpretive retrieval errors.
+
+<!-- brain-doc-source-hash: 39518714cbd2d67ac7bf5b6c344deccf10d92de3228a8d326e89643404c807a9 -->

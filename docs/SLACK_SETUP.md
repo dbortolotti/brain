@@ -145,6 +145,9 @@ Request URL: https://your-public-host.example.com/slack/events
 Slack will send a URL verification challenge. Brain responds to
 `type=url_verification` after signature verification.
 
+The Slack agent ignores bot messages and message edits/deletions with the
+`bot_message`, `message_deleted`, and `message_changed` subtypes.
+
 Subscribe to bot events as needed:
 
 ```text
@@ -270,6 +273,7 @@ BRAIN_SLACK_BOT_TOKEN
 Slack non-secret deployment variables are:
 
 ```text
+BRAIN_SLACK_ENABLED
 BRAIN_SLACK_AGENT_ENABLED
 BRAIN_SLACK_ALLOWED_TEAM_IDS
 BRAIN_SLACK_ALLOWED_CHANNEL_IDS
@@ -292,6 +296,11 @@ Set `BRAIN_SLACK_SIGNING_SECRET` to the Slack app signing secret and restart.
 Send traffic through Slack or reproduce Slack's signature calculation exactly.
 Normal unsigned `curl` requests to Slack write routes should fail.
 
+`401 Invalid Slack timestamp`.
+
+Check the request timestamp and header parsing. Slack signatures require an
+integer timestamp.
+
 `401 Stale Slack timestamp`.
 
 Check system time and tunnel/proxy behavior. Slack signatures are accepted only
@@ -312,4 +321,4 @@ Confirm the Event Subscriptions request URL points to `/slack/events`, the
 public URL forwards to the Slack agent port, and the signing secret matches the
 Slack app.
 
-<!-- brain-doc-source-hash: 4483235b367f6161282483776aced96d2a2fbaecb413a7eddf66d68675a804eb -->
+<!-- brain-doc-source-hash: 8315a48419b717f5b7329606467275f5d59e0d0478c1fe64eceedacc461b60d7 -->

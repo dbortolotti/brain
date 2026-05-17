@@ -4,20 +4,20 @@ Brain is a personal memory system. Use it to save durable facts, decisions,
 preferences, open questions, useful source material, and reminders of things you
 want to recall later.
 
-Most users should interact with Brain through Slack or through an LLM client
-that has Brain tools enabled. You do not need to think in database terms while
-using it: write clear memory requests, confirm them when asked, and use recall
-when you need the saved context back.
+Most users should interact with Brain through Slack, through an LLM client that
+has Brain tools enabled, or through the browser user dashboard. You do not need
+to think in database terms while using it: write clear memory requests, confirm
+them when asked, and use recall when you need the saved context back.
 
 ## Main Workflows
 
 Use Brain for four day-to-day jobs:
 
-- Save a memory: "remember this..."
-- Save source material: "ingest this note/article/transcript..."
-- Recall stored context: "what do we know about..."
-- Review or correct memory: "show recent writes", "undo the last one", or
-  "actually, replace the old fact with..."
+- Save a memory: `remember this...`
+- Save source material: `ingest this note/article/transcript...`
+- Recall stored context: `what do we know about...`
+- Review or correct memory: `show recent writes`, `undo the last one`, or
+  `actually, replace the old fact with...`
 
 Slack is the strictest interface. It dry-runs writes and asks for confirmation
 by default. An LLM client can use the same Brain tools directly, usually with
@@ -124,10 +124,43 @@ Confirm a proposed write:
 Slack may ask for confirmation or clarification when a memory is ambiguous,
 sensitive, low-confidence, or potentially conflicts with an existing memory.
 
+## Using the User Dashboard
+
+The browser dashboard is for reviewing and managing your memory. It opens with a
+sign-in overlay and a session line that says Connect to review memory.
+
+The top bar links to User, Admin, and Cognee views.
+
+Main tabs:
+
+- Review: Recent Cards, Open Loops, and Memory Contents. Click a memory card to
+  inspect it.
+- Recall: search Brain with a query and an optional limit.
+- Remember: preview a memory before saving it. The input type menu includes
+  auto, note, fact, thought, open question, and chat conclusion.
+- Profile: add standing answer-tailoring context. The default scope is
+  `answer_tailoring`.
+- Prompt: inspect Personal Info In Session, Custom Preprompt Instructions, Latest
+  Session Data, Bias Protocol, and Agent Memory Protocol.
+- Data Controls: view App Write Audit, Export Preview, Profile Data, and Recent
+  Memory Data.
+- Account: change your password.
+- Users: available to superusers for user administration.
+- Help: command and usage help.
+
+Use Review before trusting a recall result. It is a safe place to inspect recent
+memory and open loops without changing data.
+
 ## Using Brain Through An LLM
 
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good
 prompts tell the LLM whether to save, recall, profile, or review.
+
+In the ChatGPT app surface, common tools include `brain_session`,
+`brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`,
+`brain_profile_context_forget`, `brain_app_data_controls`, `brain_recall`,
+`brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`,
+`brain_review_recent`, and `brain_undo_last`.
 
 Save one durable memory:
 
@@ -160,7 +193,9 @@ Context: this came from the May architecture review.
 Preserve chat/session context for handover:
 
 ```text
-Use brain_session to get the standard session id, then use Brain's agent-memory workflow to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
+Use brain_session to get the standard session id. If my client exposes an
+agent-memory workflow, use it to preserve this chat handover. Do not use
+brain_remember unless there is a separate durable user fact or decision.
 ```
 
 Recall context:
@@ -199,26 +234,27 @@ Good Brain memories are durable, specific, and useful later.
 
 Save:
 
-- Stable preferences: "Maya prefers written briefs."
-- People facts: "Sam works at Goldman."
+- Stable preferences: `Maya prefers written briefs.`
+- People facts: `Sam works at Goldman.`
 - Family or personal context you are allowed to remember.
-- Decisions: "Use Brain DB as the source of truth."
-- Project state: "Slack is the primary guarded intake."
-- Commitments: "I promised to send Alex the draft on Friday."
-- Open questions: "I want to learn more about temporal retrieval."
-- Research questions: "I wonder whether vector search improves this recall path?"
+- Decisions: `Use Brain DB as the source of truth.`
+- Project state: `Slack is the primary guarded intake.`
+- Commitments: `I promised to send Alex the draft on Friday.`
+- Open questions: `I want to learn more about temporal retrieval.`
+- Research questions: `I wonder whether vector search improves this recall path?`
 - Source summaries, meeting notes, transcripts, articles, and small tables.
 - Corrections that clearly replace older facts.
 
 Do not save:
 
 - Passwords, API keys, tokens, or private credentials.
-- Vague notes with no subject: "remember this is important."
-- Temporary chatter: "that was funny."
-- Guesses as facts: "Maybe Sam likes Bill Evans."
+- Vague notes with no subject: `remember this is important.`
+- Temporary chatter: `that was funny.`
+- Guesses as facts: `Maybe Sam likes Bill Evans.`
 - Sensitive personal facts unless there is a clear reason and permission.
 - Chat-session handovers, conversation summaries, or agent workflow learnings;
-  use `brain_agent_memory` with the `brain_session` session id.
+  use the dedicated agent-memory workflow in clients that expose it, and keep
+  those handovers separate from ordinary durable facts.
 - Full raw dumps when only a concise memory is needed.
 
 ## Supported Memory Types
@@ -227,25 +263,25 @@ Brain stores memory cards with these kinds:
 
 | Memory kind | Use it for | Example |
 | --- | --- | --- |
-| `basic_fact` | General durable facts | "Brain runs locally on the production Mac." |
-| `family_fact` | Family relationships or family context | "Tom and Anna are twins." |
-| `person_fact` | Facts about a person | "Sam works at Goldman." |
-| `person_interaction` | Something someone said or did | "Alex mentioned the renewal is due in June." |
-| `preference` | Likes, dislikes, working style, defaults | "Maya prefers written briefs." |
-| `decision` | Explicit decisions | "We decided to keep Slack as the primary intake." |
-| `idea` | Ideas or possible future directions | "Try a weekly open-loop review." |
-| `open_question` | Things to learn, revisit, or track | "I want to learn more about temporal knowledge graphs." |
-| `research_question` | Investigative questions | "Does LanceDB improve local recall quality?" |
-| `article_note` | Saved articles or URLs | "Saved article about SQLite vector search." |
-| `key_takeaway` | Important takeaway from a source | "Cognee can be rebuilt from Brain DB." |
-| `conversation_summary` | Summary of a longer conversation | "The architecture review covered Slack, Cognee, and backups." |
-| `chat_conclusion` | Conclusion reached in chat | "Brain DB should be the source of truth." |
-| `experience` | Personal experience or observed lesson | "The live model smoke test caught missing credentials." |
-| `place_note` | Place-specific notes | "The meeting room has unreliable video." |
-| `table_note` | Small tables and tabular observations | "Stored a table of model scores." |
-| `source_summary` | Summary of source material | "Stored source material from the architecture note." |
-| `project_state` | Current project facts and direction | "Telegram is deferred until Slack is stable." |
-| `commitment` | Promises, obligations, or intended follow-ups | "Send the launch notes to Alex by Friday." |
+| `basic_fact` | General durable facts | `Brain runs locally on the production Mac.` |
+| `family_fact` | Family relationships or family context | `Tom and Anna are twins.` |
+| `person_fact` | Facts about a person | `Sam works at Goldman.` |
+| `person_interaction` | Something someone said or did | `Alex mentioned the renewal is due in June.` |
+| `preference` | Likes, dislikes, working style, defaults | `Maya prefers written briefs.` |
+| `decision` | Explicit decisions | `We decided to keep Slack as the primary intake.` |
+| `idea` | Ideas or possible future directions | `Try a weekly open-loop review.` |
+| `open_question` | Things to learn, revisit, or track | `I want to learn more about temporal knowledge graphs.` |
+| `research_question` | Investigative questions | `Does LanceDB improve local recall quality?` |
+| `article_note` | Saved articles or URLs | `Saved article about SQLite vector search.` |
+| `key_takeaway` | Important takeaway from a source | `Cognee can be rebuilt from Brain DB.` |
+| `conversation_summary` | Summary of a longer conversation | `The architecture review covered Slack, Cognee, and backups.` |
+| `chat_conclusion` | Conclusion reached in chat | `Brain DB should be the source of truth.` |
+| `experience` | Personal experience or observed lesson | `The live model smoke test caught missing credentials.` |
+| `place_note` | Place-specific notes | `The meeting room has unreliable video.` |
+| `table_note` | Small tables and tabular observations | `Stored a table of model scores.` |
+| `source_summary` | Summary of source material | `Stored source material from the architecture note.` |
+| `project_state` | Current project facts and direction | `Telegram is deferred until Slack is stable.` |
+| `commitment` | Promises, obligations, or intended follow-ups | `Send the launch notes to Alex by Friday.` |
 
 Slack's proposal layer accepts a smaller input set:
 
@@ -263,7 +299,8 @@ table
 Brain may then classify the final stored card as a more specific memory kind,
 such as `preference`, `person_fact`, `project_state`, or `source_summary`.
 For chat-session continuity and handovers, prefer the dedicated
-`brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion`.
+`brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion`
+when your client exposes that workflow.
 
 ## How Memories Are Stored
 
@@ -443,7 +480,8 @@ Ask for evidence when using an LLM:
 Use Brain to recall what we know about Cognee projection, including evidence and conflicts.
 ```
 
-If a recall answer looks wrong, review recent writes:
+If a recall answer looks wrong, review recent writes in Slack or in the browser
+Review tab before trusting the result:
 
 ```text
 /brain review
@@ -516,4 +554,4 @@ Use Brain to recall the current project state for Slack intake and include any c
 - [Production Secrets](production-secrets.md) explains production secret
   handling.
 
-<!-- brain-doc-source-hash: fe343b90e584d2c6b8b7a1cad5016254b9c886faa9460cbdb49107486dedefbe -->
+<!-- brain-doc-source-hash: a44e4e32154bc17b65e929a63c833052d17ae8da13ae80c25c775607d98a305e -->

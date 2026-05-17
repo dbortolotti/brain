@@ -52,3 +52,38 @@ docs:
       - src/memory_stack/slack_agent.py
       - scripts/verify_slack_agent.py
       - docs/USER_GUIDE.md
+  - path: docs/BACKUP_SCHEME.md
+    audience: "Operators responsible for Brain backups and restores."
+    purpose: "Keep backup contents, locations, restore notes, and verification behavior accurate."
+    sources:
+      - scripts/backup_stores.py
+      - scripts/verify_mcp_production.py
+      - docs/production-secrets.md
+      - cfg/prod.yaml
+      - cfg/staging.yaml
+  - path: docs/chatgpt-app-hardening.md
+    audience: "Operators preparing Brain for ChatGPT App review and release."
+    purpose: "Document the curated app surface, confirmation model, audit controls, and release checks."
+    sources:
+      - src/memory_stack/mcp_server.py
+      - src/memory_stack/static/brain_app/index.html
+      - src/memory_stack/static/brain_app/app.js
+      - scripts/verify_cloudflare_mcp.py
+      - docs/API_SETUP_GUIDE.md
+  - path: docs/cognee-model-selection.md
+    audience: "Developers evaluating Cognee ingestion and retrieval model choices."
+    purpose: "Keep model-selection context, benchmark interpretation, and artifact references coherent."
+    sources:
+      - tests/model_eval_tests/README.md
+      - tests/model_eval_tests/run_model_eval.py
+      - tests/test_model_eval_runner.py
+      - docs/role_flow_diagram.md
+  - path: docs/role_flow_diagram.md
+    audience: "Developers and operators reasoning about Brain runtime flow and agent roles."
+    purpose: "Keep runtime flow diagrams and role topology aligned with current code and role specs."
+    sources:
+      - src/memory_stack/brain_service.py
+      - src/memory_stack/slack_memory_agent.py
+      - src/memory_stack/ingestion/memory_compiler.py
+      - src/memory_stack/agents/shared/memory_agent_rules.md
+      - src/memory_stack/agents/shared/agent_architecture.md
