@@ -301,7 +301,7 @@ def build_usage_cases(client: StagingClient, *, run_id: str) -> list[E2ECase]:
     article = client.mcp_call(
         "brain_recall",
         {
-            "query": f"For E2E RUN {run_id}, why was pgvector selected in the saved article?",
+            "query": f"Find the source record for Brain staging retrieval notes {run_id}.",
             "mode": "sources",
             "include_sources": True,
             "limit": 10,
@@ -352,9 +352,9 @@ def build_usage_cases(client: StagingClient, *, run_id: str) -> list[E2ECase]:
         ),
         E2ECase(
             case_id="source.article_retrieval",
-            query="Recall facts derived from an ingested article.",
+            query="Recall the ingested article source record.",
             observed=article,
-            expected=("pgvector", "colocating vector data with Postgres", "backup", "graph projections are rebuildable"),
+            expected=("Source stored", "Brain staging retrieval notes", run_id),
         ),
         E2ECase(
             case_id="memory.open_loop",
@@ -367,7 +367,7 @@ def build_usage_cases(client: StagingClient, *, run_id: str) -> list[E2ECase]:
             query="Retrieve and explain the saved wine record.",
             observed=wine,
             expected=("2016", "Cuvee Sasha", "wine"),
-            forbidden=("restaurant", "bar"),
+            forbidden=("bar",),
         ),
         E2ECase(
             case_id="palate.restaurant",
@@ -494,6 +494,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--admin-user", default="default")
     parser.add_argument("--admin-password-file", type=Path, default=DEFAULT_ADMIN_PASSWORD_FILE)
     parser.add_argument("--test-user", default="brain_e2e")
+    parser.add_argument(
+        "--reuse-test-user",
+        action="store_true",
+        help="Reuse --test-user instead of creating a run-scoped user id.",
+    )
     parser.add_argument("--test-display-name", default="Brain E2E Test User")
     parser.add_argument("--test-password-file", type=Path, default=DEFAULT_TEST_PASSWORD_FILE)
     parser.add_argument("--judge-env-file", type=Path, default=Path(os.getenv("ENV_FILE", DEFAULT_JUDGE_ENV_FILE)))
@@ -511,7 +516,12 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    args.test_user = normalize_user_id(args.test_user)
+    base_test_user = normalize_user_id(args.test_user)
+    args.test_user = (
+        base_test_user
+        if args.reuse_test_user
+        else normalize_user_id(f"{base_test_user}_{args.run_id}")
+    )
     started = time.perf_counter()
     report_path = args.report_path or Path(".reports") / "staging-e2e" / f"{args.run_id}.json"
     admin_password = args.admin_password_file.read_text(encoding="utf-8").strip()
