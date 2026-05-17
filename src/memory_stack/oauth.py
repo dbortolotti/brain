@@ -533,7 +533,7 @@ def auth_form(
     user_values = list((users or {}).values())
     user_html = ""
     if user_values:
-        user_html = f"""
+        user_html = """
         <label for="user_id">Username</label>
         <input id="user_id" name="user_id" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="username">
         """
