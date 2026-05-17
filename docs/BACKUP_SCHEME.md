@@ -71,6 +71,12 @@ when LanceDB is the configured vector backend.
 
 ## Running A Backup
 
+Local prod and staging deploys install a daily launchd backup job from
+`deployment/launchd/com.brain.backup.plist.template`. The rendered production
+label is `com.brain.prod.backup`; staging renders as `com.brain.staging.backup`.
+The job runs `scripts/backup_stores.py` against the environment's shared
+`brain.env` at 02:15.
+
 Use the configured environment:
 
 ```bash
@@ -399,4 +405,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 1210fe8db4e3d412375f8f0f574d684ff838ae3157fd621dab5c8701b7b726fb -->
+<!-- brain-doc-source-hash: bf4ce5934c7e6be6e789dd506fc1e13db1aac40238bcc5d90177a0bf4222450d -->

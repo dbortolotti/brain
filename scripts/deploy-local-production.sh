@@ -36,6 +36,7 @@ UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
 SLACK_LABEL="${BRAIN_SLACK_AGENT_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.slack-agent}"
 AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
 LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.log-rotation}"
+BACKUP_LABEL="${BRAIN_BACKUP_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.backup}"
 PROD_ROOT="${BRAIN_PROD_ROOT:-$DEFAULT_ROOT}"
 BRAIN_PUBLIC_BASE_URL="${BRAIN_PUBLIC_BASE_URL:-$DEFAULT_PUBLIC_BASE_URL}"
 BRAIN_MCP_PORT="${BRAIN_MCP_PORT:-$DEFAULT_MCP_PORT}"
@@ -75,6 +76,8 @@ AGENT_MEMORY_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.pl
 AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$AGENT_MEMORY_LABEL.plist"
 LOG_ROTATION_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template"
 LOG_ROTATION_PLIST_DST="$HOME/Library/LaunchAgents/$LOG_ROTATION_LABEL.plist"
+BACKUP_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.backup.plist.template"
+BACKUP_PLIST_DST="$HOME/Library/LaunchAgents/$BACKUP_LABEL.plist"
 NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
 NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
 
@@ -254,6 +257,7 @@ if deploy_env != "prod":
             "brain-slack-agent.": f"brain-{deploy_env}-slack-agent.",
             "brain-agent-memory.": f"brain-{deploy_env}-agent-memory.",
             "brain-log-rotation.": f"brain-{deploy_env}-log-rotation.",
+            "brain-backup.": f"brain-{deploy_env}-backup.",
         }
     )
 for old, new in replacements.items():
@@ -635,6 +639,8 @@ render_plist "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
 plutil -lint "$AGENT_MEMORY_PLIST_DST" >/dev/null
 render_plist "$LOG_ROTATION_PLIST_SRC" "$LOG_ROTATION_PLIST_DST"
 plutil -lint "$LOG_ROTATION_PLIST_DST" >/dev/null
+render_plist "$BACKUP_PLIST_SRC" "$BACKUP_PLIST_DST"
+plutil -lint "$BACKUP_PLIST_DST" >/dev/null
 if [[ "$DEPLOY_ENV" == "prod" ]]; then
   install_newsyslog_config
 else
@@ -658,6 +664,8 @@ if command -v launchctl >/dev/null 2>&1; then
   enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"
   log "reloading launchd job $LOG_ROTATION_LABEL"
   enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"
+  log "reloading launchd job $BACKUP_LABEL"
+  enable_launch_agent "$BACKUP_LABEL" "$BACKUP_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi
