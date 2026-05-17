@@ -19,7 +19,7 @@ from memory_stack.cfg import Settings, load_settings
 from memory_stack.llm.client import ConfiguredLLMClient
 
 
-DEFAULT_BASE_URL = "https://brain-staging.dceb.net"
+DEFAULT_BASE_URL = "http://127.0.0.1:18100"
 DEFAULT_ADMIN_PASSWORD_FILE = Path(
     "/Volumes/xpg_usb4/staging/brain/shared/secrets/brain-auth-root-password"
 )
@@ -89,7 +89,14 @@ class StagingClient:
             json=json_payload,
         )
         response.raise_for_status()
-        payload = response.json()
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise RuntimeError(
+                f"Expected JSON from {method} {path}, got "
+                f"{response.headers.get('content-type', 'unknown content type')}: "
+                f"{response.text[:240]}"
+            ) from exc
         if not isinstance(payload, dict):
             raise RuntimeError(f"Expected JSON object from {path}.")
         return payload

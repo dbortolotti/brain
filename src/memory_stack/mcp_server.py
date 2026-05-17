@@ -104,6 +104,7 @@ CHATGPT_APP_TOOLS = {
     "brain_session",
     "brain_recall",
     "brain_remember",
+    "brain_ingest_source",
     "brain_profile_entity",
     "brain_list_open_loops",
     "brain_get_memory",
@@ -126,6 +127,7 @@ APP_READ_ONLY_TOOLS = {
 }
 APP_MUTATING_TOOLS = {
     "brain_remember",
+    "brain_ingest_source",
     "brain_profile_context_remember",
     "brain_profile_context_forget",
     "brain_undo_last",
@@ -907,6 +909,13 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
                     "Prepare or store a user-level Brain memory. On the ChatGPT App "
                     "surface this tool previews by default; save only after explicit "
                     "user confirmation by passing context.confirmed_by_user=true."
+                )
+            if tool["name"] == "brain_ingest_source":
+                tool["description"] = (
+                    "Prepare or store a user-level source such as an article, email, "
+                    "transcript, markdown note, or table. On the ChatGPT App surface "
+                    "this tool previews by default; save only after explicit user "
+                    "confirmation by passing confirmed_by_user=true."
                 )
     return tools_with_output_schemas(tools, surface=surface)
 
@@ -2608,6 +2617,7 @@ async def call_tool_dispatch(
         )
 
     if name == "brain_ingest_source":
+        arguments = confirmation_first_arguments(arguments, surface=surface)
         if "source" in arguments:
             request = IngestSourceRequest.model_validate(
                 {
@@ -3145,6 +3155,10 @@ def app_write_target_id(tool_name: str, arguments: Any, structured: Any) -> str 
                 if isinstance(card, dict) and card.get("created") and card.get("id")
             ]
             return ",".join(memory_ids[:5]) if memory_ids else structured.get("ingestion_run_id")
+        if tool_name == "brain_ingest_source":
+            return structured.get("source_id") or (
+                (structured.get("ingestion") or {}).get("ingestion_run_id")
+            )
     if isinstance(arguments, dict):
         return arguments.get("context_id") or arguments.get("ingestion_run_id")
     return None
@@ -3160,6 +3174,11 @@ def app_write_summary(tool_name: str, structured: Any) -> str | None:
             if isinstance(card, dict) and card.get("created")
         )
         return f"brain_remember dry_run={bool(structured.get('dry_run'))} created={created}"
+    if tool_name == "brain_ingest_source":
+        return (
+            f"brain_ingest_source status={structured.get('status')} "
+            f"source_id={structured.get('source_id')}"
+        )
     if tool_name == "brain_profile_context_remember":
         return f"profile_context scope={structured.get('scope')} id={structured.get('id')}"
     if tool_name == "brain_profile_context_forget":

@@ -357,6 +357,9 @@ ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env \
   uv run python scripts/staging_e2e_suite.py
 ```
 
+The default target is the local staging service at `http://127.0.0.1:18100`,
+which avoids public proxy routing for admin user-management APIs.
+
 The runner writes JSON reports under `.reports/staging-e2e/` by default. It is
 not part of normal `pytest` because it mutates staging and makes live provider
 calls.
@@ -503,4 +506,4 @@ uv run brain models auth login --provider openai-codex
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 98a63d4925be1541385d44c169cbc35f74716d4bf9eb3955484a56ca6fe1f167 -->
+<!-- brain-doc-source-hash: 1a03c8505d2c3d0554cadd8a6850c894416b3c440e20eea352a5cc7418bbaa7c -->

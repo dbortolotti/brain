@@ -14,7 +14,7 @@ def script_text() -> str:
 def test_staging_e2e_script_is_opt_in_and_targets_staging() -> None:
     text = script_text()
 
-    assert "https://brain-staging.dceb.net" in text
+    assert "http://127.0.0.1:18100" in text
     assert "brain-auth-e2e-password" in text
     assert 'parser.add_argument("--test-user", default="brain-e2e")' in text
     assert 'parser.add_argument("--judge-model", default="gpt-5.5")' in text

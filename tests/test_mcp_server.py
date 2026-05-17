@@ -208,6 +208,8 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     }.isdisjoint(tool_names)
     remember = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_remember")
     assert "previews by default" in remember["description"]
+    ingest_source = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_ingest_source")
+    assert "previews by default" in ingest_source["description"]
     for tool in response.json()["result"]["tools"]:
         assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
         assert tool["_meta"]["ui"] == {"visibility": ["model"]}
@@ -224,6 +226,8 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     assert remember["annotations"]["readOnlyHint"] is False
     assert remember["annotations"]["destructiveHint"] is False
     assert remember["_meta"]["brain/requiresUserConfirmation"] is True
+    assert ingest_source["annotations"]["readOnlyHint"] is False
+    assert ingest_source["_meta"]["brain/requiresUserConfirmation"] is True
     recall = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_recall")
     assert recall["annotations"]["readOnlyHint"] is True
     assert recall["_meta"]["brain/requiresUserConfirmation"] is False
@@ -465,6 +469,62 @@ def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
     confirmed = confirmed_response.json()["result"]["structuredContent"]
     assert confirmed["dry_run"] is False
     assert any(card["created"] is True for card in confirmed["memory_cards"])
+
+
+def test_chatgpt_app_ingest_source_previews_until_confirmed(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app, base_url="https://testserver")
+        preview_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_ingest_source",
+                    "arguments": {
+                        "source": "Article: app-surface source ingestion previews first.",
+                        "source_kind": "article",
+                        "title": "App source preview",
+                    },
+                },
+            },
+        )
+        confirmed_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_ingest_source",
+                    "arguments": {
+                        "source": "Article: app-surface source ingestion saves after confirmation.",
+                        "source_kind": "article",
+                        "title": "App source confirmed",
+                        "dry_run": False,
+                        "confirmed_by_user": True,
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert preview_response.status_code == 200
+    preview = preview_response.json()["result"]["structuredContent"]
+    assert preview["ingestion"]["dry_run"] is True
+    assert preview["source_id"] is None
+
+    assert confirmed_response.status_code == 200
+    confirmed = confirmed_response.json()["result"]["structuredContent"]
+    assert confirmed["ingestion"]["dry_run"] is False
+    assert confirmed["source_id"]
 
 
 def test_memory_tools_expose_node_set_and_search_options() -> None:
