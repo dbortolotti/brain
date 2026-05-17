@@ -15,6 +15,7 @@ from typing import Any
 
 import httpx
 
+from memory_stack.brain_store import normalize_user_id
 from memory_stack.cfg import Settings, load_settings
 from memory_stack.llm.client import ConfiguredLLMClient
 
@@ -144,12 +145,17 @@ def ensure_test_user(
     test_password: str,
     display_name: str,
 ) -> str:
+    normalized_test_user = normalize_user_id(test_user)
     admin = StagingClient(base_url)
     try:
         admin.login(admin_user, admin_password)
         users_payload = admin.request_json("GET", "/admin/users", csrf=False)
         users = users_payload.get("users") or []
-        exists = any(str(user.get("id")) == test_user for user in users if isinstance(user, dict))
+        exists = any(
+            normalize_user_id(str(user.get("id") or "")) == normalized_test_user
+            for user in users
+            if isinstance(user, dict)
+        )
         body = {
             "password": test_password,
             "display_name": display_name,
@@ -157,12 +163,12 @@ def ensure_test_user(
             "superuser": False,
         }
         if exists:
-            admin.request_json("PUT", f"/admin/users/{test_user}", json_payload=body)
+            admin.request_json("PUT", f"/admin/users/{normalized_test_user}", json_payload=body)
             return "updated"
         admin.request_json(
             "POST",
             "/admin/users",
-            json_payload={"id": test_user, **body},
+            json_payload={"id": normalized_test_user, **body},
         )
         return "created"
     finally:
@@ -204,6 +210,7 @@ records, so raw article text should stay separate from derived memory cards.
             "why_saved": "Staging E2E source-ingestion coverage.",
             "extract_memories": True,
             "dry_run": False,
+            "confirmed_by_user": True,
             "metadata": {"run_id": run_id, "suite": "staging_e2e"},
         },
     )
@@ -486,7 +493,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", default=os.getenv("BRAIN_STAGING_BASE_URL", DEFAULT_BASE_URL))
     parser.add_argument("--admin-user", default="default")
     parser.add_argument("--admin-password-file", type=Path, default=DEFAULT_ADMIN_PASSWORD_FILE)
-    parser.add_argument("--test-user", default="brain-e2e")
+    parser.add_argument("--test-user", default="brain_e2e")
     parser.add_argument("--test-display-name", default="Brain E2E Test User")
     parser.add_argument("--test-password-file", type=Path, default=DEFAULT_TEST_PASSWORD_FILE)
     parser.add_argument("--judge-env-file", type=Path, default=Path(os.getenv("ENV_FILE", DEFAULT_JUDGE_ENV_FILE)))
@@ -504,6 +511,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    args.test_user = normalize_user_id(args.test_user)
     started = time.perf_counter()
     report_path = args.report_path or Path(".reports") / "staging-e2e" / f"{args.run_id}.json"
     admin_password = args.admin_password_file.read_text(encoding="utf-8").strip()

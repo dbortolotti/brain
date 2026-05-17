@@ -16,7 +16,8 @@ def test_staging_e2e_script_is_opt_in_and_targets_staging() -> None:
 
     assert "http://127.0.0.1:18100" in text
     assert "brain-auth-e2e-password" in text
-    assert 'parser.add_argument("--test-user", default="brain-e2e")' in text
+    assert 'parser.add_argument("--test-user", default="brain_e2e")' in text
+    assert "normalize_user_id" in text
     assert 'parser.add_argument("--judge-model", default="gpt-5.5")' in text
     assert 'parser.add_argument("--judge-reasoning-effort", default="high")' in text
 

@@ -1344,6 +1344,50 @@
         "description": "Soft-delete objects created by one recent ingestion run. On the ChatGPT App surface this requires confirmed_by_user=true.",
         "name": "brain_undo_last",
         "required": []
+      },
+      {
+        "description": "Read-only palate describe/enrich tool. Use this when the user asks to use palate to describe, look up, normalize, or enrich a restaurant, wine, film, series, music, cigar, or other taste item without saving it. For example: 'use palate to describe Junsei restaurant in London'. This must not store palate data.",
+        "name": "brain_palate_describe_item",
+        "required": [
+          "entity_type",
+          "item_text"
+        ]
+      },
+      {
+        "description": "Rank already-saved canonical palate records for a recommendation or comparison query. Do not use this to describe, look up, enrich, or check a single named unsaved item such as Junsei; call brain_palate_describe_item for that.",
+        "name": "brain_palate_query",
+        "required": [
+          "query"
+        ]
+      },
+      {
+        "description": "Rank only supplied options against already-saved canonical palate records. Do not use this to describe, look up, enrich, or check one named item; call brain_palate_describe_item for read-only item descriptions.",
+        "name": "brain_palate_evaluate_options",
+        "required": [
+          "query"
+        ]
+      },
+      {
+        "description": "Confirm a pending palate proposal by proposal_id.",
+        "name": "brain_palate_confirm",
+        "required": [
+          "proposal_id"
+        ]
+      },
+      {
+        "description": "Cancel a pending palate proposal by proposal_id.",
+        "name": "brain_palate_cancel",
+        "required": [
+          "proposal_id"
+        ]
+      },
+      {
+        "description": "Apply a free-text correction to a pending palate proposal.",
+        "name": "brain_palate_correct_proposal",
+        "required": [
+          "correction",
+          "proposal_id"
+        ]
       }
     ],
     "internal_admin": [

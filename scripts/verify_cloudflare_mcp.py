@@ -40,6 +40,12 @@ CHATGPT_APP_TOOLS = {
     "brain_profile_context_remember",
     "brain_profile_context_forget",
     "brain_app_data_controls",
+    "brain_palate_describe_item",
+    "brain_palate_query",
+    "brain_palate_evaluate_options",
+    "brain_palate_confirm",
+    "brain_palate_cancel",
+    "brain_palate_correct_proposal",
 }
 
 APP_READ_ONLY_TOOLS = {
@@ -51,6 +57,9 @@ APP_READ_ONLY_TOOLS = {
     "brain_review_recent",
     "brain_profile_context_list",
     "brain_app_data_controls",
+    "brain_palate_describe_item",
+    "brain_palate_query",
+    "brain_palate_evaluate_options",
 }
 
 APP_MUTATING_TOOLS = {
@@ -59,6 +68,9 @@ APP_MUTATING_TOOLS = {
     "brain_profile_context_remember",
     "brain_profile_context_forget",
     "brain_undo_last",
+    "brain_palate_confirm",
+    "brain_palate_cancel",
+    "brain_palate_correct_proposal",
 }
 
 APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}

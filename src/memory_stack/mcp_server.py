@@ -114,6 +114,12 @@ CHATGPT_APP_TOOLS = {
     "brain_profile_context_remember",
     "brain_profile_context_forget",
     "brain_app_data_controls",
+    "brain_palate_describe_item",
+    "brain_palate_query",
+    "brain_palate_evaluate_options",
+    "brain_palate_confirm",
+    "brain_palate_cancel",
+    "brain_palate_correct_proposal",
 }
 APP_READ_ONLY_TOOLS = {
     "brain_session",
@@ -124,6 +130,9 @@ APP_READ_ONLY_TOOLS = {
     "brain_review_recent",
     "brain_profile_context_list",
     "brain_app_data_controls",
+    "brain_palate_describe_item",
+    "brain_palate_query",
+    "brain_palate_evaluate_options",
 }
 APP_MUTATING_TOOLS = {
     "brain_remember",
@@ -131,6 +140,9 @@ APP_MUTATING_TOOLS = {
     "brain_profile_context_remember",
     "brain_profile_context_forget",
     "brain_undo_last",
+    "brain_palate_confirm",
+    "brain_palate_cancel",
+    "brain_palate_correct_proposal",
 }
 APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
 APP_TOOL_READ_SCOPE = "brain.memory.read"
@@ -3159,6 +3171,12 @@ def app_write_target_id(tool_name: str, arguments: Any, structured: Any) -> str 
             return structured.get("source_id") or (
                 (structured.get("ingestion") or {}).get("ingestion_run_id")
             )
+        if tool_name in {
+            "brain_palate_confirm",
+            "brain_palate_cancel",
+            "brain_palate_correct_proposal",
+        }:
+            return structured.get("proposal_id") or (arguments or {}).get("proposal_id")
     if isinstance(arguments, dict):
         return arguments.get("context_id") or arguments.get("ingestion_run_id")
     return None
@@ -3179,6 +3197,12 @@ def app_write_summary(tool_name: str, structured: Any) -> str | None:
             f"brain_ingest_source status={structured.get('status')} "
             f"source_id={structured.get('source_id')}"
         )
+    if tool_name in {
+        "brain_palate_confirm",
+        "brain_palate_cancel",
+        "brain_palate_correct_proposal",
+    }:
+        return f"{tool_name} proposal_id={structured.get('proposal_id')}"
     if tool_name == "brain_profile_context_remember":
         return f"profile_context scope={structured.get('scope')} id={structured.get('id')}"
     if tool_name == "brain_profile_context_forget":

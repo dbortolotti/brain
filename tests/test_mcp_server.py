@@ -210,6 +210,8 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     assert "previews by default" in remember["description"]
     ingest_source = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_ingest_source")
     assert "previews by default" in ingest_source["description"]
+    palate_query = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_query")
+    palate_confirm = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_confirm")
     for tool in response.json()["result"]["tools"]:
         assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
         assert tool["_meta"]["ui"] == {"visibility": ["model"]}
@@ -228,6 +230,10 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     assert remember["_meta"]["brain/requiresUserConfirmation"] is True
     assert ingest_source["annotations"]["readOnlyHint"] is False
     assert ingest_source["_meta"]["brain/requiresUserConfirmation"] is True
+    assert palate_query["annotations"]["readOnlyHint"] is True
+    assert palate_query["_meta"]["brain/requiresUserConfirmation"] is False
+    assert palate_confirm["annotations"]["readOnlyHint"] is False
+    assert palate_confirm["_meta"]["brain/requiresUserConfirmation"] is True
     recall = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_recall")
     assert recall["annotations"]["readOnlyHint"] is True
     assert recall["_meta"]["brain/requiresUserConfirmation"] is False
