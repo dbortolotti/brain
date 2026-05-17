@@ -154,6 +154,18 @@ table
 
 Brain may still classify the final stored card more specifically.
 
+The Slack intake layer is conservative. It returns JSON-only proposals with `decision`, `reason`, `user_message`, `proposed_memory`, `questions`, `conflicts`, and `requires_confirmation`.
+
+Slack memory policy:
+
+- Allowed memory kinds are `fact`, `note`, `person_interaction`, `open_question`, `research_question`, `chat_conclusion`, and `table`.
+- Refuse text that contains secrets, passwords, API keys, tokens, private authentication material, or credential-shaped strings.
+- Refuse weak memories such as transient chatter, guesses presented as facts, facts with unclear subject, or third-party claims without attribution.
+- Ask a concise clarification when pronouns such as `he`, `she`, `they`, `it`, or `that` cannot be resolved from nearby Brain context.
+- Ask before storing sensitive or personal facts even when confidence is high.
+- Treat contradictions and corrections as blockers unless the user explicitly confirms the proposed write.
+- Keep the tone concise, direct, and specific. Ask one pointed question when possible, and name the exact blocker when complaining.
+
 ## Palate Tools
 
 Palate is Brain's taste layer. It normalizes messy user input into structured items, enriches those items, stores taste signals, and ranks recommendations.
@@ -295,11 +307,7 @@ score.
 
 Agent memory is for continuity between agent chats. It uses a dedicated, user-scoped Cognee dataset so it can be cleaned up separately if it becomes noisy.
 
-The default session id base is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. A common base used in this document is:
-
-```text
-portable_agent_session
-```
+The default session id base is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. Do not hardcode a base value.
 
 Agents must not hardcode that value. The `brain_session` tool derives the active user's session id from that base, resolves the matching user-scoped agent-memory dataset, and returns the related Brain workflow names.
 
@@ -307,11 +315,11 @@ Minimal agent preprompt:
 
 ```text
 Use Brain as the user's durable memory. At conversation start, call
-brain_session, then load Brain bias or preferences and standing profile context
-for the returned session and apply them. Use brain_agent_memory_recall at the
-start of the conversation, then use brain_agent_memory whenever your surface
-exposes it to preserve chat-session memory, handovers, conversation summaries,
-and workflow learnings. Use the returned session_id whenever a Brain workflow
+brain_session, then load relevant preferences and standing profile context for
+the returned session and apply them. Use brain_agent_memory_recall at the start
+of the conversation, then use brain_agent_memory whenever your surface exposes
+it to preserve chat-session memory, handovers, conversation summaries, and
+workflow learnings. Use the returned session_id whenever a Brain workflow
 accepts session_id. Use brain_remember only for durable user facts, stable
 preferences, explicit constraints, durable decisions, open questions, research
 questions, and Palate or taste memories. If the user asks to remember a stable
@@ -375,7 +383,7 @@ Key reminders:
 - `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, and `release.yml`, intentionally when promoting changes.
 - `BRAIN_CONFIG_RENDER_SHA`, `BRAIN_CONFIG_RENDERED_AT`, and `BRAIN_CONFIG_RENDER_SOURCE` may appear in rendered config.
 - Use separate datasets for memory, data, sources, palate, and agent memory via the `BRAIN_COGNEE_*_DATASET` settings.
-- In dev, staging, and prod, `BRAIN_LOG_LEVEL` is also available.
+- In dev, staging, and prod, `BRAIN_LOG_LEVEL` and `BRAIN_UI_ENABLED` are also available.
 - The deploy and promotion workflows are `deploy-local-staging.yml`, `deploy-local-production.yml`, `release.yml`, and `validate.yml`.
 
 Never store secrets, passwords, API keys, OAuth tokens, or credentials in Brain.
@@ -817,4 +825,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: fac1311f714d9e2a81fa9a1d2214c3c3a0554dea382ed31730ece2c8f39b8799 -->
+<!-- brain-doc-source-hash: cc6b37caf08e17e669e9665aa7be14b33fe07005828bae53ee40922047d63f2e -->

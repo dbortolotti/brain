@@ -1,8 +1,6 @@
 # Slack Setup Guide
 
-Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and configured allowlists before handling any memory operation. Slack writes are guarded by proposal rules and require confirmation by default.
-
-For HTTP and MCP client setup, see [API Setup](API_SETUP_GUIDE.md).
+Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and configured allowlists before handling memory operations. Slack writes are guarded by proposal rules and require confirmation by default.
 
 ## Architecture
 
@@ -36,7 +34,7 @@ POST /slack/interactions
 3. A configured `.env` file for Brain.
 4. The Brain database and dependencies initialized with `make setup`.
 
-For local development, use any HTTPS tunnel that can forward to the Slack agent host and port. In production, route only `/slack/*` to the Slack agent port.
+For local development, use a tunnel or reverse proxy that forwards to the Slack agent host and port. In production, route only `/slack/*` to the Slack agent port.
 
 ## Configure Brain
 
@@ -68,26 +66,11 @@ Use comma-separated values for multiple teams, channels, users, or admins.
 
 In Slack's app management UI:
 
-1. Create a new app from scratch.
-2. Choose the target workspace.
-3. Open **Basic Information** and copy the **Signing Secret** into `BRAIN_SLACK_SIGNING_SECRET`.
-4. Open **OAuth & Permissions** and add the bot scopes needed for your chosen surfaces.
-
-Recommended scopes:
-
-```text
-commands
-chat:write
-app_mentions:read
-channels:history
-groups:history
-im:history
-mpim:history
-```
-
-The exact scopes depend on whether you use only slash commands, app mentions, DMs, or channel events. Slash-command-only setups can start with `commands` and the scopes Slack requires for installation.
-
-Install the app to the workspace and copy the bot token into `BRAIN_SLACK_BOT_TOKEN` if you use event-based replies from mentions or DMs, because the agent posts those responses with `chat.postMessage` and needs the `chat:write` bot scope.
+1. Create or open the app for your workspace.
+2. Copy the app Signing Secret into `BRAIN_SLACK_SIGNING_SECRET`.
+3. Configure the slash-command, event subscription, and interactivity Request URLs to point at the Slack agent routes.
+4. Install the app to the workspace.
+5. Copy the bot token into `BRAIN_SLACK_BOT_TOKEN` if you want event-based replies from mentions or DMs, because the agent posts those responses with `chat.postMessage`.
 
 ## Configure Slash Commands
 
@@ -116,7 +99,7 @@ Example commands:
 /brain help
 ```
 
-`/brain help` returns Block Kit buttons for common command templates. Slack does not let app buttons insert text into the user's composer directly, so each button returns a copyable template instead.
+`/brain help` returns Block Kit buttons for common command templates.
 
 The Slack slash command sends form-encoded payloads to `/slack/commands`; Brain validates the Slack signature before parsing the command text. The handler combines the command and text fields into a single command string before routing it, so the command text should be written the way you want Brain to interpret it, for example `/brain remember ...`.
 
@@ -139,7 +122,7 @@ app_mention
 message.im
 ```
 
-Use app mentions or DMs for free-form recall/profile/remember routing. The agent strips bot mentions before parsing the message. Event-based DMs and mentions do not use Slack's slash-command response channel, so Brain replies by calling Slack `chat.postMessage`; this requires `BRAIN_SLACK_BOT_TOKEN` and the `chat:write` bot scope.
+Use app mentions or DMs for free-form recall/profile/remember routing. The agent strips bot mentions before parsing the message. Event-based DMs and mentions do not use Slack's slash-command response channel, so Brain replies by calling Slack `chat.postMessage`; this requires `BRAIN_SLACK_BOT_TOKEN`.
 
 ## Configure Interactivity
 
@@ -215,21 +198,9 @@ BRAIN_SLACK_ALLOWED_USER_IDS=U...
 BRAIN_SLACK_ADMIN_USER_IDS=U...
 ```
 
-Leave an allowlist blank only when you intentionally allow all values for that dimension. For production, set at least team and user allowlists. Set admin users separately from the general allowlists.
+Set admin users separately from the general allowlists.
 
 ## Production Notes
-
-Production launchd support is scaffolded in:
-
-```text
-deployment/launchd/com.brain.slack-agent.plist.template
-```
-
-The README expects the production Slack agent to run under:
-
-```text
-com.brain.slack-agent
-```
 
 Keep route separation at the reverse proxy or tunnel layer:
 
@@ -238,22 +209,20 @@ Keep route separation at the reverse proxy or tunnel layer:
 /mcp     -> 127.0.0.1:8000
 ```
 
-Production secrets and variables are described in [Production Secrets](production-secrets.md). Slack secrets are:
-
-```text
-BRAIN_SLACK_SIGNING_SECRET
-BRAIN_SLACK_BOT_TOKEN
-```
+Treat `BRAIN_SLACK_SIGNING_SECRET` and `BRAIN_SLACK_BOT_TOKEN` as secrets.
 
 Slack non-secret deployment variables are:
 
 ```text
 BRAIN_SLACK_ENABLED
 BRAIN_SLACK_AGENT_ENABLED
+BRAIN_SLACK_AGENT_HOST
+BRAIN_SLACK_AGENT_PORT
 BRAIN_SLACK_ALLOWED_TEAM_IDS
 BRAIN_SLACK_ALLOWED_CHANNEL_IDS
 BRAIN_SLACK_ALLOWED_USER_IDS
 BRAIN_SLACK_ADMIN_USER_IDS
+BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE
 ```
 
 ## Troubleshooting
@@ -282,12 +251,8 @@ Check system time and tunnel/proxy behavior. Slack signatures are accepted only 
 
 Add the Slack ID to the relevant allowlist or confirm the request is coming from the expected workspace, channel, and user.
 
-`Debug tools are admin-only.`
-
-Add the Slack user ID to `BRAIN_SLACK_ADMIN_USER_IDS`.
-
 Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: e7d18bbad898e39ad0ae2fb81b1376f4e9a58c12dc6fef94676043563fc9fe51 -->
+<!-- brain-doc-source-hash: 8f406fdba1d38fe5697973c90d0cac50247f3e72beed79b46395420d183b6a01 -->

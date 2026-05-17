@@ -1,8 +1,8 @@
 # API Setup Guide
 
 This guide is for developers and operators who want to connect Brain to an LLM
-client, MCP client, or direct HTTP integration. For end-user memory examples,
-see the [User Guide](USER_GUIDE.md).
+client, MCP client, ChatGPT app client, or direct HTTP integration. For
+end-user memory examples, see the [User Guide](USER_GUIDE.md).
 
 Brain exposes two API surfaces:
 
@@ -295,8 +295,8 @@ routes. `/admin/cognee` requires a superuser user record. `/ui`, `/ui-api`,
 
 Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
 `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`,
-`BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, and
-`BRAIN_AUTH_SUPERUSER_IDS`. See [Production Secrets](production-secrets.md) for
+`BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`,
+`BRAIN_AUTH_USERS_FILE`, and `BRAIN_AUTH_SUPERUSER_IDS`. See [Production Secrets](production-secrets.md) for
 secret handling.
 
 For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
@@ -335,8 +335,7 @@ curl -s http://127.0.0.1:8000/mcp \
   }'
 ```
 
-Call `brain_session` first when an agent needs Brain workflow names or the
-active user's portable session id:
+Call `brain_session` first when an agent needs the active user's portable session id:
 
 ```bash
 curl -s http://127.0.0.1:8000/mcp \

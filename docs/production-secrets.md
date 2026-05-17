@@ -112,10 +112,10 @@ environment's `shared/secrets/brain-auth-password` with a matching
 ## Deployment Metadata and Auth Registry
 
 Deployment also configures `BRAIN_AUTH_USERS_FILE` under
-`shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`.
-Auth-enabled Brain instances fail closed when the configured registry is
-missing. A superuser can create, edit, and delete user records from the
-dashboard User Admin tab without restarting the service.
+`shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the
+deployed config. Auth-enabled Brain instances fail closed when the configured
+registry is missing. A superuser can create, edit, and delete user records from
+the dashboard User Admin tab without restarting the service.
 
 The deployed auth and dashboard surfaces include these route families:
 
@@ -209,12 +209,11 @@ BRAIN_AUTH_PASSWORD
 BRAIN_AUTH_TOKEN
 ```
 
-`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer.
-`BRAIN_AUTH_PASSWORD` is written to each deployed environment's
-`shared/secrets/brain-auth-password`. The staging and production workflows also
-pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`. The renderer rejects empty
-or placeholder values for `OPENAI_API_KEY` (``, `replace-me`, `sk-...`, `...`)
-and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
+`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer. The renderer
+rejects empty or placeholder values for `OPENAI_API_KEY` (``, `replace-me`,
+`sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`). The
+staging and production workflows also pass `BRAIN_AUTH_TOKEN` into
+`render_prod_env.py`.
 
 ## Optional Taste Integration Secrets
 
@@ -407,4 +406,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 8819a6e7334a84365dc625ba1893485bf2a41803cd2d082083a746b791305250 -->
+<!-- brain-doc-source-hash: b0851417c7d96f05d669b257aac6ae4c28a1f7b973223d64d37850b27dcb70e3 -->

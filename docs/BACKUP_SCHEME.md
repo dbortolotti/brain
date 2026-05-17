@@ -33,8 +33,8 @@ backed up to reduce restore time and preserve debugging context.
 
 ## Default Locations
 
-Local defaults come from `.env.example`; production defaults are rendered by the
-production deployment scripts.
+Local defaults come from `.env.example`; deployed defaults are rendered by the
+production deployment scripts and checked-in environment configs.
 
 ```env
 BRAIN_BACKUP_DIR=/Volumes/xpg_usb4/prod/brain/shared/backups
@@ -49,7 +49,7 @@ BRAIN_NEO4J_STOP_FOR_DUMP=false
 Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`,
 `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
 Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`,
-`BRAIN_NEO4J_DUMP_ENABLED=false`, and `BRAIN_NEO4J_STOP_FOR_DUMP=false`.
+`BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
 
 Each backup run creates:
 
@@ -415,4 +415,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 360071558ad0c6e26d46752b2dc0cbca393bef5c694d09d6379d36ed5c6512ab -->
+<!-- brain-doc-source-hash: 9cff1796dd04c8680a2eb3e2eeace692f0efd982d7506e41c2e0ed153bc911a2 -->

@@ -4,7 +4,7 @@ Brain is a personal memory and taste system. Use it to save durable facts, decis
 
 Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard. You do not need to think in database terms while using it: write clear memory requests, confirm them when asked, and use recall or review when you need the saved context back.
 
-Palate is Brain's taste layer. Use it for wine, restaurants, media, cigars, experiences, and other taste-related preferences.
+Palate is Brain's taste layer. Use it for wine, restaurants, media, music, cigars, experiences, and other taste-related preferences.
 
 ## Main Workflows
 
@@ -109,12 +109,6 @@ Undo the latest write:
 /brain undo-last
 ```
 
-Confirm a proposed write:
-
-```text
-/brain confirm Sam from Goldman prefers morning calls.
-```
-
 Slack may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
 Slack's proposal layer accepts a smaller input set:
@@ -161,9 +155,11 @@ Useful browser pages:
 - `/` and `/user` — memory dashboard
 - `/app` — app dashboard
 - `/admin` — admin dashboard
+- `/admin/users` and `/admin/users/{user_id}` — user administration for superusers
 - `/cognee` — user Cognee UI
-- `/cognee-login` — Cognee UI sign-in
-- `/ui`, `/ui-login`, and `/ui-logout` — UI proxy routes
+- `/cognee-login` and `/cognee-logout` — Cognee UI sign-in and sign-out
+- `/cognee-api/{path:path}` — Cognee API proxy routes
+- `/ui`, `/ui-login`, `/ui-logout`, and `/ui-api/{path:path}` — UI proxy routes
 - `/admin/cognee`, `/admin/cognee-api/{path:path}`, and `/admin/cognee/{path:path}` — admin Cognee proxy routes
 - `/privacy`, `/support`, `/terms`
 - `/app-assets/{asset_name}` and `/app/oauth/callback`
@@ -278,12 +274,6 @@ Correct an older memory:
 Use Brain to remember this correction: Actually, Sam from Goldman now prefers afternoon calls, replacing the older morning-calls preference.
 ```
 
-For important writes, ask the LLM to dry-run first:
-
-```text
-Use Brain to dry-run this memory before committing it: Maya prefers written briefs before vendor calls.
-```
-
 ## Using Palate
 
 Palate is Brain's taste layer. It normalizes messy user input into structured items, enriches those items, stores taste signals, and ranks recommendations.
@@ -300,7 +290,7 @@ Palate is best for:
 Describe an item without storing it:
 
 ```text
-Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not store it yet. Fetch external ratings if available, but do not use broad web search unless needed.
+Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not store it yet.
 ```
 
 Remember a wine:
@@ -665,4 +655,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 1d23185544d5a520fb5d597534a0c1abe6e20988959cd90070a384a181f5a6f2 -->
+<!-- brain-doc-source-hash: 035ddad8220a7a4f0b5ef473499cb11dad31e5be0ea36675f281c1ca3001c19f -->

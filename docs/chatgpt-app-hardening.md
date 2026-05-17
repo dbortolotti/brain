@@ -57,23 +57,30 @@ Write or mutating tools advertise and require `brain.memory.write` as well:
 
 Destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require explicit confirmation. Profile context writes and profile context deletes also require explicit confirmation. App-surface write attempts are rate-limited using `BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`, and append a redacted audit record with the tool name, OAuth client id when available, request id, target id, confirmation flag, status, and short summary. Raw memory text is not stored in the app write audit table.
 
+Do not bypass confirmation or normal backup checks in production promotion paths.
+
 ## User Controls
 
-The dashboard Data Controls tab calls `brain_app_data_controls` to show App Write Audit, Export Preview, Profile Data, and Recent Memory Data. The Review tab shows Recent Cards and Open Loops. Profile and Prompt tabs remain editable, and profile-context forget actions require explicit confirmation before the MCP call.
+The dashboard Data Controls tab calls `brain_app_data_controls` to show App Write Audit, Export Preview, Profile Data, and Recent Memory Data. The Review tab shows Recent Cards and Open Loops. The Profile tab is editable, and profile-context forget actions require explicit confirmation before the MCP call.
 
 The Prompt tab surfaces Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
 
 ## Operator Checklist
 
-The `Validate` workflow runs on pull requests and manual dispatch.
+Workflow reference:
+
+- `Validate` runs on `pull_request` and `workflow_dispatch`.
+- `Deploy Local Staging` runs on `push` and `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
+- `Deploy Local Production` runs on `workflow_dispatch`; manual dispatch accepts `force_config_override`.
+- `Release` runs on `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
 
 After every merge or push to `main`:
 
 1. Watch the `Deploy Local Staging` GitHub Actions run to completion.
    - The workflow triggers on `push` and `workflow_dispatch`.
    - Manual dispatch accepts `version` and `force_config_override` inputs.
-2. Run `ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env uv run python scripts/verify_mcp_production.py --skip-backups`.
-3. Confirm `/Volumes/xpg_usb4/staging/brain/current` points to the pushed release.
+2. Verify the deployed release metadata matches the expected pushed release.
+3. Keep your normal backup checks in the promotion path if they are part of your environment.
 
 For a production release:
 
@@ -81,7 +88,7 @@ For a production release:
    - The workflow triggers on `workflow_dispatch`.
    - Manual dispatch accepts `version` and `force_config_override` inputs.
 2. Watch production deployment and verification finish successfully.
-3. Run `ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
-4. Confirm `/Volumes/xpg_usb4/prod/brain/current` points to the tagged release.
+3. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
+4. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 5bbfcf7176a05e792b72d78da82b99c3b90a0b61450cacc43994460fa2b9c147 -->
+<!-- brain-doc-source-hash: 041a227005654ab346034363bc2edf5669ae28f9f5d7690f5ed4f919959a3c62 -->

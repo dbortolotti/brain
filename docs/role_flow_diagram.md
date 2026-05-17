@@ -15,7 +15,7 @@ The fine-grained topology is useful for model evaluation and deployment planning
 
 Slack and MCP are separate ingress paths, but they share the same core Brain service layer. Slack is not an MCP client.
 
-The main Brain HTTP surface includes `/`, `/admin`, `/app`, `/healthz`, auth/session endpoints, `/memory/*`, and the catch-all MCP route `/{path:path}`. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
+The main Brain HTTP surface includes OAuth discovery/protected-resource endpoints, auth/session and account/password endpoints, admin/user management, app/dashboard, datasources, `/memory/*`, docs/redoc/privacy/support/terms, healthz, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
 
 The shared agent rules also refuse secrets, passwords, API keys, tokens, private authentication material, and credential-shaped strings.
 
@@ -26,7 +26,7 @@ Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_st
 ```mermaid
 flowchart LR
     classDef det fill:#dcfce7,stroke:#15803d,color:#08331a;
-    classDef opt fill:#e0f2fe,stroke:#0369a1,color:#082f49;
+    classDef opt fill:#e0f2fe,stroke:#0369a9,color:#082f49;
     classDef store fill:#f3f4f6,stroke:#374151,color:#111827;
     classDef ext fill:#fef3c7,stroke:#a16207,color:#3f2d05;
 
@@ -91,7 +91,7 @@ flowchart LR
 
 ## Runtime Notes
 
-1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests arrive through `/slack/commands`, `/slack/events`, and `/slack/interactions`, then are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
+1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests arrive through `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz`, then are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
 2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text with `normalize_agent_text()`, splits intent with `split_intent()`, and dispatches commands such as `help_template`, `help`, `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `open`, `get_memory`, and `review`.
 3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`.
 4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when LLMs are enabled and the rule result is not already sufficient high-confidence.
@@ -124,10 +124,10 @@ The table below describes current runtime behavior, not eval-topology intent.
 | `source_loader` | Deterministic source loading and fetch-status handling; not a normal model call |
 | `zero_tolerance_validator` | Deterministic hard gate before writes |
 | `entity_candidate_ranker` | Not a runtime model role; entity resolution is deterministic |
-| `entity_final_resolver` | Deterministic at current runtime; promoted to eval-first model role for future semantic final resolution |
+| `entity_final_resolver` | Deterministic at current runtime; semantic final resolution is represented in the fine-grained role topology |
 | `conflict_candidate_detector` | Deterministic duplicate / conflict detection |
 | `conflict_explainer` | Not model-backed at runtime |
-| `conflict_policy_decider` | Deterministic code / explicit user action at current runtime; promoted to eval-first model role |
+| `conflict_policy_decider` | Deterministic code / explicit user action at current runtime; decision flow is represented in the fine-grained role topology |
 | `recall_planner` | Deterministic mode inference |
 | `recall_relevance_filter` | Deterministic retrieval/filtering at current runtime; model-backed only in eval topology |
 | `recall_synthesizer` | Deterministic templated rendering |

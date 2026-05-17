@@ -270,7 +270,7 @@ Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 
 `.github/workflows/deploy-local-production.yml` remains available as a manual production deploy escape hatch. It is not triggered by pushes to `main`; its workflow-dispatch run resolves a `prod-<12-char-sha>` build version.
 
-The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables before running `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
+The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
 
 Workflow model:
 
@@ -278,6 +278,12 @@ Workflow model:
 - `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
 - `.github/workflows/deploy-local-production.yml` is manual only and accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
+
+The Makefile also exposes `make deploy-local-production` as a manual production deploy helper:
+
+```bash
+./scripts/deploy-local-production.sh
+```
 
 Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
 
@@ -472,6 +478,7 @@ Deployment, routing, auth-related settings worth calling out:
 - `BRAIN_GOOGLE_DRIVE_REMOTE`
 - `BRAIN_HEALTH_PATH`
 - `BRAIN_LAUNCHD_LABEL`
+- `BRAIN_LOG_LEVEL`
 - `BRAIN_LLM_ENABLED`
 - `BRAIN_MCP_HOST`
 - `BRAIN_MCP_PATH`
@@ -686,4 +693,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 0efb528201d7141d7e8219fde6fb4a57092c657a50416423e3de58b270d43f0b -->
+<!-- brain-doc-source-hash: 0e3e6a3dfb3c5ae6b332e3396b9a77092dec47ed324ccdc7edf927c9fc7b9917 -->
