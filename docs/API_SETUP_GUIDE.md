@@ -71,6 +71,8 @@ Health check:
 curl http://127.0.0.1:8000/healthz
 ```
 
+If you customize the health route, update `BRAIN_HEALTH_PATH` accordingly.
+
 The curated user/app MCP endpoint is:
 
 ```text
@@ -96,6 +98,8 @@ BRAIN_MCP_PATH=/mcp
 BRAIN_ADMIN_MCP_PATH=/admin/mcp
 BRAIN_APP_MCP_PATH=/app/mcp
 ```
+
+The health path is controlled separately by `BRAIN_HEALTH_PATH`.
 
 ## HTTP Endpoints
 
@@ -149,6 +153,7 @@ GET /privacy
 GET /terms
 GET /support
 GET /docs
+GET /docs/oauth2-redirect
 GET /redoc
 GET /openapi.json
 GET /healthz
@@ -383,6 +388,8 @@ If auth is enabled, add:
 -H "Authorization: Bearer $BRAIN_AUTH_TOKEN"
 ```
 
+If you changed `BRAIN_MCP_PATH`, replace `/mcp` in the examples.
+
 ## MCP Stdio
 
 Use stdio when a local MCP client should launch Brain directly rather than call
@@ -481,8 +488,7 @@ Use `brain_ingest_source` for longer source material:
 ```
 
 Set `run_in_background` for very long documents or chat clients with short tool
-timeouts. The tool returns `status: queued`; Brain then writes source/memory rows
-in-process and leaves Cognee projection as `pending` for `brain_sync_cognee`.
+timeouts.
 
 Use `brain_recall` to answer from memory:
 
@@ -621,8 +627,9 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make cloudflare-v
 The production verifier checks runtime paths, health, release metadata, MCP
 route behavior, OAuth metadata when auth is enabled, and backup manifests unless
 `--skip-backups` is used. The Cloudflare verifier checks DNS/TLS, public curated
-and admin MCP URLs, dashboard and public support pages, OAuth protected-resource
-metadata, and the authenticated public app MCP surface when auth is enabled.
+and admin MCP URLs, dashboard, privacy, terms, and support pages, OAuth
+protected-resource metadata, and the authenticated public app MCP surface when
+auth is enabled.
 
 ## Troubleshooting
 
@@ -658,4 +665,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 097c0b0af2031a95441deb1f58a2c1427dfecd3bca842e36564041de21e19bad -->
+<!-- brain-doc-source-hash: 232f75068a187bf88cc398e9312f145b4f96508ed5f8a13f6d102ee612e83c83 -->

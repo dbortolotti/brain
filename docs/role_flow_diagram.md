@@ -15,9 +15,11 @@ The fine-grained topology is useful for model evaluation and deployment planning
 
 Slack and MCP are separate ingress paths, but they share the same core Brain service layer. Slack is not an MCP client.
 
-The main Brain HTTP surface includes OAuth discovery/protected-resource endpoints, auth/session and account/password endpoints, admin/user management, app/dashboard, datasources, `/memory/*`, docs/redoc/privacy/support/terms, healthz, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
+The main Brain HTTP surface includes root `/`, OAuth discovery/protected-resource endpoints, auth/session and account/password endpoints, login/logout/register/revoke/token endpoints, admin/user management, app/dashboard and app asset/callback routes, datasources, `/memory/*`, docs/openapi/redoc/privacy/support/terms, healthz, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
 
 The shared agent rules also refuse secrets, passwords, API keys, tokens, private authentication material, and credential-shaped strings.
+
+`remember()` can return a dry-run ingestion receipt when `request.dry_run` is set, and the service has background ingest helpers that can queue source ingestion work and return a queued receipt before the background future completes.
 
 ## Current Runtime Flow
 
@@ -32,7 +34,7 @@ flowchart LR
 
     USER[/User or client/]:::ext
     SLACK[/Slack commands<br/>events<br/>interactions/]:::ext
-    HTTP[/HTTP /memory/* endpoints<br/>MCP tools/]:::ext
+    HTTP[/HTTP /memory/* endpoints<br/>MCP tools<br/>/api/session · /auth/session · /login · /logout · /register · /revoke · /token · /user · /admin · /app · /app/oauth/callback/]:::ext
     DB[(Brain DB<br/>memory cards · sources · entities · relationships<br/>open loops · ingestion runs · recall logs · cognee sync)]:::store
     COGNEE[(Cognee projection)]:::store
 
@@ -93,12 +95,12 @@ flowchart LR
 
 1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests arrive through `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz`, then are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
 2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text with `normalize_agent_text()`, splits intent with `split_intent()`, and dispatches commands such as `help_template`, `help`, `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `open`, `get_memory`, and `review`.
-3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`.
+3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`. When a proposal is returned, the ingestion receipt is marked `classification="taste_proposal"`, `dry_run=True`, and carries `taste.requires_confirmation=true`.
 4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when LLMs are enabled and the rule result is not already sufficient high-confidence.
 5. **Fine-grained extractor roles are not separate runtime calls.** Roles such as `atomic_card_extractor`, `entity_mention_extractor`, `relationship_extractor`, `open_loop_detector`, `table_policy_handler`, and `source_takeaway_extractor` are currently represented by deterministic rule compiler behavior, or by the optional broad compiler fallback.
 6. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships/open loops, then runs deterministic duplicate/conflict/supersession handling.
 7. **Recall is deterministic.** Recall mode inference, retrieval, status filtering, evidence construction, and answer rendering are code paths, not a fine-grained `recall_synthesizer` model call.
-8. **Background ingest helpers exist.** The service can queue ingestion work onto a thread pool and return a queued ingestion receipt before the background future completes.
+8. **Background ingest helpers exist.** The service can queue ingestion work onto a thread pool and return a queued ingestion receipt before the background future completes. That queued receipt is distinct from the normal compiled write path.
 9. **Slack provenance belongs in request context metadata.** Team id, channel id, user id, thread timestamp, message timestamp, and permalink belong in Brain request context metadata, not in the memory statement itself.
 10. **Eval and embeddings remain model-backed outside this flow.** `eval_judge` is used by eval tooling. Embedding models are used when vector/Cognee paths are enabled.
 

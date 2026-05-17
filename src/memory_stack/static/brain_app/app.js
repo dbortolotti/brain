@@ -108,6 +108,7 @@ async function mcpPrompt(name, args = {}) {
 async function mcpRequest(method, params = {}) {
   const response = await fetch("/mcp", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
       ...csrfHeader(),
@@ -129,6 +130,7 @@ async function mcpRequest(method, params = {}) {
 async function adminRequest(path, { method = "GET", body = null } = {}) {
   const response = await fetch(path, {
     method,
+    credentials: "same-origin",
     headers: {
       ...(body ? { "Content-Type": "application/json" } : {}),
       ...(method === "GET" ? {} : csrfHeader()),
@@ -145,6 +147,7 @@ async function adminRequest(path, { method = "GET", body = null } = {}) {
 async function accountRequest(path, { method = "GET", body = null } = {}) {
   const response = await fetch(path, {
     method,
+    credentials: "same-origin",
     headers: {
       ...(body ? { "Content-Type": "application/json" } : {}),
       ...(method === "GET" ? {} : csrfHeader()),
@@ -170,7 +173,7 @@ function setLoggedIn(payload) {
 }
 
 async function refreshSession() {
-  const response = await fetch("/auth/session");
+  const response = await fetch("/auth/session", { credentials: "same-origin" });
   if (response.status === 401) {
     setLoggedIn({});
     setStatus("Sign in to load Brain.");
@@ -185,7 +188,7 @@ async function refreshSession() {
 }
 
 async function refreshHealth() {
-  const response = await fetch("/healthz");
+  const response = await fetch("/healthz", { credentials: "same-origin" });
   const payload = await response.json();
   if (!response.ok) {
     throw new Error(payload.detail || `HTTP ${response.status}`);
@@ -198,6 +201,7 @@ async function loginUser() {
   $("loginStatus").textContent = "Signing in...";
   const response = await fetch("/login", {
     method: "POST",
+    credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       user_id: $("loginUserId").value,
@@ -217,6 +221,7 @@ async function loginUser() {
 async function logoutUser() {
   await fetch("/logout", {
     method: "POST",
+    credentials: "same-origin",
     headers: csrfHeader(),
   });
   state.csrfToken = "";

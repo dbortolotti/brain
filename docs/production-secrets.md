@@ -4,7 +4,8 @@ The staging, production, and release workflows run on the self-hosted `brain-pro
 
 - `dev`: local developer runs.
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
-  to `/Volumes/xpg_usb4/staging/brain`.
+  to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually;
+  its `version` input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml`
   and deploys the currently staged release version to
   `/Volumes/xpg_usb4/prod/brain`.
@@ -59,10 +60,11 @@ The conflict checker ignores both metadata families.
 
 Normal pushes to `main` deploy staging with an automatic build version such as
 `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
-workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That staged workflow
-deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git
-tag at the staged SHA when the version starts with `v`. If the tag already
-exists at a different SHA, the staging run fails instead of retagging.
+workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. If you omit the version
+on a manual staging run, it falls back to `staging-<12-char-sha>`. That staged
+workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the
+annotated git tag at the staged SHA when the version starts with `v`. If the tag
+already exists at a different SHA, the staging run fails instead of retagging.
 
 Production promotion does not mint a new version. The release workflow reads
 staging `shared/release.json`, verifies the requested version is the active
@@ -113,9 +115,8 @@ environment's `shared/secrets/brain-auth-password` with a matching
 
 Deployment also configures `BRAIN_AUTH_USERS_FILE` under
 `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the
-deployed config. Auth-enabled Brain instances fail closed when the configured
-registry is missing. A superuser can create, edit, and delete user records from
-the dashboard User Admin tab without restarting the service.
+deployed config. A superuser can create, edit, and delete user records from the
+dashboard User Admin tab.
 
 The deployed auth and dashboard surfaces include these route families:
 

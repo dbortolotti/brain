@@ -88,6 +88,19 @@ def test_brain_app_ui_routes() -> None:
     assert "brain_preprompt" in js_response.text
 
 
+def test_public_http_redirects_to_https_for_cookie_auth(tmp_path) -> None:
+    with oauth_settings(tmp_path):
+        client = TestClient(app, base_url="http://brain.dceb.net", follow_redirects=False)
+        response = client.get("/")
+        forwarded_https_response = client.get("/", headers={"X-Forwarded-Proto": "https"})
+        local_response = client.get("http://127.0.0.1:18100/healthz")
+
+    assert response.status_code == 307
+    assert response.headers["location"] == "https://brain.dceb.net/"
+    assert forwarded_https_response.status_code == 200
+    assert local_response.status_code == 200
+
+
 def test_mcp_initialize() -> None:
     client = TestClient(app)
     response = client.post("/admin/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})

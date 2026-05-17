@@ -380,7 +380,7 @@ Key reminders:
 - `BRAIN_AUTH_ENABLED` controls auth; related settings include access token lifetime, refresh token lifetime, password file, users file, state path, scopes, PKCE, and `BRAIN_AUTH_SUPERUSER_IDS` in prod and staging.
 - `BRAIN_COGNEE_*_DATASET` settings separate memory, data, sources, palate, and agent memory. `BRAIN_COGNEE_ENABLED`, `BRAIN_COGNEE_RECALL_ENABLED`, and `BRAIN_COGNEE_RECALL_TOP_K` control Cognee availability and recall.
 - `BRAIN_BACKUP_DIR` and Google Drive backup settings control backups.
-- `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, and `release.yml`, intentionally when promoting changes.
+- `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, `release.yml`, and `validate.yml` intentionally when promoting or validating changes.
 - `BRAIN_CONFIG_RENDER_SHA`, `BRAIN_CONFIG_RENDERED_AT`, and `BRAIN_CONFIG_RENDER_SOURCE` may appear in rendered config.
 - Use separate datasets for memory, data, sources, palate, and agent memory via the `BRAIN_COGNEE_*_DATASET` settings.
 - In dev, staging, and prod, `BRAIN_LOG_LEVEL` and `BRAIN_UI_ENABLED` are also available.
@@ -825,4 +825,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: cc6b37caf08e17e669e9665aa7be14b33fe07005828bae53ee40922047d63f2e -->
+<!-- brain-doc-source-hash: 4630990ffe361d4b24b90c758720d6c03e7f88d29d230b4113b907cc002194e7 -->

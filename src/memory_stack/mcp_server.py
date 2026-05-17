@@ -12,9 +12,10 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from fastapi import Cookie, FastAPI, Header, HTTPException, Request, Response
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
@@ -162,6 +163,14 @@ _rate_limit_buckets: dict[str, deque[float]] = defaultdict(deque)
 app = FastAPI(title="Brain MCP", version="0.1.0")
 if settings.brain_request_log_enabled:
     app.add_middleware(RequestResponseLogMiddleware, settings=settings)
+
+
+@app.middleware("http")
+async def redirect_public_http_to_https(request: Request, call_next):
+    redirect_url = public_https_redirect_url(request)
+    if redirect_url is not None:
+        return RedirectResponse(redirect_url, status_code=307)
+    return await call_next(request)
 
 
 class CreateDatasourceRequest(BaseModel):
@@ -2231,6 +2240,21 @@ def auth_user_is_superuser(user_id: str | None) -> bool:
 
 def auth_record_is_superuser(record: dict[str, Any] | None) -> bool:
     return bool(record and str(record.get("superuser", "")).lower() == "true")
+
+
+def public_https_redirect_url(request: Request) -> str | None:
+    public_base = settings.brain_public_base_url.strip()
+    public_url = urlsplit(public_base)
+    if public_url.scheme != "https" or not public_url.hostname:
+        return None
+    request_host = request.headers.get("host", "").split(":", 1)[0].lower()
+    if request_host != public_url.hostname.lower():
+        return None
+    forwarded_proto = request.headers.get("x-forwarded-proto", "").split(",", 1)[0].strip().lower()
+    effective_scheme = forwarded_proto or request.url.scheme
+    if effective_scheme == "https":
+        return None
+    return str(request.url.replace(scheme="https"))
 
 
 def web_sessions_path() -> Path:

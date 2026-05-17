@@ -53,6 +53,8 @@ Selected user-facing HTTP endpoints include:
 - `GET /healthz`
 - `GET /`, `GET /app`, and `GET /user` for the Brain user dashboard
 - `GET /admin` for the root/admin dashboard view
+- `GET /cognee` and `GET /admin/cognee` for the Cognee UI entry points
+- `GET /app-assets/{asset_name}` and `GET /app/oauth/callback`
 - `GET /auth/session` and `GET /api/session` for the web session endpoint
 - `POST /login` and `POST /logout`
 - `PUT /account/password`
@@ -184,7 +186,7 @@ The proxy also serves `GET /healthz`, `GET /docs`, `GET /redoc`, `GET /openapi.j
 
 ## ChatGPT App Surface
 
-Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`. `/app/mcp` remains a legacy alias. The root dashboard uses the same curated surface through a browser session cookie. Browser users sign in with user id and password; the dashboard does not store OAuth bearer tokens in local storage.
+Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at the configured public base URL together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. `/app/mcp` remains a legacy alias. The root dashboard uses the same curated surface through a browser session. Browser users sign in with user id and password; the dashboard uses its own session and CSRF flow rather than bearer tokens.
 
 The ChatGPT App surface intentionally lists only user-safe tools:
 
@@ -208,11 +210,11 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
 
-Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember` previews by default; a client may save only after explicit user confirmation by calling it with `context.confirmed_by_user=true`. App-surface write tools accept either top-level `confirmed_by_user=true` or `context.confirmed_by_user=true`. Read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and append a redacted audit record visible in the dashboard Data Controls tab. Destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
+Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember` previews by default; a client may save only after explicit user confirmation by calling it with `context.confirmed_by_user=true`. Read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
 
-Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a `Secure`, `HttpOnly`, `SameSite=Lax` cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
+Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
 
-The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; root users can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes, plus `/cognee-api`, `/cognee-login`, `/cognee-logout`, `/ui-login`, and `/ui-logout`, are compatibility aliases.
+The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; superusers can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes, plus `/cognee-api`, `/cognee-login`, `/cognee-logout`, `/ui-login`, and `/ui-logout`, are compatibility aliases.
 
 Public app support pages:
 
@@ -243,7 +245,7 @@ Routes:
 - `POST /slack/commands`
 - `POST /slack/interactions`
 
-The agent verifies Slack signatures, timestamp freshness, team/channel/user allowlists, and admin-only debug access before it touches Brain internals. Write requests use the same role contracts in `src/memory_stack/agents/` that the model eval harness tests, plus deterministic guardrails. By default, Slack writes require confirmation.
+The agent verifies Slack signatures, timestamp freshness, team/channel/user allowlists, and admin-only debug access before it touches Brain internals. By default, Slack writes require confirmation.
 
 Supported Slack commands:
 
@@ -254,7 +256,7 @@ Supported Slack commands:
 - `/brain get-memory <memory_id>`
 - `/brain debug ...` for admin-only read-only inspection
 
-Production should run this under launchd label `com.brain.slack-agent` on local port `8003`; see `deployment/launchd/com.brain.slack-agent.plist.template`. Verify route separation and fail-closed signature behavior with:
+The agent listens on local port `8003` by default; see `BRAIN_SLACK_AGENT_PORT=8003`. Verify route separation and fail-closed signature behavior with:
 
 ```bash
 make slack-agent-check
@@ -285,7 +287,7 @@ The Makefile also exposes `make deploy-local-production` as a manual production 
 ./scripts/deploy-local-production.sh
 ```
 
-Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS=default`. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
+Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
 
 GitHub Secrets and GitHub Variables are the source of truth; direct emergency edits to live config must be propagated back before the next deploy.
 
@@ -693,4 +695,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
 
-<!-- brain-doc-source-hash: 0e3e6a3dfb3c5ae6b332e3396b9a77092dec47ed324ccdc7edf927c9fc7b9917 -->
+<!-- brain-doc-source-hash: 826f927696921e4f61733516f5923dd6d50ac5444c9dd340e6de03471d09ce83 -->

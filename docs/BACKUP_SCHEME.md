@@ -50,6 +50,9 @@ Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`,
 `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
 Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`,
 `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
+The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so
+`pgvector/` is the expected vector-store archive directory in both environments;
+`lancedb/` is used when LanceDB is the configured vector backend.
 
 Each backup run creates:
 
@@ -78,7 +81,7 @@ LanceDB is the configured vector backend.
 ## Running A Backup
 
 Local prod and staging deploys install a daily maintenance launchd job from
-`deployment/launchd/com.brain.maintenance.plist.template`. The rendered
+deployment/launchd/com.brain.maintenance.plist.template. The rendered
 production label is `com.brain.prod.maintenance`; staging renders as
 `com.brain.staging.maintenance`. The job starts at 03:00 and runs
 `scripts/nightly_maintenance.py` against the environment's shared `brain.env`.
@@ -177,7 +180,7 @@ Production verification requires:
 
 ## Raw Data Archive
 
-`DATA_ROOT_DIRECTORY` is archived as:
+The shared data directory passed via `--data-dir` is archived as:
 
 ```text
 raw_data/<data-root-name>.tar.gz
@@ -186,7 +189,7 @@ raw_data/<data-root-name>.tar.gz
 This preserves source data and runtime files that are not captured by the
 SQLite- or vector-store-specific paths.
 
-If `DATA_ROOT_DIRECTORY` is missing, the manifest receives a blocker.
+If the shared data directory is missing, the manifest receives a blocker.
 
 ## Vector Store Backups
 
@@ -415,4 +418,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 9cff1796dd04c8680a2eb3e2eeace692f0efd982d7506e41c2e0ed153bc911a2 -->
+<!-- brain-doc-source-hash: d22e0cb5b68d4563c9c55bcdefa02e3d58eb14b67e82895b44734218651e268d -->

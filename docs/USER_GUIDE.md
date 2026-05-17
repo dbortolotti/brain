@@ -1,6 +1,6 @@
 # Brain User Guide
 
-Brain is a personal memory and taste system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, and, when your client exposes it, chat-session continuity through a dedicated agent-memory workflow.
+Brain is a personal memory, taste, and portable agent-memory system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, and, when your client exposes it, chat-session continuity through a dedicated agent-memory workflow.
 
 Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard. You do not need to think in database terms while using it: write clear memory requests, confirm them when asked, and use recall or review when you need the saved context back.
 
@@ -21,7 +21,7 @@ Slack is the strictest interface. It may ask for confirmation or clarification w
 
 ## Using Brain From Slack
 
-The Slack app uses the `/brain` command.
+The Slack app uses the `/brain` command. It is a separate guarded surface and may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
 Save a simple memory:
 
@@ -62,7 +62,7 @@ Save a person interaction:
 Save a project state update:
 
 ```text
-/brain remember Brain project state: Slack is the primary guarded memory ingestion interface; Telegram can come later.
+/brain remember Brain project state: Slack is the primary guarded memory ingestion interface; Telegram is deferred until Slack is stable.
 ```
 
 Recall stored context:
@@ -108,8 +108,6 @@ Undo the latest write:
 ```text
 /brain undo-last
 ```
-
-Slack may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
 Slack's proposal layer accepts a smaller input set:
 
@@ -206,7 +204,7 @@ Datasource endpoints also exist:
 
 Other common endpoints include `/healthz`, `/docs`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, and `/apple-touch-icon.png`.
 
-MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated alias `/app/mcp`.
+MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated alias `/app/mcp`. The MCP catch-all route is `/{path:path}`.
 
 ## Using Brain Through An LLM
 
@@ -272,6 +270,12 @@ Correct an older memory:
 
 ```text
 Use Brain to remember this correction: Actually, Sam from Goldman now prefers afternoon calls, replacing the older morning-calls preference.
+```
+
+Load profile context before answering:
+
+```text
+Load my preferences from Brain before answering.
 ```
 
 ## Using Palate
@@ -655,4 +659,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 035ddad8220a7a4f0b5ef473499cb11dad31e5be0ea36675f281c1ca3001c19f -->
+<!-- brain-doc-source-hash: 4bf2af03ee5fec42b1b8a212f4b09c2b9474bb00c3868974603214b08c065a5c -->
