@@ -15,29 +15,39 @@ def normalize_enrichment_with_llm(
     llm_client: LLMClient,
     model: str | None = None,
     reasoning_effort: str | None = None,
+    use_web_search: bool = False,
 ) -> dict[str, Any]:
     allowed_attributes = attribute_keys_for_type(entity_type)
+    instructions = [
+        "Normalize noisy descriptive text into Brain Taste's fixed attribute schema for the given entity type.",
+        "Never invent new attribute keys.",
+        "Each attribute must include value and interval_95.",
+        "Each value must be in [0, 1]. Use 0 when not evidenced.",
+        "Each interval_95 is the 95% interval for the true attribute value.",
+        "Each interval_95 must include the value and stay within [0, 1].",
+        "Use a narrow interval when evidence is explicit and a wide interval when weak or absent.",
+        "For movie or series items, extract only explicitly evidenced media metadata.",
+        "For music items, extract only explicitly evidenced music metadata.",
+        "For restaurant items, extract explicitly evidenced cuisine as scored metadata cuisine.",
+        "Use canonical cuisine values exactly as provided by the schema.",
+        "For restaurant cuisine, use 0 when not evidenced and use other only when no listed cuisine category fits at 40% confidence.",
+        "For restaurant Michelin metadata, use only explicitly evidenced official Michelin Guide information.",
+        "Set Michelin status to unknown when an official Michelin source is not provided.",
+        "For restaurant Google metadata, use only directly evidenced Google Maps, Google Business Profile, or Google Places data.",
+        "Set Google rating and rating_count to null when no direct Google source is provided.",
+        "Do not invent external ratings, external IDs, or watched status.",
+    ]
+    if use_web_search:
+        instructions.extend(
+            [
+                "Use current web sources to identify the item before scoring attributes.",
+                "For wine, use producer, cuvee, region, vintage, grape, and critic or merchant notes when available.",
+                "If web evidence is weak, return wide intervals rather than empty attributes.",
+            ]
+        )
     prompt = json.dumps(
         {
-            "instructions": [
-                "Normalize noisy descriptive text into Brain Taste's fixed attribute schema for the given entity type.",
-                "Never invent new attribute keys.",
-                "Each attribute must include value and interval_95.",
-                "Each value must be in [0, 1]. Use 0 when not evidenced.",
-                "Each interval_95 is the 95% interval for the true attribute value.",
-                "Each interval_95 must include the value and stay within [0, 1].",
-                "Use a narrow interval when evidence is explicit and a wide interval when weak or absent.",
-                "For movie or series items, extract only explicitly evidenced media metadata.",
-                "For music items, extract only explicitly evidenced music metadata.",
-                "For restaurant items, extract explicitly evidenced cuisine as scored metadata cuisine.",
-                "Use canonical cuisine values exactly as provided by the schema.",
-                "For restaurant cuisine, use 0 when not evidenced and use other only when no listed cuisine category fits at 40% confidence.",
-                "For restaurant Michelin metadata, use only explicitly evidenced official Michelin Guide information.",
-                "Set Michelin status to unknown when an official Michelin source is not provided.",
-                "For restaurant Google metadata, use only directly evidenced Google Maps, Google Business Profile, or Google Places data.",
-                "Set Google rating and rating_count to null when no direct Google source is provided.",
-                "Do not invent external ratings, external IDs, or watched status.",
-            ],
+            "instructions": instructions,
             "payload": {
                 "item_text": item_text,
                 "entity_type": entity_type,
@@ -52,12 +62,33 @@ def normalize_enrichment_with_llm(
         },
         sort_keys=True,
     )
+    kwargs: dict[str, Any] = {
+        "model": model,
+        "reasoning_effort": reasoning_effort,
+        "temperature": 0,
+    }
+    if use_web_search:
+        kwargs.update(
+            tools=[
+                {
+                    "type": "web_search",
+                    "user_location": {
+                        "type": "approximate",
+                        "country": "GB",
+                        "city": "London",
+                        "region": "London",
+                        "timezone": "Europe/London",
+                    },
+                }
+            ],
+            tool_choice="auto",
+            include=["web_search_call.action.sources"],
+            schema_name=f"brain_{entity_type}_web_enrichment",
+        )
     return llm_client.complete_json(
         prompt,
         enrichment_schema_for_type(entity_type),
-        model=model,
-        reasoning_effort=reasoning_effort,
-        temperature=0,
+        **kwargs,
     )
 
 

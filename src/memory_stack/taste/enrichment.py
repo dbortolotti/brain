@@ -80,6 +80,7 @@ class TasteEnrichmentService:
                         llm_client=self.llm_client,
                         model=self.settings.brain_taste_llm_model,
                         reasoning_effort=self.settings.brain_taste_llm_reasoning_effort,
+                        use_web_search=fetch_external_ratings,
                     )
             except Exception as exc:
                 llm_warnings.append(f"LLM enrichment failed: {exc}")

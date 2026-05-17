@@ -8,7 +8,7 @@ from memory_stack.brain_store import content_hash, normalize_name, stable_id
 from memory_stack.cfg import Settings
 from memory_stack.llm.client import LLMClient, build_llm_client
 from memory_stack.resolution.entity_resolver import EntityResolver
-from memory_stack.taste.enrichment import TasteEnrichmentService
+from memory_stack.taste.enrichment import TasteEnrichmentService, metadata_has_content
 from memory_stack.taste.models import (
     TasteDescribeRequest,
     TasteLogDecisionRequest,
@@ -318,16 +318,20 @@ class TasteService:
         if route.get("taste_intent") == "remember":
             request = remember_request_from_route(text, route)
             enriched = self.enrichment.describe_item(
-                item_text=request.description,
+                item_text=request.canonical_name,
                 entity_type=request.type,
                 canonical_name=request.canonical_name,
                 attributes=request.attributes,
                 attribute_intervals_95=request.attribute_intervals_95,
                 metadata=request.metadata,
                 notes=request.notes,
-                fetch_external_ratings=False,
+                fetch_external_ratings=request.fetch_external_ratings,
                 allow_broader_web_search=False,
             )
+            if explicit_palate_route_requires_enrichment(route) and not enriched_has_content(enriched):
+                raise RuntimeError(
+                    "Explicit Palate proposal requires LLM/web enrichment; enrichment returned no attributes or metadata."
+                )
             proposal = self._proposal_payload_for_request(request, enriched, route)
         else:
             proposal = {
@@ -886,6 +890,20 @@ def remember_request_from_route(text: str, route: dict[str, Any]) -> TasteRememb
         avoid=bool(extracted.get("avoid")),
         not_my_style=bool(extracted.get("not_my_style")),
         bad_fit=bool(extracted.get("bad_fit")),
+    )
+
+
+def explicit_palate_route_requires_enrichment(route: dict[str, Any]) -> bool:
+    return route.get("classification_source") in {
+        "llm_explicit_palate",
+        "llm_palate_context",
+    }
+
+
+def enriched_has_content(enriched: dict[str, Any]) -> bool:
+    return bool(enriched.get("llm_used")) and (
+        bool(enriched.get("attributes"))
+        or metadata_has_content(enriched.get("normalized_metadata"))
     )
 
 

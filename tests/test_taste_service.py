@@ -330,19 +330,22 @@ def test_router_extracts_listened_and_negative_signals_into_proposals(tmp_path) 
 def test_taste_and_palate_keywords_strongly_hint_generic_remember_routing(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     llm = FakeLLMClient(
-        {
-            "domain": "ambiguous",
-            "taste_intent": "remember",
-            "entity_type_hint": None,
-            "confidence": 0.82,
-            "requires_enrichment": True,
-            "requires_confirmation": True,
-            "ambiguity_reasons": ["Confirm explicit palate item type."],
-            "extracted": {
-                "item": "Mystery Thing",
-                "recommended_by": "Alex",
+        [
+            {
+                "domain": "ambiguous",
+                "taste_intent": "remember",
+                "entity_type_hint": None,
+                "confidence": 0.82,
+                "requires_enrichment": True,
+                "requires_confirmation": True,
+                "ambiguity_reasons": ["Confirm explicit palate item type."],
+                "extracted": {
+                    "item": "Mystery Thing",
+                    "recommended_by": "Alex",
+                },
             },
-        }
+            experience_enrichment_payload("A lightly evidenced palate item."),
+        ]
     )
 
     receipt = remember(
@@ -417,19 +420,22 @@ def test_explicit_palate_command_fails_when_llm_does_not_extract_taste(tmp_path)
 def test_explicit_palate_command_prefers_web_enabled_llm_extraction(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     llm = FakeLLMClient(
-        {
-            "domain": "ambiguous",
-            "taste_intent": "remember",
-            "entity_type_hint": "wine",
-            "confidence": 0.88,
-            "requires_enrichment": True,
-            "requires_confirmation": True,
-            "ambiguity_reasons": ["Confirm wine extraction."],
-            "extracted": {
-                "item": "2016 Gaja Barbaresco",
-                "wanted": True,
+        [
+            {
+                "domain": "ambiguous",
+                "taste_intent": "remember",
+                "entity_type_hint": "wine",
+                "confidence": 0.88,
+                "requires_enrichment": True,
+                "requires_confirmation": True,
+                "ambiguity_reasons": ["Confirm wine extraction."],
+                "extracted": {
+                    "item": "2016 Gaja Barbaresco",
+                    "wanted": True,
+                },
             },
-        }
+            wine_enrichment_payload("Nebbiolo with classic Barbaresco structure."),
+        ]
     )
 
     receipt = remember(
@@ -442,12 +448,49 @@ def test_explicit_palate_command_prefers_web_enabled_llm_extraction(tmp_path) ->
     assert llm.calls
     assert llm.calls[0]["kwargs"]["schema_name"] == "brain_palate_memory_extraction"
     assert llm.calls[0]["kwargs"]["tools"][0]["type"] == "web_search"
+    assert llm.calls[1]["kwargs"]["schema_name"] == "brain_wine_web_enrichment"
+    assert llm.calls[1]["kwargs"]["tools"][0]["type"] == "web_search"
     route = receipt.taste["proposal"]["route"]
     payload = receipt.taste["proposal"]["remember_payload"]
+    proposed = receipt.taste["proposal"]["proposed_taste_records"][0]
     assert route["classification_source"] == "llm_explicit_palate"
     assert payload["type"] == "wine"
     assert payload["canonical_name"] == "2016 Gaja Barbaresco"
     assert payload["wanted"] is True
+    assert proposed["attributes"]["classic"] == 0.9
+    assert proposed["enrichment_metadata_summary"]["normalized_fields_source"] == "llm"
+
+
+def test_explicit_palate_wine_fails_when_enrichment_is_empty(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient(
+        [
+            {
+                "domain": "ambiguous",
+                "taste_intent": "remember",
+                "entity_type_hint": "wine",
+                "confidence": 0.88,
+                "requires_enrichment": True,
+                "requires_confirmation": True,
+                "ambiguity_reasons": ["Confirm wine extraction."],
+                "extracted": {
+                    "item": "2016 Cuvee Sasha",
+                    "wanted": True,
+                },
+            },
+            {"attributes": {}, "notes": "No usable wine evidence.", "metadata": {}},
+        ]
+    )
+
+    with pytest.raises(RuntimeError, match="requires LLM/web enrichment"):
+        remember(
+            RememberRequest(input="remember 2016 cuvee sasha in palate"),
+            settings,
+            llm_client=llm,
+        )
+
+    assert llm.calls[1]["prompt"].count("2016 Cuvee Sasha") >= 1
+    assert "remember 2016 cuvee sasha in palate" not in llm.calls[1]["prompt"]
 
 
 def test_bar_word_inside_wine_name_does_not_force_restaurant(tmp_path) -> None:
@@ -460,19 +503,22 @@ def test_bar_word_inside_wine_name_does_not_force_restaurant(tmp_path) -> None:
 def test_bare_want_to_try_food_routes_to_restaurant_palate_proposal(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     llm = FakeLLMClient(
-        {
-            "domain": "ambiguous",
-            "taste_intent": "remember",
-            "entity_type_hint": "restaurant",
-            "confidence": 0.86,
-            "requires_enrichment": True,
-            "requires_confirmation": True,
-            "ambiguity_reasons": ["Confirm restaurant wishlist extraction."],
-            "extracted": {
-                "item": "Mayfair Food Fayre",
-                "wanted": True,
+        [
+            {
+                "domain": "ambiguous",
+                "taste_intent": "remember",
+                "entity_type_hint": "restaurant",
+                "confidence": 0.86,
+                "requires_enrichment": True,
+                "requires_confirmation": True,
+                "ambiguity_reasons": ["Confirm restaurant wishlist extraction."],
+                "extracted": {
+                    "item": "Mayfair Food Fayre",
+                    "wanted": True,
+                },
             },
-        }
+            restaurant_enrichment_payload("Casual food counter."),
+        ]
     )
 
     receipt = remember(
@@ -503,19 +549,22 @@ def test_bare_want_to_try_food_routes_to_restaurant_palate_proposal(tmp_path) ->
 def test_explicit_palate_context_uses_llm_extraction_before_generic_memory(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     llm = FakeLLMClient(
-        {
-            "domain": "ambiguous",
-            "taste_intent": "remember",
-            "entity_type_hint": "restaurant",
-            "confidence": 0.84,
-            "requires_enrichment": True,
-            "requires_confirmation": True,
-            "ambiguity_reasons": ["Confirm restaurant wishlist extraction."],
-            "extracted": {
-                "item": "Mayfair Food Fayre",
-                "wanted": True,
+        [
+            {
+                "domain": "ambiguous",
+                "taste_intent": "remember",
+                "entity_type_hint": "restaurant",
+                "confidence": 0.84,
+                "requires_enrichment": True,
+                "requires_confirmation": True,
+                "ambiguity_reasons": ["Confirm restaurant wishlist extraction."],
+                "extracted": {
+                    "item": "Mayfair Food Fayre",
+                    "wanted": True,
+                },
             },
-        }
+            restaurant_enrichment_payload("Casual food counter."),
+        ]
     )
 
     receipt = remember(
@@ -572,19 +621,22 @@ def test_generic_remember_writes_routing_log_without_raw_text(tmp_path) -> None:
     )
     text = "Palate memory: Alex recommended Mystery Thing."
     llm = FakeLLMClient(
-        {
-            "domain": "ambiguous",
-            "taste_intent": "remember",
-            "entity_type_hint": None,
-            "confidence": 0.82,
-            "requires_enrichment": True,
-            "requires_confirmation": True,
-            "ambiguity_reasons": ["Confirm explicit palate item type."],
-            "extracted": {
-                "item": "Mystery Thing",
-                "recommended_by": "Alex",
+        [
+            {
+                "domain": "ambiguous",
+                "taste_intent": "remember",
+                "entity_type_hint": None,
+                "confidence": 0.82,
+                "requires_enrichment": True,
+                "requires_confirmation": True,
+                "ambiguity_reasons": ["Confirm explicit palate item type."],
+                "extracted": {
+                    "item": "Mystery Thing",
+                    "recommended_by": "Alex",
+                },
             },
-        }
+            experience_enrichment_payload("A lightly evidenced palate item."),
+        ]
     )
 
     remember(RememberRequest(input=text), settings, llm_client=llm)
@@ -775,6 +827,59 @@ def test_refresh_enrichment_reports_material_changes(tmp_path) -> None:
         "metadata",
         "attributes",
         "attribute_intervals_95",
+    }
+
+
+def wine_enrichment_payload(notes: str) -> dict[str, Any]:
+    return {
+        "attributes": {
+            "classic": {"value": 0.9, "interval_95": {"lower": 0.75, "upper": 0.98}},
+            "body": {"value": 0.7, "interval_95": {"lower": 0.5, "upper": 0.85}},
+            "tannin": {"value": 0.7, "interval_95": {"lower": 0.5, "upper": 0.85}},
+        },
+        "notes": notes,
+        "metadata": {},
+    }
+
+
+def experience_enrichment_payload(notes: str) -> dict[str, Any]:
+    return {
+        "attributes": {
+            "novelty": {"value": 0.6, "interval_95": {"lower": 0.3, "upper": 0.8}},
+        },
+        "notes": notes,
+        "metadata": {},
+    }
+
+
+def restaurant_enrichment_payload(notes: str) -> dict[str, Any]:
+    return {
+        "attributes": {
+            "casual": {
+                "value": 0.8,
+                "interval_95": {"lower": 0.6, "upper": 0.9},
+                "interval_1sigma": {"lower": 0.7, "upper": 0.85},
+            },
+        },
+        "notes": notes,
+        "metadata": {
+            "cuisine": {},
+            "michelin": {
+                "status": "unknown",
+                "stars": None,
+                "green_star": False,
+                "source_url": None,
+                "source": None,
+                "checked_at": None,
+            },
+            "google": {
+                "rating": None,
+                "rating_count": None,
+                "source_url": None,
+                "source": None,
+                "checked_at": None,
+            },
+        },
     }
 
 
