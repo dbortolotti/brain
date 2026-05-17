@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import pytest
 from sqlalchemy import func, select
 
 from memory_stack import brain_schema as schema
@@ -20,6 +21,7 @@ from memory_stack.taste.models import (
 from memory_stack.taste.evals import DEFAULT_TASTE_EVAL_CASES, coverage_report
 from memory_stack.taste.evals.runner import run_acceptance_evals
 from memory_stack.taste import restaurants
+from memory_stack.taste.routing import taste_domain_router
 from memory_stack.taste.service import TasteService, extract_option_entities, intent_from_query
 from memory_stack.taste.store import TasteStore
 
@@ -327,23 +329,151 @@ def test_router_extracts_listened_and_negative_signals_into_proposals(tmp_path) 
 
 def test_taste_and_palate_keywords_strongly_hint_generic_remember_routing(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient(
+        {
+            "domain": "ambiguous",
+            "taste_intent": "remember",
+            "entity_type_hint": None,
+            "confidence": 0.82,
+            "requires_enrichment": True,
+            "requires_confirmation": True,
+            "ambiguity_reasons": ["Confirm explicit palate item type."],
+            "extracted": {
+                "item": "Mystery Thing",
+                "recommended_by": "Alex",
+            },
+        }
+    )
 
     receipt = remember(
         RememberRequest(input="Palate memory: Alex recommended Mystery Thing."),
         settings,
+        llm_client=llm,
     )
 
     assert receipt.classification == "taste_proposal"
     assert receipt.taste["requires_confirmation"] is True
-    assert receipt.taste["proposal"]["route"]["routing_hints"] == ["taste_keyword"]
+    assert receipt.taste["proposal"]["route"]["classification_source"] == "llm_explicit_palate"
     assert receipt.taste["proposal"]["route"]["requires_confirmation"] is True
     assert receipt.taste["proposal"]["remember_payload"]["canonical_name"] == "Mystery Thing"
     assert receipt.taste["proposal"]["remember_payload"]["recommended_by"] == "Alex"
     assert table_count(settings, schema.memory_cards) == 0
 
 
+def test_explicit_palate_command_requires_llm_when_client_unavailable(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+
+    with pytest.raises(RuntimeError, match="requires server-side LLM extraction"):
+        remember(
+            RememberRequest(input="remember 2016 Gaja Barbaresco in palate"),
+            settings,
+        )
+
+
+def test_deterministic_router_handles_barbaresco_as_wine_when_used_as_fallback() -> None:
+    route = taste_domain_router("remember 2016 Gaja Barbaresco in palate")
+
+    assert route["taste_intent"] == "remember"
+    assert route["entity_type_hint"] == "wine"
+    assert route["extracted"]["item"] == "2016 Gaja Barbaresco"
+    assert route["routing_hints"] == ["taste_keyword"]
+
+
+def test_explicit_palate_command_fails_when_llm_extraction_fails(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient([])
+
+    with pytest.raises(RuntimeError, match="requires server-side LLM extraction"):
+        remember(
+            RememberRequest(input="remember 2016 Gaja Barbaresco in palate"),
+            settings,
+            llm_client=llm,
+        )
+
+
+def test_explicit_palate_command_fails_when_llm_does_not_extract_taste(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient(
+        {
+            "domain": "general",
+            "taste_intent": "none",
+            "entity_type_hint": None,
+            "confidence": 0.8,
+            "requires_enrichment": False,
+            "requires_confirmation": False,
+            "ambiguity_reasons": [],
+            "extracted": {},
+        }
+    )
+
+    with pytest.raises(RuntimeError, match="remember/taste LLM extraction"):
+        remember(
+            RememberRequest(input="remember 2016 Gaja Barbaresco in palate"),
+            settings,
+            llm_client=llm,
+        )
+
+
+def test_explicit_palate_command_prefers_web_enabled_llm_extraction(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient(
+        {
+            "domain": "ambiguous",
+            "taste_intent": "remember",
+            "entity_type_hint": "wine",
+            "confidence": 0.88,
+            "requires_enrichment": True,
+            "requires_confirmation": True,
+            "ambiguity_reasons": ["Confirm wine extraction."],
+            "extracted": {
+                "item": "2016 Gaja Barbaresco",
+                "wanted": True,
+            },
+        }
+    )
+
+    receipt = remember(
+        RememberRequest(input="remember 2016 Gaja Barbaresco in palate"),
+        settings,
+        llm_client=llm,
+    )
+
+    assert receipt.classification == "taste_proposal"
+    assert llm.calls
+    assert llm.calls[0]["kwargs"]["schema_name"] == "brain_palate_memory_extraction"
+    assert llm.calls[0]["kwargs"]["tools"][0]["type"] == "web_search"
+    route = receipt.taste["proposal"]["route"]
+    payload = receipt.taste["proposal"]["remember_payload"]
+    assert route["classification_source"] == "llm_explicit_palate"
+    assert payload["type"] == "wine"
+    assert payload["canonical_name"] == "2016 Gaja Barbaresco"
+    assert payload["wanted"] is True
+
+
+def test_bar_word_inside_wine_name_does_not_force_restaurant(tmp_path) -> None:
+    route = taste_domain_router("Palate memory: I want to try 2016 Gaja Barbaresco.")
+
+    assert route["entity_type_hint"] == "wine"
+    assert route["extracted"]["item"] == "2016 Gaja Barbaresco"
+
+
 def test_bare_want_to_try_food_routes_to_restaurant_palate_proposal(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
+    llm = FakeLLMClient(
+        {
+            "domain": "ambiguous",
+            "taste_intent": "remember",
+            "entity_type_hint": "restaurant",
+            "confidence": 0.86,
+            "requires_enrichment": True,
+            "requires_confirmation": True,
+            "ambiguity_reasons": ["Confirm restaurant wishlist extraction."],
+            "extracted": {
+                "item": "Mayfair Food Fayre",
+                "wanted": True,
+            },
+        }
+    )
 
     receipt = remember(
         RememberRequest(
@@ -360,6 +490,7 @@ def test_bare_want_to_try_food_routes_to_restaurant_palate_proposal(tmp_path) ->
             },
         ),
         settings,
+        llm_client=llm,
     )
 
     assert receipt.classification == "taste_proposal"
@@ -409,17 +540,14 @@ def test_explicit_palate_context_uses_llm_extraction_before_generic_memory(tmp_p
 def test_explicit_palate_context_never_falls_through_to_generic_memory(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
 
-    receipt = remember(
-        RememberRequest(
-            input="save this vague food thing for later",
-            context={"palate": True, "category": "restaurant_wishlist"},
-        ),
-        settings,
-    )
-
-    assert receipt.classification == "taste_proposal"
-    assert receipt.taste["proposal"]["route"]["classification_source"] == "palate_context_fallback"
-    assert receipt.taste["proposal"]["remember_payload"]["type"] == "restaurant"
+    with pytest.raises(RuntimeError, match="requires server-side LLM extraction"):
+        remember(
+            RememberRequest(
+                input="save this vague food thing for later",
+                context={"palate": True, "category": "restaurant_wishlist"},
+            ),
+            settings,
+        )
     assert table_count(settings, schema.memory_cards) == 0
 
 
@@ -443,13 +571,28 @@ def test_generic_remember_writes_routing_log_without_raw_text(tmp_path) -> None:
         brain_routing_log_retention_days=90,
     )
     text = "Palate memory: Alex recommended Mystery Thing."
+    llm = FakeLLMClient(
+        {
+            "domain": "ambiguous",
+            "taste_intent": "remember",
+            "entity_type_hint": None,
+            "confidence": 0.82,
+            "requires_enrichment": True,
+            "requires_confirmation": True,
+            "ambiguity_reasons": ["Confirm explicit palate item type."],
+            "extracted": {
+                "item": "Mystery Thing",
+                "recommended_by": "Alex",
+            },
+        }
+    )
 
-    remember(RememberRequest(input=text), settings)
+    remember(RememberRequest(input=text), settings, llm_client=llm)
 
     [log_path] = list((tmp_path / "routing").glob("*.jsonl"))
     record = json.loads(log_path.read_text(encoding="utf-8"))
     assert record["route"] == "palate_proposal"
-    assert record["routing_hints"] == ["taste_keyword"]
+    assert record["classification_source"] == "llm_explicit_palate"
     assert record["requires_confirmation"] is True
     assert "input_hash" in record
     assert text not in log_path.read_text(encoding="utf-8")

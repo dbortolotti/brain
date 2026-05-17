@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from memory_stack.llm.client import build_llm_client
 from memory_stack.taste.schema import ENTITY_TYPES
 
 
@@ -44,12 +45,91 @@ TASTE_HINT_COMMAND_RE = re.compile(
     r"(?:\s+(?:memory|note|record))?\s*[:\-–—]?\s*(?P<body>.+)$",
     re.IGNORECASE,
 )
+TASTE_HINT_TRAILING_COMMAND_RE = re.compile(
+    r"^\s*(?:save|store|remember|record|add)\s+(?P<body>.+?)\s+"
+    r"(?:to|in|as)\s+(?:my\s+)?(?:taste|palate)"
+    r"(?:\s+(?:memory|note|record))?\s*$",
+    re.IGNORECASE,
+)
+RESTAURANT_PHRASES = {
+    "wine bar",
+    "cocktail bar",
+    "food fayre",
+    "food hall",
+}
+RESTAURANT_TERMS = {
+    "restaurant",
+    "bar",
+    "cafe",
+    "café",
+    "bistro",
+    "brasserie",
+    "grill",
+    "rot",
+    "food",
+    "diner",
+    "dining",
+    "izakaya",
+    "osteria",
+    "pizzeria",
+    "pub",
+    "ramen",
+    "sushi",
+    "tavern",
+    "trattoria",
+}
+WINE_PHRASES = {
+    "gran reserva",
+    "premier cru",
+    "grand cru",
+}
+WINE_TERMS = {
+    "barbaresco",
+    "barolo",
+    "bordeaux",
+    "brunello",
+    "burgundy",
+    "cabernet",
+    "champagne",
+    "chardonnay",
+    "chianti",
+    "chateau",
+    "château",
+    "domaine",
+    "gaja",
+    "malbec",
+    "merlot",
+    "musar",
+    "nebbiolo",
+    "pinot",
+    "reserva",
+    "riesling",
+    "rioja",
+    "sancerre",
+    "sangiovese",
+    "sauvignon",
+    "shiraz",
+    "syrah",
+    "tondonia",
+    "wine",
+}
+PALATE_WEB_SEARCH_TOOL = {
+    "type": "web_search",
+    "user_location": {
+        "type": "approximate",
+        "country": "GB",
+        "city": "London",
+        "region": "London",
+        "timezone": "Europe/London",
+    },
+}
 
 
 def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
     stripped = text.strip()
     lower = stripped.casefold()
     hinted, routed_text = taste_hint_body(stripped)
+    explicit_command = explicit_taste_command(stripped)
     routed_lower = routed_text.casefold()
     result = {
         "domain": "general",
@@ -60,6 +140,7 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
         "requires_confirmation": False,
         "ambiguity_reasons": [],
         "extracted": {},
+        "explicit_taste_command": explicit_command,
     }
     if not stripped:
         return result
@@ -256,7 +337,21 @@ def taste_hint_body(text: str) -> tuple[bool, str]:
     command = TASTE_HINT_COMMAND_RE.match(text)
     if command:
         return True, command.group("body").strip()
+    trailing = TASTE_HINT_TRAILING_COMMAND_RE.match(text)
+    if trailing:
+        return True, trailing.group("body").strip()
     return bool(TASTE_HINT_RE.search(text)), text
+
+
+def explicit_taste_command(text: str) -> bool:
+    return any(
+        pattern.match(text)
+        for pattern in (
+            TASTE_HINT_PREFIX_RE,
+            TASTE_HINT_COMMAND_RE,
+            TASTE_HINT_TRAILING_COMMAND_RE,
+        )
+    )
 
 
 def apply_taste_hint(route: dict[str, Any], hinted: bool) -> dict[str, Any]:
@@ -284,31 +379,64 @@ def classify_taste_route(
     route = taste_domain_router(text, explicit=explicit)
     route["classification_source"] = "deterministic"
     route["llm_classification_status"] = "not_needed"
-    if explicit or float(route.get("confidence") or 0) >= 0.70:
+    explicit_palate = explicit or bool(route.get("explicit_taste_command"))
+    if not explicit_palate and float(route.get("confidence") or 0) >= 0.70:
         return route
-    if not getattr(settings, "brain_taste_llm_routing_enabled", False):
+    if not explicit_palate and not getattr(settings, "brain_taste_llm_routing_enabled", False):
         route["llm_classification_status"] = "disabled"
         return route
-    if llm_client is None:
+    active_llm_client = llm_client or (build_llm_client(settings) if settings is not None else None)
+    if active_llm_client is None:
         route["llm_classification_status"] = "skipped"
-        route["ambiguity_reasons"].append("LLM taste classification unavailable.")
+        message = "LLM taste classification unavailable."
+        route["ambiguity_reasons"].append(message)
+        if explicit_palate:
+            raise RuntimeError(
+                "Explicit Palate categorization requires server-side LLM extraction; "
+                f"{message}"
+            )
         return route
     try:
+        llm_kwargs: dict[str, Any] = {
+            "model": getattr(settings, "brain_taste_llm_model", None),
+            "reasoning_effort": getattr(settings, "brain_taste_llm_reasoning_effort", None),
+            "temperature": 0,
+            "schema_name": "brain_palate_memory_extraction" if explicit_palate else "brain_taste_routing",
+        }
+        if explicit_palate:
+            llm_kwargs.update(
+                tools=[PALATE_WEB_SEARCH_TOOL],
+                tool_choice="auto",
+                include=["web_search_call.action.sources"],
+            )
         llm_route = normalize_llm_route(
-            llm_client.complete_json(
-                taste_classification_prompt(text),
+            active_llm_client.complete_json(
+                palate_memory_extraction_prompt(text, {}) if explicit_palate else taste_classification_prompt(text),
                 taste_classification_schema(),
-                model=getattr(settings, "brain_taste_llm_model", None),
-                reasoning_effort=getattr(settings, "brain_taste_llm_reasoning_effort", None),
-                temperature=0,
+                **llm_kwargs,
             )
         )
     except Exception as exc:
         route["llm_classification_status"] = "failed"
-        route["ambiguity_reasons"].append(f"LLM taste classification failed: {exc}")
+        message = f"LLM taste classification failed: {exc}"
+        route["ambiguity_reasons"].append(message)
+        if explicit_palate:
+            raise RuntimeError(
+                "Explicit Palate categorization requires server-side LLM extraction; "
+                f"{message}"
+            ) from exc
         return route
-    llm_route["classification_source"] = "llm"
+    llm_route["classification_source"] = "llm_explicit_palate" if explicit_palate else "llm"
     llm_route["llm_classification_status"] = "success"
+    if explicit_palate and llm_route.get("taste_intent") == "remember" and llm_route.get("domain") in {
+        "taste",
+        "ambiguous",
+    }:
+        return llm_route
+    if explicit_palate:
+        raise RuntimeError(
+            "Explicit Palate categorization requires a remember/taste LLM extraction."
+        )
     if float(llm_route.get("confidence") or 0) > float(route.get("confidence") or 0):
         return llm_route
     route["llm_classification_status"] = "success"
@@ -325,56 +453,45 @@ def classify_palate_memory_route(
     deterministic = taste_domain_router(text)
     deterministic["classification_source"] = "deterministic"
     deterministic["llm_classification_status"] = "not_available"
-    if llm_client is not None:
-        try:
-            llm_route = normalize_llm_route(
-                llm_client.complete_json(
-                    palate_memory_extraction_prompt(text, context or {}),
-                    taste_classification_schema(),
-                    model=getattr(settings, "brain_taste_llm_model", None),
-                    reasoning_effort=getattr(settings, "brain_taste_llm_reasoning_effort", None),
-                    temperature=0,
-                    schema_name="brain_palate_memory_extraction",
-                )
+    active_llm_client = llm_client or (build_llm_client(settings) if settings is not None else None)
+    if active_llm_client is None:
+        raise RuntimeError(
+            "Explicit Palate categorization requires server-side LLM extraction; "
+            "LLM taste classification unavailable."
+        )
+    try:
+        llm_route = normalize_llm_route(
+            active_llm_client.complete_json(
+                palate_memory_extraction_prompt(text, context or {}),
+                taste_classification_schema(),
+                model=getattr(settings, "brain_taste_llm_model", None),
+                reasoning_effort=getattr(settings, "brain_taste_llm_reasoning_effort", None),
+                temperature=0,
+                schema_name="brain_palate_memory_extraction",
+                tools=[PALATE_WEB_SEARCH_TOOL],
+                tool_choice="auto",
+                include=["web_search_call.action.sources"],
             )
-            llm_route["classification_source"] = "llm_palate_context"
-            llm_route["llm_classification_status"] = "success"
-            if llm_route.get("taste_intent") == "remember" and llm_route.get("domain") in {
-                "taste",
-                "ambiguous",
-            }:
-                return llm_route
-            deterministic["llm_classification_status"] = "ignored_non_taste"
-        except Exception as exc:
-            deterministic["llm_classification_status"] = "failed"
-            deterministic.setdefault("ambiguity_reasons", []).append(
-                f"LLM palate extraction failed: {exc}"
-            )
-
-    if deterministic.get("taste_intent") == "remember" and deterministic.get("domain") in {
-        "taste",
-        "ambiguous",
-    }:
-        deterministic["palate_context_forced"] = True
-        return deterministic
-
-    context_type = entity_type_from_context(context or {})
-    return {
-        "domain": "ambiguous",
-        "taste_intent": "remember",
-        "entity_type_hint": context_type,
-        "confidence": 0.7 if context_type else 0.5,
-        "requires_enrichment": True,
-        "requires_confirmation": True,
-        "ambiguity_reasons": [
-            "Explicit palate context was supplied, but the item could not be extracted confidently."
-        ],
-        "extracted": {},
-        "classification_source": "palate_context_fallback",
-        "llm_classification_status": deterministic.get("llm_classification_status", "not_available"),
-        "palate_context_forced": True,
-    }
-
+        )
+        llm_route["classification_source"] = "llm_palate_context"
+        llm_route["llm_classification_status"] = "success"
+        if llm_route.get("taste_intent") == "remember" and llm_route.get("domain") in {
+            "taste",
+            "ambiguous",
+        }:
+            return llm_route
+        raise RuntimeError(
+            "Explicit Palate categorization requires a remember/taste LLM extraction."
+        )
+    except Exception as exc:
+        deterministic["llm_classification_status"] = "failed"
+        deterministic.setdefault("ambiguity_reasons", []).append(
+            f"LLM palate extraction failed: {exc}"
+        )
+        raise RuntimeError(
+            "Explicit Palate categorization requires server-side LLM extraction; "
+            f"LLM palate extraction failed: {exc}"
+        ) from exc
 
 def normalize_llm_route(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
@@ -504,22 +621,31 @@ def type_for_item(item: str, *, verb: str | None = None) -> str | None:
         return "series" if any(word in lower for word in ("season", "series", "show")) else "movie"
     if verb == "listen to":
         return "music"
-    if any(word in lower for word in ("restaurant", "bar", "cafe", "bistro", "grill", "rot", "food")):
-        return "restaurant"
-    if any(word in lower for word in ("wine", "chateau", "barolo", "riesling", "cabernet")):
-        return "wine"
-    if re.search(r"\b(19|20)\d{2}\b", item):
-        return "wine"
-    if any(word in lower for word in ("cigar", "habanos", "robusto")):
+    if any_token(lower, {"cigar", "habanos", "robusto"}):
         return "cigar"
-    if any(word in lower for word in ("album", "song", "track", "jazz")):
+    if any_token(lower, {"album", "song", "track", "jazz"}):
         return "music"
+
+    wine_term_score = phrase_score(lower, WINE_PHRASES) + token_score(lower, WINE_TERMS)
+    has_vintage = re.search(r"\b(19|20)\d{2}\b", item) is not None
+    wine_score = wine_term_score + (1 if has_vintage else 0)
+    restaurant_score = phrase_score(lower, RESTAURANT_PHRASES) + token_score(
+        lower,
+        RESTAURANT_TERMS,
+    )
+
+    if wine_term_score and wine_score >= restaurant_score:
+        return "wine"
+    if restaurant_score:
+        return "restaurant"
+    if has_vintage:
+        return "wine"
     return None
 
 
 def entity_type_from_context(context: dict[str, Any]) -> str | None:
-    text = " ".join(str(value) for value in context.values()).casefold()
-    if any(word in text for word in ("restaurant", "food", "dining", "cafe", "bar")):
+    text = re.sub(r"[_-]+", " ", " ".join(str(value) for value in context.values()).casefold())
+    if phrase_score(text, RESTAURANT_PHRASES) or token_score(text, RESTAURANT_TERMS):
         return "restaurant"
     return mentioned_entity_type(text)
 
@@ -547,6 +673,18 @@ def clean_item(value: str) -> str:
         flags=re.IGNORECASE,
     )[0]
     return text.strip().strip("\"'“”‘’").rstrip(".")
+
+
+def phrase_score(lower_text: str, phrases: set[str]) -> int:
+    return sum(1 for phrase in phrases if re.search(rf"\b{re.escape(phrase)}\b", lower_text))
+
+
+def token_score(lower_text: str, terms: set[str]) -> int:
+    return sum(1 for term in terms if re.search(rf"\b{re.escape(term)}\b", lower_text))
+
+
+def any_token(lower_text: str, terms: set[str]) -> bool:
+    return token_score(lower_text, terms) > 0
 
 
 def safe_float(value: Any) -> float | None:
