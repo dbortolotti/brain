@@ -20,6 +20,14 @@ scripts/capture_openai_submission_screenshots.sh
 
 Set `BRAIN_SUBMISSION_BASE_URL` to capture staging instead of production.
 
+## Demo Recording
+
+Use the public MP4 recording for the submission demo:
+
+- `openai-demo.mp4`
+- Public URL after push:
+  `https://raw.githubusercontent.com/dbortolotti/brain/main/docs/openai-submission-assets/openai-demo.mp4`
+
 ## Reviewer Credentials
 
 Use the dedicated non-admin verifier account:
