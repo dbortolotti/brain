@@ -25,7 +25,7 @@ hard deletes, backup controls, or other users' data.
 
 1. Connect the ChatGPT App to `https://brain.dceb.net/mcp`.
 2. Complete OAuth sign-in with the reviewer account.
-3. Ask: `Open my Brain review panel.`
+3. Ask: `What Brain session am I using?`
 4. Ask: `Remember that the verifier prefers concise release notes.`
    Brain should preview the write and require confirmation before storing it.
 5. Confirm the write.
@@ -40,6 +40,8 @@ hard deletes, backup controls, or other users' data.
 
 - Unauthenticated MCP requests fail closed and return Brain OAuth metadata.
 - Public app tools are curated for user memory workflows.
+- The current public app submission is text-only and does not expose a widget
+  opener or Apps SDK component tool.
 - Public app tools exclude system administration, raw Cognee primitives,
   hard-delete operations, token handling, password management, backups, and
   other users' data.

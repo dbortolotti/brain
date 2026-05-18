@@ -13,9 +13,10 @@ the remaining non-code work.
 - Privacy URL: `https://brain.dceb.net/privacy`
 - Terms URL: `https://brain.dceb.net/terms`
 - Support URL: `https://brain.dceb.net/support`
-- App component resource: `ui://brain/review.v2.html`
-- Only `brain_app_open_review_panel` advertises that component as its OpenAI output template.
-- The component is served as `text/html;profile=mcp-app` with `_meta.ui.csp` and `_meta.ui.domain`.
+- Current submission mode: text-only ChatGPT App tools.
+- The browser dashboard remains available at `https://brain.dceb.net`, and production verification checks the ChatGPT App tool descriptors, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, and support pages, browser security headers, and that the public app surface remains text-only.
+
+In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
 The current verified production release should be recorded from the deployed environment:
 
@@ -51,6 +52,8 @@ uv run python scripts/migrate_auth_user_passwords.py --env-file /path/to/brain.e
 
 Use `--check` to fail deployment verification when any user still needs migration.
 
+Production auth is configured through `BRAIN_AUTH_ENABLED`, `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`, `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_USERS_FILE`, and `BRAIN_AUTH_SUPERUSER_IDS`.
+
 For authenticated app verification against hashed user registries, configure a dedicated non-admin verifier account with either pair:
 
 ```bash
@@ -65,24 +68,25 @@ export BRAIN_AUTH_VERIFIER_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/sec
 
 Public dashboard, legal, and app-asset responses include Content Security Policy, HSTS, Referrer Policy, Permissions Policy, and `X-Content-Type-Options`. The CSP includes `frame-ancestors` entries for ChatGPT/OpenAI hosts so the app component can be framed by ChatGPT while excluding arbitrary embedding.
 
+Do not store passwords, API keys, OAuth tokens, or other secrets in Brain memories. Records are retained until the authenticated user or operator removes them, or until an environment backup/retention policy expires.
+
 ## Public App Surface
 
 Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
-This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`.
+This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not.
 
 ChatGPT App responses are minimized on this surface. They return a short summary plus redacted `structuredContent` and strip internal identifiers such as user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields.
 
 The public ChatGPT App tools are exactly:
 
 - `brain_session`
-- `brain_app_open_review_panel`
 - `brain_remember`
+- `brain_ingest_source`
 - `brain_profile_context_remember`
 - `brain_profile_context_list`
 - `brain_profile_context_forget`
 - `brain_app_data_controls`
-- `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
 - `brain_list_open_loops`
@@ -95,6 +99,8 @@ The public ChatGPT App tools are exactly:
 - `brain_palate_confirm`
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
+
+These are the only public app MCP tools.
 
 Read-only tools advertise and require `brain.memory.read`:
 
@@ -146,18 +152,20 @@ Explain these points in the submission:
 - The Review tab shows Recent Cards and Open Loops.
 - The Profile tab is editable, and profile-context forget actions require explicit confirmation before the MCP call.
 - The Prompt tab surfaces Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
-- The embedded ChatGPT component is intentionally smaller than the full dashboard. It supports recent-memory, profile-context, open-loop, and app-write review using Apps SDK tool calls, while account administration and system administration remain in the authenticated browser dashboard.
+- The authenticated browser dashboard supports recent-memory, profile-context, open-loop, and app-write review, while account administration and system administration remain outside the public app MCP surface.
 
 ## Assets To Prepare
 
 - App name, short description, and category.
 - App icon using the existing Brain icon asset.
-- Support contact.
+- Support contact: `support@dceb.net`.
 - Reviewer credentials for the non-admin verifier user.
-- Screenshots of the embedded ChatGPT component and browser dashboard.
+- Public privacy, terms, and support URLs on the production host.
+- Screenshots are not required for the current text-only submission. Browser dashboard screenshots may be kept as supporting assets.
 - Latest successful `prod-check` output.
 - Latest successful `verify_cloudflare_mcp.py --skip-cloudflared` output.
-- Submission-ready copy, reviewer instructions, and screenshots are stored under `docs/openai-submission-assets/`.
+- Submission-ready copy, reviewer instructions, and screenshots for the submission package.
+- ChatGPT App tool descriptor confirmation, including no public widget tool or app component resource.
 
 ## Pre-Submission Gates
 
@@ -168,7 +176,7 @@ Explain these points in the submission:
 - Confirm `https://brain.dceb.net/privacy`, `/terms`, and `/support` load over HTTPS with security headers.
 - Confirm the public app MCP verification passes with `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` loaded in the production environment.
 - When auth is enabled, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
-- Confirm the verifier reports the curated public app MCP surface, OAuth metadata, the app component resource, and the browser security headers.
-- Confirm `resources/read` for `ui://brain/review.v2.html` returns `text/html;profile=mcp-app` and includes `_meta.ui.csp` plus `_meta.ui.domain`.
+- Confirm the verifier reports the curated text-only ChatGPT App tool surface, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, support pages, and browser security headers.
+- Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 76bf04a6bd82a2df7c8f328d1d74674ab4619e57658ecac957566c7a84d148c5 -->
+<!-- brain-doc-source-hash: 414f29de17fc740774452159767e3086dfa94035c5f1b87846a0480c0df93214 -->

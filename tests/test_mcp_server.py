@@ -252,15 +252,8 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     palate_confirm = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_confirm")
     for tool in response.json()["result"]["tools"]:
         assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
-        if tool["name"] == "brain_app_open_review_panel":
-            assert tool["_meta"]["ui"] == {
-                "visibility": ["model", "app"],
-                "resourceUri": mcp_server.APP_COMPONENT_RESOURCE_URI,
-            }
-            assert tool["_meta"]["openai/outputTemplate"] == mcp_server.APP_COMPONENT_RESOURCE_URI
-        else:
-            assert tool["_meta"]["ui"] == {"visibility": ["model"]}
-            assert "openai/outputTemplate" not in tool["_meta"]
+        assert tool["_meta"]["ui"] == {"visibility": ["model"]}
+        assert "openai/outputTemplate" not in tool["_meta"]
         assert tool["_meta"]["openai/visibility"] == "public"
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoking"], str)
         assert isinstance(tool["_meta"]["openai/toolInvocation/invoked"], str)
@@ -285,8 +278,6 @@ def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
     assert recall["_meta"]["brain/requiresUserConfirmation"] is False
     data_controls = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_app_data_controls")
     assert data_controls["annotations"]["readOnlyHint"] is True
-    render_tool = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_app_open_review_panel")
-    assert render_tool["annotations"]["readOnlyHint"] is True
     undo = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_undo_last")
     assert undo["annotations"]["destructiveHint"] is True
 
@@ -308,7 +299,7 @@ def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
     assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
 
 
-def test_chatgpt_app_render_tool_opens_panel_without_data() -> None:
+def test_chatgpt_app_render_tool_is_not_public() -> None:
     client = TestClient(app)
     response = client.post(
         "/mcp",
@@ -321,9 +312,8 @@ def test_chatgpt_app_render_tool_opens_panel_without_data() -> None:
     )
 
     assert response.status_code == 200
-    result = response.json()["result"]
-    assert result["content"] == [{"type": "text", "text": "Brain review panel ready."}]
-    assert result["structuredContent"] == {"status": "ready", "panel": "brain_review"}
+    assert response.json()["error"]["code"] == -32000
+    assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
 
 
 def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
@@ -1121,11 +1111,24 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
             "params": {"uri": "brain://schema/memory-card"},
         },
     )
-    component_response = client.post(
+    app_resources_response = client.post(
+        "/mcp",
+        json={"jsonrpc": "2.0", "id": 4, "method": "resources/list"},
+    )
+    app_component_response = client.post(
         "/mcp",
         json={
             "jsonrpc": "2.0",
-            "id": 4,
+            "id": 5,
+            "method": "resources/read",
+            "params": {"uri": mcp_server.APP_COMPONENT_RESOURCE_URI},
+        },
+    )
+    admin_component_response = client.post(
+        "/admin/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 6,
             "method": "resources/read",
             "params": {"uri": mcp_server.APP_COMPONENT_RESOURCE_URI},
         },
@@ -1151,8 +1154,16 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
     content = read_response.json()["result"]["contents"][0]
     assert content["uri"] == "brain://schema/memory-card"
     assert json.loads(content["text"])["schema"] == "memory-card"
-    assert component_response.status_code == 200
-    component = component_response.json()["result"]["contents"][0]
+    assert app_resources_response.status_code == 200
+    app_resource_uris = {
+        resource["uri"] for resource in app_resources_response.json()["result"]["resources"]
+    }
+    assert mcp_server.APP_COMPONENT_RESOURCE_URI not in app_resource_uris
+    assert app_component_response.status_code == 200
+    assert app_component_response.json()["error"]["code"] == -32000
+    assert "Unknown Brain resource" in app_component_response.json()["error"]["message"]
+    assert admin_component_response.status_code == 200
+    component = admin_component_response.json()["result"]["contents"][0]
     assert component["mimeType"] == mcp_server.APP_COMPONENT_MIME_TYPE
     assert "window.openai.callTool" in component["text"]
     assert component["_meta"]["ui"]["csp"]["connectDomains"]

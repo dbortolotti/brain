@@ -2,6 +2,8 @@
 
 Brain is a personal memory, taste, and portable agent-memory system for agents.
 
+Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard.
+
 Use Brain when you want an agent to remember durable facts, decisions, preferences, project state, open loops, research questions, source material, standing profile context, palate or taste signals, or chat-session continuity. Use Cognee-backed agent memory when you want continuity between agent chats and a dedicated portable session memory. Use Palate when the memory is about taste: wine, restaurants, media, music, cigars, experiences, and other supported preference categories.
 
 The practical rule is simple:
@@ -64,18 +66,18 @@ Poor memories:
 
 ## Core MCP Tools
 
-Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset. The ChatGPT app surface does not expose `brain_agent_memory`, `brain_agent_memory_recall`, or `brain_agent_memory_clear`.
+Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset.
 
 Most agents should use these tools rather than lower-level storage details.
 
 | Tool | Use it for |
 | --- | --- |
+| `brain_app_open_review_panel` | Open the app review panel. Internal or admin only. |
 | `brain_session` | Resolve the active user's Brain profile and standing context. Internal or admin surfaces also return the user-scoped session_id for portable agent-memory calls; the ChatGPT app surface hides session ids. |
-| `brain_app_open_review_panel` | Open the ChatGPT app review panel. Available on the ChatGPT app surface. |
+| `brain_app_data_controls` | Inspect app data controls and related dashboard state. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_profile_context_remember` | Store stable user-profile context for answer tailoring. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_profile_context_list` | List stable user-profile context. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_profile_context_forget` | Remove one stable user-profile context item. Available on ChatGPT app and internal or admin surfaces. |
-| `brain_app_data_controls` | Inspect app data controls and related dashboard state. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_remember` | Store a durable memory, fact, preference, decision, open question, research question, or short note. |
 | `brain_ingest_source` | Store longer source material and optionally extract memories. |
 | `brain_recall` | Answer a memory query with evidence. |
@@ -104,13 +106,14 @@ Normal users rarely need maintenance tools. Use them when operating the system, 
 
 Brain also exposes HTTP endpoints and browser pages. Use them when you are not talking to the MCP tools directly.
 
-- Health and docs: `/`, `/healthz`, `/docs`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, `/apple-touch-icon.png`, `/.well-known/openai-apps-challenge`
+- Health and docs: `/`, `/healthz`, `/docs`, `/docs/oauth2-redirect`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, `/apple-touch-icon.png`, `/.well-known/openai-apps-challenge`
 - Auth and session: `/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource`, `/.well-known/oauth-protected-resource/{resource_path:path}`, `/authorize`, `/login`, `/logout`, `/register`, `/revoke`, `/token`, `/account/password`, `/api/session`, `/auth/session`
 - User administration: `/admin/users` and `/admin/users/{user_id}`
 - UI pages: `/app`, `/app-assets/{asset_name}`, `/app/oauth/callback`, `/user`, `/admin`, `/privacy`, `/support`, `/terms`
 - Memory endpoints: `/memory/remember`, `/memory/ingest_source`, `/memory/recall`, `/memory/profile_entity`, `/memory/open_loops`, `/memory/{memory_id}`, `/memory/review_recent`, `/memory/undo_last`, `/memory/forget`, `/memory/resolve_conflict`, `/memory/sync_cognee`, `/memory/rebuild_cognee`, `/memory/merge_entities`
 - Datasource endpoints: `/datasources`, `/create_datasource`, `/delete_datasource`, `/list_datasources`, `/datasources/{datasource}`, `/delete_datasource/{datasource}`
 - Cognee UI proxy routes: `/cognee`, `/cognee-api/{path:path}`, `/cognee-login`, `/cognee-logout`, `/ui`, `/ui-api/{path:path}`, `/ui-login`, `/ui-logout`, `/admin/cognee`, `/admin/cognee-api/{path:path}`, `/admin/cognee/{path:path}`
+- Slack agent endpoints: `/slack/healthz`, `/slack/events`, `/slack/commands`, `/slack/interactions`
 - The MCP catch-all route is `/{path:path}`
 
 The browser dashboard ships with `index.html`, `privacy.html`, `support.html`, and `terms.html`.
@@ -122,6 +125,8 @@ The Prompt tab includes Personal Info In Session, Custom Preprompt Instructions,
 ## Slack Surface
 
 Brain's Slack app is a separate guarded surface and should not be treated as an MCP client. It shares the Brain service layer and uses `/brain` commands. It is the strictest interface and may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or conflicts with an existing memory.
+
+The Slack memory agent is conservative by default and is not a general Slack assistant. It shares the core Brain service layer, but it should not expose arbitrary SQL, Cognee primitives, or row-level write tools.
 
 Slack provenance belongs in Brain request-context metadata, not in the memory statement itself. The provenance fields are team id, channel id, user id, thread timestamp, message timestamp, and permalink.
 
@@ -308,9 +313,9 @@ score.
 
 Agent memory is for continuity between agent chats. It uses a dedicated, user-scoped Cognee dataset so it can be cleaned up separately if it becomes noisy.
 
-The default session id base is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. Do not hardcode a base value.
+The default agent-memory session id is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. Do not hardcode that value.
 
-Agents must not hardcode that value. The `brain_session` tool derives the active user's session id from that base, resolves the matching user-scoped agent-memory dataset, and returns the related Brain workflow names.
+Agents must not hardcode that value. The `brain_session` tool derives the active user's session id from that value, resolves the matching user-scoped agent-memory dataset, and returns the related Brain workflow names.
 
 Minimal agent preprompt:
 
@@ -325,9 +330,8 @@ accepts session_id. Use brain_remember only for durable user facts, stable
 preferences, explicit constraints, durable decisions, open questions, research
 questions, and Palate or taste memories. If the user asks to remember a stable
 fact about who they are, their expertise, work, background, or communication
-needs, use brain_profile_context_remember. Current user instructions in this
-chat override any recalled Brain memory or preference. Store concise declarative
-facts, not transcripts.
+needs, use brain_profile_context_remember. Store concise declarative facts, not
+transcripts.
 ```
 
 Use the Agent Memory Protocol, if your client exposes one, to inject operating instructions into an agent. The protocol tells the agent to:
@@ -427,8 +431,6 @@ unless I ask.
 ## Source Ingestion
 
 Use `brain_ingest_source` when the input is too large or too source-like for a single memory card: meeting notes, articles, design docs, transcripts, tables, or copied research.
-
-For very long documents, set `run_in_background: true`. Brain returns a queued receipt immediately, then performs ingestion in-process and leaves Cognee projection pending for `brain_sync_cognee`.
 
 Good source-ingestion prompt:
 
@@ -826,4 +828,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: a8af72ed3a4c887f6ca2639e64fb4b169f98f165e8ea966158bb4a66cb43af20 -->
+<!-- brain-doc-source-hash: be32575b2697cf72ae783d1fbef6384945c026333d94471a0a6c381770f1cdca -->

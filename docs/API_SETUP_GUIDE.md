@@ -130,7 +130,7 @@ OAuth, auth, and browser session endpoints:
 
 ```text
 GET  /.well-known/oauth-protected-resource
-GET  /.well-known/oauth-protected-resource/{resource_path}
+GET  /.well-known/oauth-protected-resource/{resource_path:path}
 GET  /.well-known/oauth-authorization-server
 GET  /.well-known/openai-apps-challenge
 POST /register
@@ -144,8 +144,8 @@ GET  /api/session
 PUT  /account/password
 ```
 
-The dashboard and public app pages are also served by the Brain HTTP process by
-the configured Brain HTTP server:
+The dashboard and public app pages are served by the same Brain HTTP process at
+the configured public base URL:
 
 ```text
 GET /app
@@ -215,9 +215,11 @@ configured improve.
 ## ChatGPT App Surface
 
 Use the public app MCP surface for ChatGPT App or any user-facing client that
-should not see admin tools. In production, the public MCP URLs are configured by
-`BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`,
-`BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
+should not see admin tools. The internal `/admin/mcp` surface exposes
+`brain_app_open_review_panel`; the public app surface does not. In production,
+the public MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with
+`BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and
+`BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
 `/app/mcp` remains a compatibility alias for older clients. The browser
 dashboard is served by the same HTTP process at the configured public base URL.
@@ -225,7 +227,6 @@ dashboard is served by the same HTTP process at the configured public base URL.
 The curated app tool set is:
 
 ```text
-brain_app_open_review_panel
 brain_session
 brain_recall
 brain_remember
@@ -257,15 +258,8 @@ on `/admin/mcp`.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
-The app surface also exposes the embedded Apps SDK component resource
-`ui://brain/review.v2.html`. Only `brain_app_open_review_panel` advertises that
-resource as its OpenAI output template, so ChatGPT renders the compact review
-panel from a render-only tool while data tools stay model-only. The component is
-served as `text/html;profile=mcp-app` with standard `_meta.ui.csp` and
-`_meta.ui.domain` metadata. Tool-call responses on this surface are minimized to
-one short text content item plus redacted structured content; internal user ids,
-session ids, OAuth client ids, request ids, datasets, timestamps, tokens, raw
-metadata JSON, and password fields are stripped from the app-facing payload.
+Production verification also checks ChatGPT App tool descriptor metadata and
+that the public app surface remains text-only.
 
 ## Authentication
 
@@ -302,7 +296,7 @@ OAuth metadata routes:
 
 ```text
 GET /.well-known/oauth-protected-resource
-GET /.well-known/oauth-protected-resource/{resource_path}
+GET /.well-known/oauth-protected-resource/{resource_path:path}
 GET /.well-known/oauth-authorization-server
 GET /.well-known/openai-apps-challenge
 POST /register
@@ -670,10 +664,10 @@ used. The Cloudflare verifier checks DNS/TLS, public curated, admin, and app
 MCP URLs, dashboard, privacy, terms, and support pages, OAuth
 protected-resource metadata, and the authenticated public app MCP surface when
 auth is enabled. It also checks browser security headers, ChatGPT App tool
-descriptor metadata, and the embedded component resource. For authenticated
-verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and
-`BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and
-`BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
+descriptor metadata, and that the public app surface remains text-only. For
+authenticated verification against hashed user registries, set
+`BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or
+`BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 ## Troubleshooting
 
@@ -709,4 +703,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: b66ba4283251d2856ceab08d3a990b62661616d2fdce7bcceb145be21009f12a -->
+<!-- brain-doc-source-hash: 0649ac4d4637e7b2ef2464bfc6599c494fb66a073f8f0db2517664f7081333e2 -->

@@ -105,7 +105,6 @@ DEFAULT_MCP_PROTOCOL_VERSION = "2024-11-05"
 MCP_SURFACE_INTERNAL = "internal"
 MCP_SURFACE_CHATGPT_APP = "chatgpt_app"
 CHATGPT_APP_TOOLS = {
-    "brain_app_open_review_panel",
     "brain_session",
     "brain_recall",
     "brain_remember",
@@ -127,7 +126,6 @@ CHATGPT_APP_TOOLS = {
     "brain_palate_correct_proposal",
 }
 APP_READ_ONLY_TOOLS = {
-    "brain_app_open_review_panel",
     "brain_session",
     "brain_recall",
     "brain_profile_entity",
@@ -1313,8 +1311,8 @@ APP_STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
 }
 
 
-def resource_definitions() -> list[dict[str, str]]:
-    return [
+def resource_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[str, str]]:
+    resources = [
         {
             "uri": APP_COMPONENT_RESOURCE_URI,
             "name": "Brain review and data controls",
@@ -1336,6 +1334,9 @@ def resource_definitions() -> list[dict[str, str]]:
             "mimeType": "application/json",
         },
     ]
+    if surface == MCP_SURFACE_CHATGPT_APP:
+        return [item for item in resources if item["uri"] != APP_COMPONENT_RESOURCE_URI]
+    return resources
 
 
 def prompt_definitions() -> list[dict[str, Any]]:
@@ -2594,12 +2595,14 @@ async def handle_json_rpc(
             )
         elif method == "resources/list":
             require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
-            result = {"resources": resource_definitions()}
+            result = {"resources": resource_definitions(surface=surface)}
         elif method == "resources/templates/list":
             require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
             result = {"resourceTemplates": resource_template_definitions()}
         elif method == "resources/read":
             require_app_scopes(request_context, surface=surface, scopes=[APP_TOOL_READ_SCOPE])
+            if surface == MCP_SURFACE_CHATGPT_APP and str(params.get("uri", "")) == APP_COMPONENT_RESOURCE_URI:
+                raise ValueError(f"Unknown Brain resource: {APP_COMPONENT_RESOURCE_URI}")
             result = read_resource(str(params.get("uri", "")), request_context=request_context)
         elif method == "tools/call":
             tool_name = str(params.get("name") or "") if isinstance(params, dict) else ""

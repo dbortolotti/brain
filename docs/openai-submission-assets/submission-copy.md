@@ -19,7 +19,8 @@ first and require user confirmation before storage or removal.
 The public ChatGPT App surface is intentionally curated for user-level memory
 workflows. System administration, raw Cognee primitives, hard deletes, backup
 operations, password management, token handling, and other users' data are not
-available from the public app surface.
+available from the public app surface. The current public app submission is
+text-only and does not expose a widget opener or Apps SDK component tool.
 
 ## Category
 
@@ -58,7 +59,7 @@ until an environment backup/retention policy expires.
 ## Reviewer Test Prompts
 
 ```text
-Open my Brain review panel.
+What Brain session am I using?
 ```
 
 ```text

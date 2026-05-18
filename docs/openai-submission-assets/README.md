@@ -5,7 +5,9 @@ App.
 
 ## Screenshots
 
-Current public screenshots are in `screenshots/`:
+The current public app submission is text-only, so screenshots are not required
+by the app review form. Supporting browser-dashboard screenshots are kept in
+`screenshots/`:
 
 - `01-dashboard-login.png`
 - `02-privacy.png`
@@ -40,8 +42,8 @@ portal reviewer-credentials field.
 
 ## Verified Release
 
-- Version: `v2.0.4`
-- Commit: `906f26f00fdb6490123080f1e48e66a8928f70ab`
+- Version: record the promoted production release used for submission.
+- Commit: record the promoted production commit used for submission.
 - Production URL: `https://brain.dceb.net`
 - Public MCP URL: `https://brain.dceb.net/mcp`
 - Privacy URL: `https://brain.dceb.net/privacy`
@@ -62,4 +64,5 @@ BRAIN_VERIFIER_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-a
   uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared
 ```
 
-Both checks passed after the `v2.0.4` production promotion.
+Run both checks after the production promotion used for submission and record
+the result in the reviewer notes.

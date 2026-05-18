@@ -11,7 +11,7 @@ MCP clients -> public or local URL -> Brain MCP server on /mcp
 
 Do not route Slack traffic to the MCP server. The Slack agent intentionally does not serve `/mcp`.
 
-Local service endpoints are configured with the Brain host and port settings:
+Local service endpoints are configured with the Brain MCP host/port and Slack agent host/port settings:
 
 ```text
 MCP/HTTP service: http://{BRAIN_MCP_HOST}:{BRAIN_MCP_PORT}
@@ -31,6 +31,7 @@ The Slack agent also serves FastAPI documentation endpoints:
 
 ```text
 GET /docs
+GET /docs/oauth2-redirect
 GET /openapi.json
 GET /redoc
 ```
@@ -68,7 +69,7 @@ Use comma-separated values for multiple teams, channels, users, or admins.
 
 `BRAIN_SLACK_SIGNING_SECRET` is required. The server fails closed with `503` if the agent is enabled but the signing secret is blank or placeholder-shaped.
 
-`BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer default. With this setting, Slack memory writes dry-run first and require confirmation before committing.
+`BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer default. With this setting, Slack memory writes use the proposal and confirmation flow before committing.
 
 ## Create The Slack App
 
@@ -184,7 +185,7 @@ This verifies:
 
 - `/slack/healthz` returns the Slack service identity.
 - `/mcp` is not served by the Slack agent.
-- invalid Slack signatures fail closed.
+- invalid Slack signatures fail closed with `401` or `503`.
 
 You can also pass a base URL directly:
 
@@ -206,7 +207,7 @@ BRAIN_SLACK_ALLOWED_USER_IDS=U...
 BRAIN_SLACK_ADMIN_USER_IDS=U...
 ```
 
-Set admin users separately from the general allowlists.
+Set admin users separately from the general allowlists. The same allowlists are applied before memory handling on Slack requests.
 
 ## Production Notes
 
@@ -263,4 +264,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: d92fbcd4197e748a48275d79768a7148015c41d11c080f851066fa451075b854 -->
+<!-- brain-doc-source-hash: f805ad85bf48c270fc662b426c583bf266fac5fb54c9282cedf7558d97fd5f83 -->

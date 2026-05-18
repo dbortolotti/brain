@@ -1,10 +1,12 @@
 # Brain User Guide
 
-Brain is a personal memory, taste, and portable agent-memory system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, and, when your client exposes it, chat-session continuity through a dedicated agent-memory workflow.
+Brain is a personal memory, taste, and portable agent-memory system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, commitments, and, when your client exposes it, chat-session continuity through a dedicated agent-memory workflow.
 
 Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard. You do not need to think in database terms while using it: write clear memory requests, confirm them when asked, and use recall or review when you need the saved context back.
 
 Palate is Brain's taste layer. Use it for wine, restaurants, media, music, cigars, experiences, and other taste-related preferences.
+
+If your client exposes `brain_agent_memory`, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
 
 ## Main Workflows
 
@@ -123,6 +125,7 @@ table
 ```
 
 Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
+For chat-session continuity and handovers, prefer the dedicated `brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
 
 ## Using the User Dashboard
 
@@ -141,6 +144,8 @@ Main tabs:
 - Account: change your password.
 - Users: available to superusers for user administration.
 - Help: command and usage help.
+
+The dashboard ships with the main app page plus privacy, support, and terms pages.
 
 Use Review before trusting a recall result. It is a safe place to inspect recent memory and open loops without changing data.
 
@@ -203,6 +208,13 @@ Datasource endpoints also exist:
 - `/datasources/{datasource}`
 - `/delete_datasource/{datasource}`
 
+Slack agent endpoints include:
+
+- `/slack/healthz`
+- `/slack/events`
+- `/slack/commands`
+- `/slack/interactions`
+
 Other common endpoints include `/healthz`, `/docs`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, and `/apple-touch-icon.png`.
 
 MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated alias `/app/mcp`. The MCP catch-all route is `/{path:path}`.
@@ -211,9 +223,9 @@ MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated al
 
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
-In the ChatGPT app surface, common tools include `brain_session`, `brain_app_open_review_panel`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
+The ChatGPT app surface exposes a smaller subset of tools and does not expose `brain_agent_memory`, `brain_agent_memory_recall`, or `brain_agent_memory_clear`. It does expose `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
 
-Tool availability varies by surface. The internal/admin surface also exposes tools such as `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
+Internal or admin surfaces also expose tools such as `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, `brain_palate_refresh_enrichment`, and `cognee_improve`.
 
 `brain_session` can resolve the active user's Brain profile and standing context. On internal or admin surfaces it also returns the user-scoped `session_id` for portable agent-memory calls; the ChatGPT app surface hides session ids.
 
@@ -662,4 +674,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 6d7f98ad978ee29ca38af2eee223de9415ca2927b007442a4a013fece683a5ca -->
+<!-- brain-doc-source-hash: 063506e234af1f32729ca90107c700c9f0cd740df8e6f4300a9585011f54e109 -->

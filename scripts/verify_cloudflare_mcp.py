@@ -28,7 +28,6 @@ from production_check_utils import command_exists, uid
 console = Console()
 
 CHATGPT_APP_TOOLS = {
-    "brain_app_open_review_panel",
     "brain_session",
     "brain_recall",
     "brain_remember",
@@ -51,7 +50,6 @@ CHATGPT_APP_TOOLS = {
 }
 
 APP_READ_ONLY_TOOLS = {
-    "brain_app_open_review_panel",
     "brain_session",
     "brain_recall",
     "brain_profile_entity",
@@ -78,7 +76,6 @@ APP_MUTATING_TOOLS = {
 
 APP_DESTRUCTIVE_TOOLS = {"brain_undo_last", "brain_profile_context_forget"}
 APP_COMPONENT_RESOURCE_URI = "ui://brain/review.v2.html"
-APP_COMPONENT_MIME_TYPE = "text/html;profile=mcp-app"
 
 
 def main() -> int:
@@ -347,7 +344,7 @@ def check_authenticated_public_app_mcp(settings, hostname: str, failures: list[s
             )
         for tool in tools:
             validate_app_tool_descriptor(tool, failures)
-        verify_app_component_resource(settings, token, failures)
+        verify_text_only_app_resources(settings, token, failures)
 
         blocked_admin = rpc_call(
             settings.public_app_mcp_url,
@@ -454,21 +451,6 @@ def verify_confirmed_write_cleanup(settings, token: str, failures: list[str]) ->
     if session:
         assert_app_safe_response("brain_session", session, failures)
 
-    panel = rpc_call(
-        settings.public_app_mcp_url,
-        token,
-        {
-            "jsonrpc": "2.0",
-            "id": 10,
-            "method": "tools/call",
-            "params": {"name": "brain_app_open_review_panel", "arguments": {}},
-        },
-        "authenticated ChatGPT App review panel",
-        failures,
-    )
-    if panel:
-        assert_app_safe_response("brain_app_open_review_panel", panel, failures)
-
     cleanup = rpc_call(
         settings.public_app_mcp_url,
         token,
@@ -500,17 +482,10 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
     expected_scopes = ["brain.memory.read", "brain.memory.write"] if name in APP_MUTATING_TOOLS else ["brain.memory.read"]
     if tool.get("securitySchemes") != [{"type": "oauth2", "scopes": expected_scopes}]:
         failures.append(f"{name} has wrong securitySchemes: {tool.get('securitySchemes')}")
-    expected_ui = (
-        {"visibility": ["model", "app"], "resourceUri": APP_COMPONENT_RESOURCE_URI}
-        if name == "brain_app_open_review_panel"
-        else {"visibility": ["model"]}
-    )
+    expected_ui = {"visibility": ["model"]}
     if meta.get("ui") != expected_ui:
         failures.append(f"{name} has wrong UI visibility metadata: {meta}")
-    if name == "brain_app_open_review_panel":
-        if meta.get("openai/outputTemplate") != APP_COMPONENT_RESOURCE_URI:
-            failures.append(f"{name} is missing app component output template metadata")
-    elif "openai/outputTemplate" in meta:
+    if "openai/outputTemplate" in meta:
         failures.append(f"{name} should not advertise an app component output template")
     if meta.get("openai/visibility") != "public":
         failures.append(f"{name} is missing public OpenAI visibility metadata")
@@ -528,18 +503,17 @@ def validate_app_tool_descriptor(tool: dict, failures: list[str]) -> None:
         failures.append(f"{name} has wrong confirmation metadata: {meta}")
 
 
-def verify_app_component_resource(settings, token: str, failures: list[str]) -> None:
+def verify_text_only_app_resources(settings, token: str, failures: list[str]) -> None:
     resource_list = rpc_call(
         settings.public_app_mcp_url,
         token,
         {"jsonrpc": "2.0", "id": 7, "method": "resources/list"},
-        "authenticated ChatGPT App resources/list",
+        "authenticated text-only ChatGPT App resources/list",
         failures,
     )
     resources = ((resource_list or {}).get("result") or {}).get("resources") or []
-    if not any(resource.get("uri") == APP_COMPONENT_RESOURCE_URI for resource in resources if isinstance(resource, dict)):
-        failures.append(f"ChatGPT App component resource is not listed: {resources}")
-        return
+    if any(resource.get("uri") == APP_COMPONENT_RESOURCE_URI for resource in resources if isinstance(resource, dict)):
+        failures.append(f"text-only ChatGPT App should not list component resource: {resources}")
     resource_read = rpc_call(
         settings.public_app_mcp_url,
         token,
@@ -549,27 +523,11 @@ def verify_app_component_resource(settings, token: str, failures: list[str]) -> 
             "method": "resources/read",
             "params": {"uri": APP_COMPONENT_RESOURCE_URI},
         },
-        "authenticated ChatGPT App resources/read",
+        "authenticated text-only ChatGPT App component resources/read",
         failures,
     )
-    contents = ((resource_read or {}).get("result") or {}).get("contents") or []
-    if not contents:
-        failures.append(f"ChatGPT App component resource did not return contents: {resource_read}")
-        return
-    content = contents[0]
-    if content.get("mimeType") != APP_COMPONENT_MIME_TYPE:
-        failures.append(f"ChatGPT App component resource has wrong MIME type: {content}")
-    if "window.openai.callTool" not in str(content.get("text") or ""):
-        failures.append("ChatGPT App component does not use the Apps SDK tool bridge")
-    meta = content.get("_meta") or {}
-    ui_meta = (meta.get("ui") or {}) if isinstance(meta, dict) else {}
-    csp = (ui_meta.get("csp") or {}) if isinstance(ui_meta, dict) else {}
-    if not isinstance(csp.get("connectDomains"), list) or not csp.get("connectDomains"):
-        failures.append("ChatGPT App component is missing standard _meta.ui.csp.connectDomains")
-    if not isinstance(csp.get("resourceDomains"), list) or not csp.get("resourceDomains"):
-        failures.append("ChatGPT App component is missing standard _meta.ui.csp.resourceDomains")
-    if not isinstance(ui_meta.get("domain"), str) or not ui_meta.get("domain"):
-        failures.append("ChatGPT App component is missing standard _meta.ui.domain")
+    if resource_read and "error" not in resource_read:
+        failures.append("text-only ChatGPT App should not allow reading the component resource")
 
 
 def assert_app_safe_response(label: str, payload: dict, failures: list[str]) -> None:

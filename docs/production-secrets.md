@@ -5,7 +5,8 @@ The staging, production, and release workflows run on the self-hosted `brain-pro
 - `dev`: local developer runs.
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
   to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually;
-  its `version` input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
+  its `version` input is optional, and if omitted it deploys a
+  `staging-<12-char-sha>` build version.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml`
   and deploys the currently staged release version to
   `/Volumes/xpg_usb4/prod/brain`.
@@ -56,7 +57,8 @@ BRAIN_RELEASE_SHA
 BRAIN_RELEASE_VERSION
 ```
 
-The conflict checker ignores both metadata families.
+These are deployment metadata, not repository variables. The conflict checker
+ignores both metadata families.
 
 Normal pushes to `main` deploy staging with an automatic build version such as
 `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
@@ -126,7 +128,7 @@ The deployed auth and dashboard surfaces include these route families:
 /user                 user dashboard
 /app                  app dashboard
 /login                user login endpoint
-/logout               user login endpoint
+/logout               user logout endpoint
 /account/password     change own password
 /admin/users          list and create auth users
 /admin/users/{user_id} update or delete auth users
@@ -257,7 +259,9 @@ BRAIN_SLACK_BOT_TOKEN
 
 ## Recommended Variables
 
-Use GitHub repository variables for non-secret deployment settings:
+Use GitHub repository variables for non-secret deployment settings. Do not set
+`BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, or `BRAIN_RELEASE_VERSION` here;
+deployment writes those metadata keys.
 
 ```text
 PROFILE
@@ -394,8 +398,9 @@ BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 The renderer also reads additional environment variables in staging and prod,
 including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`,
 `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`,
-`BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`,
-`BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
+`BRAIN_NEO4J_*` service and container labels,
+`BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_SLACK_ENABLED`,
+`BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
 `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including
 `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown
 above.
@@ -409,4 +414,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 3e162901532b335d50495dc82fcda495d174f5178ebdc949a2b1d9c7a790e492 -->
+<!-- brain-doc-source-hash: 3bf8c433fd3b7ff334978f0fbb351c6048bb365638c1f0db140b41388058949c -->

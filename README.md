@@ -31,7 +31,7 @@ make up
 make down
 ```
 
-By default Brain uses SQLite at `sqlite:///.data/brain/brain.db`. The store also creates the schema automatically for local tests and dev, and Alembic migrations are available for production-controlled setup:
+By default Brain uses SQLite at `sqlite:///.data/brain/brain.db`. For controlled schema setup, run:
 
 ```bash
 uv run alembic upgrade head
@@ -97,8 +97,11 @@ The high-level MCP tools are grouped by surface:
 Public ChatGPT App surface:
 
 - `brain_session`
-- `brain_app_open_review_panel`
 - `brain_remember`
+- `brain_profile_context_remember`
+- `brain_profile_context_list`
+- `brain_profile_context_forget`
+- `brain_app_data_controls`
 - `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
@@ -106,10 +109,6 @@ Public ChatGPT App surface:
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
-- `brain_profile_context_remember`
-- `brain_profile_context_list`
-- `brain_profile_context_forget`
-- `brain_app_data_controls`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -195,8 +194,11 @@ Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at
 The ChatGPT App surface intentionally lists only user-safe tools:
 
 - `brain_session`
-- `brain_app_open_review_panel`
 - `brain_remember`
+- `brain_profile_context_remember`
+- `brain_profile_context_list`
+- `brain_profile_context_forget`
+- `brain_app_data_controls`
 - `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
@@ -204,10 +206,6 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
-- `brain_profile_context_list`
-- `brain_profile_context_remember`
-- `brain_profile_context_forget`
-- `brain_app_data_controls`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -215,13 +213,11 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
 
-Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, `brain_remember` previews by default; a client may save only after explicit user confirmation by calling it with `context.confirmed_by_user=true`. Read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
-
-`brain_app_open_review_panel` advertises the embedded ChatGPT Apps SDK component at `ui://brain/review.v2.html` using the current `text/html;profile=mcp-app` resource MIME type. Data tools remain model-only. App-surface tool responses are minimized to one short text item plus redacted structured content; internal user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields are stripped before they are returned to ChatGPT.
+Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
 
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
 
-User-registry passwords are stored as Argon2id hashes. Legacy plaintext user records are accepted for migration only; a successful login migrates that user, and operators can migrate/check the full registry with:
+User-registry passwords are stored as Argon2id hashes. Legacy plaintext user records are accepted for migration only; a successful login migrates that user, and operators can migrate and check the full registry with:
 
 ```bash
 uv run python scripts/migrate_auth_user_passwords.py --env-file /path/to/brain.env
@@ -259,7 +255,7 @@ Routes:
 - `POST /slack/commands`
 - `POST /slack/interactions`
 
-The agent verifies Slack signatures, timestamp freshness, team/channel/user allowlists, and admin-only debug access before it touches Brain internals. By default, Slack writes require confirmation.
+The agent verifies Slack signatures, timestamp freshness, team, channel, and user allowlists, and admin-only debug access before it touches Brain internals. By default, Slack writes require confirmation.
 
 Supported Slack commands:
 
@@ -367,9 +363,7 @@ After a successful render, both `brain.env` and `brain.env.last-deployed` are up
 
 ## Live Model Smoke and Operational Checks
 
-After deployment, staging and production run `scripts/live_model_smoke.py` against the configured live model scope. By default this is `active`, which calls the active `LLM_PROVIDER`/`LLM_MODEL` and `EMBEDDING_PROVIDER`/`EMBEDDING_MODEL` with tiny requests. Set repository variable `BRAIN_MODEL_SMOKE_SCOPE` to `active` or `none` to control deploys.
-
-The Make target mirrors the active smoke run and writes `eval_runs/live_model_smoke_active.json` by default:
+Use `scripts/live_model_smoke.py` against the configured live model scope. The Make target mirrors the active smoke run and writes `eval_runs/live_model_smoke_active.json` by default:
 
 ```bash
 make model-smoke
@@ -390,7 +384,7 @@ make slack-agent-check
 make cloudflare-verify
 ```
 
-`cloudflare-verify` checks DNS/TLS, public curated and admin MCP URLs, dashboard, privacy, terms, support, browser security headers, OAuth metadata, ChatGPT App tool descriptors, the embedded app component resource, and the authenticated public app MCP surface when auth is enabled. For authenticated checks against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
+`cloudflare-verify` checks DNS/TLS, public curated and admin MCP URLs, dashboard, privacy, terms, support, browser security headers, OAuth metadata, ChatGPT App tool descriptors, and the authenticated public app MCP surface when auth is enabled. It also confirms the public app surface remains text-only. For authenticated checks against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 Operational maintenance targets:
 
@@ -447,7 +441,7 @@ For targeted fine-grained evals, use:
 make targeted-fine-grained-eval
 ```
 
-For full end-to-end model checks, use the E2E model suite. It creates a fresh SQLite Brain database, seeds it through the app service layer, retrieves runtime facts/evidence, and calls the live configured model against the same shared role contracts used by runtime. The suite covers every checked-in fine-grained role spec, plus recall synthesis cases that use real runtime recall payloads.
+For full end-to-end model checks, use the E2E model suite. It creates a fresh SQLite Brain database, seeds it through the app service layer, retrieves runtime facts and evidence, and calls the live configured model against the same shared role contracts used by runtime. The suite covers every checked-in fine-grained role spec, plus recall synthesis cases that use real runtime recall payloads.
 
 ```bash
 uv run brain eval e2e-models --model openai:gpt-5.5 --output-json eval_runs/e2e_model/results.json
@@ -459,7 +453,7 @@ The pytest live E2E gate is opt-in because it makes provider calls:
 BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 ```
 
-For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie/CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-5.5` high reasoning.
+For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie and CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-5.5` high reasoning.
 
 ```bash
 ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env uv run python scripts/staging_e2e_suite.py
@@ -469,7 +463,7 @@ The runner writes JSON reports under `.reports/staging-e2e/` by default. It is n
 
 ## Environment Variables
 
-Deployment, routing, auth-related settings worth calling out:
+Deployment, routing, and auth-related settings worth calling out:
 
 - `ALLOW_EMBEDDING_DIMENSION_CHANGE`
 - `BRAIN_ADMIN_MCP_PATH`
@@ -485,6 +479,7 @@ Deployment, routing, auth-related settings worth calling out:
 - `BRAIN_AUTH_SCOPES`
 - `BRAIN_AUTH_STATE_PATH`
 - `BRAIN_AUTH_SUPERUSER_IDS`
+- `BRAIN_AUTH_TOKEN`
 - `BRAIN_AUTH_USERS_FILE`
 - `BRAIN_BACKUP_DIR`
 - `BRAIN_COGNEE_AGENT_MEMORY_DATASET`
@@ -512,6 +507,7 @@ Deployment, routing, auth-related settings worth calling out:
 - `BRAIN_NEO4J_DUMP_ENABLED`
 - `BRAIN_NEO4J_LAUNCHD_LABEL`
 - `BRAIN_NEO4J_STOP_FOR_DUMP`
+- `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`
 - `BRAIN_OWNER_FULL_NAME`
 - `BRAIN_OWNER_NAME`
 - `BRAIN_PROD_ROOT`
@@ -620,13 +616,13 @@ Google Drive backup settings:
 - `BRAIN_GOOGLE_DRIVE_LOCAL_PATH`
 - `BRAIN_GOOGLE_DRIVE_REMOTE`
 
-LLM compiler settings are disabled by default. When enabled, it uses the same fixed runtime LLM as the rest of Brain/Cognee:
+LLM compiler settings are disabled by default. When enabled, it uses the same fixed runtime LLM as the rest of Brain and Cognee:
 
 - `BRAIN_LLM_ENABLED=false`
 - `LLM_PROVIDER`
 - `LLM_MODEL`
 
-Taste/palate input enrichment uses its own model setting so it can stay on a stronger model without changing Cognee projection defaults:
+Taste and palate input enrichment uses its own model setting so it can stay on a stronger model without changing Cognee projection defaults:
 
 - `BRAIN_TASTE_LLM_MODEL=gpt-5.5`
 - `BRAIN_TASTE_LLM_REASONING_EFFORT=medium`
@@ -650,7 +646,7 @@ Cognee projection settings:
 
 `BRAIN_AGENT_MEMORY_SESSION_ID` and `BRAIN_COGNEE_AGENT_MEMORY_DATASET` are base names. At runtime, authenticated users receive a derived session id and Cognee agent-memory dataset scoped to their Brain user id, so one user cannot recall or improve another user's chat-session memory.
 
-Brain defaults Cognee's rebuildable projection to Postgres/pgvector for vector storage and Postgres for Cognee metadata. The configured Postgres role must be able to create the `vector` extension; with Cognee's pgvector dataset handler it also needs permission to create per-dataset databases.
+Brain defaults Cognee's rebuildable projection to Postgres and pgvector for vector storage and Postgres for Cognee metadata. The configured Postgres role must be able to create the `vector` extension; with Cognee's pgvector dataset handler it also needs permission to create per-dataset databases.
 
 Brain Taste settings:
 
@@ -715,6 +711,6 @@ OPENAI_AUTH_MODE=oauth
 OPENAI_CODEX_AUTH_PROFILE=default
 ```
 
-Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval/smoke experiments.
+Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: b8a16580a70dd317d9e27fa10fdaf3e92927a115b3559e0d56d18520a9ba257e -->
+<!-- brain-doc-source-hash: ca041ace87c5bfd2f237c4fc5e8e132c521b4c6904ecca39472444c03dec5c6d -->

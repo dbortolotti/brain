@@ -81,9 +81,9 @@ production label is `com.brain.prod.maintenance`; staging renders as
 `com.brain.staging.maintenance`. The job starts at 03:00 and runs
 `scripts/nightly_maintenance.py` against the environment's shared `brain.env`.
 That script runs `scripts/brain_agent_memory.py` first, then runs
-`scripts/backup_stores.py` only if the agent-memory/Cognee improvement step
-exits successfully. A failed cognify run therefore skips backup instead of
-creating a snapshot from a partially refreshed projection.
+`scripts/backup_stores.py` only if the agent-memory cognify step exits
+successfully. A failed cognify run therefore skips backup instead of creating a
+snapshot from a partially refreshed projection.
 
 Run the backup script directly with the configured environment:
 
@@ -134,7 +134,7 @@ Every backup writes `manifest.json` with this shape:
 
 `google_drive` is populated after the local manifest is written when Drive
 replication runs. If `--skip-google-drive` is used while Google Drive backup is
-enabled, the manifest records `{"skipped": true}` for that step. `blockers`
+enabled, the manifest records `{\"skipped\": true}` for that step. `blockers`
 means the run finished but missed something operationally important. Production
 verification treats blockers as failures.
 
@@ -207,6 +207,9 @@ code, captured stderr, and whether the dump was verified as non-empty.
 
 If Docker is not available, the manifest receives a blocker and the pgvector
 backup does not complete.
+
+If the dump is produced but not verified as non-empty, the script raises an
+error.
 
 ### LanceDB Archive
 
@@ -415,8 +418,10 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Do not rely on raw live Neo4j archives for restore.
 - Keep `ENV_FILE`, `BRAIN_AUTH_PASSWORD_FILE`, and `BRAIN_AUTH_STATE_PATH` in
   the secrets archive.
+- Do not assume `BRAIN_AUTH_USERS_FILE` is captured unless the backup inputs
+  were explicitly extended to include it.
 - Keep at least one verified off-device copy when Google Drive backup is
   enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 06200dcf127755e9cbe655c60ffea8e2d411dc2f49bae38453e1db322cd01c70 -->
+<!-- brain-doc-source-hash: 9e22a2e98ecbbbb9f8fd3446efa54ac985be5473350157b20f8c140ddbc67edc -->

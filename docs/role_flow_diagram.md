@@ -8,12 +8,14 @@ This document contains two related but different views of Brain:
 The fine-grained topology is useful for model evaluation and deployment planning, but it is not a literal runtime call graph. Current production runtime is mostly deterministic. The normal runtime LLM hooks are:
 
 - an optional Slack proposal / repair model when `SlackMemoryAgent` is constructed with an injected `llm_client`
-- an optional taste-routing / taste-proposal model when `BRAIN_TASTE_ENABLED=true` and the taste branch is active
+- an optional taste-routing / taste-proposal model when `BRAIN_TASTE_ENABLED=true`, the request is not marked to skip taste routing, and the taste branch is active
 - an optional broad memory compiler fallback when `BRAIN_LLM_ENABLED=true` and deterministic rule compilation is not already high-confidence
 
 `SlackMemoryAgent` and `compile_memory()` both load shared prompt-contract blocks from `src/memory_stack/agents/prompt_contracts.py` plus the role docs under `src/memory_stack/agents/shared/`. `SlackMemoryAgent` uses `prompt_contract_block(SLACK_RUNTIME_ROLES)`; `compile_memory()` uses `prompt_contract_block(MEMORY_COMPILER_RUNTIME_ROLES)`.
 
 Slack and MCP are separate ingress paths, but they share the same core Brain service layer. Slack is not an MCP client.
+
+The MCP surface exposes the high-level tools `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, and `brain_undo_last`. Internal admin MCP tools also include `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `cognee_improve`, and the palate tools.
 
 The main Brain HTTP surface includes root `/`, OAuth discovery/protected-resource endpoints, OpenAI apps challenge, account/password and session endpoints, login/logout/register/revoke/token endpoints, admin/user management, app/dashboard, app asset and OAuth callback routes, datasource routes, `/memory/*` including `/memory/{memory_id}`, docs/openapi/redoc/privacy/support/terms, `/healthz`, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
 
@@ -23,7 +25,7 @@ The shared agent rules also refuse secrets, passwords, API keys, tokens, private
 
 ## Current Runtime Flow
 
-Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_store.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, `src/memory_stack/agents/prompt_contracts.py`, `src/memory_stack/agents/shared/*`, `src/memory_stack/agents/shared/memory_agent_rules.md`, and `src/memory_stack/agents/shared/agent_architecture.md`.
+Source of truth: `src/memory_stack/brain_service.py`, `src/memory_stack/brain_store.py`, `src/memory_stack/slack_memory_agent.py`, `src/memory_stack/route_logging.py`, `src/memory_stack/slack_guardrails.py`, `src/memory_stack/llm/client.py`, `src/memory_stack/taste/*`, `src/memory_stack/ingestion/*`, `src/memory_stack/resolution/*`, `src/memory_stack/recall/*`, `src/memory_stack/agents/prompt_contracts.py`, `src/memory_stack/agents/shared/*`, `src/memory_stack/agents/shared/memory_agent_rules.md`, and `src/memory_stack/agents/shared/agent_architecture.md`.
 
 ```mermaid
 flowchart LR
@@ -95,14 +97,15 @@ flowchart LR
 
 1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests arrive through `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz`, then are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
 2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text with `normalize_agent_text()`, splits intent with `split_intent()`, and dispatches commands such as `help_template`, `help`, `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `open`, `get_memory`, and `review`.
-3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`. When a proposal is returned, the ingestion receipt is marked `classification="taste_proposal"`, `dry_run=True`, and carries `taste.requires_confirmation=true`.
-4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when LLMs are enabled and the rule result is not already sufficient high-confidence.
+3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`. When a proposal is returned, the ingestion receipt is marked `classification=taste_proposal`, `dry_run=true`, and carries `taste.requires_confirmation=true`.
+4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when `BRAIN_LLM_ENABLED` is on, a client is available, and the rule result is not already sufficient high-confidence.
 5. **Fine-grained extractor roles are not separate runtime calls.** Roles such as `atomic_card_extractor`, `entity_mention_extractor`, `relationship_extractor`, `open_loop_detector`, `table_policy_handler`, and `source_takeaway_extractor` are currently represented by deterministic rule compiler behavior, or by the optional broad compiler fallback.
 6. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships/open loops, then runs deterministic duplicate/conflict/supersession handling.
 7. **Recall is deterministic.** Recall mode inference, retrieval, status filtering, evidence construction, and answer rendering are code paths, not a fine-grained `recall_synthesizer` model call.
-8. **Background ingest helpers exist.** The service can queue ingestion work onto a thread pool and return a queued ingestion receipt before the background future completes. That queued receipt is distinct from the normal compiled write path.
+8. **Background ingest helpers exist.** The service can queue ingestion work onto a thread pool and return a queued ingestion receipt before the background future completes. `remember()` also returns a dry-run ingestion receipt when `request.dry_run` is set. Those queued and dry-run receipts are distinct from the normal compiled write path.
 9. **Slack provenance belongs in request context metadata.** Team id, channel id, user id, thread timestamp, message timestamp, and permalink belong in Brain request context metadata, not in the memory statement itself.
 10. **Eval and embeddings remain model-backed outside this flow.** `eval_judge` is used by eval tooling. Embedding models are used when vector/Cognee paths are enabled.
+11. **MCP tools remain high-level service calls.** Public tools expose memory, recall, profile, open loops, memory lookup, review, and undo, plus session and profile-context helpers. Internal admin tools add source inspection, conflict resolution, merge, forget, sync, rebuild, review-panel, agent-memory, and palate flows. `brain_undo_last` is a soft-delete path; hard delete remains guarded. These are service-layer entry points, not low-level storage APIs.
 
 ## Runtime Role Status
 
@@ -389,4 +392,4 @@ flowchart TD
 | judge (offline)    | eval_judge                                                                                                                      | —                                                                         |
 | embeddings         | embeddings                                                                                                                      | —                                                                         |
 
-<!-- brain-doc-source-hash: 0233f1e4fcd2565109a09e3f1cf2ecdd5a1664b0609c41e5d87cb924c59b7337 -->
+<!-- brain-doc-source-hash: 051347620d98611cbb920383da8dbaedc93a780338740317a6d8b8055b0129af -->
