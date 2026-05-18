@@ -1646,6 +1646,7 @@ def normalize_public_resource_path(active_settings: Settings, resource_path: str
 
 
 @app.get("/.well-known/oauth-authorization-server")
+@app.get("/.well-known/openid-configuration")
 async def oauth_authorization_server() -> dict[str, Any]:
     if oauth_provider:
         return oauth_provider.authorization_server_metadata()

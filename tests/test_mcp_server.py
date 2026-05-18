@@ -1555,6 +1555,16 @@ def test_auth_enabled_datasources_fail_closed(tmp_path) -> None:
     assert "Brain" in response.headers["www-authenticate"]
 
 
+def test_openid_configuration_aliases_oauth_metadata(tmp_path) -> None:
+    with oauth_settings(tmp_path):
+        client = TestClient(app)
+        oauth_response = client.get("/.well-known/oauth-authorization-server")
+        openid_response = client.get("/.well-known/openid-configuration")
+
+    assert openid_response.status_code == 200
+    assert openid_response.json() == oauth_response.json()
+
+
 def test_oauth_authorization_code_flow(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app, follow_redirects=False)
