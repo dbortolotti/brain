@@ -17,7 +17,7 @@ Slack and MCP are separate ingress paths, but they share the same core Brain ser
 
 The MCP surface exposes the high-level tools `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, and `brain_undo_last`. Internal admin MCP tools also include `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `cognee_improve`, and the palate tools.
 
-The main Brain HTTP surface includes root `/`, OAuth discovery/protected-resource endpoints, OpenAI apps challenge, account/password and session endpoints, login/logout/register/revoke/token endpoints, admin/user management, app/dashboard, app asset and OAuth callback routes, datasource routes, `/memory/*` including `/memory/{memory_id}`, docs/openapi/redoc/privacy/support/terms, `/healthz`, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
+The main Brain HTTP surface includes root `/`, OAuth discovery and protected-resource endpoints, OpenAI Apps challenge, `authorize`, `api/session` and `auth/session`, account/password and session endpoints, login/logout/register/revoke/token endpoints, admin/user management, app/dashboard, app asset and OAuth callback routes, datasource routes, `/memory/*` including `/memory/{memory_id}`, docs/openapi/redoc/privacy/support/terms, `/healthz`, and the catch-all MCP route `/{path:path}`. Slack has its own `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz` ingress. Operational promotion and backups are handled outside this runtime flow by the release and deploy workflows; destructive operations remain guarded.
 
 The shared agent rules also refuse secrets, passwords, API keys, tokens, private authentication material, and credential-shaped strings.
 
@@ -36,14 +36,14 @@ flowchart LR
 
     USER[/User or client/]:::ext
     SLACK[/Slack commands<br/>events<br/>interactions/]:::ext
-    HTTP[/HTTP routes<br/>OAuth discovery/protected-resource<br/>session/auth · account/password<br/>login/logout/register/revoke/token<br/>admin/user · app/dashboard/assets/callback<br/>datasources · /memory/*<br/>docs/openapi/redoc/privacy/support/terms<br/>healthz · MCP catch-all/]:::ext
+    HTTP[/HTTP routes<br/>OAuth discovery/protected-resource<br/>authorize and session endpoints<br/>login/logout/register/revoke/token<br/>admin/user · app/dashboard/assets/callback<br/>datasources · /memory/*<br/>docs/openapi/redoc/privacy/support/terms<br/>healthz · MCP catch-all/]:::ext
     DB[(Brain DB<br/>memory cards · sources · entities · relationships<br/>open loops · ingestion runs · recall logs · cognee sync)]:::store
     COGNEE[(Cognee projection)]:::store
 
     SLACK --> SAUTH[apply Slack allowlists<br/>normalize request metadata]:::det
-    SAUTH --> SPARSE[normalize text<br/>parse Slack intent]:::det
-    SPARSE --> SREMEMBER[remember / confirm / cancel / correct]:::det
-    SPARSE --> SREAD[recall / profile / open loops / get_memory / review / undo_last / debug]:::det
+    SAUTH --> SPARSE[normalize text<br/>split intent]:::det
+    SPARSE --> SREMEMBER[remember / confirm / cancel / correct / help / help_template]:::det
+    SPARSE --> SREAD[recall / profile / open_loops / get_memory / review]:::det
 
     SREMEMBER --> SPROPOSE[proposal + guardrails<br/>dry run + confirmation]:::det
     SPROPOSE -. optional injected LLM .-> SLLM[Slack proposal model]:::opt
@@ -51,15 +51,17 @@ flowchart LR
 
     REMEMBER --> TASTECHK[brain_taste_enabled and taste_skip check]:::det
     TASTECHK -. optional taste LLM .-> TLLM[Taste route model]:::opt
-    TASTECHK -- taste branch --> TASTESVC[TasteService remember / proposal]:::det
-    TASTECHK -- no taste branch --> COMPILE[compile_memory]:::det
-    TASTESVC --> TASTEREC[return taste receipt or proposal]:::det
+    TASTECHK -- palate branch --> TASTEPAL[classify_palate_memory_route]:::det
+    TASTECHK -- normal branch --> TASTENORM[classify_taste_route]:::det
+    TASTEPAL --> PALATEWRITE[TasteService remember / proposal]:::det
+    TASTENORM --> COMPILE[compile_memory]:::det
+    PALATEWRITE --> TASTEREC[return taste receipt or proposal]:::det
 
     HTTP --> HROUTE[FastAPI /memory/* endpoints<br/>MCP tool dispatch]:::det
     HROUTE --> REMEMBER
     HROUTE --> INGEST[brain_service.ingest_source]:::det
     HROUTE --> RECALL[brain_service.recall]:::det
-    HROUTE --> ADMIN[admin / memory tools<br/>get_memory · profile_entity · review_recent<br/>open_loops · merge_entities · resolve_conflict<br/>undo_last · forget · sync_cognee · rebuild_cognee]:::det
+    HROUTE --> ADMIN[admin / memory tools<br/>get_memory · profile_entity · review_recent<br/>open_loops · merge_entities · resolve_conflict<br/>undo_last · forget · sync_cognee · rebuild_cognee<br/>profile-context helpers · palate tools]:::det
 
     INGEST --> TOREMEMBER[build RememberRequest]:::det
     TOREMEMBER --> REMEMBER
@@ -97,15 +99,15 @@ flowchart LR
 
 1. **Routing is deterministic.** HTTP requests are dispatched by FastAPI routes and MCP tool names. Slack requests arrive through `/slack/commands`, `/slack/events`, `/slack/interactions`, and `/slack/healthz`, then are dispatched by `SlackMemoryAgent` command parsing. The runtime does not call a fine-grained `intent_router` model.
 2. **Slack command parsing includes repair and review paths.** `SlackMemoryAgent.handle()` normalizes text with `normalize_agent_text()`, splits intent with `split_intent()`, and dispatches commands such as `help_template`, `help`, `remember`, `confirm`, `cancel`, `correct`, `recall`, `profile`, `open_loops`, `open`, `get_memory`, and `review`.
-3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`; otherwise it uses `classify_taste_route()`. If the route is a taste remember request and confidence reaches `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, `TasteService.remember()` can run. Otherwise the service may return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`. When a proposal is returned, the ingestion receipt is marked `classification=taste_proposal`, `dry_run=true`, and carries `taste.requires_confirmation=true`.
+3. **Taste is a separate optional remember branch.** When `BRAIN_TASTE_ENABLED` is on and the request is not marked to skip taste routing, `remember()` may classify the input with taste routing before memory compilation. If `context.palate` is true, it uses `classify_palate_memory_route()`. In that branch, a `taste` remember request with confidence at or above `BRAIN_TASTE_AUTO_WRITE_THRESHOLD` can commit through `TasteService.remember()`. Otherwise it creates a proposal from text with `forced_palate` metadata and returns a dry-run `taste_proposal` receipt with `taste.requires_confirmation=true`. In the normal branch, `classify_taste_route()` is used; a `taste` remember request can auto-write at or above `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`, and it can return a proposal when confidence reaches `BRAIN_TASTE_CONFIRMATION_THRESHOLD`.
 4. **Compilation is deterministic first.** `compile_memory()` calls the rule compiler first. A broad LLM compiler can run only when `BRAIN_LLM_ENABLED` is on, a client is available, and the rule result is not already sufficient high-confidence.
 5. **Fine-grained extractor roles are not separate runtime calls.** Roles such as `atomic_card_extractor`, `entity_mention_extractor`, `relationship_extractor`, `open_loop_detector`, `table_policy_handler`, and `source_takeaway_extractor` are currently represented by deterministic rule compiler behavior, or by the optional broad compiler fallback.
-6. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships/open loops, then runs deterministic duplicate/conflict/supersession handling.
+6. **Memory cards are written before conflict handling.** Runtime writes the memory card, resolves and links entities, creates relationships and open loops, then runs deterministic duplicate, conflict, and supersession handling.
 7. **Recall is deterministic.** Recall mode inference, retrieval, status filtering, evidence construction, and answer rendering are code paths, not a fine-grained `recall_synthesizer` model call.
 8. **Background ingest helpers exist.** The service can queue ingestion work onto a thread pool and return a queued ingestion receipt before the background future completes. `remember()` also returns a dry-run ingestion receipt when `request.dry_run` is set. Those queued and dry-run receipts are distinct from the normal compiled write path.
 9. **Slack provenance belongs in request context metadata.** Team id, channel id, user id, thread timestamp, message timestamp, and permalink belong in Brain request context metadata, not in the memory statement itself.
 10. **Eval and embeddings remain model-backed outside this flow.** `eval_judge` is used by eval tooling. Embedding models are used when vector/Cognee paths are enabled.
-11. **MCP tools remain high-level service calls.** Public tools expose memory, recall, profile, open loops, memory lookup, review, and undo, plus session and profile-context helpers. Internal admin tools add source inspection, conflict resolution, merge, forget, sync, rebuild, review-panel, agent-memory, and palate flows. `brain_undo_last` is a soft-delete path; hard delete remains guarded. These are service-layer entry points, not low-level storage APIs.
+11. **MCP tools remain high-level service calls.** Public tools expose memory, recall, profile, open loops, memory lookup, review, undo, profile-context helpers, app data controls, and palate flows. Internal admin tools add source inspection, conflict resolution, merge, forget, sync, rebuild, review-panel, agent-memory, and palate management flows. `brain_undo_last` is a soft-delete path; hard delete remains guarded. These are service-layer entry points, not low-level storage APIs.
 
 ## Runtime Role Status
 
@@ -156,7 +158,7 @@ Source of truth: `src/memory_stack/evals/scoring.py` (`COARSE_CAPABILITIES`) and
 flowchart TD
     classDef model fill:#dbeafe,stroke:#1d4ed8,color:#0b1f4a;
     classDef det   fill:#dcfce7,stroke:#15803d,color:#08331a;
-    classDef gate  fill:#fef9c3,stroke:#a16207,color:#3f2d05;
+    classDef gate   fill:#fef9c3,stroke:#a16207,color:#3f2d05;
     classDef store fill:#f3f4f6,stroke:#374151,color:#111827;
     classDef ext   fill:#fef3c7,stroke:#a16207,color:#3f2d05;
     classDef out   fill:#fee2e2,stroke:#b91c1c,color:#450a0a;
@@ -344,7 +346,7 @@ flowchart TD
 3. **Safety gates remain deterministic.** Model roles may propose semantic classifications and policies, but zero-tolerance validators, status visibility filters, and backend writes remain hard code gates.
 4. **Ingestion paths converge before entity and conflict handling.** Slack intake and source compilation both produce candidate cards and mentions. Those candidates must pass entity resolution before conflict policy can decide whether anything is written.
 5. **Ask/reject paths are first-class outputs, not errors.** Ambiguity, no-durable-value input, unsafe conflicts, and entity uncertainty should flow to user clarification or rejection rather than being forced into a write.
-6. **Recall has two safety layers.** Backend status visibility removes deleted/superseded records before `recall_relevance_filter`; the relevance role then prunes semantically irrelevant records before synthesis.
+6. **Recall has two safety layers.** Backend status visibility removes deleted or superseded records before `recall_relevance_filter`; the relevance role then prunes semantically irrelevant records before synthesis.
 7. **Out-of-band roles are separate.** `eval_judge` scores fixtures offline, and `embeddings` supplies vector/projection data. Neither owns normal memory write policy.
 8. **Prompt contracts mirror the runtime bundles.** The Slack intake flow and the compiler flow both share the prompt-contract blocks used by the tests, so the topology should stay aligned with `SLACK_RUNTIME_ROLES`, `MEMORY_COMPILER_RUNTIME_ROLES`, and the shared role docs.
 
@@ -380,16 +382,16 @@ flowchart TD
 
 ### Coarse → fine-grained mapping (canonical)
 
-| Coarse role        | Model roles                                                                                                                     | Deterministic roles                                                       |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| router             | intent_router                                                                                                                   | —                                                                         |
-| slack_intake       | source_classifier, durability_filter, memory_kind_classifier, repair_option_generator, commit_policy_decider, success_receipt_generator | zero_tolerance_validator                                                  |
-| memory_compiler    | atomic_card_extractor, entity_mention_extractor, relationship_extractor, open_loop_detector, table_policy_handler, source_takeaway_extractor | source_loader, zero_tolerance_validator                                  |
-| entity_resolution  | entity_mention_extractor, entity_candidate_ranker, entity_final_resolver                                                        | —                                                                         |
-| conflict_handling  | conflict_candidate_detector, conflict_explainer, conflict_policy_decider                                                        | —                                                                         |
-| recall             | recall_planner, recall_relevance_filter, recall_synthesizer                                                                     | —                                                                         |
-| debug              | debug_explainer                                                                                                                 | —                                                                         |
-| judge (offline)    | eval_judge                                                                                                                      | —                                                                         |
-| embeddings         | embeddings                                                                                                                      | —                                                                         |
+| Coarse role | Model roles | Deterministic roles |
+| --- | --- | --- |
+| router | intent_router | — |
+| slack_intake | source_classifier, durability_filter, memory_kind_classifier, repair_option_generator, commit_policy_decider, success_receipt_generator | zero_tolerance_validator |
+| memory_compiler | atomic_card_extractor, entity_mention_extractor, relationship_extractor, open_loop_detector, table_policy_handler, source_takeaway_extractor | source_loader, zero_tolerance_validator |
+| entity_resolution | entity_mention_extractor, entity_candidate_ranker, entity_final_resolver | — |
+| conflict_handling | conflict_candidate_detector, conflict_explainer, conflict_policy_decider | — |
+| recall | recall_planner, recall_relevance_filter, recall_synthesizer | — |
+| debug | debug_explainer | — |
+| judge (offline) | eval_judge | — |
+| embeddings | embeddings | — |
 
-<!-- brain-doc-source-hash: 051347620d98611cbb920383da8dbaedc93a780338740317a6d8b8055b0129af -->
+<!-- brain-doc-source-hash: c1fa4c475b89b0a17dd7885848b942d8fa30433510ee60ace50aaa05c72e1560 -->

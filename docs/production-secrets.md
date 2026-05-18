@@ -139,6 +139,7 @@ The deployed auth and dashboard surfaces include these route families:
 /.well-known/oauth-authorization-server
 /.well-known/oauth-protected-resource
 /.well-known/oauth-protected-resource/{resource_path:path}
+/.well-known/openid-configuration
 /.well-known/openai-apps-challenge
 /auth/session         session endpoint
 /api/session          session endpoint
@@ -414,4 +415,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 3bf8c433fd3b7ff334978f0fbb351c6048bb365638c1f0db140b41388058949c -->
+<!-- brain-doc-source-hash: a0f72550a1b63a86c18120fbe94b0f81e4e4c98c03ff7e8650176b691e954146 -->

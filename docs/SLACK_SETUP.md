@@ -1,6 +1,6 @@
 # Slack Setup Guide
 
-Brain's Slack memory agent is a separate HTTP service from the MCP server. It verifies Slack request signatures and configured allowlists before handling memory operations. Slack writes use proposal rules and confirmation flows, and `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer setting.
+Brain's Slack memory agent is a separate HTTP service from the main Brain/MCP surface. It verifies Slack request signatures and configured allowlists before handling memory operations. Slack writes use proposal rules and confirmation flows, and `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer setting.
 
 ## Architecture
 
@@ -110,7 +110,7 @@ Example commands:
 
 `/brain help` returns Block Kit buttons for common command templates.
 
-The Slack slash command sends form-encoded payloads to `/slack/commands`; Brain validates the Slack signature before parsing the command text. The handler combines the command and text fields into a single command string before routing it, so the command text should be written the way you want Brain to interpret it, for example `/brain remember ...`.
+The Slack slash command sends form-encoded payloads to `/slack/commands`; Brain validates the Slack signature before parsing the command text. The handler combines the `command` and `text` fields into a single command string before routing it, so the command text should be written the way you want Brain to interpret it, for example `/brain remember ...`.
 
 ## Configure Events
 
@@ -141,7 +141,7 @@ Enable Interactivity & Shortcuts and set:
 Request URL: https://your-public-host.example.com/slack/interactions
 ```
 
-Interactive confirmations are used for proposed Slack memory commits and help-template buttons. The Slack agent reads the interactive `payload` form field, so the endpoint must receive Slack's form-encoded interaction payloads.
+Interactive confirmations are used for proposed Slack memory commits, taste proposal actions, and help-template buttons. The Slack agent reads the interactive `payload` form field, so the endpoint must receive Slack's form-encoded interaction payloads.
 
 ## Start The Services Locally
 
@@ -178,14 +178,8 @@ Expected shape:
 With the Slack agent running:
 
 ```bash
-make slack-agent-check
+uv run python scripts/verify_slack_agent.py
 ```
-
-This verifies:
-
-- `/slack/healthz` returns the Slack service identity.
-- `/mcp` is not served by the Slack agent.
-- invalid Slack signatures fail closed with `401` or `503`.
 
 You can also pass a base URL directly:
 
@@ -193,6 +187,12 @@ You can also pass a base URL directly:
 uv run python scripts/verify_slack_agent.py \
   --base-url https://your-public-host.example.com
 ```
+
+This verifies:
+
+- `/slack/healthz` returns the Slack service identity.
+- `/mcp` is not served by the Slack agent.
+- invalid Slack signatures fail closed with `401` or `503`.
 
 ## Allowlist Setup
 
@@ -264,4 +264,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: f805ad85bf48c270fc662b426c583bf266fac5fb54c9282cedf7558d97fd5f83 -->
+<!-- brain-doc-source-hash: 8bb71aed4db12f4eb8d012821c959ecb71d633849ccf4806179d9ea42e4bfa06 -->

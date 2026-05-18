@@ -1,8 +1,6 @@
 # OpenAI Submission Checklist
 
-Brain is deployable as a ChatGPT App only after the production service is live,
-verified, and submitted through the OpenAI app review flow. This document tracks
-the remaining non-code work.
+Brain is deployable as a ChatGPT App only after the production service is live, verified, and submitted through the OpenAI app review flow. This document tracks the remaining non-code work.
 
 ## Production Requirements
 
@@ -14,7 +12,7 @@ the remaining non-code work.
 - Terms URL: `https://brain.dceb.net/terms`
 - Support URL: `https://brain.dceb.net/support`
 - Current submission mode: text-only ChatGPT App tools.
-- The browser dashboard remains available at `https://brain.dceb.net`, and production verification checks the ChatGPT App tool descriptors, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, and support pages, browser security headers, and that the public app surface remains text-only.
+- The browser dashboard remains available at `https://brain.dceb.net`, and production verification checks DNS and TLS for the hostname, the ChatGPT App tool descriptors, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, and support pages, browser security headers, and that the public app surface remains text-only.
 
 In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
@@ -42,7 +40,7 @@ Do not bypass confirmation or normal backup checks in production promotion paths
 
 ## Reviewer Setup And Auth
 
-Browser dashboard auth uses `/login`, an HTTP-only session cookie, and per-session CSRF tokens from `/auth/session`. MCP clients use OAuth bearer tokens.
+Browser dashboard auth uses `/login`, an HTTP-only session cookie, and per-session CSRF tokens from `/auth/session` with `/api/session` as a compatibility alias. MCP clients use OAuth bearer tokens.
 
 User-registry passwords are stored as Argon2id hashes. Legacy plaintext user records are migrated after successful login or by running:
 
@@ -76,23 +74,23 @@ Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` r
 
 This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not.
 
-ChatGPT App responses are minimized on this surface. They return a short summary plus redacted `structuredContent` and strip internal identifiers such as user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields.
+ChatGPT App responses are minimized on this surface. They strip internal identifiers such as user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields.
 
 The public ChatGPT App tools are exactly:
 
 - `brain_session`
+- `brain_recall`
 - `brain_remember`
 - `brain_ingest_source`
-- `brain_profile_context_remember`
-- `brain_profile_context_list`
-- `brain_profile_context_forget`
-- `brain_app_data_controls`
-- `brain_recall`
 - `brain_profile_entity`
 - `brain_list_open_loops`
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
+- `brain_profile_context_list`
+- `brain_profile_context_remember`
+- `brain_profile_context_forget`
+- `brain_app_data_controls`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -148,10 +146,12 @@ Explain these points in the submission:
 
 ## Dashboard User Controls
 
+- The dashboard exposes Review, Recall, Remember, Profile, Prompt, Data Controls, Account, Users, and Help tabs.
 - The Data Controls tab calls `brain_app_data_controls` to show App Write Audit, Export Preview, Profile Data, and Recent Memory Data.
 - The Review tab shows Recent Cards and Open Loops.
 - The Profile tab is editable, and profile-context forget actions require explicit confirmation before the MCP call.
 - The Prompt tab surfaces Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
+- The Account tab supports password changes.
 - The authenticated browser dashboard supports recent-memory, profile-context, open-loop, and app-write review, while account administration and system administration remain outside the public app MCP surface.
 
 ## Assets To Prepare
@@ -176,7 +176,7 @@ Explain these points in the submission:
 - Confirm `https://brain.dceb.net/privacy`, `/terms`, and `/support` load over HTTPS with security headers.
 - Confirm the public app MCP verification passes with `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` loaded in the production environment.
 - When auth is enabled, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
-- Confirm the verifier reports the curated text-only ChatGPT App tool surface, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, support pages, and browser security headers.
+- Confirm the verifier reports the curated text-only ChatGPT App tool surface, DNS and TLS for the hostname, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, support pages, and browser security headers.
 - Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 414f29de17fc740774452159767e3086dfa94035c5f1b87846a0480c0df93214 -->
+<!-- brain-doc-source-hash: 4aed75609065fb68a2d2a6ee8c53bdf15668cd25e85c158469fce19b28130884 -->

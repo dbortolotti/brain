@@ -107,7 +107,7 @@ Normal users rarely need maintenance tools. Use them when operating the system, 
 Brain also exposes HTTP endpoints and browser pages. Use them when you are not talking to the MCP tools directly.
 
 - Health and docs: `/`, `/healthz`, `/docs`, `/docs/oauth2-redirect`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, `/apple-touch-icon.png`, `/.well-known/openai-apps-challenge`
-- Auth and session: `/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource`, `/.well-known/oauth-protected-resource/{resource_path:path}`, `/authorize`, `/login`, `/logout`, `/register`, `/revoke`, `/token`, `/account/password`, `/api/session`, `/auth/session`
+- Auth and session: `/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource`, `/.well-known/oauth-protected-resource/{resource_path:path}`, `/.well-known/openid-configuration`, `/authorize`, `/login`, `/logout`, `/register`, `/revoke`, `/token`, `/account/password`, `/api/session`, `/auth/session`
 - User administration: `/admin/users` and `/admin/users/{user_id}`
 - UI pages: `/app`, `/app-assets/{asset_name}`, `/app/oauth/callback`, `/user`, `/admin`, `/privacy`, `/support`, `/terms`
 - Memory endpoints: `/memory/remember`, `/memory/ingest_source`, `/memory/recall`, `/memory/profile_entity`, `/memory/open_loops`, `/memory/{memory_id}`, `/memory/review_recent`, `/memory/undo_last`, `/memory/forget`, `/memory/resolve_conflict`, `/memory/sync_cognee`, `/memory/rebuild_cognee`, `/memory/merge_entities`
@@ -127,6 +127,8 @@ The Prompt tab includes Personal Info In Session, Custom Preprompt Instructions,
 Brain's Slack app is a separate guarded surface and should not be treated as an MCP client. It shares the Brain service layer and uses `/brain` commands. It is the strictest interface and may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or conflicts with an existing memory.
 
 The Slack memory agent is conservative by default and is not a general Slack assistant. It shares the core Brain service layer, but it should not expose arbitrary SQL, Cognee primitives, or row-level write tools.
+
+Slack should use the deterministic Brain service and validation layers rather than relying on the LLM alone. The LLM can classify, propose, and repair, but policy enforcement should remain deterministic.
 
 Slack provenance belongs in Brain request-context metadata, not in the memory statement itself. The provenance fields are team id, channel id, user id, thread timestamp, message timestamp, and permalink.
 
@@ -315,7 +317,7 @@ Agent memory is for continuity between agent chats. It uses a dedicated, user-sc
 
 The default agent-memory session id is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. Do not hardcode that value.
 
-Agents must not hardcode that value. The `brain_session` tool derives the active user's session id from that value, resolves the matching user-scoped agent-memory dataset, and returns the related Brain workflow names.
+Agents must not hardcode that value. The `brain_session` tool derives the active user's session id from that value and resolves the matching user-scoped agent-memory dataset. On surfaces that expose it, `brain_session` also returns the user-scoped `session_id` for portable agent-memory calls.
 
 Minimal agent preprompt:
 
@@ -828,4 +830,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: be32575b2697cf72ae783d1fbef6384945c026333d94471a0a6c381770f1cdca -->
+<!-- brain-doc-source-hash: 01b0c1ebde806ce2ca3cf660720c951bd74d6b5598ac2c0c791c77672f004796 -->

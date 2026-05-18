@@ -7,18 +7,18 @@ Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` r
 The ChatGPT App surface includes exactly these tools:
 
 - `brain_session`
+- `brain_recall`
 - `brain_remember`
 - `brain_ingest_source`
-- `brain_profile_context_remember`
-- `brain_profile_context_list`
-- `brain_profile_context_forget`
-- `brain_app_data_controls`
-- `brain_recall`
 - `brain_profile_entity`
 - `brain_list_open_loops`
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
+- `brain_profile_context_list`
+- `brain_profile_context_remember`
+- `brain_profile_context_forget`
+- `brain_app_data_controls`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -63,7 +63,7 @@ Do not bypass confirmation or normal backup checks in production promotion paths
 
 ## Authentication And Transport
 
-Browser dashboard auth uses `/login`, an HTTP-only session cookie, and per-session CSRF tokens from `/auth/session`. MCP clients use OAuth bearer tokens. User-registry passwords are stored as Argon2id hashes; legacy plaintext user records are migrated after successful login or by running:
+Browser dashboard auth uses `/login`, an HTTP-only session cookie, and per-session CSRF tokens from `/auth/session` (with `/api/session` as a compatibility alias). MCP clients use OAuth bearer tokens. User-registry passwords are stored as Argon2id hashes; legacy plaintext user records are migrated after successful login or by running:
 
 ```bash
 uv run python scripts/migrate_auth_user_passwords.py --env-file /path/to/brain.env
@@ -77,7 +77,7 @@ Public dashboard, legal, and app-asset responses include Content Security Policy
 
 ## User Controls
 
-The dashboard Data Controls tab calls `brain_app_data_controls` to show App Write Audit, Export Preview, Profile Data, and Recent Memory Data. The Review tab shows Recent Cards and Open Loops. The Profile tab is editable, and profile-context forget actions require explicit confirmation before the MCP call.
+The dashboard exposes Review, Recall, Remember, Profile, Prompt, Data Controls, Account, Users, and Help tabs. The Data Controls tab calls `brain_app_data_controls` to show App Write Audit, Export Preview, Profile Data, and Recent Memory Data. The Review tab shows Recent Cards and Open Loops. The Profile tab is editable, and profile-context forget actions require explicit confirmation before the MCP call.
 
 The Prompt tab surfaces Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
 
@@ -123,4 +123,4 @@ For a production release:
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 4. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 9acb7ba46927d804ed7ffb1bd79807cc42112d0b3b665cead6f8b1b3867b6947 -->
+<!-- brain-doc-source-hash: e24b011dfefc23cfa2c0078fb3f2e488fac29ee8d5d270af3e2f35f25d8d97d3 -->

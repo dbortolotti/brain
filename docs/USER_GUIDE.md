@@ -166,6 +166,7 @@ Useful browser pages:
 - `/admin/cognee`, `/admin/cognee-api/{path:path}`, and `/admin/cognee/{path:path}` — admin Cognee proxy routes
 - `/privacy`, `/support`, `/terms`
 - `/app-assets/{asset_name}` and `/app/oauth/callback`
+- `/docs/oauth2-redirect`
 
 Useful auth and session endpoints:
 
@@ -173,6 +174,7 @@ Useful auth and session endpoints:
 - `/.well-known/oauth-protected-resource`
 - `/.well-known/oauth-protected-resource/{resource_path:path}`
 - `/.well-known/openai-apps-challenge`
+- `/.well-known/openid-configuration`
 - `/authorize`
 - `/login`
 - `/logout`
@@ -417,24 +419,10 @@ Brain DB is the source of truth. Cognee and vector data are projections that can
 
 Brain has two common ways to save information:
 
-`memory_only`
+- Use `/memory/remember` for short durable statements.
+- Use `/memory/ingest_source` when the original source matters and Brain should also extract durable memories.
 
-Use this for short durable statements. Example:
-
-```text
-/brain remember Sam from Goldman prefers morning calls.
-```
-
-`source_and_memory`
-
-Use this when the original source matters and Brain should also extract durable memories. Example for an LLM:
-
-```text
-Use Brain to ingest this as source material and extract memories:
-<meeting notes>
-```
-
-`source_only` exists for keeping source material without extracting memory cards, but it is mainly an API or tooling option rather than a normal Slack workflow.
+When you are using Slack or an LLM client, choose the simplest write that matches the goal: a direct memory for one durable fact, or source ingestion when you want the source material preserved too.
 
 ## Writing Good Memories
 
@@ -674,4 +662,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 063506e234af1f32729ca90107c700c9f0cd740df8e6f4300a9585011f54e109 -->
+<!-- brain-doc-source-hash: 78795afc8e1df9a31817640467c194c8b088ac1fafa20965c2c9f6cd359c05ef -->

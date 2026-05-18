@@ -132,6 +132,7 @@ OAuth, auth, and browser session endpoints:
 GET  /.well-known/oauth-protected-resource
 GET  /.well-known/oauth-protected-resource/{resource_path:path}
 GET  /.well-known/oauth-authorization-server
+GET  /.well-known/openid-configuration
 GET  /.well-known/openai-apps-challenge
 POST /register
 GET|POST /authorize
@@ -298,6 +299,7 @@ OAuth metadata routes:
 GET /.well-known/oauth-protected-resource
 GET /.well-known/oauth-protected-resource/{resource_path:path}
 GET /.well-known/oauth-authorization-server
+GET /.well-known/openid-configuration
 GET /.well-known/openai-apps-challenge
 POST /register
 GET|POST /authorize
@@ -703,4 +705,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 0649ac4d4637e7b2ef2464bfc6599c494fb66a073f8f0db2517664f7081333e2 -->
+<!-- brain-doc-source-hash: 13be9594273f97ccdcc94d0622833796663ae3b791790a8c0110fa250b65620a -->

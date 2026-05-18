@@ -10,26 +10,21 @@ make prod-check
 
 ## Goals
 
-The backup scheme must preserve enough state to rebuild Brain after local disk
-loss or a bad deploy:
+The backup scheme must preserve enough state to rebuild Brain after local disk loss or a bad deploy:
 
 - Brain SQLite databases under the shared data root.
 - Raw source/data directories.
-- Vector-store data, either as a pgvector SQL dump or LanceDB archives,
-  depending on the configured vector backend.
+- Vector-store data, either as a pgvector SQL dump or LanceDB archives, depending on the configured vector backend.
 - Production secret files needed to restart the services.
 - Neo4j graph state when graph data exists.
 - A machine-readable manifest describing what was captured and verified.
 - Optional Google Drive replication.
 
-Brain DB remains the authoritative memory store. Cognee, pgvector/LanceDB, and
-Neo4j are treated as rebuildable projections where possible, but they are still
-backed up to reduce restore time and preserve debugging context.
+Brain DB remains the authoritative memory store. Cognee, pgvector/LanceDB, and Neo4j are treated as rebuildable projections where possible, but they are still backed up to reduce restore time and preserve debugging context.
 
 ## Default Locations
 
-Local defaults come from `.env.example`; deployed defaults are rendered by the
-production deployment scripts and checked-in environment configs.
+Local defaults come from `.env.example`; deployed defaults are rendered by the production deployment scripts and checked-in environment configs.
 
 ```env
 BRAIN_BACKUP_DIR=/Volumes/xpg_usb4/prod/brain/shared/backups
@@ -41,13 +36,7 @@ BRAIN_NEO4J_DUMP_ENABLED=false
 BRAIN_NEO4J_STOP_FOR_DUMP=false
 ```
 
-Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`,
-`BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
-Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`,
-`BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`.
-The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so
-`pgvector/` is the expected vector-store archive directory in both environments;
-`lancedb/` is used when LanceDB is the configured vector backend.
+Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend.
 
 Each backup run creates:
 
@@ -68,22 +57,11 @@ neo4j/
 neo4j-counts.json
 ```
 
-Some directories are omitted when the corresponding source does not exist or is
-disabled. Current production uses `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/`
-is the expected vector-store archive directory; `lancedb/` is used when
-LanceDB is the configured vector backend.
+Some directories are omitted when the corresponding source does not exist or is disabled.
 
 ## Running A Backup
 
-Local prod and staging deploys install a daily maintenance launchd job from
-deployment/launchd/com.brain.maintenance.plist.template. The rendered
-production label is `com.brain.prod.maintenance`; staging renders as
-`com.brain.staging.maintenance`. The job starts at 03:00 and runs
-`scripts/nightly_maintenance.py` against the environment's shared `brain.env`.
-That script runs `scripts/brain_agent_memory.py` first, then runs
-`scripts/backup_stores.py` only if the agent-memory cognify step exits
-successfully. A failed cognify run therefore skips backup instead of creating a
-snapshot from a partially refreshed projection.
+Local prod and staging deploys install a daily maintenance launchd job from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance`; staging renders as `com.brain.staging.maintenance`. The job starts at 03:00 and runs `scripts/nightly_maintenance.py` against the environment's shared `brain.env`. That script runs `scripts/brain_agent_memory.py` first, then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
 
 Run the backup script directly with the configured environment:
 
@@ -109,8 +87,7 @@ Skip Google Drive replication for a local test:
 ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --skip-google-drive
 ```
 
-If `--skip-google-drive` is used while Google Drive backup is enabled, the
-manifest records that replication as skipped instead of verified.
+If `--skip-google-drive` is used while Google Drive backup is enabled, the manifest records that replication as skipped instead of verified.
 
 ## Manifest Contract
 
@@ -132,11 +109,7 @@ Every backup writes `manifest.json` with this shape:
 }
 ```
 
-`google_drive` is populated after the local manifest is written when Drive
-replication runs. If `--skip-google-drive` is used while Google Drive backup is
-enabled, the manifest records `{\"skipped\": true}` for that step. `blockers`
-means the run finished but missed something operationally important. Production
-verification treats blockers as failures.
+`google_drive` is populated after the local manifest is written when Drive replication runs. If `--skip-google-drive` is used while Google Drive backup is enabled, the manifest records `{"skipped": true}` for that step. `blockers` means the run finished but missed something operationally important. Production verification treats blockers as failures.
 
 ## SQLite Backups
 
@@ -149,9 +122,7 @@ The backup script searches the shared data root for SQLite databases:
 system/databases/*
 ```
 
-It only backs up files that SQLite identifies as databases. Each SQLite file is
-copied using SQLite's online backup API, not a raw file copy. The backup is then
-checked with:
+It only backs up files that SQLite identifies as databases. Each SQLite file is copied using SQLite's online backup API, not a raw file copy. The backup is then checked with:
 
 ```sql
 PRAGMA integrity_check;
@@ -182,11 +153,9 @@ The shared data directory passed via `--data-dir` is archived as:
 raw_data/<data-root-name>.tar.gz
 ```
 
-This preserves source data and runtime files that are not captured by the
-SQLite- or vector-store-specific paths.
+This preserves source data and runtime files that are not captured by the SQLite- or vector-store-specific paths.
 
-If the shared data directory is missing, the manifest receives a blocker and no
-raw-data archive is written.
+If the shared data directory is missing, the manifest receives a blocker and no raw-data archive is written.
 
 ## Vector Store Backups
 
@@ -194,22 +163,17 @@ The script backs up exactly one vector-store family based on `VECTOR_DB_PROVIDER
 
 ### pgvector Backup
 
-When `VECTOR_DB_PROVIDER=pgvector`, the backup script creates a Postgres dump
-of the configured vector database. The dump is written to:
+When `VECTOR_DB_PROVIDER=pgvector`, the backup script creates a Postgres dump of the configured vector database. The dump is written to:
 
 ```text
 pgvector/<db-name>.sql
 ```
 
-The dump is produced with `docker exec brain-prod-postgres pg_dump` when Docker
-is available. The manifest entry records the dump method, database name, return
-code, captured stderr, and whether the dump was verified as non-empty.
+The dump is produced with `docker exec brain-prod-postgres pg_dump` when Docker is available. The manifest entry records the dump method, database name, return code, captured stderr, and whether the dump was verified as non-empty.
 
-If Docker is not available, the manifest receives a blocker and the pgvector
-backup does not complete.
+If Docker is not available, the manifest receives a blocker and the pgvector backup does not complete.
 
-If the dump is produced but not verified as non-empty, the script raises an
-error.
+If the dump is produced but not verified as non-empty, the script raises an error.
 
 ### LanceDB Archive
 
@@ -218,8 +182,7 @@ When the vector backend is LanceDB, the script archives:
 - The configured `VECTOR_DB_URL`.
 - Any path under the shared data root whose name contains `lancedb`.
 
-If `VECTOR_DB_URL` is not absolute, the script resolves it relative to the
-shared data root before checking for the path.
+If `VECTOR_DB_URL` is not absolute, the script resolves it relative to the shared data root before checking for the path.
 
 Each candidate is stored as:
 
@@ -227,9 +190,7 @@ Each candidate is stored as:
 lancedb/<source-name>.tar.gz
 ```
 
-If no LanceDB path is found, the manifest receives a blocker because production
-verification expects a vector-store artifact when LanceDB is the configured
-backend.
+If no LanceDB path is found, the manifest receives a blocker because production verification expects a vector-store artifact when LanceDB is the configured backend.
 
 ## Secrets Archive
 
@@ -247,25 +208,18 @@ The archive is written to:
 secrets/secrets.tar.gz
 ```
 
-If no secret files are found, the manifest receives a blocker. The deployed auth
-registry file (`BRAIN_AUTH_USERS_FILE`) is rendered by production deploys; do not
-assume it is captured by this backup unless you have added it to the backup
-inputs.
+If no secret files are found, the manifest receives a blocker. The deployed auth registry file (`BRAIN_AUTH_USERS_FILE`) is rendered by production deploys; do not assume it is captured by this backup unless you have added it to the backup inputs.
 
-Production secret rendering and conflict rules are documented in
-[Production Secrets](production-secrets.md).
+Production secret rendering and conflict rules are documented in [Production Secrets](production-secrets.md).
 
 ## Neo4j Backup
 
-The script first attempts a read-only graph count with `cypher-shell` and writes
-`neo4j-counts.json` when available. A successful count check is recorded as a
-verified Neo4j manifest entry.
+The script first attempts a read-only graph count with `cypher-shell` and writes `neo4j-counts.json` when available. A successful count check is recorded as a verified Neo4j manifest entry.
 
 If `BRAIN_NEO4J_DUMP_ENABLED=false`:
 
 - Empty graph: no dump is required.
-- Non-empty graph: the manifest receives a blocker, and the script may create a
-  raw live archive as a fallback.
+- Non-empty graph: the manifest receives a blocker, and the script may create a raw live archive as a fallback.
 
 Raw live Neo4j archives are not considered consistent backups.
 
@@ -275,8 +229,7 @@ For a consistent Neo4j dump:
 BRAIN_NEO4J_DUMP_ENABLED=true
 ```
 
-When Docker is available, the script runs `neo4j-admin database dump` inside the
-configured Neo4j Docker container and copies the dump into:
+When Docker is available, the script runs `neo4j-admin database dump` inside the configured Neo4j Docker container and copies the dump into:
 
 ```text
 neo4j/neo4j.dump
@@ -294,13 +247,11 @@ If the local database is in use, enable a stop-the-world dump window:
 BRAIN_NEO4J_STOP_FOR_DUMP=true
 ```
 
-With this enabled, the script stops the configured Neo4j service, runs the dump,
-restarts Neo4j, and waits for readiness.
+With this enabled, the script stops the configured Neo4j service, runs the dump, restarts Neo4j, and waits for readiness.
 
 ## Google Drive Replication
 
-When `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, the backup is replicated after the
-local manifest is written.
+When `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, the backup is replicated after the local manifest is written.
 
 Preferred local-mounted Drive path:
 
@@ -321,8 +272,7 @@ If no local path is configured, the script uses `rclone` and targets:
 $BRAIN_GOOGLE_DRIVE_REMOTE:$BRAIN_GOOGLE_DRIVE_FOLDER/YYYYMMDD_HHMMSS/
 ```
 
-Replication is considered verified only when the copied/uploaded directory
-contains `manifest.json`. The manifest records either:
+Replication is considered verified only when the copied/uploaded directory contains `manifest.json`. The manifest records either:
 
 ```json
 {"method": "local_path", "path": "...", "verified": true}
@@ -334,17 +284,13 @@ or:
 {"method": "rclone", "remote": "...", "verified": true}
 ```
 
-If `--skip-google-drive` is used, the manifest records the Drive step as
-skipped when Google Drive backup is enabled.
+If `--skip-google-drive` is used, the manifest records the Drive step as skipped when Google Drive backup is enabled.
 
-Production verification requires Google Drive verification when
-`BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`.
+Production verification requires Google Drive verification when `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`.
 
 ## Production Verification
 
-`scripts/verify_mcp_production.py` checks the latest manifest under
-`BRAIN_BACKUP_DIR` unless `--skip-backups` is passed. It also checks that the
-configured runtime paths are absolute and under `shared/data`.
+`scripts/verify_mcp_production.py` checks the latest manifest under `BRAIN_BACKUP_DIR` unless `--skip-backups` is passed. It also checks that the configured runtime paths are absolute and under `shared/data`.
 
 It fails when:
 
@@ -388,8 +334,7 @@ tar -xzf BACKUP_DIR/secrets/secrets.tar.gz -C /Volumes/xpg_usb4/prod/brain/share
 chmod 600 /Volumes/xpg_usb4/prod/brain/shared/secrets/*
 ```
 
-Restore SQLite databases by copying the selected files from `sqlite/` back to
-their manifest `source` paths.
+Restore SQLite databases by copying the selected files from `sqlite/` back to their manifest `source` paths.
 
 Restore raw data from the matching archive in `raw_data/`.
 
@@ -412,16 +357,12 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 
 ## Operating Rules
 
-- Run a backup before any destructive migration, production deploy, production
-  promotion, or manual data repair.
+- Run a backup before any destructive migration, production deploy, production promotion, or manual data repair.
 - Treat `manifest.json` as the source of truth for what was captured.
 - Do not rely on raw live Neo4j archives for restore.
-- Keep `ENV_FILE`, `BRAIN_AUTH_PASSWORD_FILE`, and `BRAIN_AUTH_STATE_PATH` in
-  the secrets archive.
-- Do not assume `BRAIN_AUTH_USERS_FILE` is captured unless the backup inputs
-  were explicitly extended to include it.
-- Keep at least one verified off-device copy when Google Drive backup is
-  enabled.
+- Keep `ENV_FILE`, `BRAIN_AUTH_PASSWORD_FILE`, and `BRAIN_AUTH_STATE_PATH` in the secrets archive.
+- Do not assume `BRAIN_AUTH_USERS_FILE` is captured unless the backup inputs were explicitly extended to include it.
+- Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 9e22a2e98ecbbbb9f8fd3446efa54ac985be5473350157b20f8c140ddbc67edc -->
+<!-- brain-doc-source-hash: b07078d8af048442ab71679f2aba99d4f6bcb61a1c360d1aed99054225e97835 -->
