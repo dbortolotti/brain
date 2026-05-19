@@ -241,6 +241,8 @@ brain_profile_context_remember
 brain_profile_context_forget
 brain_app_data_controls
 brain_ingest_source
+brain_agent_memory
+brain_agent_memory_recall
 brain_palate_describe_item
 brain_palate_query
 brain_palate_evaluate_options
@@ -252,10 +254,9 @@ brain_palate_correct_proposal
 Read-only app tools require `brain.memory.read`; write tools require
 `brain.memory.write` as well and are rate-limited by
 `BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`.
-Destructive app-surface calls such as `brain_undo_last` and
-`brain_profile_context_forget` require confirmation. The app surface includes
-selected Palate read/interaction tools; internal Palate persistence tools stay
-on `/admin/mcp`.
+The app surface treats `brain_undo_last` and `brain_profile_context_forget` as
+destructive tools. The app surface includes selected Palate read/interaction
+tools; internal Palate persistence tools stay on `/admin/mcp`.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
@@ -705,4 +706,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 13be9594273f97ccdcc94d0622833796663ae3b791790a8c0110fa250b65620a -->
+<!-- brain-doc-source-hash: bb2749544dfb2f24c112a957edcb4e648f934b0cbe7873b5c0621f255cff6c94 -->

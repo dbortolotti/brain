@@ -110,6 +110,8 @@ Public ChatGPT App surface:
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
+- `brain_agent_memory`
+- `brain_agent_memory_recall`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -207,6 +209,8 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
+- `brain_agent_memory`
+- `brain_agent_memory_recall`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -285,6 +289,8 @@ Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 
 The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. They also set `BRAIN_PUBLIC_BASE_URL`, `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
 
+The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline.
+
 Workflow model:
 
 - `.github/workflows/deploy-local-staging.yml` triggers on `push` to `main` and on `workflow_dispatch`, and accepts optional `version` and `force_config_override` inputs.
@@ -306,7 +312,7 @@ Equivalent command:
 
 Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
 
-GitHub Secrets and GitHub Variables are the source of truth; direct emergency edits to live config must be propagated back before the next deploy.
+GitHub Secrets and GitHub Variables are the source of truth; direct emergency edits to live config must be propagated back, or the next deploy will fail.
 
 ## Release Versioning
 
@@ -318,11 +324,11 @@ Every deploy writes runtime release metadata into:
 /Volumes/xpg_usb4/{staging|prod}/brain/shared/current-version
 ```
 
-The release metadata records the app name, environment, version, SHA, deployment directory, deploy time, and source. The source is `github-actions` for workflow runs and `local` for local runs.
+The release metadata records the app name, environment, version, SHA, deployment directory, deployed_at, and source. The source is `github-actions` for workflow runs and `local` for local runs.
 
 Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. If you omit the version on a manual staging run, it falls back to `staging-<12-char-sha>`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA when the version starts with `v`. If the tag already exists at a different SHA, the staging run fails instead of retagging.
 
-Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION`.
+Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION` and staged SHA.
 
 ## Conflict Rule
 
@@ -714,4 +720,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: 4fe6706794ccc326de056295009865a0e9aeb518d3c53c6ed967abd06e3d8f33 -->
+<!-- brain-doc-source-hash: ea9290a837f1ee1b528efb6e9029bd970c20df5f57437d95a6c66b47eef0c18a -->

@@ -1,10 +1,10 @@
 # ChatGPT App Hardening
 
-Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors and confirms the public app surface remains text-only.
+Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. The public app includes the curated ChatGPT App tool set listed below, including Palate read and interaction tools, `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall`; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors and confirms the public app component resource (`ui://brain/review.v2.html`) remains text-only.
 
 ## Public App Tools
 
-The ChatGPT App surface includes exactly these tools:
+The public ChatGPT App surface includes exactly these tools:
 
 - `brain_session`
 - `brain_recall`
@@ -19,6 +19,8 @@ The ChatGPT App surface includes exactly these tools:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_app_data_controls`
+- `brain_agent_memory`
+- `brain_agent_memory_recall`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -38,6 +40,7 @@ Read-only tools advertise and require `brain.memory.read`:
 - `brain_review_recent`
 - `brain_profile_context_list`
 - `brain_app_data_controls`
+- `brain_agent_memory_recall`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -49,6 +52,7 @@ Write or mutating tools advertise and require `brain.memory.write` as well:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_undo_last`
+- `brain_agent_memory`
 - `brain_palate_confirm`
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
@@ -91,8 +95,8 @@ Before submitting Brain as a ChatGPT App, complete the non-code submission asset
 - Public privacy, terms, and support URLs on the production host.
 - A short reviewer test path using a dedicated non-admin verifier user.
 - Clear explanation that memory writes preview first and require explicit confirmation.
-- Confirmation that admin tools, raw Cognee operations, hard-delete tools, tokens, secrets, and password hashes are not exposed on the public app surface.
-- Confirmation that the ChatGPT App tool descriptors match the release and do not expose a public widget tool or app component resource.
+- Confirmation that admin tools, raw Cognee operations, hard-delete tools, `brain_agent_memory_clear`, tokens, secrets, and password hashes are not exposed on the public app surface.
+- Confirmation that the ChatGPT App tool descriptors match the release and the public app component resource (`ui://brain/review.v2.html`) remains text-only.
 - Production verification output from `make prod-check` and `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
 
 ## Operator Checklist
@@ -123,4 +127,4 @@ For a production release:
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 4. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: e24b011dfefc23cfa2c0078fb3f2e488fac29ee8d5d270af3e2f35f25d8d97d3 -->
+<!-- brain-doc-source-hash: d865351b797e804b11fb3283f87f4059521b13343bdf38457dfa1ca078c34c68 -->

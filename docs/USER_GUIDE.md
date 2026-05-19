@@ -129,13 +129,13 @@ For chat-session continuity and handovers, prefer the dedicated `brain_agent_mem
 
 ## Using the User Dashboard
 
-The browser dashboard is for reviewing and managing your memory. It opens with a sign-in overlay and a session line that says Connect to review memory.
+The browser dashboard is for reviewing and managing your memory. It opens with a sign-in overlay that says `Sign In` and `Sign in to review and manage your memory.`, and the session line says `Connect to review memory.`
 
 The dashboard is available at `/` and `/user`. The app dashboard is also available at `/app`. The top bar links to User, Admin, and Cognee views.
 
 Main tabs:
 
-- Review: Recent Cards, Open Loops, and Memory Contents. Click a memory card to inspect it.
+- Review: Recent Cards, Open Loops, and Memory Contents. Select a memory card to inspect its contents and evidence.
 - Recall: search Brain with a query and an optional limit.
 - Remember: preview a memory before saving it. The input type menu includes auto, fact, note, thought, open question, and chat conclusion.
 - Profile: add standing answer-tailoring context. The default scope is `answer_tailoring`.
@@ -225,9 +225,9 @@ MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated al
 
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
-The ChatGPT app surface exposes a smaller subset of tools and does not expose `brain_agent_memory`, `brain_agent_memory_recall`, or `brain_agent_memory_clear`. It does expose `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`.
+Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset of tools. It does expose `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. It does not expose `brain_agent_memory_clear`.
 
-Internal or admin surfaces also expose tools such as `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, `brain_palate_refresh_enrichment`, and `cognee_improve`.
+Internal or admin surfaces also expose tools such as `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, `brain_palate_refresh_enrichment`, and `cognee_improve`.
 
 `brain_session` can resolve the active user's Brain profile and standing context. On internal or admin surfaces it also returns the user-scoped `session_id` for portable agent-memory calls; the ChatGPT app surface hides session ids.
 
@@ -662,4 +662,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 78795afc8e1df9a31817640467c194c8b088ac1fafa20965c2c9f6cd359c05ef -->
+<!-- brain-doc-source-hash: d54e412a2d75fd5207cffd8ef2081c0b951ec22231e9181533c04f1f7b615df3 -->

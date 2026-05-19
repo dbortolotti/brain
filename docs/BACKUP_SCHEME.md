@@ -36,7 +36,7 @@ BRAIN_NEO4J_DUMP_ENABLED=false
 BRAIN_NEO4J_STOP_FOR_DUMP=false
 ```
 
-Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend.
+Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend. The deployed auth registry file is configured as `BRAIN_AUTH_USERS_FILE` in prod and staging, but it is not part of the default backup inputs unless the script is explicitly extended to capture it.
 
 Each backup run creates:
 
@@ -208,7 +208,7 @@ The archive is written to:
 secrets/secrets.tar.gz
 ```
 
-If no secret files are found, the manifest receives a blocker. The deployed auth registry file (`BRAIN_AUTH_USERS_FILE`) is rendered by production deploys; do not assume it is captured by this backup unless you have added it to the backup inputs.
+If no secret files are found, the manifest receives a blocker. The deployed auth registry file (`BRAIN_AUTH_USERS_FILE`, rendered by production deploys under the environment's `shared/secrets/brain-auth-users.json`) is not assumed to be captured by this backup unless you have explicitly extended the backup inputs.
 
 Production secret rendering and conflict rules are documented in [Production Secrets](production-secrets.md).
 
@@ -365,4 +365,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: b07078d8af048442ab71679f2aba99d4f6bcb61a1c360d1aed99054225e97835 -->
+<!-- brain-doc-source-hash: a4b1dcc801ca9d628c2b6ce19810c0df5612caef32b6efd9eadf4b50658c0000 -->

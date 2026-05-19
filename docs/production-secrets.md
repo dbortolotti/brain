@@ -57,8 +57,8 @@ BRAIN_RELEASE_SHA
 BRAIN_RELEASE_VERSION
 ```
 
-These are deployment metadata, not repository variables. The conflict checker
-ignores both metadata families.
+These metadata keys are deployment metadata, not repository variables. The
+conflict checker ignores both metadata families.
 
 Normal pushes to `main` deploy staging with an automatic build version such as
 `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
@@ -216,9 +216,10 @@ BRAIN_AUTH_PASSWORD
 The staging and production workflows also pass `BRAIN_AUTH_TOKEN` into
 `render_prod_env.py`.
 
-`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer. The renderer
-rejects empty or placeholder values for `OPENAI_API_KEY` (``, `replace-me`,
-`sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
+`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer and cannot be
+empty. The renderer rejects empty or placeholder values for `OPENAI_API_KEY`
+(``, `replace-me`, `sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`,
+`...`).
 
 ## Optional Taste Integration Secrets
 
@@ -399,12 +400,11 @@ BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 The renderer also reads additional environment variables in staging and prod,
 including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`,
 `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`,
-`BRAIN_NEO4J_*` service and container labels,
-`BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_SLACK_ENABLED`,
-`BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`,
-`BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including
-`BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown
-above.
+`BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`,
+`BRAIN_AUTH_TOKEN`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`,
+`BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`,
+`BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the
+`BRAIN_UI_*` runtime settings shown above.
 
 ## Local Backup
 
@@ -415,4 +415,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: a0f72550a1b63a86c18120fbe94b0f81e4e4c98c03ff7e8650176b691e954146 -->
+<!-- brain-doc-source-hash: 8fe10d95c34287aca79ac22797a2a507591aca6e9870db43bad6ede58d4baeb4 -->

@@ -66,7 +66,7 @@ Poor memories:
 
 ## Core MCP Tools
 
-Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset.
+Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset. The ChatGPT app surface also exposes `brain_agent_memory` and `brain_agent_memory_recall` for portable chat continuity.
 
 Most agents should use these tools rather than lower-level storage details.
 
@@ -90,6 +90,9 @@ Most agents should use these tools rather than lower-level storage details.
 | `brain_forget` | Soft-delete or, with confirmation, hard-delete a Brain object. Internal or admin only. |
 | `brain_resolve_conflict` | Resolve contradictions or duplicates between memories. Internal or admin only. |
 | `brain_merge_entities` | Merge duplicate entities after confirmation. Internal or admin only. |
+| `brain_agent_memory` | Bridge the active user's Cognee session into their dedicated agent-memory dataset. Available on ChatGPT app and internal or admin surfaces; internal or admin can also manage cleanup. |
+| `brain_agent_memory_recall` | Search the active user's dedicated agent-memory dataset. Available on ChatGPT app and internal or admin surfaces. |
+| `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. Internal or admin only. |
 
 Maintenance tools:
 
@@ -162,7 +165,7 @@ table
 
 Brain may still classify the final stored card more specifically.
 
-The Slack intake layer is conservative. It returns JSON-only proposals with `decision`, `reason`, `user_message`, `proposed_memory`, `questions`, `conflicts`, and `requires_confirmation`.
+The Slack intake layer is conservative. It returns JSON-only proposals with decision, reason, user_message, proposed_memory, questions, conflicts, and requires_confirmation. The decision value can be ask, complain, dry_run, commit, recall, profile, debug, or unsupported. Inside `proposed_memory`, the common fields are input, input_type, source_policy, confidence, and entities.
 
 Slack memory policy:
 
@@ -213,24 +216,21 @@ Remember a wine:
 ```text
 Use Brain Palate to remember:
 I want to try Chateau Musar 2016. Sam recommended it. Treat it as a wine.
-Notes: likely savory, mature, complex Lebanese red. I am curious but have not
-tried it.
+Notes: likely savory, mature, complex Lebanese red. I am curious but have not tried it.
 ```
 
 Remember a restaurant:
 
 ```text
 Use Brain Palate to remember:
-Noble Rot is a restaurant I like for wine-led dinners in London. I like the
-wine list, classic food, and relaxed but serious atmosphere.
+Noble Rot is a restaurant I like for wine-led dinners in London. I like the wine list, classic food, and relaxed but serious atmosphere.
 ```
 
 Store a dislike or avoid signal:
 
 ```text
 Use Brain Palate to remember:
-Avoid over-oaked Napa Cabernet for casual dinners. I find it too heavy and
-sweet-fruited unless the meal really calls for it.
+Avoid over-oaked Napa Cabernet for casual dinners. I find it too heavy and sweet-fruited unless the meal really calls for it.
 ```
 
 Query recommendations:
@@ -256,16 +256,14 @@ Options:
 Log feedback after a recommendation:
 
 ```text
-Use brain_palate_log_decision to record that I chose Noble Rot for the query
-serious but relaxed wine dinner in London.
+Use brain_palate_log_decision to record that I chose Noble Rot for the query serious but relaxed wine dinner in London.
 ```
 
 Correct a pending proposal:
 
 ```text
 Use brain_palate_correct_proposal:
-The producer is Chateau Musar, the vintage is 2016, and the region is Bekaa
-Valley. Keep wanted=true and tried=false.
+The producer is Chateau Musar, the vintage is 2016, and the region is Bekaa Valley. Keep wanted=true and tried=false.
 ```
 
 Refresh an old item:
@@ -304,11 +302,7 @@ What wine should I drink?
 Good ranking instructions for an agent:
 
 ```text
-Before ranking, use Brain Palate recall or query rather than guessing from the
-current chat. Treat avoid and disliked as hard exclusions. Treat wanted_to_try,
-liked, recommended_by, and high rating as positive signals. If two items are
-close, prefer the one with better context fit over the one with a higher generic
-score.
+Before ranking, use Brain Palate recall or query rather than guessing from the current chat. Treat avoid and disliked as hard exclusions. Treat wanted_to_try, liked, recommended_by, and high rating as positive signals. If two items are close, prefer the one with better context fit over the one with a higher generic score.
 ```
 
 ## Agent Memory
@@ -322,18 +316,7 @@ Agents must not hardcode that value. The `brain_session` tool derives the active
 Minimal agent preprompt:
 
 ```text
-Use Brain as the user's durable memory. At conversation start, call
-brain_session, then load relevant preferences and standing profile context for
-the returned session and apply them. Use brain_agent_memory_recall at the start
-of the conversation, then use brain_agent_memory whenever your surface exposes
-it to preserve chat-session memory, handovers, conversation summaries, and
-workflow learnings. Use the returned session_id whenever a Brain workflow
-accepts session_id. Use brain_remember only for durable user facts, stable
-preferences, explicit constraints, durable decisions, open questions, research
-questions, and Palate or taste memories. If the user asks to remember a stable
-fact about who they are, their expertise, work, background, or communication
-needs, use brain_profile_context_remember. Store concise declarative facts, not
-transcripts.
+Use Brain as the user's durable memory. At conversation start, call brain_session, then load relevant preferences and standing profile context for the returned session and apply them. Use brain_agent_memory_recall at the start of the conversation, then use brain_agent_memory whenever your surface exposes it to preserve chat-session memory, handovers, conversation summaries, and workflow learnings. Use the returned session_id whenever a Brain workflow accepts session_id. Use brain_remember only for durable user facts, stable preferences, explicit constraints, durable decisions, open questions, research questions, and Palate or taste memories. If the user asks to remember a stable fact about who they are, their expertise, work, background, or communication needs, use brain_profile_context_remember. Store concise declarative facts, not transcripts.
 ```
 
 Use the Agent Memory Protocol, if your client exposes one, to inject operating instructions into an agent. The protocol tells the agent to:
@@ -347,20 +330,13 @@ Use the Agent Memory Protocol, if your client exposes one, to inject operating i
 Prompt to start a chat with portable memory:
 
 ```text
-Call brain_session, then use Brain's agent-memory workflow with the returned
-user-scoped session_id. Before answering, recall relevant memory from that
-session with brain_agent_memory_recall. During the chat, preserve chat-session
-context through brain_agent_memory without narrating tool calls. Use
-brain_remember only for durable user facts and decisions that should live in
-Brain's durable memory graph.
+Call brain_session, then use Brain's agent-memory workflow with the returned user-scoped session_id. Before answering, recall relevant memory from that session with brain_agent_memory_recall. During the chat, preserve chat-session context through brain_agent_memory without narrating tool calls. Use brain_remember only for durable user facts and decisions that should live in Brain's durable memory graph.
 ```
 
 Prompt to preserve the session at the end:
 
 ```text
-Call brain_session, then record this chat using Brain's agent-memory workflow
-with the returned user-scoped session_id. Store only durable decisions, project
-facts, and open questions.
+Call brain_session, then record this chat using Brain's agent-memory workflow with the returned user-scoped session_id. Store only durable decisions, project facts, and open questions.
 ```
 
 Useful tools:
@@ -372,8 +348,8 @@ Useful tools:
 | `brain_profile_context_list` | List standing user-profile context. |
 | `brain_profile_context_forget` | Remove one standing user-profile context item by id. |
 | `brain_profile_context_sync` | Sync standing user-profile context to the configured projection. Internal or admin only. |
-| `brain_agent_memory` | Bridge the active user's Cognee session into their dedicated agent-memory dataset. Internal or admin only. |
-| `brain_agent_memory_recall` | Search the active user's dedicated agent-memory dataset. Internal or admin only. |
+| `brain_agent_memory` | Bridge the active user's Cognee session into their dedicated agent-memory dataset. Available on ChatGPT app and internal or admin surfaces; internal or admin can also manage cleanup. |
+| `brain_agent_memory_recall` | Search the active user's dedicated agent-memory dataset. Available on ChatGPT app and internal or admin surfaces. |
 | `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. Internal or admin only. |
 
 ## Configuration, Auth, Backups, and Release Notes
@@ -389,7 +365,6 @@ Key reminders:
 - `BRAIN_BACKUP_DIR` and Google Drive backup settings control backups.
 - `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, `deploy-local-staging.yml`, `deploy-local-production.yml`, `release.yml`, and `validate.yml` intentionally when promoting or validating changes.
 - `BRAIN_CONFIG_RENDER_SHA`, `BRAIN_CONFIG_RENDERED_AT`, and `BRAIN_CONFIG_RENDER_SOURCE` may appear in rendered config.
-- Use separate datasets for memory, data, sources, palate, and agent memory via the `BRAIN_COGNEE_*_DATASET` settings.
 - In dev, staging, and prod, `BRAIN_LOG_LEVEL` and `BRAIN_UI_ENABLED` are also available.
 - The deploy and promotion workflows are `deploy-local-staging.yml`, `deploy-local-production.yml`, `release.yml`, and `validate.yml`.
 
@@ -418,16 +393,13 @@ Revise a preference:
 
 ```text
 Use Brain to remember this updated preference:
-Daniele prefers concise final answers, but wants detailed implementation updates
-while work is in progress.
+Daniele prefers concise final answers, but wants detailed implementation updates while work is in progress.
 ```
 
 Prompt an agent to apply preferences silently:
 
 ```text
-Load my preferences from Brain. Apply any relevant response style, coding, and
-architecture preferences silently. Do not tell me that you are applying them
-unless I ask.
+Load my preferences from Brain. Apply any relevant response style, coding, and architecture preferences silently. Do not tell me that you are applying them unless I ask.
 ```
 
 ## Source Ingestion
@@ -447,16 +419,13 @@ Do not store temporary discussion or unresolved speculation as facts.
 Good article prompt:
 
 ```text
-Use Brain to ingest this article URL and save the key takeaways relevant to
-Brain, Cognee, memory retrieval, and local deployment. Keep the source attached
-for evidence.
+Use Brain to ingest this article URL and save the key takeaways relevant to Brain, Cognee, memory retrieval, and local deployment. Keep the source attached for evidence.
 ```
 
 When to use `brain_remember` instead:
 
 ```text
-Use Brain to remember: Production and dev Brain services must use separate
-ports because they run on the same host.
+Use Brain to remember: Production and dev Brain services must use separate ports because they run on the same host.
 ```
 
 ## Recall Patterns
@@ -472,8 +441,7 @@ Use Brain to recall what we decided about SQLite versus Cognee for palate.
 Entity profile:
 
 ```text
-Use Brain to profile the Brain project, focusing on deployment, Cognee, Palate,
-and open architecture questions.
+Use Brain to profile the Brain project, focusing on deployment, Cognee, Palate, and open architecture questions.
 ```
 
 Open loops:
@@ -485,15 +453,13 @@ Use Brain to list open loops about agent memory and palate enrichment.
 Before ambiguous work:
 
 ```text
-Before implementing, use Brain to recall what the Cognee split referred to in
-our prior Brain discussions.
+Before implementing, use Brain to recall what the Cognee split referred to in our prior Brain discussions.
 ```
 
 Evidence-oriented:
 
 ```text
-Use Brain to answer with evidence: why did we decide not to keep SQLite as the
-canonical store for approved palate items?
+Use Brain to answer with evidence: why did we decide not to keep SQLite as the canonical store for approved palate items?
 ```
 
 ## Cleanup And Correction
@@ -503,8 +469,7 @@ Brain is designed to be corrected. Use cleanup tools when memory quality drifts.
 Review recent writes:
 
 ```text
-Use brain_review_recent and summarize the last 10 memory writes. Flag anything
-that looks too broad, duplicated, or wrong.
+Use brain_review_recent and summarize the last 10 memory writes. Flag anything that looks too broad, duplicated, or wrong.
 ```
 
 Undo the latest write:
@@ -516,30 +481,26 @@ Use brain_undo_last to undo the most recent ingestion run.
 Forget a bad memory:
 
 ```text
-Use brain_forget to soft-delete the memory that says dev and prod can share the
-same Neo4j database. That is wrong.
+Use brain_forget to soft-delete the memory that says dev and prod can share the same Neo4j database. That is wrong.
 ```
 
 Resolve a contradiction:
 
 ```text
 Use brain_resolve_conflict:
-The newer memory saying Brain keeps policy and ranking logic should replace the
-older memory saying SQLite is canonical for palate.
+The newer memory saying Brain keeps policy and ranking logic should replace the older memory saying SQLite is canonical for palate.
 ```
 
 Merge duplicates:
 
 ```text
-Use brain_merge_entities to merge the duplicate Cognee and cognee.ai
-entities. Keep Cognee as primary.
+Use brain_merge_entities to merge the duplicate Cognee and cognee.ai entities. Keep Cognee as primary.
 ```
 
 Clear agent memory if it becomes noisy:
 
 ```text
-Use brain_agent_memory_clear with confirm=true. I want to reset the dedicated
-portable agent-memory dataset.
+Use brain_agent_memory_clear with confirm=true. I want to reset the dedicated portable agent-memory dataset.
 ```
 
 Prefer soft-delete; use hard-delete only with explicit confirmation and only when you intentionally want to remove data.
@@ -551,8 +512,7 @@ Most users should not need Cognee operations directly. Use them when managing th
 Run native improve on a dataset:
 
 ```text
-Call brain_session, then use cognee_improve on dataset agent_memory with the
-returned session_id. Run it in the background if supported.
+Call brain_session, then use cognee_improve on dataset agent_memory with the returned session_id. Run it in the background if supported.
 ```
 
 Manually sync Brain projections:
@@ -570,8 +530,7 @@ Use brain_rebuild_cognee for dataset memory. Do not prune first.
 Prune and rebuild only when you are intentionally resetting a projection:
 
 ```text
-Use brain_rebuild_cognee for dataset palate with prune_first=true and
-confirm=true.
+Use brain_rebuild_cognee for dataset palate with prune_first=true and confirm=true.
 ```
 
 ## Best Practices For Prompting Agents
@@ -582,8 +541,7 @@ Good:
 
 ```text
 Use Brain to remember this as a durable architecture decision:
-Brain keeps policy and ranking logic; Cognee keeps rebuildable retrieval and
-portable agent-memory projections.
+Brain keeps policy and ranking logic; Cognee keeps rebuildable retrieval and portable agent-memory projections.
 ```
 
 Weak:
@@ -600,8 +558,7 @@ Good:
 Use Brain to store these as separate memories:
 1. Daniele prefers short final answers.
 2. Daniele wants implementation progress updates while work is in progress.
-3. Daniele prefers production and dev services to be isolated by port and data
-directory when they share a host.
+3. Daniele prefers production and dev services to be isolated by port and data directory when they share a host.
 ```
 
 Use context labels when the same phrase may be ambiguous.
@@ -609,8 +566,7 @@ Use context labels when the same phrase may be ambiguous.
 Good:
 
 ```text
-Use Brain to recall palate canonical store in the context of the Brain
-project, not the generic concept of taste.
+Use Brain to recall palate canonical store in the context of the Brain project, not the generic concept of taste.
 ```
 
 Make recommendations policy-aware.
@@ -619,8 +575,7 @@ Good:
 
 ```text
 Use Brain Palate to recommend a restaurant for Friday in London.
-Prefer places I liked or wanted to try. Exclude avoid or disliked. Prioritize
-serious wine, relaxed atmosphere, and not too formal.
+Prefer places I liked or wanted to try. Exclude avoid or disliked. Prioritize serious wine, relaxed atmosphere, and not too formal.
 ```
 
 Tell agents when not to write memory.
@@ -628,8 +583,7 @@ Tell agents when not to write memory.
 Good:
 
 ```text
-Use Brain recall for context, but do not write any new memories unless I
-explicitly say remember.
+Use Brain recall for context, but do not write any new memories unless I explicitly say remember.
 ```
 
 Use recall before implementation when history matters.
@@ -637,8 +591,7 @@ Use recall before implementation when history matters.
 Good:
 
 ```text
-Before changing the Brain MCP tool names, use Brain to recall our naming
-decision about dots versus underscores.
+Before changing the Brain MCP tool names, use Brain to recall our naming decision about dots versus underscores.
 ```
 
 Use cleanup after experiments.
@@ -646,8 +599,7 @@ Use cleanup after experiments.
 Good:
 
 ```text
-Review recent Brain writes from this session. Soft-delete anything that was
-temporary experiment state rather than a durable decision.
+Review recent Brain writes from this session. Soft-delete anything that was temporary experiment state rather than a durable decision.
 ```
 
 ## Suggested Agent Starter Prompts
@@ -655,68 +607,43 @@ temporary experiment state rather than a durable decision.
 General Brain-aware agent:
 
 ```text
-You have Brain MCP tools. At the start, use brain_recall for relevant project
-context if my request depends on prior decisions. Use brain_remember only for
-durable user facts, stable preferences, explicit constraints, durable decisions,
-Palate or taste memories, open questions, and research questions. Use
-brain_session plus brain_agent_memory for chat-session handovers and workflow
-continuity. Store one declarative sentence per fact. Do not store temporary
-scratch or transcripts.
+You have Brain MCP tools. At the start, use brain_recall for relevant project context if my request depends on prior decisions. Use brain_remember only for durable user facts, stable preferences, explicit constraints, durable decisions, Palate or taste memories, open questions, and research questions. Use brain_session plus brain_agent_memory for chat-session handovers and workflow continuity. Store one declarative sentence per fact. Do not store temporary scratch or transcripts.
 ```
 
 Brain plus preferences:
 
 ```text
-Use Brain's Bias Protocol, then load my preferences from Brain. Apply recalled
-preferences silently. If I state a new durable preference or revise an old one,
-store it with brain_remember.
+Use Brain's Bias Protocol, then load my preferences from Brain. Apply recalled preferences silently. If I state a new durable preference or revise an old one, store it with brain_remember.
 ```
 
 Brain plus portable agent memory:
 
 ```text
-Call brain_session, then use brain_agent_memory with the returned user-scoped
-session_id. Recall relevant session memory before answering. During the
-conversation, preserve handover-worthy chat context with brain_agent_memory;
-use brain_remember only for durable user facts, stable preferences, explicit
-constraints, durable decisions, open questions, research questions, and
-Palate or taste memories.
+Call brain_session, then use brain_agent_memory with the returned user-scoped session_id. Recall relevant session memory before answering. During the conversation, preserve handover-worthy chat context with brain_agent_memory; use brain_remember only for durable user facts, stable preferences, explicit constraints, durable decisions, open questions, research questions, and Palate or taste memories.
 ```
 
 Brain plus Palate:
 
 ```text
-Use Brain Palate for taste-related memories and recommendations. Normalize and
-enrich items before storing. Treat avoid or disliked as hard exclusions. Treat
-wanted_to_try, liked, high rating, and recommended_by as positive signals.
-After I choose an option, log the decision.
+Use Brain Palate for taste-related memories and recommendations. Normalize and enrich items before storing. Treat avoid or disliked as hard exclusions. Treat wanted_to_try, liked, high rating, and recommended_by as positive signals. After I choose an option, log the decision.
 ```
 
 Implementation agent:
 
 ```text
-Before coding, use Brain to recall prior decisions about this project area.
-After implementation, remember only durable decisions or new constraints that
-future agents should know. Do not store test logs, temporary failures, or
-transient debugging notes.
+Before coding, use Brain to recall prior decisions about this project area. After implementation, remember only durable decisions or new constraints that future agents should know. Do not store test logs, temporary failures, or transient debugging notes.
 ```
 
 Research agent:
 
 ```text
-Use Brain to recall what we already know about this topic before researching.
-When done, ingest source material only if it is likely to be useful later.
-Store key takeaways as evidence-backed memories, and keep open questions
-separate from facts.
+Use Brain to recall what we already know about this topic before researching. When done, ingest source material only if it is likely to be useful later. Store key takeaways as evidence-backed memories, and keep open questions separate from facts.
 ```
 
 Palate recommendation agent:
 
 ```text
-Use Brain Palate to answer taste questions. If the user asks for a suggestion,
-retrieve candidate palate records, exclude avoid or disliked items, rank by fit
-to the query and user signals, and explain the top result briefly. If the user
-chooses something, call brain_palate_log_decision.
+Use Brain Palate to answer taste questions. If the user asks for a suggestion, retrieve candidate palate records, exclude avoid or disliked items, rank by fit to the query and user signals, and explain the top result briefly. If the user chooses something, call brain_palate_log_decision.
 ```
 
 ## Common Workflows
@@ -725,8 +652,7 @@ chooses something, call brain_palate_log_decision.
 
 ```text
 Use Brain to remember this decision:
-Brain DB owns durable memory lifecycle and taste policy; Cognee owns rebuildable
-semantic retrieval and the dedicated agent-memory projection.
+Brain DB owns durable memory lifecycle and taste policy; Cognee owns rebuildable semantic retrieval and the dedicated agent-memory projection.
 ```
 
 ### Save A Preference
@@ -746,31 +672,25 @@ I tried Noble Rot and liked it for serious but relaxed wine dinners in London.
 ### Get A Recommendation
 
 ```text
-Use Brain Palate to suggest a restaurant for a relaxed but serious wine dinner
-in London. Prefer places I liked or wanted to try. Exclude avoid or disliked.
+Use Brain Palate to suggest a restaurant for a relaxed but serious wine dinner in London. Prefer places I liked or wanted to try. Exclude avoid or disliked.
 ```
 
 ### Continue Work In A New Agent Chat
 
 ```text
-Call brain_session, then use brain_agent_memory with the returned user-scoped
-session_id. Load my preferences from Brain. Then use brain_agent_memory_recall
-to recall what we decided about the Brain palate migration before proposing next
-steps.
+Call brain_session, then use brain_agent_memory with the returned user-scoped session_id. Load my preferences from Brain. Then use brain_agent_memory_recall to recall what we decided about the Brain palate migration before proposing next steps.
 ```
 
 ### End A Session Cleanly
 
 ```text
-Use Brain's agent-memory workflow to preserve a concise wrap-up with the
-standard session_id from brain_session:
+Use Brain's agent-memory workflow to preserve a concise wrap-up with the standard session_id from brain_session:
 - durable decisions we made;
 - open questions;
 - project facts future agents need;
 - palate choices or decisions, using Palate tools where appropriate.
 
-Do not store temporary debugging output, and do not use brain_remember for
-chat-session handover unless there is a separate durable user fact or decision.
+Do not store temporary debugging output, and do not use brain_remember for chat-session handover unless there is a separate durable user fact or decision.
 ```
 
 ## Troubleshooting
@@ -778,38 +698,31 @@ chat-session handover unless there is a separate durable user fact or decision.
 If recall feels wrong:
 
 ```text
-Use brain_review_recent to inspect recent writes related to this topic. Identify
-duplicates, contradictions, or overly broad memories.
+Use brain_review_recent to inspect recent writes related to this topic. Identify duplicates, contradictions, or overly broad memories.
 ```
 
 If a recommendation includes something you dislike:
 
 ```text
-Use Brain Palate to remember that I want to avoid that item in this context,
-then rerun the recommendation excluding avoid and disliked items.
+Use Brain Palate to remember that I want to avoid that item in this context, then rerun the recommendation excluding avoid and disliked items.
 ```
 
 If an agent keeps storing too much:
 
 ```text
-Use Brain only for durable decisions, preferences, project facts, palate
-signals, open questions, and research questions. Do not store summaries of
-ordinary back-and-forth.
+Use Brain only for durable decisions, preferences, project facts, palate signals, open questions, and research questions. Do not store summaries of ordinary back-and-forth.
 ```
 
 If portable session memory becomes messy:
 
 ```text
-Use brain_agent_memory_recall to inspect what is being retrieved for this topic.
-If it is not useful, clear your dedicated agent-memory dataset with
-brain_agent_memory_clear confirm=true.
+Use brain_agent_memory_recall to inspect what is being retrieved for this topic. If it is not useful, clear your dedicated agent-memory dataset with brain_agent_memory_clear confirm=true.
 ```
 
 If Cognee projection is stale:
 
 ```text
-Use brain_sync_cognee for the relevant dataset. If that does not fix it, use
-brain_rebuild_cognee without pruning first.
+Use brain_sync_cognee for the relevant dataset. If that does not fix it, use brain_rebuild_cognee without pruning first.
 ```
 
 ## Mental Model
@@ -830,4 +743,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: 01b0c1ebde806ce2ca3cf660720c951bd74d6b5598ac2c0c791c77672f004796 -->
+<!-- brain-doc-source-hash: e86489f15e5256472b4074f5e08b36d7c3a7268e4e75487df850fcdeaadf0627 -->

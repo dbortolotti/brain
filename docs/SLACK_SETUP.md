@@ -69,6 +69,8 @@ Use comma-separated values for multiple teams, channels, users, or admins.
 
 `BRAIN_SLACK_SIGNING_SECRET` is required. The server fails closed with `503` if the agent is enabled but the signing secret is blank or placeholder-shaped.
 
+`BRAIN_SLACK_BOT_TOKEN` is only required if you want event-based replies from mentions or DMs, because the agent posts those responses with `chat.postMessage`.
+
 `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer default. With this setting, Slack memory writes use the proposal and confirmation flow before committing.
 
 ## Create The Slack App
@@ -79,7 +81,7 @@ In Slack's app management UI:
 2. Copy the app Signing Secret into `BRAIN_SLACK_SIGNING_SECRET`.
 3. Configure the slash-command, event subscription, and interactivity Request URLs to point at the Slack agent routes.
 4. Install the app to the workspace.
-5. Copy the bot token into `BRAIN_SLACK_BOT_TOKEN` if you want event-based replies from mentions or DMs, because the agent posts those responses with `chat.postMessage`.
+5. Copy the bot token into `BRAIN_SLACK_BOT_TOKEN` if you want event-based replies from mentions or DMs.
 
 ## Configure Slash Commands
 
@@ -141,7 +143,7 @@ Enable Interactivity & Shortcuts and set:
 Request URL: https://your-public-host.example.com/slack/interactions
 ```
 
-Interactive confirmations are used for proposed Slack memory commits, taste proposal actions, and help-template buttons. The Slack agent reads the interactive `payload` form field, so the endpoint must receive Slack's form-encoded interaction payloads.
+Interactive confirmations are used for proposed Slack memory commits, taste proposal actions, and help-template buttons. The Slack agent reads the interactive `payload` form field, so the endpoint must receive Slack's form-encoded interaction payloads. The first action in the payload is parsed, and its `value` must be JSON containing fields such as `proposed_memory`, `taste_proposal_id`, `taste_action`, or `help_command`.
 
 ## Start The Services Locally
 
@@ -264,4 +266,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: 8bb71aed4db12f4eb8d012821c959ecb71d633849ccf4806179d9ea42e4bfa06 -->
+<!-- brain-doc-source-hash: 2875d6546399d7dcf9b4e678230a8260c19b043a9540804299c6e8e4a66eac2f -->

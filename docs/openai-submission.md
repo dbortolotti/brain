@@ -1,6 +1,6 @@
 # OpenAI Submission Checklist
 
-Brain is deployable as a ChatGPT App only after the production service is live, verified, and submitted through the OpenAI app review flow. This document tracks the remaining non-code work.
+Brain is deployable as a ChatGPT App only after the production service is live, verified, and submitted through the OpenAI app review flow. This document tracks the remaining non-code work for operators preparing the Brain ChatGPT App submission.
 
 ## Production Requirements
 
@@ -12,7 +12,7 @@ Brain is deployable as a ChatGPT App only after the production service is live, 
 - Terms URL: `https://brain.dceb.net/terms`
 - Support URL: `https://brain.dceb.net/support`
 - Current submission mode: text-only ChatGPT App tools.
-- The browser dashboard remains available at `https://brain.dceb.net`, and production verification checks DNS and TLS for the hostname, the ChatGPT App tool descriptors, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, and support pages, browser security headers, and that the public app surface remains text-only.
+- The browser dashboard remains available at `https://brain.dceb.net`, and production verification checks DNS and TLS for the hostname, the ChatGPT App tool descriptors, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, and support pages, browser security headers, and that the public app component resource (`ui://brain/review.v2.html`) remains text-only.
 
 In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
@@ -72,7 +72,7 @@ Do not store passwords, API keys, OAuth tokens, or other secrets in Brain memori
 
 Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
-This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not.
+This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors and confirms the public app component resource (`ui://brain/review.v2.html`) remains text-only.
 
 ChatGPT App responses are minimized on this surface. They strip internal identifiers such as user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields.
 
@@ -91,6 +91,8 @@ The public ChatGPT App tools are exactly:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_app_data_controls`
+- `brain_agent_memory`
+- `brain_agent_memory_recall`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -110,6 +112,7 @@ Read-only tools advertise and require `brain.memory.read`:
 - `brain_review_recent`
 - `brain_profile_context_list`
 - `brain_app_data_controls`
+- `brain_agent_memory_recall`
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -121,6 +124,7 @@ Write or mutating tools advertise and require `brain.memory.write` as well:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_undo_last`
+- `brain_agent_memory`
 - `brain_palate_confirm`
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
@@ -138,7 +142,7 @@ Explain these points in the submission:
 - Brain is a private personal-memory service.
 - Users authenticate before any memory is read or written.
 - The public ChatGPT App surface is curated and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`.
-- Selected Palate read and interaction tools plus `brain_ingest_source` are exposed on the public app surface.
+- Selected Palate read and interaction tools plus `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall` are exposed on the public app surface.
 - Memory writes preview first and require explicit user confirmation before storage or deletion.
 - Users can inspect recent writes, profile context, latest session data, open loops, and app write audit records.
 - Users can change their password and remove user-level profile context in the dashboard.
@@ -160,12 +164,13 @@ Explain these points in the submission:
 - App icon using the existing Brain icon asset.
 - Support contact: `support@dceb.net`.
 - Reviewer credentials for the non-admin verifier user.
+- A short reviewer test path using the dedicated verifier account.
 - Public privacy, terms, and support URLs on the production host.
 - Screenshots are not required for the current text-only submission. Browser dashboard screenshots may be kept as supporting assets.
 - Latest successful `prod-check` output.
 - Latest successful `verify_cloudflare_mcp.py --skip-cloudflared` output.
 - Submission-ready copy, reviewer instructions, and screenshots for the submission package.
-- ChatGPT App tool descriptor confirmation, including no public widget tool or app component resource.
+- ChatGPT App tool descriptor confirmation, including that the app component resource (`ui://brain/review.v2.html`) remains text-only.
 
 ## Pre-Submission Gates
 
@@ -179,4 +184,24 @@ Explain these points in the submission:
 - Confirm the verifier reports the curated text-only ChatGPT App tool surface, DNS and TLS for the hostname, OAuth protected-resource and authorization metadata, the public and admin MCP surfaces, the public dashboard, privacy, terms, support pages, and browser security headers.
 - Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 4aed75609065fb68a2d2a6ee8c53bdf15668cd25e85c158469fce19b28130884 -->
+## Operator Checklist
+
+After every merge or push to `main`:
+
+1. Watch the `Deploy Local Staging` GitHub Actions run to completion.
+   - The workflow triggers on `push` and `workflow_dispatch`.
+   - Manual dispatch accepts `version` and `force_config_override` inputs.
+2. Verify the deployed release metadata matches the expected pushed release.
+3. Keep your normal backup checks in the promotion path if they are part of your environment.
+
+For a production release:
+
+1. Run the manual `Release` GitHub Actions workflow with the desired `vX.Y.Z` tag.
+   - The workflow triggers on `workflow_dispatch`.
+   - Manual dispatch accepts `version` and `force_config_override` inputs.
+2. Watch production deployment and verification finish successfully.
+3. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
+   - This verification checks DNS and TLS for the hostname; the public and admin MCP surfaces; the public dashboard, privacy, terms, and support pages; browser security headers; OAuth protected-resource and authorization metadata; and the ChatGPT App tool descriptors. When auth is enabled, it also checks the authenticated public app MCP surface and confirms it remains text-only.
+4. Keep confirmation and normal backup checks enabled in the promotion path.
+
+<!-- brain-doc-source-hash: 9f234a0ba2c5e25cbd4c534e7a4bbd310fd5111b78b4e2b52dcb60d2858f866b -->

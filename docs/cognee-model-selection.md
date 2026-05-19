@@ -1,6 +1,6 @@
 # Cognee Model Selection
 
-Ingestion timing for the Manetti corpus:
+Ingestion timing for the Manetti document:
 
 | Candidate dataset | Ingestion model setting | Add step | Cognee graph/cognify step | Total wall time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
@@ -10,7 +10,7 @@ Ingestion timing for the Manetti corpus:
 
 The ingestion data strongly separates the candidates before answer quality is scored. The `gpt-5.4-mini` ingestion run completed in about 43 seconds. The `gpt-5.5` low-effort run took about 4.7 minutes, and the high-effort run took about 14.8 minutes. For this corpus, high effort is about 20x slower than `gpt-5.4-mini` ingestion.
 
-This benchmark sits alongside the repository's durable model-eval fixtures in `tests/model_eval_tests/`, which stores durable model-evaluation fixtures larger than the normal unit-test fixtures. The fixture set is documented in `tests/model_eval_tests/README.md`, which describes the balanced Manetti question bank (`tests/model_eval_tests/manetti_100_questions.json` and `tests/model_eval_tests/manetti_100_questions.md`) generated from `manetti_document.md`, plus an organic recall fixture (`tests/model_eval_tests/organic_recall_100_cases.json`) with 47 service-layer seed inserts and 100 recall cases balanced across difficulties 1 through 5. The shared difficulty scale is: 1 direct single-fact recall; 2 direct recall with simple filtering, status, or source distractors; 3 multi-fact synthesis across two or more memories or sources; 4 precise filtering under distractors, status conflicts, or scoped exclusions; and 5 high-constraint synthesis across multiple domains with stale/deleted exclusions. The fixture integrity test `tests/model_eval_tests/test_fixture_integrity.py` checks the JSON fixture shapes and the copied Manetti materials. The live runner (`tests/model_eval_tests/run_model_eval.py`) creates a fresh dataset, ingests the full Manetti document followed by the ordered organic seed inserts, asks all 200 fixture questions, and scores every answer with a judge model. Each run writes a timestamped folder under `tests/model_eval_tests/runs/` with `config.json`, `ingestion_timings.json` and `ingestion_timings.jsonl`, `answers.jsonl`, `scores.jsonl`, `scores.csv`, and `report.md`.
+This benchmark sits alongside the repository's durable model-evaluation fixtures under `tests/model_eval_tests/`, which stores durable model-evaluation fixtures larger than the normal unit-test fixtures. The fixture set is documented in `tests/model_eval_tests/README.md`, which describes the balanced Manetti question bank (`tests/model_eval_tests/manetti_100_questions.json` and `tests/model_eval_tests/manetti_100_questions.md`) generated from `manetti_document.md`, plus an organic recall fixture (`tests/model_eval_tests/organic_recall_100_cases.json`) with 47 service-layer seed inserts and 100 recall cases balanced across difficulties 1 through 5. The shared difficulty scale is: 1 direct single-fact recall; 2 direct recall with simple filtering, status, or source distractors; 3 multi-fact synthesis across two or more memories or sources; 4 precise filtering under distractors, status conflicts, or scoped exclusions; and 5 high-constraint synthesis across multiple domains with stale/deleted exclusions. The fixture integrity test `tests/model_eval_tests/test_fixture_integrity.py` checks the JSON fixture shapes and the copied Manetti materials. The live runner (`tests/model_eval_tests/run_model_eval.py`) creates a fresh dataset, ingests the full Manetti document followed by the ordered organic seed inserts, asks all 200 fixture questions, and scores every answer with a judge model. Each run writes a timestamped folder under `tests/model_eval_tests/runs/` with `config.json`, `ingestion_timings.json` and `ingestion_timings.jsonl`, `answers.jsonl`, `scores.jsonl`, `scores.csv`, and `report.md`.
 
 Example:
 
@@ -430,4 +430,4 @@ The current data does not justify `menotti-55-high` as a default. Its ingestion 
 2. Compare low-score clusters across the completed `gpt-5.5` and `gpt-5.4-mini` retrieval runs.
 3. Select the cheaper ingestion and retrieval combination unless the slower model clearly fixes structural and interpretive retrieval errors.
 
-<!-- brain-doc-source-hash: 6163b7a55c51e3dd8246b6d172dff387c08f2343736c2f5c0f5e465d069999f2 -->
+<!-- brain-doc-source-hash: f9906880d209a53f774e1c9522d3992f78bc4fbfc26f18ccb669f7e33b7b3b7b -->
