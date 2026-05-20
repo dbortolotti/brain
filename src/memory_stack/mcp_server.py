@@ -3501,7 +3501,11 @@ def app_safe_payload(tool_name: str, payload: Any) -> Any:
         return {
             "profile_name": payload.get("profile_name"),
             "profile_full_name": payload.get("profile_full_name"),
-            "profile_context": payload.get("profile_context") or [],
+            "profile_context": [
+                app_safe_record(item)
+                for item in payload.get("profile_context", [])
+                if isinstance(item, dict)
+            ],
             "profile_context_records": [
                 app_safe_record(item)
                 for item in payload.get("profile_context_records", [])

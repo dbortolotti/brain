@@ -18,13 +18,55 @@ def list_profile_context(settings: Settings, *, user_id: str | None = None) -> l
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, list):
         raise ValueError(f"Profile context file must contain a list: {path}")
-    records = [record for record in payload if isinstance(record, dict) and record.get("statement")]
+    records: list[dict[str, Any]] = []
     changed = False
-    for record in records:
-        record.setdefault("user_id", active_user_id)
+    now = datetime.now(UTC).isoformat()
+    for item in payload:
+        if isinstance(item, str):
+            statement = _normalize_statement(item)
+            if not statement:
+                changed = True
+                continue
+            scope = "answer_tailoring"
+            records.append(
+                {
+                    "id": _context_id(statement, scope, user_id=active_user_id),
+                    "user_id": active_user_id,
+                    "statement": statement,
+                    "scope": scope,
+                    "source": "legacy_profile_context_string",
+                    "sync_status": "pending",
+                    "created_at": now,
+                    "updated_at": now,
+                }
+            )
+            changed = True
+            continue
+        if not isinstance(item, dict):
+            changed = True
+            continue
+        statement = _normalize_statement(str(item.get("statement") or ""))
+        if not statement:
+            changed = True
+            continue
+        record = dict(item)
+        scope = str(record.get("scope") or "answer_tailoring").strip() or "answer_tailoring"
+        if record.get("statement") != statement:
+            record["statement"] = statement
+            changed = True
+        if record.get("scope") != scope:
+            record["scope"] = scope
+            changed = True
+        if not record.get("id"):
+            record["id"] = _context_id(statement, scope, user_id=active_user_id)
+            changed = True
+        if not record.get("user_id"):
+            record["user_id"] = active_user_id
+            changed = True
         if "sync_status" not in record:
             record["sync_status"] = "pending"
             changed = True
+        records.append(record)
     if changed:
         _write(settings, records, user_id=active_user_id)
     return records

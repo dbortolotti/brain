@@ -817,12 +817,52 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
     assert remembered["created"] is True
     assert remembered["statement"] == "Daniele works in a bank as a quant."
     session_payload = session_response.json()["result"]["structuredContent"]
-    assert session_payload["profile_context"] == ["Daniele works in a bank as a quant."]
+    assert session_payload["profile_context"][0]["statement"] == "Daniele works in a bank as a quant."
+    assert session_payload["profile_context"][0]["id"] == context_id
     assert session_payload["profile_context_records"][0]["memory_id"].startswith("mem_")
     assert session_payload["profile_context_records"][0]["owner_entity_id"].startswith("ent_")
     listed = list_response.json()["result"]["structuredContent"]["profile_context"]
     assert listed[0]["id"] == context_id
     assert forget_response.json()["result"]["structuredContent"]["status"] == "deleted"
+
+
+def test_brain_session_migrates_legacy_string_profile_context(tmp_path) -> None:
+    profile_context_path = tmp_path / "profile_context.json"
+    profile_context_path.write_text(
+        json.dumps(
+            [
+                "Daniele's GitHub profile https://github.com/dbortolotti is the starting point for all his repositories."
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(profile_context_path),
+    )
+    try:
+        client = TestClient(app, base_url="https://testserver")
+        response = client.post(
+            "/admin/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["profile_context"][0]["statement"].startswith("Daniele's GitHub profile")
+    assert payload["profile_context"][0]["scope"] == "answer_tailoring"
+    assert payload["profile_context"][0]["id"].startswith("profile_context_")
+    stored = json.loads(profile_context_path.read_text(encoding="utf-8"))
+    assert isinstance(stored[0], dict)
 
 
 def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp_path) -> None:

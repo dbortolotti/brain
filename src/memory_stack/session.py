@@ -42,7 +42,7 @@ def brain_session_payload(settings: Settings, *, user_id: str | None = None) -> 
         "session_id": session_id,
         "profile_name": settings.brain_owner_name,
         "profile_full_name": settings.brain_owner_full_name,
-        "profile_context": [str(record["statement"]) for record in profile_context_records],
+        "profile_context": [dict(record) for record in profile_context_records],
         "profile_context_records": profile_context_records,
         "memory_tool": "brain_remember",
         "recall_tool": "brain_recall",
