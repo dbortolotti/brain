@@ -19,13 +19,13 @@
   <array>
     <string>/bin/sh</string>
     <string>-c</string>
-    <string>until [ -x /var/db/brain-prod/current-venv/bin/python ] &amp;&amp; [ -f /var/db/brain-prod/secrets/brain.env ] &amp;&amp; [ -d /Volumes/xpg_usb4/prod/brain/current ]; do sleep 5; done; unset PYTHONHOME PYTHONPATH; cd /var/db/brain-prod || exit 1; exec /var/db/brain-prod/current-venv/bin/python /var/db/brain-prod/scripts/nightly_maintenance.py --env prod --env-file /var/db/brain-prod/secrets/brain.env</string>
+    <string>exec /var/db/brain-prod/scripts/run_launchd_service.sh maintenance</string>
   </array>
 
   <key>EnvironmentVariables</key>
   <dict>
     <key>PATH</key>
-    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
     <key>HOME</key>
     <string>/var/db/brain-prod</string>
     <key>BRAIN_CONFIG_DIR</key>

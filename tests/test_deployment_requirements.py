@@ -123,10 +123,13 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/launchd/com.brain.mcp.plist.template"),
         Path("deployment/launchd/com.brain.ui.plist.template"),
         Path("deployment/launchd/com.brain.slack-agent.plist.template"),
+        Path("deployment/launchd/com.brain.databases.plist.template"),
         Path("deployment/launchd/com.brain.maintenance.plist.template"),
         Path("deployment/launchd/com.brain.log-rotation.plist.template"),
         Path("deployment/mcp/claude_desktop_config.template.json"),
         Path("deployment/newsyslog/brain.conf"),
+        Path("scripts/run_launchd_service.sh"),
+        Path("scripts/start_launchd_databases.sh"),
         Path("scripts/setup-macos-service-users.sh"),
     }
 
@@ -166,6 +169,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         "com.brain.$ENV_SUFFIX.mcp",
         "com.brain.$ENV_SUFFIX.ui",
         "com.brain.$ENV_SUFFIX.slack-agent",
+        "com.brain.$ENV_SUFFIX.databases",
         "com.brain.$ENV_SUFFIX.maintenance",
         "com.brain.$ENV_SUFFIX.log-rotation",
     ]:
@@ -174,6 +178,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"' in script
     assert "deployment" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
+    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.databases.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template" in script
     assert "disable_launch_daemon" in script
@@ -231,6 +236,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'LOCAL_ENV_FILE="$LOCAL_SECRETS_DIR/brain.env"' in script
     assert 'LOCAL_SCRIPTS_DIR="$LOCAL_SUPPORT_DIR/scripts"' in script
     assert 'LOCAL_CFG_DIR="$LOCAL_SUPPORT_DIR/cfg"' in script
+    assert 'LOCAL_DEPLOYMENT_DIR="$LOCAL_SUPPORT_DIR/deployment"' in script
     assert 'LAUNCHD_LOG_DIR="$LOCAL_SUPPORT_DIR/logs/launchd"' in script
     assert 'BRAIN_SOURCE_ROOT=""' in script
     assert 'BRAIN_RENDERED_ENV_FILE=""' in script
@@ -272,6 +278,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     ) in script
     assert 'rsync -a --delete "$RELEASE_DIR/scripts/" "$LOCAL_SCRIPTS_DIR/"' in script
     assert 'rsync -a --delete "$RELEASE_DIR/cfg/" "$LOCAL_CFG_DIR/"' in script
+    assert 'rsync -a --delete "$RELEASE_DIR/deployment/" "$LOCAL_DEPLOYMENT_DIR/"' in script
     assert "UV_LINK_MODE=copy" in script
     assert 'UV_PROJECT_ENVIRONMENT="$LOCAL_VENV_DIR"' in script
     assert 'BRAIN_CONFIG_DIR="$LOCAL_CFG_DIR"' in script
@@ -284,8 +291,12 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'enable_launch_daemon "$LABEL" "$PLIST_DST"' in script
     assert 'enable_launch_daemon "$UI_LABEL" "$UI_PLIST_DST"' in script
     assert 'enable_launch_daemon "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
+    assert 'enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"' in script
     assert 'enable_launch_daemon "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"' in script
     assert 'enable_launch_daemon "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"' in script
+    assert script.index(
+        'enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"'
+    ) < script.index('enable_launch_daemon "$LABEL" "$PLIST_DST"')
     assert (
         'disable_launch_daemon "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"'
         in script
@@ -342,6 +353,12 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'set_env_var "VECTOR_DATASET_DATABASE_HANDLER" "pgvector"' in script
     assert 'set_env_var "DB_PROVIDER" "postgres"' in script
     assert 'set_env_var "DB_PORT" "$DB_PORT"' in script
+    assert 'set_env_var "BRAIN_DOCKER_PROJECT" "$BRAIN_DOCKER_PROJECT"' in script
+    assert 'set_env_var "BRAIN_DOCKER_HOST_USER" "$BRAIN_DOCKER_HOST_USER"' in script
+    assert 'set_env_var "BRAIN_POSTGRES_CONTAINER" "$BRAIN_POSTGRES_CONTAINER"' in script
+    assert 'set_env_var "BRAIN_NEO4J_CONTAINER" "$BRAIN_NEO4J_CONTAINER"' in script
+    assert 'set_env_var "BRAIN_NEO4J_CONTAINER_USER" "$BRAIN_NEO4J_CONTAINER_USER"' in script
+    assert 'set_env_var "BRAIN_NEO4J_BOLT_PORT" "$BRAIN_NEO4J_BOLT_PORT"' in script
     assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert '"$LOCAL_VENV_DIR/bin/python" scripts/live_model_smoke.py' in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script
@@ -367,23 +384,18 @@ def test_mcp_launchd_uses_dated_request_and_routing_logs() -> None:
     assert "<string>-c</string>" in plist
     assert "<key>SessionCreate</key>" in plist
     assert "<string>/</string>" in plist
-    assert "/var/db/brain-prod/current-venv/bin/python" in plist
+    assert "/var/db/brain-prod/scripts/run_launchd_service.sh mcp" in plist
     assert "/var/db/brain-prod/secrets/brain.env" in plist
     assert "RELEASE_DIR=$(/usr/bin/readlink /Volumes/xpg_usb4/prod/brain/current)" not in plist
-    assert "cd /var/db/brain-prod || exit 1" in plist
-    assert "exec /var/db/brain-prod/current-venv/bin/python -m memory_stack.mcp_server" in plist
-    assert "unset PYTHONHOME PYTHONPATH" in plist
+    assert "memory_stack.mcp_server" not in plist
     assert "<key>PATH</key>" in plist
-    assert "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" in plist
+    assert "/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin" in plist
     assert "<key>UV_CACHE_DIR</key>" in plist
     assert "<string>/var/db/brain-prod/uv-cache</string>" in plist
     assert "<key>UV_PYTHON_INSTALL_DIR</key>" in plist
     assert "<string>/var/db/brain-prod/python</string>" in plist
     assert "<key>BRAIN_CONFIG_DIR</key>" in plist
     assert "<string>/var/db/brain-prod/cfg</string>" in plist
-    assert "until [ -x /var/db/brain-prod/current-venv/bin/python ]" in plist
-    assert "[ -f /var/db/brain-prod/secrets/brain.env ]" in plist
-    assert "[ -d /Volumes/xpg_usb4/prod/brain/current ]" in plist
     assert "/var/db/brain-prod/logs/requests/{date}.jsonl" in plist
     assert "<key>BRAIN_REQUEST_LOG_MAX_BODY_BYTES</key>" in plist
     assert "<string>8192</string>" in plist
@@ -397,6 +409,44 @@ def test_mcp_launchd_uses_dated_request_and_routing_logs() -> None:
     assert "<string>/var/db/brain-prod/system</string>" in plist
     assert "<key>DATA_ROOT_DIRECTORY</key>" in plist
     assert "<string>/var/db/brain-prod/data</string>" in plist
+
+
+def test_launchd_wrappers_wait_for_databases_and_start_containers() -> None:
+    service_script = Path("scripts/run_launchd_service.sh").read_text(encoding="utf-8")
+    database_script = Path("scripts/start_launchd_databases.sh").read_text(encoding="utf-8")
+    database_plist = Path("deployment/launchd/com.brain.databases.plist.template").read_text(
+        encoding="utf-8"
+    )
+
+    assert "wait_for_tcp" in service_script
+    assert 'wait_for_tcp "127.0.0.1" "$DB_PORT" "Postgres"' in service_script
+    assert 'wait_for_tcp "127.0.0.1" "$BRAIN_NEO4J_BOLT_PORT" "Neo4j Bolt"' in service_script
+    assert "memory_stack.mcp_server" in service_script
+    assert "memory_stack.ui_service" in service_script
+    assert "memory_stack.slack_agent_server" in service_script
+    assert "/Users/$BRAIN_DOCKER_HOST_USER/.colima/default/docker.sock" in database_script
+    assert '/usr/bin/nc -z -G 2 "$host" "$port"' in database_script
+    assert 'export DOCKER_HOST="unix://$socket"' in database_script
+    assert 'DOCKER_BIN="$(command -v "$candidate")"' in database_script
+    assert '"$DOCKER_BIN" info' in database_script
+    assert 'export BRAIN_DOCKER_PROJECT' in database_script
+    assert 'log "using Docker binary: $DOCKER_BIN"' in database_script
+    assert "$LOCAL_SUPPORT_DIR/deployment/docker-compose.prod.yml" in database_script
+    assert "/opt/homebrew/bin/docker-compose" in database_script
+    assert '"$DOCKER_COMPOSE_BIN" -p "$BRAIN_DOCKER_PROJECT"' in database_script
+    assert (
+        '"$DOCKER_BIN" compose -p "$BRAIN_DOCKER_PROJECT" -f "$COMPOSE_FILE" '
+        "up -d postgres neo4j"
+    ) in database_script
+    assert 'wait_for_tcp "127.0.0.1" "$DB_PORT" "$ENV_SUFFIX Postgres"' in database_script
+    assert (
+        'wait_for_tcp "127.0.0.1" "$BRAIN_NEO4J_BOLT_PORT" "$ENV_SUFFIX Neo4j Bolt"'
+        in database_script
+    )
+    assert "com.brain.prod.databases" in database_plist
+    assert "/var/db/brain-prod/scripts/start_launchd_databases.sh" in database_plist
+    assert "<key>RunAtLoad</key>" in database_plist
+    assert "<key>StartInterval</key>" in database_plist
 
 
 def test_ui_launchd_uses_cognee_public_paths() -> None:
@@ -424,11 +474,13 @@ def test_maintenance_launchd_runs_cognify_then_backup_nightly_at_3am() -> None:
     plist = Path("deployment/launchd/com.brain.maintenance.plist.template").read_text(
         encoding="utf-8"
     )
+    service_script = Path("scripts/run_launchd_service.sh").read_text(encoding="utf-8")
 
     assert "com.brain.prod.maintenance" in plist
-    assert "/var/db/brain-prod/scripts/nightly_maintenance.py" in plist
-    assert "--env prod" in plist
-    assert "--env-file /var/db/brain-prod/secrets/brain.env" in plist
+    assert "/var/db/brain-prod/scripts/run_launchd_service.sh maintenance" in plist
+    assert 'exec "$PYTHON" "$LOCAL_SUPPORT_DIR/scripts/nightly_maintenance.py"' in service_script
+    assert '--env "$ENV_SUFFIX"' in service_script
+    assert '--env-file "$ENV_FILE"' in service_script
     assert "--session-id portable_agent_session" not in plist
     assert "<key>StartCalendarInterval</key>" in plist
     assert "<key>Hour</key>" in plist
@@ -441,12 +493,17 @@ def test_log_rotation_launchd_runs_daily_after_midnight() -> None:
     plist = Path("deployment/launchd/com.brain.log-rotation.plist.template").read_text(
         encoding="utf-8"
     )
+    service_script = Path("scripts/run_launchd_service.sh").read_text(encoding="utf-8")
 
     assert "com.brain.prod.log-rotation" in plist
-    assert "/var/db/brain-prod/scripts/rotate_launchd_logs.py" in plist
-    assert "--log-dir /var/db/brain-prod/logs/launchd" in plist
-    assert "--archive-dir /Volumes/xpg_usb4/prod/brain/shared/logs/launchd/archive" in plist
-    assert "--retention-days 30" in plist
+    assert "/var/db/brain-prod/scripts/run_launchd_service.sh log-rotation" in plist
+    assert 'exec "$PYTHON" "$LOCAL_SUPPORT_DIR/scripts/rotate_launchd_logs.py"' in service_script
+    assert '--log-dir "$LOCAL_SUPPORT_DIR/logs/launchd"' in service_script
+    assert (
+        '--archive-dir "/Volumes/xpg_usb4/$ENV_SUFFIX/brain/shared/logs/launchd/archive"'
+        in service_script
+    )
+    assert "--retention-days 30" in service_script
     assert "<key>StartCalendarInterval</key>" in plist
     assert "<key>Hour</key>" in plist
     assert "<integer>0</integer>" in plist

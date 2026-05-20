@@ -36,6 +36,7 @@ fi
 LABEL="${BRAIN_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.mcp}"
 UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
 SLACK_LABEL="${BRAIN_SLACK_AGENT_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.slack-agent}"
+DATABASES_LABEL="${BRAIN_DATABASES_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.databases}"
 MAINTENANCE_LABEL="${BRAIN_MAINTENANCE_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.maintenance}"
 LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.log-rotation}"
 LEGACY_AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
@@ -106,6 +107,7 @@ LOCAL_SECRETS_DIR="$LOCAL_SUPPORT_DIR/secrets"
 LOCAL_ENV_FILE="$LOCAL_SECRETS_DIR/brain.env"
 LOCAL_SCRIPTS_DIR="$LOCAL_SUPPORT_DIR/scripts"
 LOCAL_CFG_DIR="$LOCAL_SUPPORT_DIR/cfg"
+LOCAL_DEPLOYMENT_DIR="$LOCAL_SUPPORT_DIR/deployment"
 LAUNCHD_LOG_DIR="$LOCAL_SUPPORT_DIR/logs/launchd"
 LEGACY_LAUNCH_AGENT_DIR="${BRAIN_LEGACY_LAUNCH_AGENT_DIR:-/Users/$BRAIN_DEPLOY_USER/Library/LaunchAgents}"
 PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.mcp.plist.template"
@@ -114,6 +116,8 @@ UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
 UI_PLIST_DST="/Library/LaunchDaemons/$UI_LABEL.plist"
 SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template"
 SLACK_PLIST_DST="/Library/LaunchDaemons/$SLACK_LABEL.plist"
+DATABASES_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.databases.plist.template"
+DATABASES_PLIST_DST="/Library/LaunchDaemons/$DATABASES_LABEL.plist"
 MAINTENANCE_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template"
 MAINTENANCE_PLIST_DST="/Library/LaunchDaemons/$MAINTENANCE_LABEL.plist"
 LOG_ROTATION_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template"
@@ -381,6 +385,7 @@ apply_runtime_permissions() {
       "$LOCAL_SECRETS_DIR" \
       "$LOCAL_SCRIPTS_DIR" \
       "$LOCAL_CFG_DIR" \
+      "$LOCAL_DEPLOYMENT_DIR" \
       "$LAUNCHD_LOG_DIR"
     run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$SECRETS_DIR" "$LOCAL_SECRETS_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR"
     if [[ -f "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh" ]]; then
@@ -392,6 +397,9 @@ apply_runtime_permissions() {
     if [[ "$phase" == "final" && -d "$LOCAL_CFG_DIR" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_CFG_DIR"
     fi
+    if [[ "$phase" == "final" && -d "$LOCAL_DEPLOYMENT_DIR" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_DEPLOYMENT_DIR"
+    fi
     if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$RELEASE_DIR"
     fi
@@ -399,7 +407,7 @@ apply_runtime_permissions() {
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_VENV_DIR"
     fi
   fi
-  run_privileged chmod 755 "$PROD_ROOT" "$PROD_ROOT/releases" "$SHARED_DIR" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR"
+  run_privileged chmod 755 "$PROD_ROOT" "$PROD_ROOT/releases" "$SHARED_DIR" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" "$LOCAL_DEPLOYMENT_DIR"
   if [[ -d "$LOCAL_VENV_DIR" ]]; then
     run_privileged chmod 755 "$LOCAL_VENV_DIR"
   fi
@@ -674,6 +682,7 @@ retire_legacy_launch_agents() {
     "$LABEL"
     "$UI_LABEL"
     "$SLACK_LABEL"
+    "$DATABASES_LABEL"
     "$MAINTENANCE_LABEL"
     "$LOG_ROTATION_LABEL"
     "$LEGACY_AGENT_MEMORY_LABEL"
@@ -767,6 +776,7 @@ if deploy_env != "prod":
         {
             "brain-ui.": f"brain-{deploy_env}-ui.",
             "brain-slack-agent.": f"brain-{deploy_env}-slack-agent.",
+            "brain-databases.": f"brain-{deploy_env}-databases.",
             "brain-maintenance.": f"brain-{deploy_env}-maintenance.",
             "brain-log-rotation.": f"brain-{deploy_env}-log-rotation.",
         }
@@ -796,7 +806,7 @@ if [[ "$(id -u)" != "0" ]]; then
 fi
 ensure_service_user
 resolve_docker_runtime_user
-run_privileged mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SECRETS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" /Library/LaunchDaemons
+run_privileged mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SECRETS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" "$LOCAL_DEPLOYMENT_DIR" /Library/LaunchDaemons
 apply_runtime_permissions bootstrap
 import_rendered_config
 clear_mutable_data_provenance
@@ -977,6 +987,13 @@ set_env_var "DB_HOST" "127.0.0.1"
 set_env_var "DB_PORT" "$DB_PORT"
 set_env_var "DB_USERNAME" "cognee"
 set_env_var "DB_PASSWORD" "cognee"
+set_env_var "BRAIN_DOCKER_PROJECT" "$BRAIN_DOCKER_PROJECT"
+set_env_var "BRAIN_DOCKER_HOST_USER" "$BRAIN_DOCKER_HOST_USER"
+set_env_var "BRAIN_POSTGRES_CONTAINER" "$BRAIN_POSTGRES_CONTAINER"
+set_env_var "BRAIN_NEO4J_CONTAINER" "$BRAIN_NEO4J_CONTAINER"
+set_env_var "BRAIN_NEO4J_CONTAINER_USER" "$BRAIN_NEO4J_CONTAINER_USER"
+set_env_var "BRAIN_NEO4J_HTTP_PORT" "$BRAIN_NEO4J_HTTP_PORT"
+set_env_var "BRAIN_NEO4J_BOLT_PORT" "$BRAIN_NEO4J_BOLT_PORT"
 ensure_env_var "BRAIN_LLM_ENABLED" "false"
 ensure_env_var "BRAIN_TASTE_ENABLED" "true"
 ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"
@@ -1096,6 +1113,7 @@ rm -f "$RELEASE_DIR/.env"
 
 log "installing dependencies in release"
 rsync -a --delete "$RELEASE_DIR/cfg/" "$LOCAL_CFG_DIR/"
+rsync -a --delete "$RELEASE_DIR/deployment/" "$LOCAL_DEPLOYMENT_DIR/"
 run_in_release_env uv sync --all-extras --no-editable --reinstall-package memory-stack --python "$BRAIN_DEPLOY_PYTHON"
 chmod +x "$RELEASE_DIR/scripts/run-cognee-ui-production.sh"
 rsync -a --delete "$RELEASE_DIR/scripts/" "$LOCAL_SCRIPTS_DIR/"
@@ -1166,6 +1184,8 @@ render_plist "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
 render_plist "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
+render_plist "$DATABASES_PLIST_SRC" "$DATABASES_PLIST_DST"
+plutil -lint "$DATABASES_PLIST_DST" >/dev/null
 render_plist "$MAINTENANCE_PLIST_SRC" "$MAINTENANCE_PLIST_DST"
 plutil -lint "$MAINTENANCE_PLIST_DST" >/dev/null
 render_plist "$LOG_ROTATION_PLIST_SRC" "$LOG_ROTATION_PLIST_DST"
@@ -1183,9 +1203,9 @@ printf '%s\n' "$RELEASE_VERSION" >"$SHARED_DIR/current-version"
 ln -sfn "$LOCAL_VENV_DIR" "$LOCAL_CURRENT_VENV_LINK"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
 if [[ "$DEPLOY_ENV" == "prod" ]]; then
-  launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-maintenance brain-log-rotation)
+  launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-databases brain-maintenance brain-log-rotation)
 else
-  launchd_log_stems=(brain-staging brain-staging-ui brain-staging-slack-agent brain-staging-maintenance brain-staging-log-rotation)
+  launchd_log_stems=(brain-staging brain-staging-ui brain-staging-slack-agent brain-staging-databases brain-staging-maintenance brain-staging-log-rotation)
 fi
 for stem in "${launchd_log_stems[@]}"; do
   touch "$LAUNCHD_LOG_DIR/$stem.out.log" "$LAUNCHD_LOG_DIR/$stem.err.log"
@@ -1194,6 +1214,8 @@ apply_runtime_permissions final
 
 if command -v launchctl >/dev/null 2>&1; then
   retire_legacy_launch_agents
+  log "restarting launchd service $DATABASES_LABEL"
+  enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"
   log "restarting launchd service $LABEL"
   enable_launch_daemon "$LABEL" "$PLIST_DST"
   log "restarting launchd service $UI_LABEL"

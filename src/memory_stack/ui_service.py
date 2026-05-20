@@ -74,8 +74,13 @@ def prepare_frontend(settings) -> Path:
         ),
         version=get_cognee_version(),
     )
-    run(["npm", "install"], cwd=isolated_dir)
+    if not frontend_dependencies_ready(isolated_dir):
+        run(["npm", "install"], cwd=isolated_dir)
     return isolated_dir
+
+
+def frontend_dependencies_ready(frontend_dir: Path) -> bool:
+    return (frontend_dir / "node_modules" / ".bin" / "next").exists()
 
 
 def isolate_frontend_cache(frontend_dir: Path, *, cache_root: Path, version: str) -> Path:
