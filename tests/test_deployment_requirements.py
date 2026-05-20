@@ -123,12 +123,14 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/launchd/com.brain.mcp.plist.template"),
         Path("deployment/launchd/com.brain.ui.plist.template"),
         Path("deployment/launchd/com.brain.slack-agent.plist.template"),
+        Path("deployment/launchd/com.brain.docker-runtime.plist.template"),
         Path("deployment/launchd/com.brain.databases.plist.template"),
         Path("deployment/launchd/com.brain.maintenance.plist.template"),
         Path("deployment/launchd/com.brain.log-rotation.plist.template"),
         Path("deployment/mcp/claude_desktop_config.template.json"),
         Path("deployment/newsyslog/brain.conf"),
         Path("scripts/run_launchd_service.sh"),
+        Path("scripts/start_docker_runtime.sh"),
         Path("scripts/start_launchd_databases.sh"),
         Path("scripts/setup-macos-service-users.sh"),
     }
@@ -169,6 +171,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         "com.brain.$ENV_SUFFIX.mcp",
         "com.brain.$ENV_SUFFIX.ui",
         "com.brain.$ENV_SUFFIX.slack-agent",
+        "com.brain.$ENV_SUFFIX.docker-runtime",
         "com.brain.$ENV_SUFFIX.databases",
         "com.brain.$ENV_SUFFIX.maintenance",
         "com.brain.$ENV_SUFFIX.log-rotation",
@@ -178,6 +181,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"' in script
     assert "deployment" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
+    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.docker-runtime.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.databases.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template" in script
@@ -291,12 +295,15 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'enable_launch_daemon "$LABEL" "$PLIST_DST"' in script
     assert 'enable_launch_daemon "$UI_LABEL" "$UI_PLIST_DST"' in script
     assert 'enable_launch_daemon "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
+    assert 'enable_launch_daemon "$DOCKER_RUNTIME_LABEL" "$DOCKER_RUNTIME_PLIST_DST"' in script
     assert 'enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"' in script
     assert 'enable_launch_daemon "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"' in script
     assert 'enable_launch_daemon "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"' in script
-    assert script.index(
-        'enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"'
-    ) < script.index('enable_launch_daemon "$LABEL" "$PLIST_DST"')
+    assert (
+        script.index('enable_launch_daemon "$DOCKER_RUNTIME_LABEL" "$DOCKER_RUNTIME_PLIST_DST"')
+        < script.index('enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"')
+        < script.index('enable_launch_daemon "$LABEL" "$PLIST_DST"')
+    )
     assert (
         'disable_launch_daemon "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"'
         in script
@@ -414,6 +421,10 @@ def test_mcp_launchd_uses_dated_request_and_routing_logs() -> None:
 def test_launchd_wrappers_wait_for_databases_and_start_containers() -> None:
     service_script = Path("scripts/run_launchd_service.sh").read_text(encoding="utf-8")
     database_script = Path("scripts/start_launchd_databases.sh").read_text(encoding="utf-8")
+    docker_runtime_script = Path("scripts/start_docker_runtime.sh").read_text(encoding="utf-8")
+    docker_runtime_plist = Path(
+        "deployment/launchd/com.brain.docker-runtime.plist.template"
+    ).read_text(encoding="utf-8")
     database_plist = Path("deployment/launchd/com.brain.databases.plist.template").read_text(
         encoding="utf-8"
     )
@@ -424,19 +435,27 @@ def test_launchd_wrappers_wait_for_databases_and_start_containers() -> None:
     assert "memory_stack.mcp_server" in service_script
     assert "memory_stack.ui_service" in service_script
     assert "memory_stack.slack_agent_server" in service_script
+    assert "com.brain.prod.docker-runtime" in docker_runtime_plist
+    assert "/var/db/brain-prod/scripts/start_docker_runtime.sh" in docker_runtime_plist
+    assert "<key>RunAtLoad</key>" in docker_runtime_plist
+    assert "<key>StartInterval</key>" in docker_runtime_plist
+    assert "homebrew.mxcl.colima" in docker_runtime_script
+    assert "/bin/launchctl asuser" in docker_runtime_script
+    assert "/usr/bin/su -l" in docker_runtime_script
+    assert "$COLIMA_BIN $COLIMA_START_ARGS" in docker_runtime_script
+    assert '"$DOCKER_BIN" info' in docker_runtime_script
     assert "/Users/$BRAIN_DOCKER_HOST_USER/.colima/default/docker.sock" in database_script
     assert '/usr/bin/nc -z -G 2 "$host" "$port"' in database_script
     assert 'export DOCKER_HOST="unix://$socket"' in database_script
     assert 'DOCKER_BIN="$(command -v "$candidate")"' in database_script
     assert '"$DOCKER_BIN" info' in database_script
-    assert 'export BRAIN_DOCKER_PROJECT' in database_script
+    assert "export BRAIN_DOCKER_PROJECT" in database_script
     assert 'log "using Docker binary: $DOCKER_BIN"' in database_script
     assert "$LOCAL_SUPPORT_DIR/deployment/docker-compose.prod.yml" in database_script
     assert "/opt/homebrew/bin/docker-compose" in database_script
     assert '"$DOCKER_COMPOSE_BIN" -p "$BRAIN_DOCKER_PROJECT"' in database_script
     assert (
-        '"$DOCKER_BIN" compose -p "$BRAIN_DOCKER_PROJECT" -f "$COMPOSE_FILE" '
-        "up -d postgres neo4j"
+        '"$DOCKER_BIN" compose -p "$BRAIN_DOCKER_PROJECT" -f "$COMPOSE_FILE" up -d postgres neo4j'
     ) in database_script
     assert 'wait_for_tcp "127.0.0.1" "$DB_PORT" "$ENV_SUFFIX Postgres"' in database_script
     assert (

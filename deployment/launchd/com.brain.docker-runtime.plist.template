@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.brain.prod.docker-runtime</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>exec /var/db/brain-prod/scripts/start_docker_runtime.sh</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StartInterval</key>
+  <integer>300</integer>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/var/db/brain-prod</string>
+    <key>ENV_FILE</key>
+    <string>/var/db/brain-prod/secrets/brain.env</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/oric/Library/Logs/brain-docker-runtime.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/oric/Library/Logs/brain-docker-runtime.err.log</string>
+</dict>
+</plist>

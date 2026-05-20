@@ -36,6 +36,7 @@ fi
 LABEL="${BRAIN_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.mcp}"
 UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
 SLACK_LABEL="${BRAIN_SLACK_AGENT_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.slack-agent}"
+DOCKER_RUNTIME_LABEL="${BRAIN_DOCKER_RUNTIME_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.docker-runtime}"
 DATABASES_LABEL="${BRAIN_DATABASES_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.databases}"
 MAINTENANCE_LABEL="${BRAIN_MAINTENANCE_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.maintenance}"
 LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.log-rotation}"
@@ -116,6 +117,8 @@ UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
 UI_PLIST_DST="/Library/LaunchDaemons/$UI_LABEL.plist"
 SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template"
 SLACK_PLIST_DST="/Library/LaunchDaemons/$SLACK_LABEL.plist"
+DOCKER_RUNTIME_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.docker-runtime.plist.template"
+DOCKER_RUNTIME_PLIST_DST="/Library/LaunchDaemons/$DOCKER_RUNTIME_LABEL.plist"
 DATABASES_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.databases.plist.template"
 DATABASES_PLIST_DST="/Library/LaunchDaemons/$DATABASES_LABEL.plist"
 MAINTENANCE_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template"
@@ -682,6 +685,7 @@ retire_legacy_launch_agents() {
     "$LABEL"
     "$UI_LABEL"
     "$SLACK_LABEL"
+    "$DOCKER_RUNTIME_LABEL"
     "$DATABASES_LABEL"
     "$MAINTENANCE_LABEL"
     "$LOG_ROTATION_LABEL"
@@ -776,6 +780,7 @@ if deploy_env != "prod":
         {
             "brain-ui.": f"brain-{deploy_env}-ui.",
             "brain-slack-agent.": f"brain-{deploy_env}-slack-agent.",
+            "brain-docker-runtime.": f"brain-{deploy_env}-docker-runtime.",
             "brain-databases.": f"brain-{deploy_env}-databases.",
             "brain-maintenance.": f"brain-{deploy_env}-maintenance.",
             "brain-log-rotation.": f"brain-{deploy_env}-log-rotation.",
@@ -1184,6 +1189,8 @@ render_plist "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
 render_plist "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
+render_plist "$DOCKER_RUNTIME_PLIST_SRC" "$DOCKER_RUNTIME_PLIST_DST"
+plutil -lint "$DOCKER_RUNTIME_PLIST_DST" >/dev/null
 render_plist "$DATABASES_PLIST_SRC" "$DATABASES_PLIST_DST"
 plutil -lint "$DATABASES_PLIST_DST" >/dev/null
 render_plist "$MAINTENANCE_PLIST_SRC" "$MAINTENANCE_PLIST_DST"
@@ -1203,9 +1210,9 @@ printf '%s\n' "$RELEASE_VERSION" >"$SHARED_DIR/current-version"
 ln -sfn "$LOCAL_VENV_DIR" "$LOCAL_CURRENT_VENV_LINK"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
 if [[ "$DEPLOY_ENV" == "prod" ]]; then
-  launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-databases brain-maintenance brain-log-rotation)
+  launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-docker-runtime brain-databases brain-maintenance brain-log-rotation)
 else
-  launchd_log_stems=(brain-staging brain-staging-ui brain-staging-slack-agent brain-staging-databases brain-staging-maintenance brain-staging-log-rotation)
+  launchd_log_stems=(brain-staging brain-staging-ui brain-staging-slack-agent brain-staging-docker-runtime brain-staging-databases brain-staging-maintenance brain-staging-log-rotation)
 fi
 for stem in "${launchd_log_stems[@]}"; do
   touch "$LAUNCHD_LOG_DIR/$stem.out.log" "$LAUNCHD_LOG_DIR/$stem.err.log"
@@ -1214,6 +1221,8 @@ apply_runtime_permissions final
 
 if command -v launchctl >/dev/null 2>&1; then
   retire_legacy_launch_agents
+  log "restarting launchd service $DOCKER_RUNTIME_LABEL"
+  enable_launch_daemon "$DOCKER_RUNTIME_LABEL" "$DOCKER_RUNTIME_PLIST_DST"
   log "restarting launchd service $DATABASES_LABEL"
   enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"
   log "restarting launchd service $LABEL"
