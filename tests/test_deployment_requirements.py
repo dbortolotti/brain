@@ -38,7 +38,12 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     assert workflow.index("Render production config from GitHub Secrets") < workflow.index(
         "Promote staging revision to production"
     )
-    assert "BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh" in workflow
+    assert "sudo -n" in workflow
+    assert "BRAIN_DEPLOY_ENV=prod" in workflow
+    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
+    assert '--source-root "$PWD"' in workflow
+    assert "--rendered-env" in workflow
+    assert "--rendered-auth-password" in workflow
     assert not Path(".github/workflows/deploy-local-production.yml").exists()
 
 
@@ -59,7 +64,12 @@ def test_github_staging_action_deploys_main_to_staging() -> None:
     assert "BRAIN_PUBLIC_BASE_URL: https://brain-staging.dceb.net" in workflow
     assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
     assert "scripts/render_prod_env.py --env staging" in workflow
-    assert "BRAIN_DEPLOY_ENV=staging ./scripts/deploy-local-production.sh" in workflow
+    assert "sudo -n" in workflow
+    assert "BRAIN_DEPLOY_ENV=staging" in workflow
+    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
+    assert '--source-root "$PWD"' in workflow
+    assert "--rendered-env" in workflow
+    assert "--rendered-auth-password" in workflow
     assert workflow.index("Validate repository") < workflow.index(
         "Render staging config from GitHub Secrets"
     )
@@ -82,7 +92,8 @@ def test_release_action_promotes_staging_sha_to_prod_and_tags() -> None:
     assert 'git checkout "$STAGING_SHA"' in workflow
     assert "BRAIN_RELEASE_VERSION" in workflow
     assert "scripts/render_prod_env.py --env prod" in workflow
-    assert "BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh" in workflow
+    assert "BRAIN_DEPLOY_ENV=prod" in workflow
+    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
     assert "git tag -a" not in workflow
     assert "git push origin" not in workflow
     assert "Verify promoted release tag" in workflow
@@ -221,11 +232,22 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'LOCAL_SCRIPTS_DIR="$LOCAL_SUPPORT_DIR/scripts"' in script
     assert 'LOCAL_CFG_DIR="$LOCAL_SUPPORT_DIR/cfg"' in script
     assert 'LAUNCHD_LOG_DIR="$LOCAL_SUPPORT_DIR/logs/launchd"' in script
+    assert 'BRAIN_SOURCE_ROOT=""' in script
+    assert 'BRAIN_RENDERED_ENV_FILE=""' in script
+    assert 'BRAIN_RENDERED_AUTH_PASSWORD_FILE=""' in script
+    assert "--source-root PATH" in script
+    assert "--rendered-env PATH" in script
+    assert "--rendered-auth-password PATH" in script
+    assert "BRAIN_DEPLOY_DELEGATED=true" in script
     assert (
         'LEGACY_LAUNCH_AGENT_DIR="${BRAIN_LEGACY_LAUNCH_AGENT_DIR:-/Users/$BRAIN_DEPLOY_USER/Library/LaunchAgents}"'
         in script
     )
     assert "sync_runtime_secrets()" in script
+    assert "import_rendered_config()" in script
+    assert 'cp "$BRAIN_RENDERED_ENV_FILE" "$SECRETS_DIR/brain.env"' in script
+    assert 'cp "$BRAIN_RENDERED_AUTH_PASSWORD_FILE" "$SECRETS_DIR/brain-auth-password"' in script
+    assert "import_rendered_config" in script
     assert "bootstrap_local_runtime_data()" in script
     assert "text = text.replace(source_secrets, local_secrets)" in script
     assert '"SYSTEM_ROOT_DIRECTORY": f"{local_support}/system"' in script

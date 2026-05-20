@@ -64,6 +64,7 @@ jobs:
           uv run pytest
 
       - name: Render staging config from GitHub Secrets
+        id: render-config
         env:
           BRAIN_DEPLOY_ENV: staging
           BRAIN_RELEASE_ENV: staging
@@ -138,19 +139,32 @@ jobs:
           BRAIN_SLACK_ALLOWED_USER_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_USER_IDS }}
           BRAIN_SLACK_ADMIN_USER_IDS: ${{ vars.BRAIN_SLACK_ADMIN_USER_IDS }}
         run: |
+          render_dir="$RUNNER_TEMP/brain-staging-config"
+          mkdir -p "$render_dir"
           args=()
+          args+=(--output "$render_dir/brain.env")
+          args+=(--base-output "$render_dir/brain.env.last-deployed")
+          args+=(--auth-password-file "$render_dir/brain-auth-password")
+          args+=(--auth-password-base-file "$render_dir/brain-auth-password.last-deployed")
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force_config_override }}" == "true" ]]; then
             args+=(--force-config-override)
           fi
-          sudo -E uv run python scripts/render_prod_env.py --env staging "${args[@]}"
+          uv run python scripts/render_prod_env.py --env staging "${args[@]}"
+          echo "env_file=$render_dir/brain.env" >>"$GITHUB_OUTPUT"
+          echo "auth_password_file=$render_dir/brain-auth-password" >>"$GITHUB_OUTPUT"
 
       - name: Deploy to local staging LaunchDaemons
-        env:
-          BRAIN_RELEASE_ENV: staging
-          BRAIN_RELEASE_SHA: ${{ github.sha }}
-          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          BRAIN_DEPLOY_ENV=staging ./scripts/deploy-local-production.sh
+          sudo -n \
+            BRAIN_DEPLOY_ENV=staging \
+            BRAIN_RELEASE_ENV=staging \
+            BRAIN_RELEASE_SHA="${{ github.sha }}" \
+            BRAIN_RELEASE_VERSION="${{ steps.version.outputs.version }}" \
+            GITHUB_SHA="${{ github.sha }}" \
+            /Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh \
+            --source-root "$PWD" \
+            --rendered-env "${{ steps.render-config.outputs.env_file }}" \
+            --rendered-auth-password "${{ steps.render-config.outputs.auth_password_file }}"
 
       - name: Tag staged release
         if: startsWith(steps.version.outputs.version, 'v')

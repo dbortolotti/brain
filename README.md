@@ -726,4 +726,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: 83724b13a8171262bbae9e89f5fb0142d1c504633283b260ff843783e18c552c -->
+<!-- brain-doc-source-hash: f0605b036620291121a0a834a97a65625ee205e54e5d244878d1345a28f0de29 -->

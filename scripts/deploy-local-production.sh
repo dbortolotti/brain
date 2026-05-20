@@ -122,6 +122,11 @@ LEGACY_AGENT_MEMORY_PLIST_DST="/Library/LaunchDaemons/$LEGACY_AGENT_MEMORY_LABEL
 LEGACY_BACKUP_PLIST_DST="/Library/LaunchDaemons/$LEGACY_BACKUP_LABEL.plist"
 NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
 NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
+BRAIN_SOURCE_ROOT=""
+BRAIN_RENDERED_ENV_FILE=""
+BRAIN_RENDERED_AUTH_PASSWORD_FILE=""
+ORIGINAL_ARGS=("$@")
+SHOW_USAGE="false"
 
 usage() {
   cat <<EOF
@@ -136,22 +141,63 @@ Environment:
   BRAIN_NEO4J_CONTAINER_USER   uid:gid for Neo4j Docker process (default: Docker host user)
   BRAIN_DEPLOY_PYTHON          Python version uv should install/use (default: $BRAIN_DEPLOY_PYTHON)
   BRAIN_REFRESH_RELEASE        refresh an existing release directory (default: $BRAIN_REFRESH_RELEASE)
+
+Options:
+  --source-root PATH             deploy code from PATH instead of this script's checkout
+  --rendered-env PATH            import a pre-rendered brain.env before deploy
+  --rendered-auth-password PATH  import a pre-rendered brain-auth-password before deploy
 EOF
 }
 
-case "${1:-}" in
-  "" )
-    ;;
-  -h|--help )
-    usage
-    exit 0
-    ;;
-  * )
-    printf 'unknown argument: %s\n\n' "$1" >&2
-    usage >&2
-    exit 2
-    ;;
-esac
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      SHOW_USAGE="true"
+      shift
+      ;;
+    --source-root)
+      if [[ $# -lt 2 ]]; then
+        echo "--source-root requires a path" >&2
+        exit 2
+      fi
+      BRAIN_SOURCE_ROOT="$2"
+      shift 2
+      ;;
+    --rendered-env)
+      if [[ $# -lt 2 ]]; then
+        echo "--rendered-env requires a path" >&2
+        exit 2
+      fi
+      BRAIN_RENDERED_ENV_FILE="$2"
+      shift 2
+      ;;
+    --rendered-auth-password)
+      if [[ $# -lt 2 ]]; then
+        echo "--rendered-auth-password requires a path" >&2
+        exit 2
+      fi
+      BRAIN_RENDERED_AUTH_PASSWORD_FILE="$2"
+      shift 2
+      ;;
+    *)
+      printf 'unknown argument: %s\n\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ "$SHOW_USAGE" == "true" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ -n "$BRAIN_SOURCE_ROOT" ]]; then
+  BRAIN_SOURCE_ROOT="$(cd "$BRAIN_SOURCE_ROOT" && pwd)"
+  if [[ "$BRAIN_SOURCE_ROOT" != "$REPO_ROOT" && "${BRAIN_DEPLOY_DELEGATED:-false}" != "true" ]]; then
+    exec env BRAIN_DEPLOY_DELEGATED=true "$BRAIN_SOURCE_ROOT/scripts/deploy-local-production.sh" "${ORIGINAL_ARGS[@]}"
+  fi
+fi
 
 log() {
   printf '[deploy] %s\n' "$*"
@@ -462,6 +508,43 @@ PY
   run_privileged find "$LOCAL_SECRETS_DIR" -type f -exec chmod 600 {} +
 }
 
+import_rendered_config() {
+  local source_base
+
+  if [[ -n "$BRAIN_RENDERED_ENV_FILE" ]]; then
+    if [[ ! -f "$BRAIN_RENDERED_ENV_FILE" ]]; then
+      echo "rendered env file not found: $BRAIN_RENDERED_ENV_FILE" >&2
+      exit 2
+    fi
+    log "importing rendered $DEPLOY_ENV env from $BRAIN_RENDERED_ENV_FILE"
+    run_privileged cp "$BRAIN_RENDERED_ENV_FILE" "$SECRETS_DIR/brain.env"
+    source_base="$BRAIN_RENDERED_ENV_FILE.last-deployed"
+    if [[ -f "$source_base" ]]; then
+      run_privileged cp "$source_base" "$SECRETS_DIR/brain.env.last-deployed"
+    fi
+  fi
+
+  if [[ -n "$BRAIN_RENDERED_AUTH_PASSWORD_FILE" ]]; then
+    if [[ ! -f "$BRAIN_RENDERED_AUTH_PASSWORD_FILE" ]]; then
+      echo "rendered auth password file not found: $BRAIN_RENDERED_AUTH_PASSWORD_FILE" >&2
+      exit 2
+    fi
+    log "importing rendered $DEPLOY_ENV auth password"
+    run_privileged cp "$BRAIN_RENDERED_AUTH_PASSWORD_FILE" "$SECRETS_DIR/brain-auth-password"
+    source_base="$BRAIN_RENDERED_AUTH_PASSWORD_FILE.last-deployed"
+    if [[ -f "$source_base" ]]; then
+      run_privileged cp "$source_base" "$SECRETS_DIR/brain-auth-password.last-deployed"
+    fi
+  fi
+
+  if [[ -n "$BRAIN_RENDERED_ENV_FILE$BRAIN_RENDERED_AUTH_PASSWORD_FILE" ]]; then
+    run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$SECRETS_DIR"
+    run_privileged chmod 700 "$SECRETS_DIR"
+    run_privileged find "$SECRETS_DIR" -type d -exec chmod 700 {} +
+    run_privileged find "$SECRETS_DIR" -type f -exec chmod 600 {} +
+  fi
+}
+
 bootstrap_local_runtime_data() {
   log "bootstrapping $DEPLOY_ENV Cognee runtime data under $LOCAL_SUPPORT_DIR"
   run_privileged mkdir -p "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"
@@ -715,6 +798,7 @@ ensure_service_user
 resolve_docker_runtime_user
 run_privileged mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SECRETS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" /Library/LaunchDaemons
 apply_runtime_permissions bootstrap
+import_rendered_config
 clear_mutable_data_provenance
 
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
