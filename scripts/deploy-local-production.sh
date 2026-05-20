@@ -403,6 +403,9 @@ apply_runtime_permissions() {
     if [[ "$phase" == "final" && -d "$LOCAL_DEPLOYMENT_DIR" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_DEPLOYMENT_DIR"
     fi
+    if [[ "$phase" == "final" && -d "$DATA_DIR/brain" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$DATA_DIR/brain"
+    fi
     if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$RELEASE_DIR"
     fi
@@ -413,6 +416,9 @@ apply_runtime_permissions() {
   run_privileged chmod 755 "$PROD_ROOT" "$PROD_ROOT/releases" "$SHARED_DIR" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" "$LOCAL_DEPLOYMENT_DIR"
   if [[ -d "$LOCAL_VENV_DIR" ]]; then
     run_privileged chmod 755 "$LOCAL_VENV_DIR"
+  fi
+  if [[ "$phase" == "final" && -d "$DATA_DIR/brain" ]]; then
+    run_privileged chmod -R u+rwX,go+rX "$DATA_DIR/brain"
   fi
   if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
     run_privileged find "$RELEASE_DIR" -type d -exec chmod 755 {} +

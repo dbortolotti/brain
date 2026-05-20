@@ -261,6 +261,8 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "import_rendered_config" in script
     assert "bootstrap_local_runtime_data()" in script
     assert "text = text.replace(source_secrets, local_secrets)" in script
+    assert 'chown -R "$BRAIN_SERVICE_USER:staff" "$DATA_DIR/brain"' in script
+    assert 'chmod -R u+rwX,go+rX "$DATA_DIR/brain"' in script
     assert 'f"{root}/shared/data/system": f"{local_support}/system"' in script
     assert 'f"{root}/shared/logs/requests": f"{local_support}/logs/requests"' in script
     assert "rewrite_local_runtime_config" in script

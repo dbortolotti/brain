@@ -365,4 +365,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: ca9577fa164011d2a7794056580a912b00b43d2ad724a7684ae928f34af540d6 -->
+<!-- brain-doc-source-hash: bf7d1d08da7259bf0c316ac785ebcbf0d1cf3884ef42e5a165b4b1bbea4764ea -->
