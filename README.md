@@ -431,10 +431,11 @@ Documentation has a deterministic source-of-truth check plus a manual LLM refres
 make docs-generate  # refresh docs/generated/facts.json
 make docs-check     # fail if facts or managed docs are stale
 make docs-llm       # manually rewrite managed docs with the configured LLM
+make llm-docs       # alias used by the pre-commit hook
 make docs-hash      # refresh source hashes after manual doc review
 ```
 
-The validate workflow and the deploy workflows run `make docs-check`. The LLM rewrite hook is manual so normal commits and deploys do not depend on network availability or model credentials.
+The validate workflow and the deploy workflows run `make docs-check`. The local pre-commit hook runs `make llm-docs`, so commits require the configured LLM documentation environment.
 
 For statistical model-role evals, use the Brain eval Make targets. The default target writes `eval_runs/brain-golden.json`:
 
@@ -720,4 +721,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: ea9290a837f1ee1b528efb6e9029bd970c20df5f57437d95a6c66b47eef0c18a -->
+<!-- brain-doc-source-hash: 3185020620e3ebb5135310f6524b28d994144f386f8ac352c4b8608d57b56f3c -->

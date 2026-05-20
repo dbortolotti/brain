@@ -11,12 +11,12 @@ def test_docs_automation_files_are_wired() -> None:
     makefile = Path("Makefile").read_text(encoding="utf-8")
     pre_commit = Path(".pre-commit-config.yaml").read_text(encoding="utf-8")
 
-    for target in ("docs-generate", "docs-check", "docs-hash", "docs-llm"):
+    for target in ("docs-generate", "docs-check", "docs-hash", "docs-llm", "llm-docs"):
         assert f"{target}:" in makefile
 
     assert "make docs-check" in pre_commit
-    assert "make docs-llm" in pre_commit
-    assert "stages: [manual]" in pre_commit
+    assert "make llm-docs" in pre_commit
+    assert "stages: [manual]" not in pre_commit
 
 
 def test_docs_check_is_part_of_validation_and_deploy_workflows() -> None:

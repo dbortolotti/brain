@@ -204,4 +204,4 @@ For a production release:
    - This verification checks DNS and TLS for the hostname; the public and admin MCP surfaces; the public dashboard, privacy, terms, and support pages; browser security headers; OAuth protected-resource and authorization metadata; and the ChatGPT App tool descriptors. When auth is enabled, it also checks the authenticated public app MCP surface and confirms it remains text-only.
 4. Keep confirmation and normal backup checks enabled in the promotion path.
 
-<!-- brain-doc-source-hash: 9f234a0ba2c5e25cbd4c534e7a4bbd310fd5111b78b4e2b52dcb60d2858f866b -->
+<!-- brain-doc-source-hash: f157b84fbbcf1ceb120a82569040c9a9a5ed395182266aa8026c39dba3c468f9 -->
