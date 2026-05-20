@@ -192,7 +192,7 @@ The proxy also serves `GET /healthz`, `GET /docs`, `GET /docs/oauth2-redirect`, 
 
 ## ChatGPT App Surface
 
-Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at the configured public base URL together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. `/app/mcp` remains a legacy alias. The root dashboard uses the same curated surface through a browser session. Browser users sign in with user id and password; the dashboard uses its own session and CSRF flow rather than bearer tokens.
+Brain exposes a curated MCP surface for a ChatGPT App and user-facing clients at the configured public base URL together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The workflows currently set `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, so public app clients use the curated surface at `/mcp` while `/app/mcp` remains a legacy alias. The root dashboard uses the same curated surface through a browser session. Browser users sign in with user id and password; the dashboard uses its own session and CSRF flow rather than bearer tokens.
 
 The ChatGPT App surface intentionally lists only user-safe tools:
 
@@ -285,7 +285,7 @@ Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually; its version input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
-The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Prod runs as `oric_prod`; staging runs as `oric_staging`. Both are installed as system LaunchDaemons under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching. They also set `BRAIN_PUBLIC_BASE_URL`, `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
+The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Prod runs as `oric_prod`; staging runs as `oric_staging`. Both are installed as system LaunchDaemons under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching. `scripts/setup-macos-service-users.sh` creates those hidden service users on a new Mac. Deploys normalize `/Volumes/xpg_usb4/{staging|prod}/brain` ownership to the matching runtime user with world-readable release, data, and log paths and owner-only `shared/secrets`. Local non-GitHub staging deploys refresh an existing release directory for the same commit SHA from the working tree so migration iterations can exercise uncommitted changes.
 
 The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline.
 
@@ -313,8 +313,6 @@ Before the first daemon deploy on a Mac, create the service users:
 ./scripts/setup-macos-service-users.sh
 ```
 
-Deploy normalizes `/Volumes/xpg_usb4/{staging|prod}/brain` ownership to the matching runtime user with world-readable release/data/log paths and owner-only `shared/secrets`.
-
 Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
 
 GitHub Secrets and GitHub Variables are the source of truth; direct emergency edits to live config must be propagated back, or the next deploy will fail.
@@ -329,7 +327,7 @@ Every deploy writes runtime release metadata into:
 /Volumes/xpg_usb4/{staging|prod}/brain/shared/current-version
 ```
 
-The release metadata records the app name, environment, version, SHA, deployment directory, deployed_at, and source. The source is `github-actions` for workflow runs and `local` for local runs.
+The release metadata records the app name, environment, version, SHA, release directory, deployed_at, and source. The source is `github-actions` for workflow runs and `local` for local runs.
 
 Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. If you omit the version on a manual staging run, it falls back to `staging-<12-char-sha>`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA when the version starts with `v`. If the tag already exists at a different SHA, the staging run fails instead of retagging.
 
@@ -386,6 +384,8 @@ Equivalent command:
 ```bash
 uv run python scripts/live_model_smoke.py --scope active --json-output eval_runs/live_model_smoke_active.json
 ```
+
+You can override the output path with `MODEL_SMOKE_OUTPUT` and append additional arguments with `MODEL_SMOKE_ARGS`.
 
 Useful production checks:
 
