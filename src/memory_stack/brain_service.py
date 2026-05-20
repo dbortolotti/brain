@@ -88,10 +88,18 @@ def _sync_cognee_targets(
     settings: Settings,
     targets: list[CogneeSyncTarget],
 ) -> list[dict[str, Any]]:
-    return [
+    results = [
         sync_cognee(settings, object_type=object_type, object_id=object_id)
         for object_type, object_id in targets
     ]
+    if settings.brain_cognee_sync_on_ingest_sweep_limit > 0:
+        results.append(
+            sync_pending_cognee(
+                settings=settings,
+                limit=settings.brain_cognee_sync_on_ingest_sweep_limit,
+            )
+        )
+    return results
 
 
 def _log_background_cognee_sync_result(future: Future[list[dict[str, Any]]]) -> None:

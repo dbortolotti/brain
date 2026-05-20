@@ -672,4 +672,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: c45e05dbc55b910f5262d50375469b120e2f06ee00a0d51381e8ec699c33d5d0 -->
+<!-- brain-doc-source-hash: 873bdc3f1e6417d07aa8d75322a4ea7d8a1322527c0032d2fa609e2ccf4ead2e -->

@@ -138,6 +138,7 @@ def test_cognee_env_does_not_export_cloud_or_modal_env() -> None:
     assert "MODAL_SECRET_NAME" not in env
     assert "BRAIN_COGNEE_EXECUTION_BACKEND" not in env
     assert env["BRAIN_COGNEE_SYNC_ON_INGEST"] == "false"
+    assert env["BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT"] == "25"
 
 
 def test_cognee_uses_postgres_pgvector_by_default() -> None:

@@ -266,4 +266,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: 1ce23ed8de294dfc5d58fd6a74cdb0a6a81afa85a85b8d4ef4df11a4a0973741 -->
+<!-- brain-doc-source-hash: 8725b67d62953513bf8ee18a75aeed69d506c220325c4b6aa9a60678a572c67b -->

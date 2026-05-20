@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, list_open_loops, profile_entity, recall, remember
 from memory_stack.brain_store import BrainStore
@@ -259,6 +261,63 @@ def test_ingest_source_submits_source_and_memory_cognee_sync_targets(
             ("memory", receipt.memory_cards[0].id),
         ]
     ]
+
+
+def test_background_cognee_sync_sweeps_pending_backlog_after_targets(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_cognee_sync_on_ingest_sweep_limit": 25}
+    )
+    calls: list[tuple[str, Any]] = []
+
+    def fake_sync_cognee(active_settings, *, object_type="all", object_id=None, **kwargs):
+        assert active_settings is settings
+        calls.append(("target", object_type, object_id, kwargs))
+        return {"processed": 1, "succeeded": 1, "failed": 0}
+
+    def fake_sync_pending_cognee(*, settings: Settings, limit: int):
+        calls.append(("sweep", limit))
+        return {"processed": 3, "succeeded": 3, "failed": 0}
+
+    monkeypatch.setattr(brain_service, "sync_cognee", fake_sync_cognee)
+    monkeypatch.setattr(brain_service, "sync_pending_cognee", fake_sync_pending_cognee)
+
+    result = brain_service._sync_cognee_targets(
+        settings,
+        [("source", "source_1"), ("memory", "mem_1")],
+    )
+
+    assert calls == [
+        ("target", "source", "source_1", {}),
+        ("target", "memory", "mem_1", {}),
+        ("sweep", 25),
+    ]
+    assert [item["processed"] for item in result] == [1, 1, 3]
+
+
+def test_background_cognee_sync_can_disable_backlog_sweep(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_cognee_sync_on_ingest_sweep_limit": 0}
+    )
+    swept = False
+
+    def fake_sync_cognee(active_settings, *, object_type="all", object_id=None, **kwargs):
+        return {"processed": 1, "succeeded": 1, "failed": 0}
+
+    def fake_sync_pending_cognee(*, settings: Settings, limit: int):
+        nonlocal swept
+        swept = True
+        return {"processed": 1, "succeeded": 1, "failed": 0}
+
+    monkeypatch.setattr(brain_service, "sync_cognee", fake_sync_cognee)
+    monkeypatch.setattr(brain_service, "sync_pending_cognee", fake_sync_pending_cognee)
+
+    result = brain_service._sync_cognee_targets(settings, [("memory", "mem_1")])
+
+    assert swept is False
+    assert len(result) == 1
 
 
 def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
