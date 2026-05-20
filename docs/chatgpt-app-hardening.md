@@ -130,4 +130,4 @@ For a production release:
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 5. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: f6520318c60980c4f15149d749604f9ee57f2ec76178857050b3814ea870a1bf -->
+<!-- brain-doc-source-hash: 34f549864b8aff4fe575935e192e0e515f2e0b5bc610499c709b3d8b3556a8ad -->

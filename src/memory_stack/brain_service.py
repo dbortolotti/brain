@@ -43,6 +43,8 @@ from memory_stack.taste.store import TasteStore
 
 _LOGGER = logging.getLogger(__name__)
 _INGEST_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brain-ingest")
+_COGNEE_SYNC_EXECUTOR = ThreadPoolExecutor(max_workers=1, thread_name_prefix="brain-cognee-sync")
+CogneeSyncTarget = tuple[str, str]
 
 
 def _submit_background_ingest(
@@ -68,6 +70,45 @@ def _log_background_ingest_result(future: Future[IngestionReceipt]) -> None:
         _LOGGER.exception("Background source ingestion failed.")
         return
     _LOGGER.info("Background source ingestion completed: %s", receipt.ingestion_run_id)
+
+
+def _submit_background_cognee_sync(
+    settings: Settings,
+    targets: list[CogneeSyncTarget],
+) -> Future[list[dict[str, Any]]] | None:
+    if not targets or not settings.brain_cognee_enabled or not settings.brain_cognee_sync_on_ingest:
+        return None
+    unique_targets = list(dict.fromkeys(targets))
+    future = _COGNEE_SYNC_EXECUTOR.submit(_sync_cognee_targets, settings, unique_targets)
+    future.add_done_callback(_log_background_cognee_sync_result)
+    return future
+
+
+def _sync_cognee_targets(
+    settings: Settings,
+    targets: list[CogneeSyncTarget],
+) -> list[dict[str, Any]]:
+    return [
+        sync_cognee(settings, object_type=object_type, object_id=object_id)
+        for object_type, object_id in targets
+    ]
+
+
+def _log_background_cognee_sync_result(future: Future[list[dict[str, Any]]]) -> None:
+    try:
+        results = future.result()
+    except Exception:
+        _LOGGER.exception("Background Cognee sync failed.")
+        return
+    processed = sum(int(result.get("processed", 0)) for result in results)
+    succeeded = sum(int(result.get("succeeded", 0)) for result in results)
+    failed = sum(int(result.get("failed", 0)) for result in results)
+    _LOGGER.info(
+        "Background Cognee sync completed: processed=%s succeeded=%s failed=%s",
+        processed,
+        succeeded,
+        failed,
+    )
 
 
 def _queued_ingestion_receipt(request: IngestSourceRequest | RememberRequest) -> IngestionReceipt:
@@ -193,6 +234,7 @@ def remember(
     )
     source_id = None
     source_created = False
+    cognee_sync_targets: list[CogneeSyncTarget] = []
     try:
         if compiled.source is not None:
             raw_source_text = compiled.source.raw_text or ""
@@ -232,6 +274,7 @@ def remember(
                     raw_source_text,
                 ),
             )
+            cognee_sync_targets.append(("source", source_id))
 
         receipt = IngestionReceipt(
             ingestion_run_id=run["id"],
@@ -354,6 +397,7 @@ def remember(
                 dataset=settings.brain_cognee_memory_dataset,
                 projection_hash=projection_hash,
             )
+            cognee_sync_targets.append(("memory", refreshed_memory["id"]))
 
         receipt.entities = [
             EntityReceipt(
@@ -365,6 +409,7 @@ def remember(
             for value in entity_receipts.values()
         ]
         store.finish_ingestion_run(run["id"], status="processed", source_id=source_id)
+        _submit_background_cognee_sync(settings, cognee_sync_targets)
         return IngestionReceipt.model_validate(receipt)
     except Exception as exc:
         store.finish_ingestion_run(run["id"], status="failed", error_message=str(exc))
@@ -943,10 +988,12 @@ def taste_result_to_ingestion_receipt(
     memory_ids = projection.get("memory_ids") or []
     records = taste_result.get("taste_records") or []
     memory_receipts = []
+    cognee_sync_targets: list[CogneeSyncTarget] = []
     for memory_id in memory_ids:
         memory = store.get_memory(memory_id)
         if memory is None:
             continue
+        cognee_sync_targets.append(("memory", memory["id"]))
         memory_receipts.append(
             MemoryReceipt(
                 id=memory["id"],
@@ -957,6 +1004,7 @@ def taste_result_to_ingestion_receipt(
                 created=True,
             )
         )
+    _submit_background_cognee_sync(settings, cognee_sync_targets)
     entity_receipts = []
     for record in records:
         entity = store.get_entity(record["brain_entity_id"])

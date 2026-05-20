@@ -376,6 +376,9 @@ class Settings(BaseSettings):
     )
     brain_llm_enabled: bool = Field(default_factory=lambda: get("BRAIN_LLM_ENABLED"))
     brain_cognee_enabled: bool = Field(default_factory=lambda: get("BRAIN_COGNEE_ENABLED"))
+    brain_cognee_sync_on_ingest: bool = Field(
+        default_factory=lambda: get("BRAIN_COGNEE_SYNC_ON_INGEST", False)
+    )
     brain_cognee_recall_enabled: bool = Field(
         default_factory=lambda: get("BRAIN_COGNEE_RECALL_ENABLED")
     )
@@ -820,6 +823,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_PROFILE_CONTEXT_PATH": settings.brain_profile_context_path,
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
         "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
+        "BRAIN_COGNEE_SYNC_ON_INGEST": str(settings.brain_cognee_sync_on_ingest).lower(),
         "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
         "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,
         "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,

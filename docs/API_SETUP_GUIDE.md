@@ -709,4 +709,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 5da27b0eee3b2a2aaef486d696936094909cbb267bc7bec3f4fe2240cf2ae23a -->
+<!-- brain-doc-source-hash: 8d44a45b6bbfb453c556be82c136a2d89430de04727fa89700cbaca8ea927107 -->

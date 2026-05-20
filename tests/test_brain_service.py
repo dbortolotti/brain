@@ -202,6 +202,65 @@ def test_ingest_source_request_accepts_article_url(tmp_path, monkeypatch) -> Non
     }
 
 
+def test_remember_submits_cognee_sync_after_successful_ingestion(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_cognee_sync_on_ingest": True}
+    )
+    submitted: list[tuple[Settings, list[tuple[str, str]]]] = []
+
+    def fake_submit_background_cognee_sync(active_settings, targets):
+        submitted.append((active_settings, targets))
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_cognee_sync",
+        fake_submit_background_cognee_sync,
+    )
+
+    receipt = remember(RememberRequest(input="Daniele prefers green tea."), settings)
+
+    assert submitted == [(settings, [("memory", receipt.memory_cards[0].id)])]
+    run = BrainStore(settings).get_ingestion_run(receipt.ingestion_run_id)
+    assert run["status"] == "processed"
+
+
+def test_ingest_source_submits_source_and_memory_cognee_sync_targets(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_cognee_sync_on_ingest": True}
+    )
+    submitted: list[list[tuple[str, str]]] = []
+
+    def fake_submit_background_cognee_sync(active_settings, targets):
+        assert active_settings is settings
+        submitted.append(targets)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_cognee_sync",
+        fake_submit_background_cognee_sync,
+    )
+
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source="# Brain note\nKnowledge graphs matter for Brain.",
+            source_kind="markdown",
+        ),
+        settings,
+    )
+
+    assert submitted == [
+        [
+            ("source", receipt.source.source_id),
+            ("memory", receipt.memory_cards[0].id),
+        ]
+    ]
+
+
 def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
 
