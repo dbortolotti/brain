@@ -3389,6 +3389,21 @@ def source_summary_from_request(arguments: dict[str, Any]) -> str | None:
 
 
 def remember_summary(payload: dict[str, Any]) -> str:
+    if payload.get("classification") == "taste_proposal":
+        taste = payload.get("taste") if isinstance(payload.get("taste"), dict) else {}
+        proposal_id = taste.get("proposal_id")
+        warnings = taste.get("warnings") or []
+        warning_text = f" Warning: {warnings[0]}" if warnings else ""
+        if proposal_id:
+            return (
+                f"Created pending Brain Palate proposal {proposal_id}; "
+                "no durable Brain memories were stored yet."
+                f"{warning_text}"
+            )
+        return (
+            "Created a pending Brain Palate proposal; no durable Brain memories "
+            f"were stored yet.{warning_text}"
+        )
     memory_count = len(payload.get("memory_cards", []))
     entity_count = len(payload.get("entities", []))
     conflict_count = len(payload.get("conflicts", []))

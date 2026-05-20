@@ -20,6 +20,26 @@ from memory_stack.request_logging import RequestResponseLogMiddleware, redact_te
 from memory_stack.session import agent_memory_dataset_for_user, agent_memory_session_id_for_user
 
 
+def test_remember_summary_names_taste_proposal_without_claiming_storage() -> None:
+    summary = mcp_server.remember_summary(
+        {
+            "classification": "taste_proposal",
+            "dry_run": True,
+            "memory_cards": [],
+            "entities": [],
+            "conflicts": [],
+            "taste": {
+                "proposal_id": "tprop_example",
+                "warnings": ["Taste/palate keyword present but item type is not certain."],
+            },
+        }
+    )
+
+    assert "pending Brain Palate proposal tprop_example" in summary
+    assert "no durable Brain memories were stored yet" in summary
+    assert "Stored 0 memories" not in summary
+
+
 def test_healthz() -> None:
     client = TestClient(app)
     response = client.get("/healthz")
