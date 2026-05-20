@@ -519,6 +519,29 @@ PY
   run_privileged find "$LOCAL_SECRETS_DIR" -type f -exec chmod 600 {} +
 }
 
+rewrite_local_runtime_config() {
+  python3 - "$LOCAL_CFG_DIR" "$PROD_ROOT" "$LOCAL_SUPPORT_DIR" "$SECRETS_DIR" "$LOCAL_SECRETS_DIR" <<'PY'
+from pathlib import Path
+import sys
+
+cfg_dir, root, local_support, source_secrets, local_secrets = sys.argv[1:]
+replacements = {
+    source_secrets: local_secrets,
+    f"{root}/shared/data/system": f"{local_support}/system",
+    f"{root}/shared/data/data": f"{local_support}/data",
+    f"{root}/shared/logs/requests": f"{local_support}/logs/requests",
+    f"{root}/shared/logs/routing": f"{local_support}/logs/routing",
+}
+for path in Path(cfg_dir).glob("*.yaml"):
+    text = path.read_text(encoding="utf-8")
+    updated = text
+    for old, new in replacements.items():
+        updated = updated.replace(old, new)
+    if updated != text:
+        path.write_text(updated, encoding="utf-8")
+PY
+}
+
 import_rendered_config() {
   local source_base
 
@@ -1118,6 +1141,7 @@ rm -f "$RELEASE_DIR/.env"
 
 log "installing dependencies in release"
 rsync -a --delete "$RELEASE_DIR/cfg/" "$LOCAL_CFG_DIR/"
+rewrite_local_runtime_config
 rsync -a --delete "$RELEASE_DIR/deployment/" "$LOCAL_DEPLOYMENT_DIR/"
 run_in_release_env uv sync --all-extras --no-editable --reinstall-package memory-stack --python "$BRAIN_DEPLOY_PYTHON"
 chmod +x "$RELEASE_DIR/scripts/run-cognee-ui-production.sh"

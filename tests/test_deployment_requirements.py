@@ -254,12 +254,16 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         in script
     )
     assert "sync_runtime_secrets()" in script
+    assert "rewrite_local_runtime_config()" in script
     assert "import_rendered_config()" in script
     assert 'cp "$BRAIN_RENDERED_ENV_FILE" "$SECRETS_DIR/brain.env"' in script
     assert 'cp "$BRAIN_RENDERED_AUTH_PASSWORD_FILE" "$SECRETS_DIR/brain-auth-password"' in script
     assert "import_rendered_config" in script
     assert "bootstrap_local_runtime_data()" in script
     assert "text = text.replace(source_secrets, local_secrets)" in script
+    assert 'f"{root}/shared/data/system": f"{local_support}/system"' in script
+    assert 'f"{root}/shared/logs/requests": f"{local_support}/logs/requests"' in script
+    assert "rewrite_local_runtime_config" in script
     assert '"SYSTEM_ROOT_DIRECTORY": f"{local_support}/system"' in script
     assert '"DATA_ROOT_DIRECTORY": f"{local_support}/data"' in script
     assert '"BRAIN_REQUEST_LOG_PATH": f"{local_support}/logs/requests/{{date}}.jsonl"' in script
