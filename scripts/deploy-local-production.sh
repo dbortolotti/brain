@@ -694,7 +694,13 @@ enable_launch_daemon() {
   run_privileged chmod 644 "$plist"
   run_privileged launchctl enable "system/$label" >/dev/null 2>&1 || true
   run_privileged launchctl bootout system "$plist" >/dev/null 2>&1 || true
-  run_privileged launchctl bootstrap system "$plist"
+  if ! run_privileged launchctl bootstrap system "$plist"; then
+    if run_privileged launchctl print "system/$label" >/dev/null 2>&1; then
+      log "launchd job $label is loaded after bootstrap warning"
+    else
+      return 1
+    fi
+  fi
 }
 
 retire_legacy_launch_agents() {
