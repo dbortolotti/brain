@@ -19,6 +19,7 @@ DEFAULT_DB_PORT="15432"
 DEFAULT_NEO4J_HTTP_PORT="17474"
 DEFAULT_NEO4J_BOLT_PORT="17687"
 DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED="true"
+DEFAULT_SERVICE_USER="oric_prod"
 if [[ "$DEPLOY_ENV" == "staging" ]]; then
   DEFAULT_PUBLIC_BASE_URL="https://brain-staging.dceb.net"
   DEFAULT_MCP_PORT="18100"
@@ -30,6 +31,7 @@ if [[ "$DEPLOY_ENV" == "staging" ]]; then
   DEFAULT_NEO4J_HTTP_PORT="18474"
   DEFAULT_NEO4J_BOLT_PORT="18687"
   DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED="false"
+  DEFAULT_SERVICE_USER="oric_staging"
 fi
 LABEL="${BRAIN_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.mcp}"
 UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
@@ -39,6 +41,14 @@ LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.lo
 LEGACY_AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
 LEGACY_BACKUP_LABEL="${BRAIN_BACKUP_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.backup}"
 PROD_ROOT="${BRAIN_PROD_ROOT:-$DEFAULT_ROOT}"
+BRAIN_SERVICE_USER="${BRAIN_SERVICE_USER:-$DEFAULT_SERVICE_USER}"
+BRAIN_DEPLOY_USER="${BRAIN_DEPLOY_USER:-${SUDO_USER:-${LOGNAME:-oric}}}"
+BRAIN_DEPLOY_PYTHON="${BRAIN_DEPLOY_PYTHON:-3.12}"
+DEFAULT_REFRESH_RELEASE="false"
+if [[ "$DEPLOY_ENV" == "staging" && -z "${GITHUB_ACTIONS:-}" ]]; then
+  DEFAULT_REFRESH_RELEASE="true"
+fi
+BRAIN_REFRESH_RELEASE="${BRAIN_REFRESH_RELEASE:-$DEFAULT_REFRESH_RELEASE}"
 BRAIN_PUBLIC_BASE_URL="${BRAIN_PUBLIC_BASE_URL:-$DEFAULT_PUBLIC_BASE_URL}"
 BRAIN_MCP_PORT="${BRAIN_MCP_PORT:-$DEFAULT_MCP_PORT}"
 BRAIN_UI_PROXY_PORT="${BRAIN_UI_PROXY_PORT:-$DEFAULT_UI_PROXY_PORT}"
@@ -52,6 +62,12 @@ BRAIN_NEO4J_BOLT_PORT="${BRAIN_NEO4J_BOLT_PORT:-$DEFAULT_NEO4J_BOLT_PORT}"
 BRAIN_DOCKER_PROJECT="${BRAIN_DOCKER_PROJECT:-brain-$ENV_SUFFIX}"
 BRAIN_POSTGRES_CONTAINER="${BRAIN_POSTGRES_CONTAINER:-brain-$ENV_SUFFIX-postgres}"
 BRAIN_NEO4J_CONTAINER="${BRAIN_NEO4J_CONTAINER:-brain-$ENV_SUFFIX-neo4j}"
+BRAIN_DOCKER_HOST_USER="${BRAIN_DOCKER_HOST_USER:-${SUDO_USER:-${LOGNAME:-}}}"
+BRAIN_NEO4J_CONTAINER_USER="${BRAIN_NEO4J_CONTAINER_USER:-}"
+POSTGRES_CONTAINER_UID="${BRAIN_POSTGRES_CONTAINER_UID:-999}"
+POSTGRES_CONTAINER_GID="${BRAIN_POSTGRES_CONTAINER_GID:-999}"
+NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_UID:-7474}"
+NEO4J_CONTAINER_GID="${BRAIN_NEO4J_CONTAINER_GID:-7474}"
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED="${BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED:-$DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"
@@ -65,22 +81,77 @@ SECRETS_DIR="$SHARED_DIR/secrets"
 DATA_DIR="$SHARED_DIR/data"
 BACKUP_DIR="$SHARED_DIR/backups"
 LOG_DIR="$SHARED_DIR/logs"
+DOCKER_DIR="$SHARED_DIR/docker"
+POSTGRES_DOCKER_DIR="$DOCKER_DIR/postgres"
+POSTGRES_DATA_DIR="$POSTGRES_DOCKER_DIR/data"
+NEO4J_DOCKER_DIR="$DOCKER_DIR/neo4j"
+NEO4J_DATA_DIR="$NEO4J_DOCKER_DIR/data"
+NEO4J_LOGS_DIR="$NEO4J_DOCKER_DIR/logs"
+NEO4J_IMPORT_DIR="$NEO4J_DOCKER_DIR/import"
+NEO4J_PLUGINS_DIR="$NEO4J_DOCKER_DIR/plugins"
 DATABASE_URL="sqlite:///$DATA_DIR/brain/brain.db"
-LOCAL_SUPPORT_DIR="$HOME/Library/Application Support/brain-$ENV_SUFFIX"
+LOCAL_SUPPORT_DIR="/var/db/brain-$ENV_SUFFIX"
+LOCAL_CACHE_DIR="$LOCAL_SUPPORT_DIR/cache"
+LOCAL_SYSTEM_DIR="$LOCAL_SUPPORT_DIR/system"
+LOCAL_DATA_DIR="$LOCAL_SUPPORT_DIR/data"
+LOCAL_UI_CACHE_DIR="$LOCAL_SUPPORT_DIR/ui-cache"
+LOCAL_REQUEST_LOG_DIR="$LOCAL_SUPPORT_DIR/logs/requests"
+LOCAL_ROUTING_LOG_DIR="$LOCAL_SUPPORT_DIR/logs/routing"
+UV_CACHE_DIR="$LOCAL_SUPPORT_DIR/uv-cache"
+UV_PYTHON_INSTALL_DIR="$LOCAL_SUPPORT_DIR/python"
+LOCAL_VENVS_DIR="$LOCAL_SUPPORT_DIR/venvs"
+LOCAL_VENV_DIR="$LOCAL_VENVS_DIR/$SHA"
+LOCAL_CURRENT_VENV_LINK="$LOCAL_SUPPORT_DIR/current-venv"
+LOCAL_SECRETS_DIR="$LOCAL_SUPPORT_DIR/secrets"
+LOCAL_ENV_FILE="$LOCAL_SECRETS_DIR/brain.env"
+LOCAL_SCRIPTS_DIR="$LOCAL_SUPPORT_DIR/scripts"
+LOCAL_CFG_DIR="$LOCAL_SUPPORT_DIR/cfg"
+LAUNCHD_LOG_DIR="$LOCAL_SUPPORT_DIR/logs/launchd"
+LEGACY_LAUNCH_AGENT_DIR="${BRAIN_LEGACY_LAUNCH_AGENT_DIR:-/Users/$BRAIN_DEPLOY_USER/Library/LaunchAgents}"
 PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.mcp.plist.template"
-PLIST_DST="$HOME/Library/LaunchAgents/$LABEL.plist"
+PLIST_DST="/Library/LaunchDaemons/$LABEL.plist"
 UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
-UI_PLIST_DST="$HOME/Library/LaunchAgents/$UI_LABEL.plist"
+UI_PLIST_DST="/Library/LaunchDaemons/$UI_LABEL.plist"
 SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template"
-SLACK_PLIST_DST="$HOME/Library/LaunchAgents/$SLACK_LABEL.plist"
+SLACK_PLIST_DST="/Library/LaunchDaemons/$SLACK_LABEL.plist"
 MAINTENANCE_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template"
-MAINTENANCE_PLIST_DST="$HOME/Library/LaunchAgents/$MAINTENANCE_LABEL.plist"
+MAINTENANCE_PLIST_DST="/Library/LaunchDaemons/$MAINTENANCE_LABEL.plist"
 LOG_ROTATION_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template"
-LOG_ROTATION_PLIST_DST="$HOME/Library/LaunchAgents/$LOG_ROTATION_LABEL.plist"
-LEGACY_AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$LEGACY_AGENT_MEMORY_LABEL.plist"
-LEGACY_BACKUP_PLIST_DST="$HOME/Library/LaunchAgents/$LEGACY_BACKUP_LABEL.plist"
+LOG_ROTATION_PLIST_DST="/Library/LaunchDaemons/$LOG_ROTATION_LABEL.plist"
+LEGACY_AGENT_MEMORY_PLIST_DST="/Library/LaunchDaemons/$LEGACY_AGENT_MEMORY_LABEL.plist"
+LEGACY_BACKUP_PLIST_DST="/Library/LaunchDaemons/$LEGACY_BACKUP_LABEL.plist"
 NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
 NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
+
+usage() {
+  cat <<EOF
+Usage: BRAIN_DEPLOY_ENV=prod|staging $0
+
+Deploy Brain to $PROD_ROOT, install LaunchDaemons, and restart the $DEPLOY_ENV services.
+
+Environment:
+  BRAIN_DEPLOY_ENV             prod or staging (default: prod)
+  BRAIN_SERVICE_USER           macOS service user (default: $DEFAULT_SERVICE_USER)
+  BRAIN_DOCKER_HOST_USER       macOS user running Docker Desktop (default: $BRAIN_DOCKER_HOST_USER)
+  BRAIN_NEO4J_CONTAINER_USER   uid:gid for Neo4j Docker process (default: Docker host user)
+  BRAIN_DEPLOY_PYTHON          Python version uv should install/use (default: $BRAIN_DEPLOY_PYTHON)
+  BRAIN_REFRESH_RELEASE        refresh an existing release directory (default: $BRAIN_REFRESH_RELEASE)
+EOF
+}
+
+case "${1:-}" in
+  "" )
+    ;;
+  -h|--help )
+    usage
+    exit 0
+    ;;
+  * )
+    printf 'unknown argument: %s\n\n' "$1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
 
 log() {
   printf '[deploy] %s\n' "$*"
@@ -98,6 +169,311 @@ require_cmd rsync
 require_cmd uv
 require_cmd python3
 require_cmd docker
+
+run_privileged() {
+  if [[ "$(id -u)" == "0" ]]; then
+    "$@"
+    return
+  fi
+  sudo "$@"
+}
+
+require_privileged_access() {
+  if [[ "$(id -u)" == "0" ]]; then
+    return
+  fi
+  if ! command -v sudo >/dev/null 2>&1; then
+    echo "sudo is required to install LaunchDaemons and set $BRAIN_SERVICE_USER ownership" >&2
+    exit 1
+  fi
+  if ! sudo -n true >/dev/null 2>&1; then
+    echo "passwordless sudo is required for non-interactive deploys that install LaunchDaemons" >&2
+    exit 1
+  fi
+}
+
+ensure_service_user() {
+  if ! id -u "$BRAIN_SERVICE_USER" >/dev/null 2>&1; then
+    cat >&2 <<EOF
+service user $BRAIN_SERVICE_USER does not exist.
+Create it before deploying, for example as a hidden standard macOS user, then rerun:
+  BRAIN_DEPLOY_ENV=$DEPLOY_ENV ./scripts/deploy-local-production.sh
+EOF
+    exit 1
+  fi
+}
+
+resolve_docker_runtime_user() {
+  if [[ -n "$BRAIN_NEO4J_CONTAINER_USER" ]]; then
+    return
+  fi
+  if [[ -n "$BRAIN_DOCKER_HOST_USER" ]] && id -u "$BRAIN_DOCKER_HOST_USER" >/dev/null 2>&1; then
+    BRAIN_NEO4J_CONTAINER_USER="$(id -u "$BRAIN_DOCKER_HOST_USER"):$(id -g "$BRAIN_DOCKER_HOST_USER")"
+  else
+    BRAIN_NEO4J_CONTAINER_USER="$NEO4J_CONTAINER_UID:$NEO4J_CONTAINER_GID"
+  fi
+}
+
+grant_docker_host_acl() {
+  local path="$1"
+
+  if [[ -z "$BRAIN_DOCKER_HOST_USER" || "$BRAIN_DOCKER_HOST_USER" == "root" ]]; then
+    return
+  fi
+  if ! id -u "$BRAIN_DOCKER_HOST_USER" >/dev/null 2>&1; then
+    log "docker host user $BRAIN_DOCKER_HOST_USER does not exist; skipping Docker bind-mount ACL"
+    return
+  fi
+  if [[ ! -e "$path" ]]; then
+    return
+  fi
+
+  local acl
+  acl="$BRAIN_DOCKER_HOST_USER allow read,write,execute,append,readattr,writeattr,readextattr,writeextattr,readsecurity,writesecurity,chown,file_inherit,directory_inherit,list,add_file,search,delete,add_subdirectory,delete_child"
+  run_privileged chmod -R -a "$acl" "$path" >/dev/null 2>&1 || true
+  run_privileged chmod -R +a "$acl" "$path"
+}
+
+container_bind_mount_permissions_need_repair() {
+  local path uid gid
+
+  for path in "$POSTGRES_DATA_DIR" "$NEO4J_DATA_DIR"; do
+    [[ -e "$path" ]] || return 0
+  done
+
+  uid="$(stat -f '%u' "$POSTGRES_DATA_DIR" 2>/dev/null || true)"
+  gid="$(stat -f '%g' "$POSTGRES_DATA_DIR" 2>/dev/null || true)"
+  if [[ "$uid" != "$POSTGRES_CONTAINER_UID" || "$gid" != "$POSTGRES_CONTAINER_GID" ]]; then
+    return 0
+  fi
+
+  uid="$(stat -f '%u' "$NEO4J_DATA_DIR" 2>/dev/null || true)"
+  gid="$(stat -f '%g' "$NEO4J_DATA_DIR" 2>/dev/null || true)"
+  if [[ "$uid" != "$NEO4J_CONTAINER_UID" || "$gid" != "$NEO4J_CONTAINER_GID" ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
+stop_data_containers_for_permission_repair() {
+  (
+    cd "$RELEASE_DIR"
+    GRAPH_DATABASE_PASSWORD="${GRAPH_DATABASE_PASSWORD:-change-me}" \
+      DB_NAME="${DB_NAME:-cognee_db}" \
+      DB_USERNAME="${DB_USERNAME:-cognee}" \
+      DB_PASSWORD="${DB_PASSWORD:-cognee}" \
+      DB_PORT="${DB_PORT:-$DEFAULT_DB_PORT}" \
+      BRAIN_PROD_ROOT="$PROD_ROOT" \
+      BRAIN_DOCKER_PROJECT="$BRAIN_DOCKER_PROJECT" \
+      BRAIN_POSTGRES_CONTAINER="$BRAIN_POSTGRES_CONTAINER" \
+      BRAIN_NEO4J_CONTAINER="$BRAIN_NEO4J_CONTAINER" \
+      BRAIN_NEO4J_CONTAINER_USER="$BRAIN_NEO4J_CONTAINER_USER" \
+      BRAIN_NEO4J_HTTP_PORT="$BRAIN_NEO4J_HTTP_PORT" \
+      BRAIN_NEO4J_BOLT_PORT="$BRAIN_NEO4J_BOLT_PORT" \
+      docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml stop postgres neo4j >/dev/null 2>&1 || true
+  )
+}
+
+prepare_container_bind_mounts() {
+  log "preparing $DEPLOY_ENV Docker bind mounts"
+  run_privileged mkdir -p \
+    "$POSTGRES_DATA_DIR" \
+    "$NEO4J_DATA_DIR"
+  run_privileged chown "$BRAIN_SERVICE_USER:staff" "$DOCKER_DIR" "$POSTGRES_DOCKER_DIR" "$NEO4J_DOCKER_DIR"
+  run_privileged chmod 755 "$DOCKER_DIR" "$POSTGRES_DOCKER_DIR" "$NEO4J_DOCKER_DIR"
+
+  if container_bind_mount_permissions_need_repair; then
+    log "repairing $DEPLOY_ENV Docker bind-mount ownership for container users"
+    stop_data_containers_for_permission_repair
+    run_privileged chown -R "$POSTGRES_CONTAINER_UID:$POSTGRES_CONTAINER_GID" "$POSTGRES_DATA_DIR"
+    run_privileged chown -R "$NEO4J_CONTAINER_UID:$NEO4J_CONTAINER_GID" "$NEO4J_DATA_DIR"
+  fi
+
+  run_privileged chmod -R u+rwX,go-rwx "$POSTGRES_DATA_DIR"
+  run_privileged chmod -R u+rwX,go+rX "$NEO4J_DATA_DIR"
+  grant_docker_host_acl "$POSTGRES_DATA_DIR"
+  grant_docker_host_acl "$NEO4J_DATA_DIR"
+}
+
+clear_mutable_data_provenance() {
+  if ! command -v xattr >/dev/null 2>&1; then
+    return
+  fi
+  if [[ ! -d "$DATA_DIR" ]]; then
+    return
+  fi
+  log "clearing macOS provenance xattrs from $DEPLOY_ENV mutable data"
+  run_privileged xattr -dr com.apple.provenance "$DATA_DIR" >/dev/null 2>&1 || true
+}
+
+apply_runtime_permissions() {
+  local phase="${1:-final}"
+
+  log "setting $DEPLOY_ENV ownership to $BRAIN_SERVICE_USER"
+  if is_true "${BRAIN_FULL_CHOWN:-false}"; then
+    run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$PROD_ROOT" "$LOCAL_SUPPORT_DIR"
+  else
+    run_privileged chown "$BRAIN_SERVICE_USER:staff" \
+      "$PROD_ROOT" \
+      "$PROD_ROOT/releases" \
+      "$SHARED_DIR" \
+      "$DATA_DIR" \
+      "$DATA_DIR/brain" \
+      "$BACKUP_DIR" \
+      "$LOG_DIR" \
+      "$LOCAL_SUPPORT_DIR" \
+      "$LOCAL_CACHE_DIR" \
+      "$LOCAL_SYSTEM_DIR" \
+      "$LOCAL_DATA_DIR" \
+      "$LOCAL_UI_CACHE_DIR" \
+      "$LOCAL_REQUEST_LOG_DIR" \
+      "$LOCAL_ROUTING_LOG_DIR" \
+      "$UV_CACHE_DIR" \
+      "$UV_PYTHON_INSTALL_DIR" \
+      "$LOCAL_VENVS_DIR" \
+      "$LOCAL_SECRETS_DIR" \
+      "$LOCAL_SCRIPTS_DIR" \
+      "$LOCAL_CFG_DIR" \
+      "$LAUNCHD_LOG_DIR"
+    run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$SECRETS_DIR" "$LOCAL_SECRETS_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR"
+    if [[ -f "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh" ]]; then
+      run_privileged chown "$BRAIN_SERVICE_USER:staff" "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh"
+    fi
+    if [[ "$phase" == "final" && -d "$LOCAL_SCRIPTS_DIR" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_SCRIPTS_DIR"
+    fi
+    if [[ "$phase" == "final" && -d "$LOCAL_CFG_DIR" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_CFG_DIR"
+    fi
+    if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$RELEASE_DIR"
+    fi
+    if [[ "$phase" == "final" && -d "$LOCAL_VENV_DIR" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_VENV_DIR"
+    fi
+  fi
+  run_privileged chmod 755 "$PROD_ROOT" "$PROD_ROOT/releases" "$SHARED_DIR" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR"
+  if [[ -d "$LOCAL_VENV_DIR" ]]; then
+    run_privileged chmod 755 "$LOCAL_VENV_DIR"
+  fi
+  if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
+    run_privileged find "$RELEASE_DIR" -type d -exec chmod 755 {} +
+    run_privileged find "$RELEASE_DIR" -type f -exec chmod u=rw,go=r {} +
+    run_privileged find "$RELEASE_DIR" -path '*/bin/*' -type f -exec chmod u=rwx,go=rx {} + >/dev/null 2>&1 || true
+    run_privileged chmod +x "$RELEASE_DIR/scripts/"*.sh >/dev/null 2>&1 || true
+  fi
+  run_privileged chmod 700 "$SECRETS_DIR"
+  run_privileged find "$SECRETS_DIR" -type d -exec chmod 700 {} +
+  run_privileged find "$SECRETS_DIR" -type f -exec chmod 600 {} +
+  run_privileged chmod 700 "$LOCAL_SECRETS_DIR"
+  run_privileged find "$LOCAL_SECRETS_DIR" -type d -exec chmod 700 {} +
+  run_privileged find "$LOCAL_SECRETS_DIR" -type f -exec chmod 600 {} +
+  run_privileged chown -h "$BRAIN_SERVICE_USER:staff" "$CURRENT_LINK" >/dev/null 2>&1 || true
+  run_privileged chown -h "$BRAIN_SERVICE_USER:staff" "$LOCAL_CURRENT_VENV_LINK" >/dev/null 2>&1 || true
+}
+
+run_in_release_env() {
+  (
+    cd "$RELEASE_DIR"
+    ENV_FILE="$LOCAL_ENV_FILE" \
+      HOME="$LOCAL_SUPPORT_DIR" \
+      XDG_CACHE_HOME="$LOCAL_CACHE_DIR" \
+      UV_CACHE_DIR="$UV_CACHE_DIR" \
+      UV_PYTHON_INSTALL_DIR="$UV_PYTHON_INSTALL_DIR" \
+      UV_PROJECT_ENVIRONMENT="$LOCAL_VENV_DIR" \
+      UV_LINK_MODE=copy \
+      BRAIN_CONFIG_DIR="$LOCAL_CFG_DIR" \
+      BRAIN_PROVIDER_AUTH_PROFILES_PATH="$LOCAL_SECRETS_DIR/provider-auth-profiles.json" \
+      BRAIN_PROVIDER_AUTH_STATE_DIR="$LOCAL_SECRETS_DIR/provider-auth-state" \
+      BRAIN_AUTH_PASSWORD_FILE="$LOCAL_SECRETS_DIR/brain-auth-password" \
+      BRAIN_AUTH_USERS_FILE="$LOCAL_SECRETS_DIR/brain-auth-users.json" \
+      BRAIN_AUTH_STATE_PATH="$LOCAL_SECRETS_DIR/brain-oauth.json" \
+      SYSTEM_ROOT_DIRECTORY="$LOCAL_SYSTEM_DIR" \
+      DATA_ROOT_DIRECTORY="$LOCAL_DATA_DIR" \
+      BRAIN_REQUEST_LOG_PATH="$LOCAL_REQUEST_LOG_DIR/{date}.jsonl" \
+      BRAIN_ROUTING_LOG_PATH="$LOCAL_ROUTING_LOG_DIR/{date}.jsonl" \
+      BRAIN_UI_CACHE_DIR="$LOCAL_UI_CACHE_DIR" \
+      "$@"
+  )
+}
+
+wait_for_tcp() {
+  local host="$1"
+  local port="$2"
+  local label="$3"
+  local attempts="${4:-60}"
+
+  for _attempt in $(seq 1 "$attempts"); do
+    if python3 - "$host" "$port" <<'PY' >/dev/null 2>&1
+import socket
+import sys
+
+host = sys.argv[1]
+port = int(sys.argv[2])
+with socket.create_connection((host, port), timeout=2):
+    pass
+PY
+    then
+      return 0
+    fi
+    sleep 2
+  done
+
+  echo "$label did not become ready on $host:$port" >&2
+  return 1
+}
+
+sync_runtime_secrets() {
+  log "syncing runtime secrets to $LOCAL_SECRETS_DIR"
+  run_privileged mkdir -p "$LOCAL_SECRETS_DIR"
+  rsync -a --delete "$SECRETS_DIR/" "$LOCAL_SECRETS_DIR/"
+  python3 - "$LOCAL_ENV_FILE" "$SECRETS_DIR" "$LOCAL_SECRETS_DIR" "$LOCAL_SUPPORT_DIR" <<'PY'
+from pathlib import Path
+import sys
+
+env_file, source_secrets, local_secrets, local_support = sys.argv[1:]
+path = Path(env_file)
+lines = path.read_text(encoding="utf-8").splitlines()
+text = "\n".join(lines) + "\n"
+text = text.replace(source_secrets, local_secrets)
+lines = text.splitlines()
+overrides = {
+    "SYSTEM_ROOT_DIRECTORY": f"{local_support}/system",
+    "DATA_ROOT_DIRECTORY": f"{local_support}/data",
+    "BRAIN_REQUEST_LOG_PATH": f"{local_support}/logs/requests/{{date}}.jsonl",
+    "BRAIN_ROUTING_LOG_PATH": f"{local_support}/logs/routing/{{date}}.jsonl",
+    "BRAIN_UI_CACHE_DIR": f"{local_support}/ui-cache",
+}
+for key, value in overrides.items():
+    line = f"{key}={value}"
+    for index, existing in enumerate(lines):
+        if existing.startswith(f"{key}="):
+            lines[index] = line
+            break
+    else:
+        lines.append(line)
+text = "\n".join(lines) + "\n"
+path.write_text(text, encoding="utf-8")
+PY
+  run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_SECRETS_DIR"
+  run_privileged chmod 700 "$LOCAL_SECRETS_DIR"
+  run_privileged find "$LOCAL_SECRETS_DIR" -type d -exec chmod 700 {} +
+  run_privileged find "$LOCAL_SECRETS_DIR" -type f -exec chmod 600 {} +
+}
+
+bootstrap_local_runtime_data() {
+  log "bootstrapping $DEPLOY_ENV Cognee runtime data under $LOCAL_SUPPORT_DIR"
+  run_privileged mkdir -p "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"
+  if [[ -d "$DATA_DIR/system" ]] && [[ -z "$(find "$LOCAL_SYSTEM_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
+    rsync -rt --ignore-existing --no-owner --no-group --no-perms "$DATA_DIR/system/" "$LOCAL_SYSTEM_DIR/"
+  fi
+  if [[ -d "$DATA_DIR/data" ]] && [[ -z "$(find "$LOCAL_DATA_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
+    rsync -rt --ignore-existing --no-owner --no-group --no-perms "$DATA_DIR/data/" "$LOCAL_DATA_DIR/"
+  fi
+  run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"
+  run_privileged chmod -R u+rwX,go+rX "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"
+}
 
 ensure_env_var() {
   local key="$1"
@@ -187,24 +563,63 @@ target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding
 PY
 }
 
-enable_launch_agent() {
+enable_launch_daemon() {
   local label="$1"
   local plist="$2"
-  local domain="gui/$(id -u)"
 
-  launchctl enable "$domain/$label" >/dev/null 2>&1 || true
-  launchctl bootout "$domain" "$plist" >/dev/null 2>&1 || true
-  launchctl bootstrap "$domain" "$plist"
+  run_privileged chown root:wheel "$plist"
+  run_privileged chmod 644 "$plist"
+  run_privileged launchctl enable "system/$label" >/dev/null 2>&1 || true
+  run_privileged launchctl bootout system "$plist" >/dev/null 2>&1 || true
+  run_privileged launchctl bootstrap system "$plist"
 }
 
-disable_launch_agent() {
+retire_legacy_launch_agents() {
+  if [[ -z "$BRAIN_DEPLOY_USER" ]] || ! id -u "$BRAIN_DEPLOY_USER" >/dev/null 2>&1; then
+    log "deploy user $BRAIN_DEPLOY_USER not found; skipping legacy LaunchAgent retirement"
+    return
+  fi
+  if [[ ! -d "$LEGACY_LAUNCH_AGENT_DIR" ]]; then
+    return
+  fi
+
+  local deploy_uid retired_dir timestamp labels label plist target
+  deploy_uid="$(id -u "$BRAIN_DEPLOY_USER")"
+  retired_dir="$LEGACY_LAUNCH_AGENT_DIR/retired"
+  timestamp="$(date +%Y%m%d%H%M%S)"
+  labels=(
+    "$LABEL"
+    "$UI_LABEL"
+    "$SLACK_LABEL"
+    "$MAINTENANCE_LABEL"
+    "$LOG_ROTATION_LABEL"
+    "$LEGACY_AGENT_MEMORY_LABEL"
+    "$LEGACY_BACKUP_LABEL"
+  )
+
+  for label in "${labels[@]}"; do
+    plist="$LEGACY_LAUNCH_AGENT_DIR/$label.plist"
+    run_privileged launchctl bootout "gui/$deploy_uid" "$plist" >/dev/null 2>&1 || true
+    run_privileged launchctl bootout "gui/$deploy_uid/$label" >/dev/null 2>&1 || true
+    run_privileged launchctl disable "gui/$deploy_uid/$label" >/dev/null 2>&1 || true
+    if [[ -f "$plist" ]]; then
+      log "retiring legacy LaunchAgent $label"
+      run_privileged mkdir -p "$retired_dir"
+      target="$retired_dir/$label.$timestamp.plist"
+      run_privileged mv "$plist" "$target"
+      run_privileged chown "$BRAIN_DEPLOY_USER:staff" "$target" >/dev/null 2>&1 || true
+    fi
+  done
+  run_privileged chown "$BRAIN_DEPLOY_USER:staff" "$retired_dir" >/dev/null 2>&1 || true
+}
+
+disable_launch_daemon() {
   local label="$1"
   local plist="$2"
-  local domain="gui/$(id -u)"
 
-  launchctl bootout "$domain" "$plist" >/dev/null 2>&1 || true
-  launchctl disable "$domain/$label" >/dev/null 2>&1 || true
-  rm -f "$plist"
+  run_privileged launchctl bootout system "$plist" >/dev/null 2>&1 || true
+  run_privileged launchctl disable "system/$label" >/dev/null 2>&1 || true
+  run_privileged rm -f "$plist"
 }
 
 install_newsyslog_config() {
@@ -218,13 +633,9 @@ install_newsyslog_config() {
     log "installed newsyslog config at $NEWSYSLOG_DST"
     return
   fi
-  if command -v sudo >/dev/null 2>&1 && sudo -n true >/dev/null 2>&1; then
-    sudo cp "$NEWSYSLOG_SRC" "$NEWSYSLOG_DST"
-    sudo chmod 644 "$NEWSYSLOG_DST"
-    log "installed newsyslog config at $NEWSYSLOG_DST"
-    return
-  fi
-  log "cannot install $NEWSYSLOG_DST without sudo; launchd logs will not get daily system rotation"
+  run_privileged cp "$NEWSYSLOG_SRC" "$NEWSYSLOG_DST"
+  run_privileged chmod 644 "$NEWSYSLOG_DST"
+  log "installed newsyslog config at $NEWSYSLOG_DST"
 }
 
 render_plist() {
@@ -232,7 +643,7 @@ render_plist() {
   local dst="$2"
   python3 - "$src" "$dst" "$DEPLOY_ENV" "$PROD_ROOT" "$BRAIN_PUBLIC_BASE_URL" \
     "$BRAIN_MCP_PORT" "$BRAIN_UI_PROXY_PORT" "$BRAIN_UI_FRONTEND_PORT" \
-    "$BRAIN_UI_BACKEND_PORT" "$BRAIN_SLACK_AGENT_PORT" <<'PY'
+    "$BRAIN_UI_BACKEND_PORT" "$BRAIN_SLACK_AGENT_PORT" "$BRAIN_SERVICE_USER" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" <<'PY'
 from pathlib import Path
 import sys
 
@@ -247,6 +658,9 @@ import sys
     ui_frontend_port,
     ui_backend_port,
     slack_agent_port,
+    service_user,
+    launchd_log_dir,
+    local_support_dir,
 ) = sys.argv[1:]
 text = Path(src).read_text(encoding="utf-8")
 replacements = {
@@ -259,6 +673,10 @@ replacements = {
     "18001": ui_backend_port,
     "18003": slack_agent_port,
     "brain-prod": f"brain-{deploy_env}",
+    "oric_prod": service_user,
+    "/Users/oric/Library/Logs": launchd_log_dir,
+    "/var/db/brain-prod": local_support_dir,
+    "/var/db/brain-prod/python": f"{local_support_dir}/python",
     "--env prod": f"--env {deploy_env}",
 }
 if deploy_env != "prod":
@@ -288,7 +706,16 @@ is_true() {
 }
 
 log "creating $DEPLOY_ENV directories under $PROD_ROOT"
-mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs" "$LOCAL_SUPPORT_DIR"
+require_privileged_access
+if [[ "$(id -u)" != "0" ]]; then
+  log "re-executing deploy as root so LaunchDaemons and $BRAIN_SERVICE_USER ownership can be managed"
+  exec sudo -E "$0" "$@"
+fi
+ensure_service_user
+resolve_docker_runtime_user
+run_privileged mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SECRETS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" /Library/LaunchDaemons
+apply_runtime_permissions bootstrap
+clear_mutable_data_provenance
 
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   log "creating starter $DEPLOY_ENV env at $SECRETS_DIR/brain.env"
@@ -558,6 +985,14 @@ users_path.chmod(0o600)
 PY
 fi
 
+sync_runtime_secrets
+bootstrap_local_runtime_data
+
+if [[ -d "$RELEASE_DIR" ]] && is_true "$BRAIN_REFRESH_RELEASE"; then
+  log "refreshing existing release $SHORT_SHA"
+  rm -rf "$RELEASE_DIR"
+fi
+
 if [[ ! -d "$RELEASE_DIR" ]]; then
   log "creating release $SHORT_SHA"
   mkdir -p "$RELEASE_DIR"
@@ -576,11 +1011,12 @@ fi
 rm -f "$RELEASE_DIR/.env"
 
 log "installing dependencies in release"
-(
-  cd "$RELEASE_DIR"
-  uv sync --all-extras
-)
+rsync -a --delete "$RELEASE_DIR/cfg/" "$LOCAL_CFG_DIR/"
+run_in_release_env uv sync --all-extras --no-editable --reinstall-package memory-stack --python "$BRAIN_DEPLOY_PYTHON"
 chmod +x "$RELEASE_DIR/scripts/run-cognee-ui-production.sh"
+rsync -a --delete "$RELEASE_DIR/scripts/" "$LOCAL_SCRIPTS_DIR/"
+chmod +x "$LOCAL_SCRIPTS_DIR/"*.py >/dev/null 2>&1 || true
+chmod +x "$LOCAL_SCRIPTS_DIR/"*.sh >/dev/null 2>&1 || true
 cp "$RELEASE_DIR/scripts/run-cognee-ui-production.sh" "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh"
 chmod +x "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh"
 
@@ -599,6 +1035,8 @@ if [[ -z "${GRAPH_DATABASE_PASSWORD:-}" || "$GRAPH_DATABASE_PASSWORD" == "change
   exit 1
 fi
 
+prepare_container_bind_mounts
+
 log "starting $DEPLOY_ENV Postgres/pgvector and Neo4j containers"
 (
   cd "$RELEASE_DIR"
@@ -611,16 +1049,16 @@ log "starting $DEPLOY_ENV Postgres/pgvector and Neo4j containers"
     BRAIN_DOCKER_PROJECT="$BRAIN_DOCKER_PROJECT" \
     BRAIN_POSTGRES_CONTAINER="$BRAIN_POSTGRES_CONTAINER" \
     BRAIN_NEO4J_CONTAINER="$BRAIN_NEO4J_CONTAINER" \
+    BRAIN_NEO4J_CONTAINER_USER="$BRAIN_NEO4J_CONTAINER_USER" \
     BRAIN_NEO4J_HTTP_PORT="$BRAIN_NEO4J_HTTP_PORT" \
     BRAIN_NEO4J_BOLT_PORT="$BRAIN_NEO4J_BOLT_PORT" \
     docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml up -d postgres neo4j
 )
+wait_for_tcp "127.0.0.1" "${DB_PORT:-$DEFAULT_DB_PORT}" "$DEPLOY_ENV Postgres"
+wait_for_tcp "127.0.0.1" "$BRAIN_NEO4J_BOLT_PORT" "$DEPLOY_ENV Neo4j Bolt"
 
 log "running Brain database migrations"
-(
-  cd "$RELEASE_DIR"
-  uv run alembic upgrade head
-)
+run_in_release_env "$LOCAL_VENV_DIR/bin/alembic" upgrade head
 
 MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
 if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
@@ -632,10 +1070,7 @@ if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
   if [[ -n "${BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS:-}" ]]; then
     smoke_args+=(--timeout "$BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS")
   fi
-  (
-    cd "$RELEASE_DIR"
-    uv run python scripts/live_model_smoke.py "${smoke_args[@]}"
-  )
+  run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/live_model_smoke.py "${smoke_args[@]}"
 else
   log "pre-promotion live model smoke disabled"
 fi
@@ -661,22 +1096,33 @@ log "updating current symlink"
 write_release_metadata "$RELEASE_DIR/release.json"
 write_release_metadata "$SHARED_DIR/release.json"
 printf '%s\n' "$RELEASE_VERSION" >"$SHARED_DIR/current-version"
+ln -sfn "$LOCAL_VENV_DIR" "$LOCAL_CURRENT_VENV_LINK"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+if [[ "$DEPLOY_ENV" == "prod" ]]; then
+  launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-maintenance brain-log-rotation)
+else
+  launchd_log_stems=(brain-staging brain-staging-ui brain-staging-slack-agent brain-staging-maintenance brain-staging-log-rotation)
+fi
+for stem in "${launchd_log_stems[@]}"; do
+  touch "$LAUNCHD_LOG_DIR/$stem.out.log" "$LAUNCHD_LOG_DIR/$stem.err.log"
+done
+apply_runtime_permissions final
 
 if command -v launchctl >/dev/null 2>&1; then
+  retire_legacy_launch_agents
   log "restarting launchd service $LABEL"
-  enable_launch_agent "$LABEL" "$PLIST_DST"
+  enable_launch_daemon "$LABEL" "$PLIST_DST"
   log "restarting launchd service $UI_LABEL"
-  enable_launch_agent "$UI_LABEL" "$UI_PLIST_DST"
+  enable_launch_daemon "$UI_LABEL" "$UI_PLIST_DST"
   log "restarting launchd service $SLACK_LABEL"
-  enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"
+  enable_launch_daemon "$SLACK_LABEL" "$SLACK_PLIST_DST"
   log "reloading launchd job $MAINTENANCE_LABEL"
-  enable_launch_agent "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"
+  enable_launch_daemon "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"
   log "reloading launchd job $LOG_ROTATION_LABEL"
-  enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"
+  enable_launch_daemon "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"
   log "removing legacy launchd jobs $LEGACY_AGENT_MEMORY_LABEL and $LEGACY_BACKUP_LABEL"
-  disable_launch_agent "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"
-  disable_launch_agent "$LEGACY_BACKUP_LABEL" "$LEGACY_BACKUP_PLIST_DST"
+  disable_launch_daemon "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"
+  disable_launch_daemon "$LEGACY_BACKUP_LABEL" "$LEGACY_BACKUP_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi
@@ -718,11 +1164,8 @@ for attempt in {1..30}; do
 done
 
 log "running $DEPLOY_ENV verifier"
-(
-  cd "$RELEASE_DIR"
-  uv run python scripts/verify_mcp_production.py --skip-backups
-  uv run python scripts/verify_cognee_ui_production.py
-  uv run python scripts/verify_slack_agent.py
-)
+run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/verify_mcp_production.py --skip-backups
+run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/verify_cognee_ui_production.py
+run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/verify_slack_agent.py
 
 log "deployed $APP_NAME $RELEASE_VERSION ($SHA)"

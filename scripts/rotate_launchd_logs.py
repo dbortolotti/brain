@@ -8,21 +8,9 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 
-LOG_NAMES = [
-    "brain-prod.out.log",
-    "brain-prod.err.log",
-    "brain-ui.out.log",
-    "brain-ui.err.log",
-    "brain-slack-agent.out.log",
-    "brain-slack-agent.err.log",
-    "brain-maintenance.out.log",
-    "brain-maintenance.err.log",
-    "com.cloudflare.cloudflared.err.log",
-]
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description="Daily copy-truncate rotation for Brain launchd logs.")
+    parser.add_argument("--env", choices=["prod", "staging"], default="prod")
     parser.add_argument("--log-dir", default=str(Path.home() / "Library" / "Logs"))
     parser.add_argument(
         "--archive-dir",
@@ -38,9 +26,10 @@ def main() -> int:
     archive_root = Path(args.archive_dir).expanduser()
     archive_day = archive_root / archive_date
     archive_day.mkdir(parents=True, exist_ok=True)
+    log_names = launchd_log_names(args.env)
 
     rotated = []
-    for name in LOG_NAMES:
+    for name in log_names:
         source = log_dir / name
         if not source.exists() or source.stat().st_size == 0:
             continue
@@ -51,6 +40,26 @@ def main() -> int:
     cleanup_archives(archive_root, retention_days=args.retention_days, now=now)
     print(f"rotated {len(rotated)} launchd logs into {archive_day}")
     return 0
+
+
+def launchd_log_names(env: str) -> list[str]:
+    if env == "prod":
+        stems = [
+            "brain-prod",
+            "brain-ui",
+            "brain-slack-agent",
+            "brain-maintenance",
+            "brain-log-rotation",
+        ]
+    else:
+        stems = [
+            "brain-staging",
+            "brain-staging-ui",
+            "brain-staging-slack-agent",
+            "brain-staging-maintenance",
+            "brain-staging-log-rotation",
+        ]
+    return [f"{stem}.{stream}.log" for stem in stems for stream in ("out", "err")]
 
 
 def copy_truncate_gzip(source: Path, destination: Path) -> None:

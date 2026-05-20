@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-from memory_stack.ui_service import isolate_frontend_cache
+from memory_stack.ui_service import isolate_frontend_cache, prepare_frontend
 
 
 def test_isolate_frontend_cache_copies_frontend_without_runtime_dirs(tmp_path) -> None:
@@ -37,6 +38,35 @@ def test_isolate_frontend_cache_refreshes_on_version_change(tmp_path) -> None:
 
     assert (target / "package.json").read_text(encoding="utf-8") == '{"version":"new"}'
     assert (cache_root / "version.txt").read_text(encoding="utf-8").strip() == "new"
+
+
+def test_prepare_frontend_uses_explicit_cache_dir(monkeypatch, tmp_path) -> None:
+    original_env = os.environ.copy()
+    source = tmp_path / "source-frontend"
+    source.mkdir()
+    (source / "package.json").write_text("{}", encoding="utf-8")
+    cache_root = tmp_path / "local-ui-cache"
+
+    import memory_stack.ui_service as ui_service
+
+    monkeypatch.setattr(
+        "cognee.api.v1.ui.ui.download_frontend_assets",
+        lambda force=False: True,
+    )
+    monkeypatch.setattr("cognee.api.v1.ui.ui.find_frontend_path", lambda: source)
+    monkeypatch.setattr("cognee.version.get_cognee_version", lambda: "test-version")
+    monkeypatch.setattr(ui_service, "run", lambda command, *, cwd: None)
+
+    class Settings:
+        brain_ui_cache_dir = str(cache_root)
+        brain_prod_root = str(tmp_path / "external-root")
+
+    try:
+        assert prepare_frontend(Settings()) == cache_root / "frontend"
+        assert (cache_root / "frontend" / "package.json").exists()
+    finally:
+        os.environ.clear()
+        os.environ.update(original_env)
 
 
 def test_dashboard_login_asks_for_username_without_autosuggest() -> None:

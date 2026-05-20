@@ -69,6 +69,23 @@ def test_cfg_rejects_unknown_environment() -> None:
         package_cfg.reload("qa")
 
 
+def test_cfg_dir_can_be_overridden(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    cfg_dir = tmp_path / "cfg"
+    cfg_dir.mkdir()
+    (cfg_dir / "common.yaml").write_text("LLM_MODEL: custom-common\n", encoding="utf-8")
+    (cfg_dir / "staging.yaml").write_text("BRAIN_MCP_PORT: 19099\n", encoding="utf-8")
+
+    monkeypatch.setenv("BRAIN_CONFIG_DIR", str(cfg_dir))
+    reloaded_cfg = importlib.reload(package_cfg)
+    try:
+        values = reloaded_cfg.reload("staging")
+        assert values["LLM_MODEL"] == "custom-common"
+        assert values["BRAIN_MCP_PORT"] == 19099
+    finally:
+        monkeypatch.delenv("BRAIN_CONFIG_DIR", raising=False)
+        importlib.reload(package_cfg)
+
+
 def test_settings_defaults_follow_explicit_config_env(tmp_path) -> None:
     env_file = tmp_path / ".env"
     env_file.write_text("", encoding="utf-8")

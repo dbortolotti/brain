@@ -61,7 +61,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Local prod and staging deploys install a daily maintenance launchd job from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance`; staging renders as `com.brain.staging.maintenance`. The job starts at 03:00 and runs `scripts/nightly_maintenance.py` against the environment's shared `brain.env`. That script runs `scripts/brain_agent_memory.py` first, then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
+Local prod and staging deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`. The job starts at 03:00, waits for the environment `current` release path on `/Volumes/xpg_usb4`, the local `/var/db/brain-{prod|staging}/current-venv`, and the local runtime env file under `/var/db/brain-{prod|staging}/secrets`, then runs `/var/db/brain-{prod|staging}/scripts/nightly_maintenance.py`. That script runs `scripts/brain_agent_memory.py` first, then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
 
 Run the backup script directly with the configured environment:
 
@@ -321,9 +321,9 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scr
 Stop Brain services before restoring:
 
 ```bash
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.brain.mcp.plist
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.brain.slack-agent.plist
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.brain.ui.plist
+sudo launchctl bootout system /Library/LaunchDaemons/com.brain.prod.mcp.plist
+sudo launchctl bootout system /Library/LaunchDaemons/com.brain.prod.slack-agent.plist
+sudo launchctl bootout system /Library/LaunchDaemons/com.brain.prod.ui.plist
 ```
 
 Restore secrets:
@@ -365,4 +365,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 6ec045153648fa988cba478e4160bb724dbf918fe52d49eb89d6d49aa153c9a5 -->
+<!-- brain-doc-source-hash: fdea8cc91fbab30c4d5e32eb59c9c71e3dbf03743542082499d8cf99e7d082f6 -->

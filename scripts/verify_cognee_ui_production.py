@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from rich.console import Console
 
 from memory_stack.cfg import load_settings
-from production_check_utils import command_exists, uid
+from production_check_utils import command_exists
 
 
 console = Console()
@@ -105,7 +105,7 @@ def check_launchd(label: str, failures: list[str]) -> None:
         failures.append("launchctl is not available")
         return
     result = subprocess.run(
-        ["launchctl", "print", f"gui/{uid()}/{label}"],
+        ["launchctl", "print", f"system/{label}"],
         text=True,
         capture_output=True,
         check=False,

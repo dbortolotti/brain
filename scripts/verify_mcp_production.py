@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from rich.console import Console
 
 from memory_stack.cfg import load_settings
-from production_check_utils import command_exists, uid
+from production_check_utils import command_exists
 
 
 console = Console()
@@ -45,7 +45,8 @@ def main() -> int:
     if not args.skip_launchd:
         pid = check_launchd(settings.brain_launchd_label, failures)
         if pid:
-            check_process_cwd(pid, prod_root, failures)
+            local_support_root = Path(f"/var/db/brain-{settings.brain_release_env}")
+            check_process_cwd(pid, (prod_root, local_support_root), failures)
 
     health_payload = check_http(
         f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_health_path}",
@@ -143,14 +144,18 @@ def check_health_release(
 
 
 def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> None:
-    paths = {
-        "SYSTEM_ROOT_DIRECTORY": Path(settings.system_root_directory),
-        "DATA_ROOT_DIRECTORY": Path(settings.data_root_directory),
+    local_support_root = Path(f"/var/db/brain-{settings.brain_release_env}")
+    shared_paths = {
         "BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url),
     }
+    local_or_shared_paths = {
+        "SYSTEM_ROOT_DIRECTORY": Path(settings.system_root_directory),
+        "DATA_ROOT_DIRECTORY": Path(settings.data_root_directory),
+    }
     if getattr(settings, "vector_db_provider", "lancedb") == "lancedb":
-        paths["VECTOR_DB_URL"] = Path(settings.vector_db_url)
-    for label, path in paths.items():
+        shared_paths["VECTOR_DB_URL"] = Path(settings.vector_db_url)
+
+    for label, path in shared_paths.items():
         if not path.is_absolute():
             failures.append(f"{label} is not absolute in production: {path}")
             continue
@@ -160,13 +165,29 @@ def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> Non
         except ValueError:
             failures.append(f"{label} is not under shared/data: {path}")
 
+    for label, path in local_or_shared_paths.items():
+        if not path.is_absolute():
+            failures.append(f"{label} is not absolute in production: {path}")
+            continue
+        resolved_path = path.resolve()
+        for root, description in (
+            (local_support_root, "local support root"),
+            (shared_data, "shared/data"),
+        ):
+            try:
+                resolved_path.relative_to(root.resolve())
+                console.print(f"[green][OK][/green] {label} under {description}")
+                break
+            except ValueError:
+                continue
+        else:
+            failures.append(f"{label} is not under local support root or shared/data: {path}")
+
 
 def check_palate_retired(failures: list[str]) -> None:
     launch_agents = Path.home() / "Library" / "LaunchAgents"
     active_launch_agents = [
-        path
-        for path in launch_agents.glob("*palate*")
-        if "retired" not in str(path)
+        path for path in launch_agents.glob("*palate*") if "retired" not in str(path)
     ]
     if active_launch_agents:
         failures.append(f"active Palate launch agents still present: {active_launch_agents}")
@@ -179,7 +200,9 @@ def check_palate_retired(failures: list[str]) -> None:
     if cloudflared_config.exists():
         text = cloudflared_config.read_text(encoding="utf-8")
         if "palate.dceb.net" in text or "/palate" in text:
-            failures.append(f"Cloudflare tunnel config still contains Palate routes: {cloudflared_config}")
+            failures.append(
+                f"Cloudflare tunnel config still contains Palate routes: {cloudflared_config}"
+            )
 
     if command_exists("launchctl"):
         result = subprocess.run(
@@ -204,7 +227,7 @@ def check_launchd(label: str, failures: list[str]) -> int | None:
         failures.append("launchctl is not available")
         return None
     result = subprocess.run(
-        ["launchctl", "print", f"gui/{uid()}/{label}"],
+        ["launchctl", "print", f"system/{label}"],
         text=True,
         capture_output=True,
         check=False,
@@ -231,7 +254,7 @@ def parse_launchd_pid(output: str) -> int | None:
     return None
 
 
-def check_process_cwd(pid: int, prod_root: Path, failures: list[str]) -> None:
+def check_process_cwd(pid: int, allowed_roots: tuple[Path, ...], failures: list[str]) -> None:
     if not command_exists("lsof"):
         failures.append("lsof is not available to inspect process cwd")
         return
@@ -249,11 +272,16 @@ def check_process_cwd(pid: int, prod_root: Path, failures: list[str]) -> None:
     if cwd is None:
         failures.append(f"could not determine cwd for pid {pid}")
         return
-    try:
-        cwd.resolve().relative_to(prod_root.resolve())
-        console.print(f"[green][OK][/green] process cwd under production: {cwd}")
-    except ValueError:
-        failures.append(f"process cwd is not under production root: {cwd}")
+    resolved_cwd = cwd.resolve()
+    for root in allowed_roots:
+        try:
+            resolved_cwd.relative_to(root.resolve())
+            console.print(f"[green][OK][/green] process cwd under approved runtime root: {cwd}")
+            return
+        except ValueError:
+            continue
+    roots = ", ".join(str(root) for root in allowed_roots)
+    failures.append(f"process cwd is not under an approved runtime root ({roots}): {cwd}")
 
 
 def check_http(
@@ -287,7 +315,9 @@ def check_http(
 
 
 def check_mcp(settings, failures: list[str]) -> None:
-    url = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_admin_mcp_path}"
+    url = (
+        f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}{settings.brain_admin_mcp_path}"
+    )
     check_mcp_get(
         settings,
         failures,
@@ -365,8 +395,7 @@ def check_oauth_metadata(settings, failures: list[str]) -> None:
             failures.append(f"protected-resource metadata is not Brain: {protected}")
         if protected.get("resource") != settings.public_mcp_url:
             failures.append(
-                "protected-resource metadata resource does not match public MCP URL: "
-                f"{protected}"
+                f"protected-resource metadata resource does not match public MCP URL: {protected}"
             )
 
     admin_protected = check_http_json(
@@ -467,9 +496,14 @@ def check_backups(backup_dir: Path, settings, failures: list[str]) -> None:
         raw_data_entries,
         Path(profile_context_path),
     ):
-        failures.append(f"latest backup raw data archive does not include profile context: {latest}")
+        failures.append(
+            f"latest backup raw data archive does not include profile context: {latest}"
+        )
     if getattr(settings, "vector_db_provider", "lancedb") == "pgvector":
-        if not any(entry.get("verified") and Path(entry.get("dump", "")).exists() for entry in payload.get("pgvector") or []):
+        if not any(
+            entry.get("verified") and Path(entry.get("dump", "")).exists()
+            for entry in payload.get("pgvector") or []
+        ):
             failures.append(f"latest backup has no verified pgvector/Postgres dump: {latest}")
     elif not verified_archive_entries(payload.get("lancedb")):
         failures.append(f"latest backup has no verified LanceDB archive: {latest}")

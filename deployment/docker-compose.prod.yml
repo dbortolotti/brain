@@ -23,6 +23,7 @@ services:
   neo4j:
     image: neo4j:5-community
     container_name: ${BRAIN_NEO4J_CONTAINER:-brain-prod-neo4j}
+    user: "${BRAIN_NEO4J_CONTAINER_USER:-7474:7474}"
     restart: unless-stopped
     ports:
       - "127.0.0.1:${BRAIN_NEO4J_HTTP_PORT:-17474}:7474"
@@ -37,6 +38,3 @@ services:
       NEO4J_server_memory_pagecache_size: "1G"
     volumes:
       - "${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}/shared/docker/neo4j/data:/data"
-      - "${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}/shared/docker/neo4j/logs:/logs"
-      - "${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}/shared/docker/neo4j/import:/var/lib/neo4j/import"
-      - "${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}/shared/docker/neo4j/plugins:/plugins"

@@ -285,7 +285,7 @@ Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually; its version input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
-The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. They also set `BRAIN_PUBLIC_BASE_URL`, `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
+The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Prod runs as `oric_prod`; staging runs as `oric_staging`. Both are installed as system LaunchDaemons under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching. They also set `BRAIN_PUBLIC_BASE_URL`, `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
 
 The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline.
 
@@ -306,6 +306,14 @@ Equivalent command:
 ```bash
 ./scripts/deploy-local-production.sh
 ```
+
+Before the first daemon deploy on a Mac, create the service users:
+
+```bash
+./scripts/setup-macos-service-users.sh
+```
+
+Deploy normalizes `/Volumes/xpg_usb4/{staging|prod}/brain` ownership to the matching runtime user with world-readable release/data/log paths and owner-only `shared/secrets`.
 
 Deployments also configure `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. Auth-enabled Brain instances fail closed when the configured registry is missing, and superusers can manage users from the dashboard User Admin tab without restarting the service.
 
@@ -718,4 +726,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: e580e14b3e4a69a59e2e271693ffe4d6fabf27b8b4ab903a7097b0dec3589da3 -->
+<!-- brain-doc-source-hash: 83724b13a8171262bbae9e89f5fb0142d1c504633283b260ff843783e18c552c -->
