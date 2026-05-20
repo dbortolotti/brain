@@ -105,7 +105,6 @@ Workflow reference:
 
 - `Validate` runs on `pull_request` and `workflow_dispatch`.
 - `Deploy Local Staging` runs on `push` and `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
-- `Deploy Local Production` runs on `workflow_dispatch`; manual dispatch accepts `force_config_override`.
 - `Release` runs on `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
 
 After every merge or push to `main`:
@@ -127,4 +126,4 @@ For a production release:
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 4. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 4efb89fe53b969bb7608d4c4b983770e4a4d3b7a355c33bfd9f384bfd3a2e624 -->
+<!-- brain-doc-source-hash: cda6fdf7b1fac06477f995e2832308333678b703a8a109fa87eaf414576e8ddd -->

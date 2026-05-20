@@ -11,22 +11,16 @@ The staging, production, and release workflows run on the self-hosted `brain-pro
   and deploys the currently staged release version to
   `/Volumes/xpg_usb4/prod/brain`.
 
-`.github/workflows/deploy-local-production.yml` remains available as a manual
-production deploy escape hatch. It is not triggered by pushes to `main`; the
-workflow-dispatch run resolves a `prod-<12-char-sha>` build version.
-
 The staging, production, and release workflows render each environment's
 `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with
 `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh`
 with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
 
 The staging workflow-dispatch `version` input is optional, the release
-workflow-dispatch `version` input is required, and the manual production deploy
-escape hatch only exposes `force_config_override`.
+workflow-dispatch `version` input is required.
 
 `force_config_override` is available only on workflow-dispatch runs for staging,
-production, and release. It defaults to `false`. Push-based staging deploys
-do not use it.
+and release. It defaults to `false`. Push-based staging deploys do not use it.
 
 ## Release Versioning
 
@@ -415,4 +409,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 8fe10d95c34287aca79ac22797a2a507591aca6e9870db43bad6ede58d4baeb4 -->
+<!-- brain-doc-source-hash: 79e2f913d9128fdfaf9e57fa6ba00797ed741fe2eb5f1920722b7bedfd8cde87 -->

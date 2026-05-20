@@ -23,7 +23,6 @@ def test_docs_check_is_part_of_validation_and_deploy_workflows() -> None:
     for path in [
         Path(".github/workflows/validate.yml"),
         Path(".github/workflows/deploy-local-staging.yml"),
-        Path(".github/workflows/deploy-local-production.yml"),
         Path(".github/workflows/release.yml"),
     ]:
         assert "make docs-check" in path.read_text(encoding="utf-8")

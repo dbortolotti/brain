@@ -3,11 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def test_github_deploy_action_validates_before_deploying() -> None:
-    workflow = Path(".github/workflows/deploy-local-production.yml").read_text(encoding="utf-8")
+def test_release_action_validates_before_deploying_to_prod() -> None:
+    workflow = Path(".github/workflows/release.yml").read_text(encoding="utf-8")
 
     assert "push:" not in workflow
     assert "workflow_dispatch:" in workflow
+    assert "version:" in workflow
     assert "uv sync --all-extras" in workflow
     assert "uv run ruff check src tests scripts" in workflow
     assert "uv run pytest" in workflow
@@ -31,13 +32,14 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "brain.env.last-deployed" in renderer
     assert "BRAIN_CONFIG_RENDER_SHA" in renderer
     assert "BRAIN_PROVIDER_AUTH_PROFILES_PATH" in renderer
-    assert workflow.index("Validate repository") < workflow.index(
+    assert workflow.index("Validate staged revision") < workflow.index(
         "Render production config from GitHub Secrets"
     )
     assert workflow.index("Render production config from GitHub Secrets") < workflow.index(
-        "Deploy to local LaunchAgents"
+        "Promote staging revision to production"
     )
     assert "BRAIN_DEPLOY_ENV=prod ./scripts/deploy-local-production.sh" in workflow
+    assert not Path(".github/workflows/deploy-local-production.yml").exists()
 
 
 def test_github_staging_action_deploys_main_to_staging() -> None:

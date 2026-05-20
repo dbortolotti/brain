@@ -285,8 +285,6 @@ Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
 - `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually; its version input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
-`.github/workflows/deploy-local-production.yml` remains available as a manual production deploy escape hatch. It is not triggered by pushes to `main`; its workflow-dispatch run resolves a `prod-<12-char-sha>` build version.
-
 The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. They also set `BRAIN_PUBLIC_BASE_URL`, `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
 
 The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline.
@@ -295,7 +293,6 @@ Workflow model:
 
 - `.github/workflows/deploy-local-staging.yml` triggers on `push` to `main` and on `workflow_dispatch`, and accepts optional `version` and `force_config_override` inputs.
 - `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
-- `.github/workflows/deploy-local-production.yml` is manual only and accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
 The Makefile also exposes `make deploy-local-production` as a manual production deploy helper:
@@ -721,4 +718,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: 3185020620e3ebb5135310f6524b28d994144f386f8ac352c4b8608d57b56f3c -->
+<!-- brain-doc-source-hash: e580e14b3e4a69a59e2e271693ffe4d6fabf27b8b4ab903a7097b0dec3589da3 -->
