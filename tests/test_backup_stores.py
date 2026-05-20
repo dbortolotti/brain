@@ -183,6 +183,7 @@ def test_backup_neo4j_stops_docker_container_for_consistent_dump(tmp_path, monke
     run_command = observed_commands[2]
     assert f"{docker_data}:/data" in run_command
     assert f"{run_dir / 'neo4j'}:/backup" in run_command
+    assert (run_dir / "neo4j").stat().st_mode & 0o777 == 0o777
     assert manifest["neo4j"][0]["verified"] is True
 
 

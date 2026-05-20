@@ -312,6 +312,7 @@ def backup_neo4j(settings, data_root: Path, run_dir: Path, manifest: dict[str, A
 
     dump_dir = run_dir / "neo4j"
     dump_dir.mkdir(exist_ok=True)
+    dump_dir.chmod(0o777)
     dump_path = dump_dir / "neo4j.dump"
     container = settings.brain_neo4j_docker_container
 
