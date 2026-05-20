@@ -425,10 +425,19 @@ apply_runtime_permissions() {
     if [[ "$phase" == "final" && -d "$LOCAL_VENV_DIR" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_VENV_DIR"
     fi
+    if [[ "$phase" == "final" && -d "$UV_PYTHON_INSTALL_DIR" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$UV_PYTHON_INSTALL_DIR"
+      run_privileged find "$UV_PYTHON_INSTALL_DIR" -type l -exec chown -h "$BRAIN_SERVICE_USER:staff" {} +
+    fi
   fi
   run_privileged chmod 755 "$PROD_ROOT" "$PROD_ROOT/releases" "$SHARED_DIR" "$DATA_DIR" "$DATA_DIR/brain" "$BACKUP_DIR" "$LOG_DIR" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" "$LOCAL_CACHE_DIR" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_UI_CACHE_DIR" "$LOCAL_REQUEST_LOG_DIR" "$LOCAL_ROUTING_LOG_DIR" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$LOCAL_VENVS_DIR" "$LOCAL_SCRIPTS_DIR" "$LOCAL_CFG_DIR" "$LOCAL_DEPLOYMENT_DIR"
   if [[ -d "$LOCAL_VENV_DIR" ]]; then
     run_privileged chmod 755 "$LOCAL_VENV_DIR"
+  fi
+  if [[ "$phase" == "final" && -d "$UV_PYTHON_INSTALL_DIR" ]]; then
+    run_privileged find "$UV_PYTHON_INSTALL_DIR" -type d -exec chmod 755 {} +
+    run_privileged find "$UV_PYTHON_INSTALL_DIR" -type f -exec chmod u=rwX,go=rX {} +
+    run_privileged find "$UV_PYTHON_INSTALL_DIR" -type l -exec chmod -h 755 {} + >/dev/null 2>&1 || true
   fi
   if [[ "$phase" == "final" && -d "$DATA_DIR/brain" ]]; then
     run_privileged chmod -R u+rwX,go+rX "$DATA_DIR/brain"
