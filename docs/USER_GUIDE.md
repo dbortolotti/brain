@@ -8,6 +8,13 @@ Palate is Brain's taste layer. Use it for wine, restaurants, media, music, cigar
 
 If your client exposes `brain_agent_memory`, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
 
+Practical model:
+
+- Brain owns memory policy, durable facts, cleanup, and ranking policy.
+- Cognee owns semantic recall and rebuildable projections.
+- Palate owns taste normalization, enrichment, recommendation ranking, and feedback on taste choices.
+- Agent memory is a dedicated user-scoped Cognee dataset for chat-session continuity; it is not the canonical store for everything.
+
 ## Main Workflows
 
 Use Brain and Palate for these day-to-day jobs:
@@ -129,16 +136,16 @@ For chat-session continuity and handovers, prefer the dedicated `brain_agent_mem
 
 ## Using the User Dashboard
 
-The browser dashboard is for reviewing and managing your memory. It opens with a sign-in overlay that says `Sign In` and `Sign in to review and manage your memory.`, and the session line says `Connect to review memory.`
+The browser dashboard is for reviewing, managing, and auditing your memory. It opens with a sign-in overlay that says `Sign In` and `Sign in to review and manage your memory.`, and the session line says `Connect to review memory.`
 
-The dashboard is available at `/` and `/user`. The app dashboard is also available at `/app`. The top bar links to User, Admin, and Cognee views.
+The dashboard is available at `/` and `/user`. The app dashboard is also available at `/app`. The sidebar links to User, Admin, and Cognee views.
 
 Main tabs:
 
 - Review: Recent Cards, Open Loops, and Memory Contents. Select a memory card to inspect its contents and evidence.
 - Recall: search Brain with a query and an optional limit.
 - Remember: preview a memory before saving it. The input type menu includes auto, fact, note, thought, open question, and chat conclusion.
-- Profile: add standing answer-tailoring context. The default scope is `answer_tailoring`.
+- Profile / Profile Context: add standing answer-tailoring context. The default scope is `answer_tailoring`.
 - Prompt: inspect Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
 - Data Controls: view App Write Audit, Export Preview, Profile Data, and Recent Memory Data.
 - Account: change your password.
@@ -226,6 +233,8 @@ MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated al
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
 Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset of tools. It does expose `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. It does not expose `brain_agent_memory_clear`.
+
+If you are using the ChatGPT app surface and want to inspect data controls or related dashboard state, use `brain_app_data_controls`.
 
 Internal or admin surfaces also expose tools such as `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, `brain_palate_refresh_enrichment`, and `cognee_improve`.
 
@@ -338,6 +347,7 @@ Save:
 - Stable preferences: `Maya prefers written briefs.`
 - People facts: `Sam works at Goldman.`
 - Family or personal context you are allowed to remember.
+- Standing profile context for answer tailoring, such as a stable name, background, work context, or communication need.
 - Decisions: `Use Brain DB as the source of truth.`
 - Project state: `Slack is the primary guarded intake.`
 - Commitments: `I promised to send Alex the draft on Friday.`
@@ -662,4 +672,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: c1402452187fd21d1e8c269226f380d796d96deb02a69d59198d435c76eff17b -->
+<!-- brain-doc-source-hash: f4165563566521a012725a38600b508833c9b29d926d4972c79e7775c0612dd5 -->

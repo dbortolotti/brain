@@ -12,7 +12,7 @@ make prod-check
 
 The backup scheme must preserve enough state to rebuild Brain after local disk loss or a bad deploy:
 
-- Brain SQLite databases under the shared data root.
+- Brain SQLite databases under the configured data roots and runtime system root.
 - Raw source/data directories.
 - Vector-store data, either as a pgvector SQL dump or LanceDB archives, depending on the configured vector backend.
 - Production secret files needed to restart the services.
@@ -61,7 +61,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Local prod, staging, and QA deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`; QA renders as `com.brain.qa.maintenance` and runs as `oric`. The job starts at 03:00, waits for the environment `current` release path on `/Volumes/xpg_usb4`, the local `/var/db/brain-{prod|staging|qa}/current-venv`, and the local runtime env file under `/var/db/brain-{prod|staging|qa}/secrets`, then runs `/var/db/brain-{prod|staging|qa}/scripts/nightly_maintenance.py`. That script runs `scripts/brain_agent_memory.py` first, then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
+Local prod, staging, and QA deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`; QA renders as `com.brain.qa.maintenance` and runs as `oric`. The maintenance job runs `scripts/nightly_maintenance.py`, which runs `scripts/brain_agent_memory.py` first and then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
 
 Run the backup script directly with the configured environment:
 
@@ -98,6 +98,8 @@ Every backup writes `manifest.json` with this shape:
   "timestamp": "20260510_120000",
   "backup_dir": "/Volumes/xpg_usb4/prod/brain/shared/backups/20260510_120000",
   "data_root": "/Volumes/xpg_usb4/prod/brain/shared/data",
+  "data_roots": ["/Volumes/xpg_usb4/prod/brain/shared/data", "/Volumes/xpg_usb4/prod/brain/shared/data/data"],
+  "sqlite_roots": ["/Volumes/xpg_usb4/prod/brain/shared/data", "/Volumes/xpg_usb4/prod/brain/shared/data/data", "/Volumes/xpg_usb4/prod/brain/shared/data/system"],
   "sqlite": [],
   "lancedb": [],
   "pgvector": [],
@@ -113,7 +115,7 @@ Every backup writes `manifest.json` with this shape:
 
 ## SQLite Backups
 
-The backup script searches the shared data root for SQLite databases:
+The backup script searches the configured data roots and runtime system root for SQLite databases:
 
 ```text
 *.sqlite
@@ -147,7 +149,7 @@ Production verification requires:
 
 ## Raw Data Archive
 
-The shared data directory passed via `--data-dir` is archived as:
+Each data root in the deduplicated backup set is archived as:
 
 ```text
 raw_data/<data-root-name>.tar.gz
@@ -155,7 +157,7 @@ raw_data/<data-root-name>.tar.gz
 
 This preserves source data and runtime files that are not captured by the SQLite- or vector-store-specific paths.
 
-If the shared data directory is missing, the manifest receives a blocker and no raw-data archive is written.
+If a data root is missing, the manifest receives a blocker for that root and no raw-data archive is written for it.
 
 ## Vector Store Backups
 
@@ -169,7 +171,7 @@ When `VECTOR_DB_PROVIDER=pgvector`, the backup script creates a Postgres dump of
 pgvector/<db-name>.sql
 ```
 
-The dump is produced with `docker exec brain-prod-postgres pg_dump` when Docker is available. The manifest entry records the dump method, database name, return code, captured stderr, and whether the dump was verified as non-empty.
+The dump is produced with Docker when available. The manifest entry records the dump method, database name, return code, captured stderr, and whether the dump was verified as non-empty.
 
 If Docker is not available, the manifest receives a blocker and the pgvector backup does not complete.
 
@@ -336,7 +338,7 @@ chmod 600 /Volumes/xpg_usb4/prod/brain/shared/secrets/*
 
 Restore SQLite databases by copying the selected files from `sqlite/` back to their manifest `source` paths.
 
-Restore raw data from the matching archive in `raw_data/`.
+Restore raw data from the matching archive in `raw_data/` for each archived data root.
 
 Restore vector data from the matching archive for the configured backend:
 
@@ -365,4 +367,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 2d1685ad60fd2b8ec2aa08fd1ad3622bf2ec99e8b7ab0b9b3782a93582c16871 -->
+<!-- brain-doc-source-hash: df9eb3df7b322e556cdc57addf0d7c13f7e0cc707134d998803800f13317e82d -->

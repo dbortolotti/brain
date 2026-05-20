@@ -10,7 +10,10 @@ Brain exposes two API surfaces:
 - MCP stdio for local desktop clients that launch Brain as a subprocess.
 
 Slack is separate and uses its own service and routes. See
-[Slack Setup](SLACK_SETUP.md) for Slack app configuration.
+[Slack Setup](SLACK_SETUP.md) for Slack app configuration. The Slack agent
+serves routes such as `/slack/commands`, `/slack/events`,
+`/slack/interactions`, and `/slack/healthz` on the Slack agent port, not the
+Brain MCP server.
 
 ## Install
 
@@ -210,8 +213,8 @@ DELETE /delete_datasource/{datasource}
 ```
 
 Raw SQL and arbitrary Cognee primitives are not exposed as public MCP tools.
-Brain does expose curated Cognee/admin operations such as sync, rebuild, and
-configured improve.
+Brain does expose curated Cognee/admin operations such as sync, rebuild, merge
+entities, conflict resolution, forget, and configured improve.
 
 ## ChatGPT App Surface
 
@@ -231,18 +234,18 @@ The curated app tool set is:
 brain_session
 brain_recall
 brain_remember
+brain_ingest_source
 brain_profile_entity
 brain_list_open_loops
 brain_get_memory
 brain_review_recent
+brain_agent_memory
+brain_agent_memory_recall
 brain_undo_last
 brain_profile_context_list
 brain_profile_context_remember
 brain_profile_context_forget
 brain_app_data_controls
-brain_ingest_source
-brain_agent_memory
-brain_agent_memory_recall
 brain_palate_describe_item
 brain_palate_query
 brain_palate_evaluate_options
@@ -706,4 +709,4 @@ Route `/slack/*` to the Slack agent port, not the MCP server. See
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 6a5d9c63c72c7388ee7e30f216383e075e6f15f49d5e55b1e51f51ee55aa1415 -->
+<!-- brain-doc-source-hash: 5da27b0eee3b2a2aaef486d696936094909cbb267bc7bec3f4fe2240cf2ae23a -->

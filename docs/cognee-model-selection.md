@@ -33,17 +33,7 @@ The latest retrieval run completed for all three candidate datasets using `gpt-5
 
 These are retrieval results for `gpt-5.5` answer synthesis, not final results for every possible retrieval model. This run holds retrieval/answer synthesis constant at `gpt-5.5` extra high. That means the current comparison is primarily testing how the different ingestion settings shape Cognee's stored graph/vector representation under a strong retrieval model. The matching `gpt-5.4-mini` retrieval run is recorded below, while keeping the scorer fixed at `gpt-5.5` extra high.
 
-The completed raw answer artifacts are:
-
-- `artifacts/manetti_candidate_eval_menotti-54-mini_latest_raw.jsonl`
-- `artifacts/manetti_candidate_eval_menotti-55-low_latest_raw.jsonl`
-- `artifacts/manetti_candidate_eval_menotti-55-high_latest_raw.jsonl`
-
-The completed scored artifacts are:
-
-- `artifacts/manetti_candidate_eval_scores_latest.csv`
-- `artifacts/manetti_candidate_eval_scores_latest.jsonl`
-- `artifacts/manetti_candidate_eval_report_latest.md`
+The completed run artifacts are written in the timestamped `tests/model_eval_tests/runs/` folders, alongside `config.json`, `ingestion_timings.json` and `ingestion_timings.jsonl`, `answers.jsonl`, `scores.jsonl`, `scores.csv`, and `report.md`.
 
 ## What We Are Testing
 
@@ -77,9 +67,9 @@ This is a good stress test because it is long enough to require multi-hop retrie
 
 The 100-question set was generated from the Manetti markdown source and saved here:
 
-- `artifacts/manetti_candidate_eval_questions_latest.json`
-- `artifacts/manetti_candidate_eval_questions_latest.md`
-- `artifacts/manetti_candidate_eval_questions_latest.txt`
+- `tests/model_eval_tests/manetti_100_questions.json`
+- `tests/model_eval_tests/manetti_100_questions.md`
+- `tests/model_eval_tests/manetti_document.md`
 
 The repository's durable Manetti fixture is separate and balanced across difficulty levels:
 
@@ -295,17 +285,7 @@ The `20260513_gpt54mini` retrieval run completed for all three candidate dataset
 
 Compared with the `gpt-5.5` retrieval run, answer quality dropped for all three candidate datasets: `menotti-54-mini` fell from 4.71 to 4.49, `menotti-55-low` from 4.69 to 4.56, and `menotti-55-high` from 4.71 to 4.39. The logged retrieval-stage timings stayed near the earlier run because they measure Cognee vector/graph retrieval, not answer-synthesis LLM latency. End-to-end query batch wall times were 355.2s for `menotti-54-mini`, 370.7s for `menotti-55-low`, and 366.2s for `menotti-55-high`.
 
-The completed raw answer artifacts are:
-
-- `artifacts/manetti_candidate_eval_menotti-54-mini_20260513_gpt54mini_raw.jsonl`
-- `artifacts/manetti_candidate_eval_menotti-55-low_20260513_gpt54mini_raw.jsonl`
-- `artifacts/manetti_candidate_eval_menotti-55-high_20260513_gpt54mini_raw.jsonl`
-
-The completed scored artifacts are:
-
-- `artifacts/manetti_candidate_eval_scores_20260513_gpt54mini.csv`
-- `artifacts/manetti_candidate_eval_scores_20260513_gpt54mini.jsonl`
-- `artifacts/manetti_candidate_eval_report_20260513_gpt54mini.md`
+The completed run artifacts are written in the timestamped `tests/model_eval_tests/runs/` folders, alongside `config.json`, `ingestion_timings.json` and `ingestion_timings.jsonl`, `answers.jsonl`, `scores.jsonl`, `scores.csv`, and `report.md`.
 
 ## Question-by-Question GPT-5.4-Mini Retrieval Scores and Timing
 
@@ -430,4 +410,4 @@ The current data does not justify `menotti-55-high` as a default. Its ingestion 
 2. Compare low-score clusters across the completed `gpt-5.5` and `gpt-5.4-mini` retrieval runs.
 3. Select the cheaper ingestion and retrieval combination unless the slower model clearly fixes structural and interpretive retrieval errors.
 
-<!-- brain-doc-source-hash: 6754ff6bbb15b5735bc714121c0bfe3f3bd51b92ce6e629029ea3d7afbac3064 -->
+<!-- brain-doc-source-hash: 1ff58f4484b9ab25a5599e12e17d6ed190f8e092cf7ba0060371fad8e01fadcf -->

@@ -1,6 +1,6 @@
 # ChatGPT App Hardening
 
-Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. The public app includes the curated ChatGPT App tool set listed below, including Palate read and interaction tools, `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall`; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors and confirms the public app component resource (`ui://brain/review.v2.html`) remains text-only.
+Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public app MCP URL is the configured public base URL plus `BRAIN_PUBLIC_MCP_PATH`; the legacy app alias uses `BRAIN_PUBLIC_APP_MCP_PATH`, and the admin surface uses `BRAIN_PUBLIC_ADMIN_MCP_PATH`. This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. The public app includes the curated ChatGPT App tool set listed below, including Palate read and interaction tools, `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall`; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors, the OAuth protected-resource metadata for the public app and admin surfaces, and confirms the public app component resource (`ui://brain/review.v2.html`) remains text-only; when auth is enabled, the authenticated public app MCP surface is also checked and must remain text-only.
 
 ## Public App Tools
 
@@ -77,7 +77,7 @@ Use `--check` to fail deployment verification when any user still needs migratio
 
 Production auth is configured through `BRAIN_AUTH_ENABLED`, `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`, `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_USERS_FILE`, and `BRAIN_AUTH_SUPERUSER_IDS`.
 
-Public dashboard, legal, and app-asset responses include Content Security Policy, HSTS, Referrer Policy, Permissions Policy, and `X-Content-Type-Options`. The CSP includes `frame-ancestors` entries for ChatGPT/OpenAI hosts so the app component can be framed by ChatGPT while excluding arbitrary embedding.
+Public dashboard, legal, and app-asset responses include browser security headers. Production verification checks those headers, along with OAuth metadata, app descriptors, and the public app surfaces.
 
 ## User Controls
 
@@ -96,7 +96,7 @@ Before submitting Brain as a ChatGPT App, complete the non-code submission asset
 - A short reviewer test path using a dedicated non-admin verifier user.
 - Clear explanation that memory writes preview first and require explicit confirmation.
 - Confirmation that admin tools, raw Cognee operations, hard-delete tools, `brain_agent_memory_clear`, tokens, secrets, and password hashes are not exposed on the public app surface.
-- Confirmation that the ChatGPT App tool descriptors match the release and the public app component resource (`ui://brain/review.v2.html`) remains text-only.
+- Confirmation that the ChatGPT App tool descriptors match the release, the public and admin OAuth protected-resource metadata resolve to the configured URLs, and the public app component resource (`ui://brain/review.v2.html`) remains text-only.
 - Production verification output from `make prod-check` and `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared`.
 
 ## Operator Checklist
@@ -118,7 +118,9 @@ After every merge or push to `main`:
 
 For a production release:
 
-1. Run the manual `Deploy Local Staging` workflow with the desired `vX.Y.Z` tag; it updates generated docs, stamps the docs with that tag, pushes the docs commit to `main`, deploys staging, and creates the tag.
+1. Run the manual `Deploy Local Staging` workflow with the desired `vX.Y.Z` tag.
+   - The workflow triggers on `workflow_dispatch`.
+   - Manual dispatch requires `version` and accepts `force_config_override`.
 2. Run the manual `Release` GitHub Actions workflow with the same staged tag.
    - The workflow triggers on `workflow_dispatch`.
    - Manual dispatch accepts `version` and `force_config_override` inputs.
@@ -128,4 +130,4 @@ For a production release:
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 5. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: b9ab74c176413cc8c26295101123d2cba501598166b3cc5e6cf57c9732ad1548 -->
+<!-- brain-doc-source-hash: f6520318c60980c4f15149d749604f9ee57f2ec76178857050b3814ea870a1bf -->

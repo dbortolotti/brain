@@ -6,6 +6,8 @@ Most users should interact with Brain through Slack, through an LLM client that 
 
 Use Brain when you want an agent to remember durable facts, decisions, preferences, project state, open loops, research questions, source material, standing profile context, palate or taste signals, or chat-session continuity. Use Cognee-backed agent memory when you want continuity between agent chats and a dedicated portable session memory. Use Palate when the memory is about taste: wine, restaurants, media, music, cigars, experiences, and other supported preference categories.
 
+If your client exposes `brain_agent_memory`, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
+
 The practical rule is simple:
 
 - Brain owns memory policy, durable preferences, cleanup, ranking policy, and palate decisions.
@@ -66,7 +68,7 @@ Poor memories:
 
 ## Core MCP Tools
 
-Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory, merge, and the full Palate toolset. The ChatGPT app surface also exposes `brain_agent_memory` and `brain_agent_memory_recall` for portable chat continuity.
+Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset; the internal or admin surface exposes the full set, including source lookup, conflict resolution, deletion, Cognee maintenance, agent-memory cleanup, merge, and the full Palate toolset. The ChatGPT app surface also exposes `brain_agent_memory` and `brain_agent_memory_recall` for portable chat continuity.
 
 Most agents should use these tools rather than lower-level storage details.
 
@@ -174,7 +176,7 @@ Slack memory policy:
 - Refuse weak memories such as transient chatter, guesses presented as facts, facts with unclear subject, or third-party claims without attribution.
 - Ask a concise clarification when pronouns such as `he`, `she`, `they`, `it`, or `that` cannot be resolved from nearby Brain context.
 - Ask before storing sensitive or personal facts even when confidence is high.
-- Treat contradictions and corrections as blockers unless the user explicitly confirms the proposed write.
+- Treat contradictions and corrections as blockers unless the user explicitly confirms the proposed write. When the user is correcting a memory, prefer clear correction language such as `actually`, `replace`, `supersedes`, or `correction`.
 - Keep the tone concise, direct, and specific. Ask one pointed question when possible, and name the exact blocker when complaining.
 
 ## Palate Tools
@@ -309,9 +311,7 @@ Before ranking, use Brain Palate recall or query rather than guessing from the c
 
 Agent memory is for continuity between agent chats. It uses a dedicated, user-scoped Cognee dataset so it can be cleaned up separately if it becomes noisy.
 
-The default agent-memory session id is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. Do not hardcode that value.
-
-Agents must not hardcode that value. The `brain_session` tool derives the active user's session id from that value and resolves the matching user-scoped agent-memory dataset. On surfaces that expose it, `brain_session` also returns the user-scoped `session_id` for portable agent-memory calls.
+The default agent-memory session id is configured by `BRAIN_AGENT_MEMORY_SESSION_ID`. Do not hardcode that value. `brain_session` derives the active user's session id from that value and resolves the matching user-scoped agent-memory dataset. On surfaces that expose it, `brain_session` also returns the user-scoped `session_id` for portable agent-memory calls.
 
 Minimal agent preprompt:
 
@@ -359,14 +359,14 @@ Brain is configured through environment variables. Common groups include `ALLOW_
 Key reminders:
 
 - `BRAIN_AGENT_MEMORY_SESSION_ID` sets the default agent-memory session id used by `brain_session`.
-- `BRAIN_APP_MCP_PATH`, `BRAIN_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, `BRAIN_PUBLIC_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_UI_PATH`, and `BRAIN_PUBLIC_UI_API_PATH` control the app, admin, and public MCP or UI paths.
-- `BRAIN_AUTH_ENABLED` controls auth; related settings include access token lifetime, refresh token lifetime, password file, users file, state path, scopes, PKCE, and `BRAIN_AUTH_SUPERUSER_IDS` in prod and staging.
+- `BRAIN_APP_MCP_PATH`, `BRAIN_ADMIN_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, `BRAIN_PUBLIC_ADMIN_MCP_PATH`, and `BRAIN_PUBLIC_MCP_PATH` control the app, admin, and public MCP or UI paths.
+- `BRAIN_AUTH_ENABLED` controls auth; related settings include access token lifetime, refresh token lifetime, password file, users file, state path, scopes, PKCE, and `BRAIN_AUTH_SUPERUSER_IDS` in prod, staging, and QA.
 - `BRAIN_COGNEE_*_DATASET` settings separate memory, data, sources, palate, and agent memory. `BRAIN_COGNEE_ENABLED`, `BRAIN_COGNEE_RECALL_ENABLED`, and `BRAIN_COGNEE_RECALL_TOP_K` control Cognee availability and recall.
 - `BRAIN_BACKUP_DIR` and Google Drive backup settings control backups.
-- `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the staging and production deploy workflows, `deploy-local-staging.yml`, `deploy-local-production.yml`, `release.yml`, and `validate.yml` intentionally when promoting or validating changes.
+- `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the QA, staging, release, and validation workflows, `deploy-local-qa.yml`, `deploy-local-staging.yml`, `release.yml`, and `validate.yml` intentionally when validating or promoting changes.
 - `BRAIN_CONFIG_RENDER_SHA`, `BRAIN_CONFIG_RENDERED_AT`, and `BRAIN_CONFIG_RENDER_SOURCE` may appear in rendered config.
-- In dev, staging, and prod, `BRAIN_LOG_LEVEL` and `BRAIN_UI_ENABLED` are also available.
-- The deploy and promotion workflows are `deploy-local-staging.yml`, `deploy-local-production.yml`, `release.yml`, and `validate.yml`.
+- In dev, qa, staging, and prod, `BRAIN_LOG_LEVEL` and `BRAIN_UI_ENABLED` are also available.
+- The deploy and promotion workflows are `deploy-local-qa.yml`, `deploy-local-staging.yml`, `release.yml`, and `validate.yml`.
 
 Never store secrets, passwords, API keys, OAuth tokens, or credentials in Brain.
 
@@ -743,4 +743,4 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: 29e3aa851d09e364a013c7296ea9cb2c67fe26ab36be1efd5aa4e0a69642bf0a -->
+<!-- brain-doc-source-hash: 5990cae39d32c4818a16820d67e3e154209ae15b16a7ac835b21227a9753e2cb -->

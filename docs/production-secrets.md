@@ -3,52 +3,16 @@
 The QA, staging, production, and release workflows run on the self-hosted `brain-prod` runner. The deployment model has three deployed environments, plus local dev:
 
 - `dev`: local developer runs.
-- `qa`: pushes and merges to `main` deploy through
-  `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`.
-  QA runs as `oric`, uses read-only repository permissions, and records a
-  `qa-<12-char-sha>` build version.
-- `staging`: manual versioned staging runs through
-  `.github/workflows/deploy-local-staging.yml` to
-  `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or
-  prerelease tag, refreshes generated docs, writes
-  `docs/generated/release.json` with that tag, pushes the docs stamp to
-  `main`, deploys the stamped commit, and creates the annotated git tag.
-- `prod`: manual release promotion runs through `.github/workflows/release.yml`
-  and deploys the currently staged release version to
-  `/Volumes/xpg_usb4/prod/brain`.
+- `qa`: pushes and merges to `main` deploy through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`.
+  QA runs as `oric`, uses read-only repository permissions, and records a `qa-<12-char-sha>` build version. `workflow_dispatch` on QA supports `force_config_override`; it has no version input.
+- `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or prerelease tag such as `vX.Y.Z-rc.1`, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag at the staged SHA.
+- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
-The QA, staging, production, and release workflows render each environment's
-`shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with
-`scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh`
-with `BRAIN_DEPLOY_ENV=qa`, `staging`, or `prod`.
+The QA, staging, production, and release workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa`, `staging`, or `prod`.
 
-The rendered config and deploy steps run with passwordless `sudo` on the local
-self-hosted runner. Prod is owned and run by `oric_prod`; staging is owned and
-run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh`
-creates the hidden staging and prod service users on a new Mac. Deploys install system LaunchDaemons in
-`/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot
-and wait for `/Volumes/xpg_usb4/{qa|staging|prod}/brain/current` before launching.
-Each LaunchDaemon uses `SessionCreate` with its service user and starts from
-`/var/db/brain-{prod|staging|qa}`. LaunchDaemons execute the per-release Python
-environment from `/var/db/brain-{prod|staging|qa}/current-venv` and read a local
-runtime copy of `brain.env` from `/var/db/brain-{prod|staging|qa}/secrets`; they
-also load config from `/var/db/brain-{prod|staging|qa}/cfg` via `BRAIN_CONFIG_DIR`.
-Deploys install `memory-stack` into that venv non-editably so launchd does not
-have to import project code or config through an external-volume `.pth` file.
-Release, data, backup, and log paths are world-readable and writable only by the
-runtime user; `shared/secrets` remains owner-only. Normal deploys update
-ownership incrementally; set `BRAIN_FULL_CHOWN=1` for a first migration or
-repair when the entire prod/staging/QA tree needs to be reclaimed by the service
-user. Local non-GitHub QA and staging deploys refresh an existing release directory for
-the same commit SHA from the working tree so migration iterations can exercise
-uncommitted changes; GitHub Actions and prod deploys keep release directories
-immutable unless `BRAIN_REFRESH_RELEASE=1` is explicitly supplied.
+The rendered config and deploy steps run with passwordless `sudo` on the local self-hosted runner. Prod is owned and run by `oric_prod`; staging is owned and run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh` creates the hidden staging and prod service users on a new Mac. Deploys install system LaunchDaemons in `/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot and wait for `/Volumes/xpg_usb4/{qa|staging|prod}/brain/current` before launching. Each LaunchDaemon uses `SessionCreate` with its service user and starts from `/var/db/brain-{prod|staging|qa}`. LaunchDaemons execute the per-release Python environment from `/var/db/brain-{prod|staging|qa}/current-venv` and read a local runtime copy of `brain.env` from `/var/db/brain-{prod|staging|qa}/secrets`; they also load config from `/var/db/brain-{prod|staging|qa}/cfg` via `BRAIN_CONFIG_DIR`. Deploys install `memory-stack` into that venv non-editably so launchd does not have to import project code or config through an external-volume `.pth` file. Release, data, backup, and log paths are world-readable and writable only by the runtime user; `shared/secrets` remains owner-only. Normal deploys update ownership incrementally; set `BRAIN_FULL_CHOWN=1` for a first migration or repair when the entire prod/staging/QA tree needs to be reclaimed by the service user. Local non-GitHub QA and staging deploys refresh an existing release directory for the same commit SHA from the working tree so migration iterations can exercise uncommitted changes; GitHub Actions and prod deploys keep release directories immutable unless `BRAIN_REFRESH_RELEASE=1` is explicitly supplied.
 
-The staging and release workflow-dispatch `version` inputs are required. QA has
-no version input and derives its build version from the pushed commit SHA.
-
-`force_config_override` is available only on workflow-dispatch runs for QA,
-staging, and release. It defaults to `false`. Push-based QA deploys do not use it.
+The staging and release workflow-dispatch `version` inputs are required. QA has no version input and derives its build version from the pushed commit SHA. `force_config_override` is available only on workflow-dispatch runs for QA, staging, and release. It defaults to `false`. Push-based QA deploys do not use it.
 
 ## Release Versioning
 
@@ -59,9 +23,7 @@ Every deploy writes runtime release metadata into:
 /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/release.json
 ```
 
-The release metadata records the app name, environment, version, SHA, release
-directory, `deployed_at`, and source. The source is `github-actions` for
-workflow runs and `local` for local runs.
+The release metadata records the app name, environment, version, SHA, release directory, `deployed_at`, and source. The source is `github-actions` for workflow runs and `local` for local runs.
 
 The renderer also writes config-render metadata keys into the rendered config:
 
@@ -79,27 +41,13 @@ BRAIN_RELEASE_SHA
 BRAIN_RELEASE_VERSION
 ```
 
-These metadata keys are deployment metadata, not repository variables. The
-conflict checker ignores both metadata families.
+These metadata keys are deployment metadata, not repository variables. The conflict checker ignores both metadata families.
 
-Normal pushes to `main` deploy QA with an automatic build version such as
-`qa-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
-workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That workflow refreshes
-generated docs, records the tag in `docs/generated/release.json`, pushes any docs
-stamp commit back to `main`, deploys that stamped commit, records
-`BRAIN_RELEASE_VERSION` as the tag, and creates the annotated git tag at the
-staged SHA. If the tag already exists at a different SHA, the staging run fails
-instead of retagging.
+Normal pushes to `main` deploy QA with an automatic build version such as `qa-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That workflow refreshes generated docs, records the tag in `docs/generated/release.json`, pushes any docs stamp commit back to `main`, deploys that stamped commit, records `BRAIN_RELEASE_VERSION` as the tag, and creates the annotated git tag at the staged SHA. If the tag already exists at a different SHA, the staging run fails instead of retagging.
 
-Production promotion does not mint a new version. The release workflow reads
-staging `shared/release.json`, verifies the requested version is the active
-staged version, verifies the git tag already exists at that exact SHA, checks
-that the staging `current` symlink points at the same commit, and then deploys
-production with the same `BRAIN_RELEASE_VERSION` and staged SHA.
+Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION` and staged SHA.
 
-GitHub Secrets and GitHub Variables are the source of truth. Live config can
-still be edited directly for an emergency, but the next deploy for that
-environment will fail unless that change has been propagated back to GitHub.
+GitHub Secrets and GitHub Variables are the source of truth. Live config can still be edited directly for an emergency, but the next deploy for that environment will fail unless that change has been propagated back to GitHub.
 
 ## Config Conflict Rule
 
@@ -122,26 +70,15 @@ else:
   fail deploy
 ```
 
-The renderer ignores metadata keys when it compares configs. After a successful
-render, both `brain.env` and `brain.env.last-deployed` are updated to the
-proposed config.
+The renderer ignores metadata keys when it compares configs. After a successful render, both `brain.env` and `brain.env.last-deployed` are updated to the proposed config.
 
-`force_config_override=true` bypasses the three-way conflict check and
-establishes a new baseline. Use it only for an intentional bootstrap or
-re-baseline. Otherwise, resolve a conflict by propagating the live change back
-to GitHub Secrets/Variables or by intentionally reconciling the environment
-back to the last deployed baseline before redeploying.
+`force_config_override=true` bypasses the three-way conflict check and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline. Otherwise, resolve a conflict by propagating the live change back to GitHub Secrets/Variables or by intentionally reconciling the environment back to the last deployed baseline before redeploying.
 
-`BRAIN_AUTH_PASSWORD` is handled similarly, but it is written to the
-environment's `shared/secrets/brain-auth-password` with a matching
-`brain-auth-password.last-deployed` snapshot.
+`BRAIN_AUTH_PASSWORD` is handled similarly, but it is written to the environment's `shared/secrets/brain-auth-password` with a matching `brain-auth-password.last-deployed` snapshot.
 
 ## Deployment Metadata and Auth Registry
 
-Deployment also configures `BRAIN_AUTH_USERS_FILE` under
-`shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the
-deployed config. A superuser can create, edit, and delete user records from the
-dashboard User Admin tab.
+Deployment also configures `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. A superuser can create, edit, and delete user records from the dashboard User Admin tab.
 
 The deployed auth and dashboard surfaces include these route families:
 
@@ -201,14 +138,11 @@ The deployed auth and dashboard surfaces include these route families:
 /{path:path}          MCP route fallback
 ```
 
-The workflows set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`,
-`BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`,
-`BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`,
-`BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
+The key auth routes are `GET` and `POST` as appropriate: `/authorize` accepts `GET` and `POST`, `/login`, `/logout`, `/register`, `/revoke`, and `/token` are `POST`-only, `/account/password` is `PUT`, `/admin/users` is `GET` and `POST`, `/admin/users/{user_id}` is `PUT` and `DELETE`, and `/auth/session` and `/api/session` are `GET`.
 
-`/app/mcp`, `/ui`, and `/ui-api` remain compatibility aliases, and the Cognee
-UI proxy also exposes `/ui-login`, `/ui-logout`, `/cognee-login`, and
-`/cognee-logout`. The Cognee UI proxy surfaces also remain available at:
+The workflows set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
+
+`/app/mcp`, `/ui`, and `/ui-api` remain compatibility aliases, and the Cognee UI proxy also exposes `/ui-login`, `/ui-logout`, `/cognee-login`, and `/cognee-logout`. The Cognee UI proxy surfaces also remain available at:
 
 ```text
 /admin/cognee
@@ -236,13 +170,9 @@ GRAPH_DATABASE_PASSWORD
 BRAIN_AUTH_PASSWORD
 ```
 
-The staging and production workflows also pass `BRAIN_AUTH_TOKEN` into
-`render_prod_env.py`.
+The staging and production workflows also pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`.
 
-`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer and cannot be
-empty. The renderer rejects empty or placeholder values for `OPENAI_API_KEY`
-(``, `replace-me`, `sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`,
-`...`).
+`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer and cannot be empty. The renderer rejects empty or placeholder values for `OPENAI_API_KEY` (``, `replace-me`, `sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
 
 ## Optional Taste Integration Secrets
 
@@ -255,9 +185,7 @@ Set these only when the corresponding Taste integrations are enabled.
 
 ## Optional Eval Provider Secrets
 
-Runtime uses the configured LLM and embedding provider/model settings. Set
-these only when you want explicit eval or smoke experiments against additional
-`provider:model` refs:
+Runtime uses the configured LLM and embedding provider/model settings. Set these only when you want explicit eval or smoke experiments against additional `provider:model` refs:
 
 ```text
 OPENROUTER_API_KEY
@@ -272,8 +200,7 @@ GROQ_API_KEY
 VOYAGE_API_KEY
 ```
 
-For Bedrock, prefer `AWS_BEARER_TOKEN_BEDROCK` for model-eval experiments. Use
-standard AWS credentials only when the Bedrock client path requires SDK auth.
+For Bedrock, prefer `AWS_BEARER_TOKEN_BEDROCK` for model-eval experiments. Use standard AWS credentials only when the Bedrock client path requires SDK auth.
 
 ## Optional Slack Secrets
 
@@ -284,9 +211,7 @@ BRAIN_SLACK_BOT_TOKEN
 
 ## Recommended Variables
 
-Use GitHub repository variables for non-secret deployment settings. Do not set
-`BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, or `BRAIN_RELEASE_VERSION` here;
-deployment writes those metadata keys.
+Use GitHub repository variables for non-secret deployment settings. Do not set `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, or `BRAIN_RELEASE_VERSION` here; deployment writes those metadata keys.
 
 ```text
 PROFILE
@@ -420,22 +345,14 @@ BRAIN_APP_WRITE_RATE_LIMIT_COUNT
 BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 ```
 
-The renderer also reads additional environment variables in staging and prod,
-including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`,
-`BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`,
-`BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`,
-`BRAIN_AUTH_TOKEN`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`,
-`BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`,
-`BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the
-`BRAIN_UI_*` runtime settings shown above.
+The renderer also reads additional environment variables in staging and prod, including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`, `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`, `BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown above.
 
 ## Local Backup
 
-Before moving secrets into GitHub, keep a local gitignored backup under
-`local-secrets/`. A generated `github-secrets.env` file can be loaded with:
+Before moving secrets into GitHub, keep a local gitignored backup under `local-secrets/`. A generated `github-secrets.env` file can be loaded with:
 
 ```bash
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 817511987a970e04fdcb84f2cff5225bb15e80ada12377398b3158607c31ee6c -->
+<!-- brain-doc-source-hash: 4a65efaf3d0ad73a34427f3e80846410843eb2ec3718ea34e75c6d41612e6161 -->
