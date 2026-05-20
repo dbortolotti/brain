@@ -145,10 +145,9 @@ def check_health_release(
 
 def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> None:
     local_support_root = Path(f"/var/db/brain-{settings.brain_release_env}")
-    shared_paths = {
-        "BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url),
-    }
+    shared_paths = {}
     local_or_shared_paths = {
+        "BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url),
         "SYSTEM_ROOT_DIRECTORY": Path(settings.system_root_directory),
         "DATA_ROOT_DIRECTORY": Path(settings.data_root_directory),
     }

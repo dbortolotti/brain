@@ -504,6 +504,8 @@ lines = text.splitlines()
 overrides = {
     "SYSTEM_ROOT_DIRECTORY": f"{local_support}/system",
     "DATA_ROOT_DIRECTORY": f"{local_support}/data",
+    "BRAIN_DATABASE_URL": f"sqlite:///{local_support}/data/brain/brain.db",
+    "BRAIN_PROFILE_CONTEXT_PATH": f"{local_support}/data/brain/profile_context.json",
     "BRAIN_REQUEST_LOG_PATH": f"{local_support}/logs/requests/{{date}}.jsonl",
     "BRAIN_ROUTING_LOG_PATH": f"{local_support}/logs/routing/{{date}}.jsonl",
     "BRAIN_UI_CACHE_DIR": f"{local_support}/ui-cache",
@@ -535,6 +537,9 @@ replacements = {
     source_secrets: local_secrets,
     f"{root}/shared/data/system": f"{local_support}/system",
     f"{root}/shared/data/data": f"{local_support}/data",
+    f"sqlite:///{root}/shared/data/brain/brain.db": f"sqlite:///{local_support}/data/brain/brain.db",
+    f"{root}/shared/data/brain/brain.db": f"{local_support}/data/brain/brain.db",
+    f"{root}/shared/data/brain/profile_context.json": f"{local_support}/data/brain/profile_context.json",
     f"{root}/shared/logs/requests": f"{local_support}/logs/requests",
     f"{root}/shared/logs/routing": f"{local_support}/logs/routing",
 }
@@ -587,12 +592,24 @@ import_rendered_config() {
 
 bootstrap_local_runtime_data() {
   log "bootstrapping $DEPLOY_ENV Cognee runtime data under $LOCAL_SUPPORT_DIR"
-  run_privileged mkdir -p "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"
+  run_privileged mkdir -p "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR" "$LOCAL_DATA_DIR/brain"
   if [[ -d "$DATA_DIR/system" ]] && [[ -z "$(find "$LOCAL_SYSTEM_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
     rsync -rt --ignore-existing --no-owner --no-group --no-perms "$DATA_DIR/system/" "$LOCAL_SYSTEM_DIR/"
   fi
   if [[ -d "$DATA_DIR/data" ]] && [[ -z "$(find "$LOCAL_DATA_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
     rsync -rt --ignore-existing --no-owner --no-group --no-perms "$DATA_DIR/data/" "$LOCAL_DATA_DIR/"
+  fi
+  if [[ -d "$DATA_DIR/brain" ]]; then
+    if [[ -f "$DATA_DIR/brain/brain.db" ]] && [[ ! -f "$LOCAL_DATA_DIR/brain/brain.db" ]]; then
+      rsync -t --no-owner --no-group --no-perms "$DATA_DIR/brain/brain.db" "$LOCAL_DATA_DIR/brain/brain.db"
+    fi
+    find "$DATA_DIR/brain" -maxdepth 1 -type f -name 'profile_context*.json' -print0 |
+      while IFS= read -r -d '' profile_context_file; do
+        local target="$LOCAL_DATA_DIR/brain/$(basename "$profile_context_file")"
+        if [[ ! -f "$target" ]]; then
+          rsync -t --no-owner --no-group --no-perms "$profile_context_file" "$target"
+        fi
+      done
   fi
   run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"
   run_privileged chmod -R u+rwX,go+rX "$LOCAL_SYSTEM_DIR" "$LOCAL_DATA_DIR"

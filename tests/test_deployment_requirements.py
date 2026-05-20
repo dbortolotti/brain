@@ -265,10 +265,24 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'chmod -R u+rwX,go+rX "$DATA_DIR/brain"' in script
     assert 'launchctl print "system/$label"' in script
     assert 'f"{root}/shared/data/system": f"{local_support}/system"' in script
+    assert (
+        'f"{root}/shared/data/brain/profile_context.json": '
+        'f"{local_support}/data/brain/profile_context.json"'
+    ) in script
+    assert (
+        'f"sqlite:///{root}/shared/data/brain/brain.db": '
+        'f"sqlite:///{local_support}/data/brain/brain.db"'
+    ) in script
+    assert (
+        'f"{root}/shared/data/brain/brain.db": '
+        'f"{local_support}/data/brain/brain.db"'
+    ) in script
     assert 'f"{root}/shared/logs/requests": f"{local_support}/logs/requests"' in script
     assert "rewrite_local_runtime_config" in script
     assert '"SYSTEM_ROOT_DIRECTORY": f"{local_support}/system"' in script
     assert '"DATA_ROOT_DIRECTORY": f"{local_support}/data"' in script
+    assert '"BRAIN_DATABASE_URL": f"sqlite:///{local_support}/data/brain/brain.db"' in script
+    assert '"BRAIN_PROFILE_CONTEXT_PATH": f"{local_support}/data/brain/profile_context.json"' in script
     assert '"BRAIN_REQUEST_LOG_PATH": f"{local_support}/logs/requests/{{date}}.jsonl"' in script
     assert '"BRAIN_ROUTING_LOG_PATH": f"{local_support}/logs/routing/{{date}}.jsonl"' in script
     assert '"BRAIN_UI_CACHE_DIR": f"{local_support}/ui-cache"' in script
@@ -287,6 +301,9 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         "rsync -rt --ignore-existing --no-owner --no-group --no-perms "
         '"$DATA_DIR/data/" "$LOCAL_DATA_DIR/"'
     ) in script
+    assert "profile_context*.json" in script
+    assert 'rsync -t --no-owner --no-group --no-perms "$DATA_DIR/brain/brain.db" "$LOCAL_DATA_DIR/brain/brain.db"' in script
+    assert 'rsync -t --no-owner --no-group --no-perms "$profile_context_file" "$target"' in script
     assert 'rsync -a --delete "$RELEASE_DIR/scripts/" "$LOCAL_SCRIPTS_DIR/"' in script
     assert 'rsync -a --delete "$RELEASE_DIR/cfg/" "$LOCAL_CFG_DIR/"' in script
     assert 'rsync -a --delete "$RELEASE_DIR/deployment/" "$LOCAL_DEPLOYMENT_DIR/"' in script
@@ -545,12 +562,12 @@ def test_cognee_ui_verifier_retries_backend_health() -> None:
     assert '["launchctl", "print", f"system/{label}"]' in verifier
 
 
-def test_production_verifier_checks_brain_database_under_shared_data_and_runtime_roots() -> None:
+def test_production_verifier_checks_brain_database_under_approved_runtime_roots() -> None:
     verifier = Path("scripts/verify_mcp_production.py").read_text(encoding="utf-8")
 
-    assert '"BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url)' in verifier
     assert 'local_support_root = Path(f"/var/db/brain-{settings.brain_release_env}")' in verifier
     assert "local_or_shared_paths = {" in verifier
+    assert '"BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url)' in verifier
     assert "SYSTEM_ROOT_DIRECTORY" in verifier
     assert "DATA_ROOT_DIRECTORY" in verifier
     assert "under local support root" in verifier
