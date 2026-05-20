@@ -13,7 +13,7 @@ from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-CONFIG_DIR = Path(__file__).resolve().parents[2] / "cfg"
+CONFIG_DIR = Path(os.environ.get("BRAIN_CONFIG_DIR", Path(__file__).resolve().parents[2] / "cfg"))
 DEFAULT_ENV = "dev"
 SUPPORTED_ENVS = {"dev", "staging", "prod"}
 
@@ -198,11 +198,17 @@ class Settings(BaseSettings):
     llm_temperature: float = Field(default_factory=lambda: get("LLM_TEMPERATURE"))
     llm_max_tokens: int = Field(default_factory=lambda: get("LLM_MAX_TOKENS"))
 
-    openai_auth_mode: Literal["oauth", "api_key"] = Field(default_factory=lambda: get("OPENAI_AUTH_MODE"))
+    openai_auth_mode: Literal["oauth", "api_key"] = Field(
+        default_factory=lambda: get("OPENAI_AUTH_MODE")
+    )
     openai_codex_auth_profile: str = Field(default_factory=lambda: get("OPENAI_CODEX_AUTH_PROFILE"))
     openai_codex_base_url: str = Field(default_factory=lambda: get("OPENAI_CODEX_BASE_URL"))
-    brain_provider_auth_profiles_path: str = Field(default_factory=lambda: get("BRAIN_PROVIDER_AUTH_PROFILES_PATH"))
-    brain_provider_auth_state_dir: str = Field(default_factory=lambda: get("BRAIN_PROVIDER_AUTH_STATE_DIR"))
+    brain_provider_auth_profiles_path: str = Field(
+        default_factory=lambda: get("BRAIN_PROVIDER_AUTH_PROFILES_PATH")
+    )
+    brain_provider_auth_state_dir: str = Field(
+        default_factory=lambda: get("BRAIN_PROVIDER_AUTH_STATE_DIR")
+    )
 
     embedding_provider: str = Field(default_factory=lambda: get("EMBEDDING_PROVIDER"))
     embedding_model: str = Field(default_factory=lambda: get("EMBEDDING_MODEL"))
@@ -229,14 +235,18 @@ class Settings(BaseSettings):
     graph_database_name: str = Field(default_factory=lambda: get("GRAPH_DATABASE_NAME"))
     graph_database_username: str = Field(default_factory=lambda: get("GRAPH_DATABASE_USERNAME"))
     graph_database_password: str = Field(default_factory=lambda: get("GRAPH_DATABASE_PASSWORD"))
-    enable_backend_access_control: bool = Field(default_factory=lambda: get("ENABLE_BACKEND_ACCESS_CONTROL"))
+    enable_backend_access_control: bool = Field(
+        default_factory=lambda: get("ENABLE_BACKEND_ACCESS_CONTROL")
+    )
 
     vector_db_provider: str = Field(default_factory=lambda: get("VECTOR_DB_PROVIDER"))
     vector_db_url: str = Field(default_factory=lambda: get("VECTOR_DB_URL"))
     vector_db_port: int = Field(default_factory=lambda: get("VECTOR_DB_PORT"))
     vector_db_name: str = Field(default_factory=lambda: get("VECTOR_DB_NAME"))
     vector_db_key: str = Field(default_factory=lambda: get("VECTOR_DB_KEY"))
-    vector_dataset_database_handler: str = Field(default_factory=lambda: get("VECTOR_DATASET_DATABASE_HANDLER"))
+    vector_dataset_database_handler: str = Field(
+        default_factory=lambda: get("VECTOR_DATASET_DATABASE_HANDLER")
+    )
     vector_db_username: str = Field(default_factory=lambda: get("VECTOR_DB_USERNAME"))
     vector_db_password: str = Field(default_factory=lambda: get("VECTOR_DB_PASSWORD"))
     vector_db_host: str = Field(default_factory=lambda: get("VECTOR_DB_HOST"))
@@ -252,63 +262,133 @@ class Settings(BaseSettings):
     data_root_directory: str = Field(default_factory=lambda: get("DATA_ROOT_DIRECTORY"))
 
     google_free_tier: bool = Field(default_factory=lambda: get("GOOGLE_FREE_TIER", False))
-    allow_embedding_dimension_change: bool = Field(default_factory=lambda: get("ALLOW_EMBEDDING_DIMENSION_CHANGE", False))
+    allow_embedding_dimension_change: bool = Field(
+        default_factory=lambda: get("ALLOW_EMBEDDING_DIMENSION_CHANGE", False)
+    )
 
     brain_mcp_host: str = Field(default_factory=lambda: get("BRAIN_MCP_HOST"))
     brain_mcp_port: int = Field(default_factory=lambda: get("BRAIN_MCP_PORT"))
     brain_mcp_path: str = Field(default_factory=lambda: get("BRAIN_MCP_PATH"))
-    brain_admin_mcp_path: str = Field(default_factory=lambda: get("BRAIN_ADMIN_MCP_PATH", "/admin/mcp"))
+    brain_admin_mcp_path: str = Field(
+        default_factory=lambda: get("BRAIN_ADMIN_MCP_PATH", "/admin/mcp")
+    )
     brain_app_mcp_path: str = Field(default_factory=lambda: get("BRAIN_APP_MCP_PATH", "/app/mcp"))
     brain_public_base_url: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_BASE_URL"))
     brain_public_mcp_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_MCP_PATH"))
     brain_public_admin_mcp_path: str = Field(
         default_factory=lambda: get("BRAIN_PUBLIC_ADMIN_MCP_PATH", "/admin/mcp")
     )
-    brain_public_app_mcp_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_APP_MCP_PATH", "/app/mcp"))
+    brain_public_app_mcp_path: str = Field(
+        default_factory=lambda: get("BRAIN_PUBLIC_APP_MCP_PATH", "/app/mcp")
+    )
     brain_openai_apps_challenge_token: str | None = None
     brain_backup_dir: str = Field(default_factory=lambda: get("BRAIN_BACKUP_DIR"))
-    brain_neo4j_dump_enabled: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_DUMP_ENABLED", False))
-    brain_neo4j_stop_for_dump: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_STOP_FOR_DUMP", False))
-    brain_neo4j_docker_container: str = Field(default_factory=lambda: get("BRAIN_NEO4J_DOCKER_CONTAINER", "neo4j-cognee"))
-    brain_neo4j_brew_service: str = Field(default_factory=lambda: get("BRAIN_NEO4J_BREW_SERVICE", "neo4j"))
-    brain_neo4j_launchd_label: str = Field(default_factory=lambda: get("BRAIN_NEO4J_LAUNCHD_LABEL", "homebrew.mxcl.neo4j"))
-    brain_google_drive_backup_enabled: bool = Field(default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED", False))
-    brain_google_drive_folder: str = Field(default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_FOLDER", "backup/brain"))
-    brain_google_drive_remote: str = Field(default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_REMOTE", "gdrive"))
+    brain_neo4j_dump_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_NEO4J_DUMP_ENABLED", False)
+    )
+    brain_neo4j_stop_for_dump: bool = Field(
+        default_factory=lambda: get("BRAIN_NEO4J_STOP_FOR_DUMP", False)
+    )
+    brain_neo4j_docker_container: str = Field(
+        default_factory=lambda: get("BRAIN_NEO4J_DOCKER_CONTAINER", "neo4j-cognee")
+    )
+    brain_neo4j_brew_service: str = Field(
+        default_factory=lambda: get("BRAIN_NEO4J_BREW_SERVICE", "neo4j")
+    )
+    brain_neo4j_launchd_label: str = Field(
+        default_factory=lambda: get("BRAIN_NEO4J_LAUNCHD_LABEL", "homebrew.mxcl.neo4j")
+    )
+    brain_google_drive_backup_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED", False)
+    )
+    brain_google_drive_folder: str = Field(
+        default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_FOLDER", "backup/brain")
+    )
+    brain_google_drive_remote: str = Field(
+        default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_REMOTE", "gdrive")
+    )
     brain_google_drive_local_path: str | None = None
     brain_auth_enabled: bool = Field(default_factory=lambda: get("BRAIN_AUTH_ENABLED", False))
     brain_auth_token: str | None = None
     brain_auth_password: str | None = None
-    brain_auth_password_file: str = Field(default_factory=lambda: get("BRAIN_AUTH_PASSWORD_FILE", "./secrets/brain-auth-password"))
-    brain_auth_users_file: str | None = Field(default_factory=lambda: get("BRAIN_AUTH_USERS_FILE", None))
-    brain_auth_superuser_ids: str = Field(default_factory=lambda: get("BRAIN_AUTH_SUPERUSER_IDS", ""))
-    brain_auth_state_path: str = Field(default_factory=lambda: get("BRAIN_AUTH_STATE_PATH", "./secrets/brain-oauth.json"))
-    brain_auth_scopes: str = Field(default_factory=lambda: get("BRAIN_AUTH_SCOPES", "brain.memory.read brain.memory.write"))
-    brain_auth_require_pkce: bool = Field(default_factory=lambda: get("BRAIN_AUTH_REQUIRE_PKCE", True))
-    brain_auth_access_token_seconds: int = Field(default_factory=lambda: get("BRAIN_AUTH_ACCESS_TOKEN_SECONDS", 3600))
-    brain_auth_refresh_token_seconds: int = Field(default_factory=lambda: get("BRAIN_AUTH_REFRESH_TOKEN_SECONDS", 60 * 60 * 24 * 30))
-    brain_request_log_enabled: bool = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_ENABLED", False))
-    brain_request_log_path: str = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_PATH", "./.data/logs/requests.jsonl"))
-    brain_request_log_max_body_bytes: int = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_MAX_BODY_BYTES", 1024 * 1024))
-    brain_request_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_RETENTION_DAYS", 30))
-    brain_app_write_rate_limit_count: int = Field(default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_COUNT", 30))
-    brain_app_write_rate_limit_window_seconds: int = Field(default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS", 60))
-    brain_routing_log_enabled: bool = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_ENABLED", False))
-    brain_routing_log_path: str = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_PATH", "./.data/logs/routing/{date}.jsonl"))
-    brain_routing_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_RETENTION_DAYS", 90))
+    brain_auth_password_file: str = Field(
+        default_factory=lambda: get("BRAIN_AUTH_PASSWORD_FILE", "./secrets/brain-auth-password")
+    )
+    brain_auth_users_file: str | None = Field(
+        default_factory=lambda: get("BRAIN_AUTH_USERS_FILE", None)
+    )
+    brain_auth_superuser_ids: str = Field(
+        default_factory=lambda: get("BRAIN_AUTH_SUPERUSER_IDS", "")
+    )
+    brain_auth_state_path: str = Field(
+        default_factory=lambda: get("BRAIN_AUTH_STATE_PATH", "./secrets/brain-oauth.json")
+    )
+    brain_auth_scopes: str = Field(
+        default_factory=lambda: get("BRAIN_AUTH_SCOPES", "brain.memory.read brain.memory.write")
+    )
+    brain_auth_require_pkce: bool = Field(
+        default_factory=lambda: get("BRAIN_AUTH_REQUIRE_PKCE", True)
+    )
+    brain_auth_access_token_seconds: int = Field(
+        default_factory=lambda: get("BRAIN_AUTH_ACCESS_TOKEN_SECONDS", 3600)
+    )
+    brain_auth_refresh_token_seconds: int = Field(
+        default_factory=lambda: get("BRAIN_AUTH_REFRESH_TOKEN_SECONDS", 60 * 60 * 24 * 30)
+    )
+    brain_request_log_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_REQUEST_LOG_ENABLED", False)
+    )
+    brain_request_log_path: str = Field(
+        default_factory=lambda: get("BRAIN_REQUEST_LOG_PATH", "./.data/logs/requests.jsonl")
+    )
+    brain_request_log_max_body_bytes: int = Field(
+        default_factory=lambda: get("BRAIN_REQUEST_LOG_MAX_BODY_BYTES", 1024 * 1024)
+    )
+    brain_request_log_retention_days: int = Field(
+        default_factory=lambda: get("BRAIN_REQUEST_LOG_RETENTION_DAYS", 30)
+    )
+    brain_app_write_rate_limit_count: int = Field(
+        default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_COUNT", 30)
+    )
+    brain_app_write_rate_limit_window_seconds: int = Field(
+        default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS", 60)
+    )
+    brain_routing_log_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_ROUTING_LOG_ENABLED", False)
+    )
+    brain_routing_log_path: str = Field(
+        default_factory=lambda: get("BRAIN_ROUTING_LOG_PATH", "./.data/logs/routing/{date}.jsonl")
+    )
+    brain_routing_log_retention_days: int = Field(
+        default_factory=lambda: get("BRAIN_ROUTING_LOG_RETENTION_DAYS", 90)
+    )
     brain_service_name: str = Field(default_factory=lambda: get("BRAIN_SERVICE_NAME"))
     brain_database_url: str = Field(default_factory=lambda: get("BRAIN_DATABASE_URL"))
-    brain_user_id: str = Field(default_factory=lambda: get("BRAIN_USER_ID", get("BRAIN_DEFAULT_USER_ID", "default")))
-    brain_owner_full_name: str = Field(default_factory=lambda: get("BRAIN_OWNER_FULL_NAME", get("BRAIN_OWNER_NAME")))
+    brain_user_id: str = Field(
+        default_factory=lambda: get("BRAIN_USER_ID", get("BRAIN_DEFAULT_USER_ID", "default"))
+    )
+    brain_owner_full_name: str = Field(
+        default_factory=lambda: get("BRAIN_OWNER_FULL_NAME", get("BRAIN_OWNER_NAME"))
+    )
     brain_owner_name: str = Field(default_factory=lambda: get("BRAIN_OWNER_NAME"))
-    brain_profile_context_path: str = Field(default_factory=lambda: get("BRAIN_PROFILE_CONTEXT_PATH"))
+    brain_profile_context_path: str = Field(
+        default_factory=lambda: get("BRAIN_PROFILE_CONTEXT_PATH")
+    )
     brain_llm_enabled: bool = Field(default_factory=lambda: get("BRAIN_LLM_ENABLED"))
     brain_cognee_enabled: bool = Field(default_factory=lambda: get("BRAIN_COGNEE_ENABLED"))
-    brain_cognee_recall_enabled: bool = Field(default_factory=lambda: get("BRAIN_COGNEE_RECALL_ENABLED"))
-    brain_cognee_memory_dataset: str = Field(default_factory=lambda: get("BRAIN_COGNEE_MEMORY_DATASET"))
-    brain_cognee_sources_dataset: str = Field(default_factory=lambda: get("BRAIN_COGNEE_SOURCES_DATASET"))
+    brain_cognee_recall_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_COGNEE_RECALL_ENABLED")
+    )
+    brain_cognee_memory_dataset: str = Field(
+        default_factory=lambda: get("BRAIN_COGNEE_MEMORY_DATASET")
+    )
+    brain_cognee_sources_dataset: str = Field(
+        default_factory=lambda: get("BRAIN_COGNEE_SOURCES_DATASET")
+    )
     brain_cognee_data_dataset: str = Field(default_factory=lambda: get("BRAIN_COGNEE_DATA_DATASET"))
-    brain_cognee_palate_dataset: str = Field(default_factory=lambda: get("BRAIN_COGNEE_PALATE_DATASET", "palate"))
+    brain_cognee_palate_dataset: str = Field(
+        default_factory=lambda: get("BRAIN_COGNEE_PALATE_DATASET", "palate")
+    )
     brain_cognee_agent_memory_dataset: str = Field(
         default_factory=lambda: get("BRAIN_COGNEE_AGENT_MEMORY_DATASET", "agent_memory")
     )
@@ -324,33 +404,67 @@ class Settings(BaseSettings):
     brain_taste_llm_reasoning_effort: Literal["minimal", "low", "medium", "high"] = Field(
         default_factory=lambda: get("BRAIN_TASTE_LLM_REASONING_EFFORT")
     )
-    brain_taste_llm_routing_enabled: bool = Field(default_factory=lambda: get("BRAIN_TASTE_LLM_ROUTING_ENABLED"))
-    brain_taste_auto_enrich_enabled: bool = Field(default_factory=lambda: get("BRAIN_TASTE_AUTO_ENRICH_ENABLED"))
+    brain_taste_llm_routing_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_TASTE_LLM_ROUTING_ENABLED")
+    )
+    brain_taste_auto_enrich_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_TASTE_AUTO_ENRICH_ENABLED")
+    )
     brain_taste_omdb_api_key: str | None = None
-    brain_taste_web_enrichment_enabled: bool = Field(default_factory=lambda: get("BRAIN_TASTE_WEB_ENRICHMENT_ENABLED"))
+    brain_taste_web_enrichment_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_TASTE_WEB_ENRICHMENT_ENABLED")
+    )
     brain_taste_google_places_api_key: str | None = None
-    brain_taste_auto_write_threshold: float = Field(default_factory=lambda: get("BRAIN_TASTE_AUTO_WRITE_THRESHOLD"))
-    brain_taste_confirmation_threshold: float = Field(default_factory=lambda: get("BRAIN_TASTE_CONFIRMATION_THRESHOLD"))
-    brain_taste_open_loop_close_threshold: float = Field(default_factory=lambda: get("BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD"))
-    brain_taste_open_loop_confirmation_threshold: float = Field(default_factory=lambda: get("BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD"))
-    brain_taste_proposal_expiry_hours: int = Field(default_factory=lambda: get("BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS"))
+    brain_taste_auto_write_threshold: float = Field(
+        default_factory=lambda: get("BRAIN_TASTE_AUTO_WRITE_THRESHOLD")
+    )
+    brain_taste_confirmation_threshold: float = Field(
+        default_factory=lambda: get("BRAIN_TASTE_CONFIRMATION_THRESHOLD")
+    )
+    brain_taste_open_loop_close_threshold: float = Field(
+        default_factory=lambda: get("BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD")
+    )
+    brain_taste_open_loop_confirmation_threshold: float = Field(
+        default_factory=lambda: get("BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD")
+    )
+    brain_taste_proposal_expiry_hours: int = Field(
+        default_factory=lambda: get("BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS")
+    )
     brain_slack_enabled: bool = Field(default_factory=lambda: get("BRAIN_SLACK_ENABLED", False))
-    brain_slack_agent_enabled: bool = Field(default_factory=lambda: get("BRAIN_SLACK_AGENT_ENABLED", False))
-    brain_slack_agent_host: str = Field(default_factory=lambda: get("BRAIN_SLACK_AGENT_HOST", "127.0.0.1"))
+    brain_slack_agent_enabled: bool = Field(
+        default_factory=lambda: get("BRAIN_SLACK_AGENT_ENABLED", False)
+    )
+    brain_slack_agent_host: str = Field(
+        default_factory=lambda: get("BRAIN_SLACK_AGENT_HOST", "127.0.0.1")
+    )
     brain_slack_agent_port: int = Field(default_factory=lambda: get("BRAIN_SLACK_AGENT_PORT", 8003))
     brain_slack_signing_secret: str | None = None
     brain_slack_bot_token: str | None = None
-    brain_slack_allowed_team_ids: str = Field(default_factory=lambda: get("BRAIN_SLACK_ALLOWED_TEAM_IDS", ""))
-    brain_slack_allowed_channel_ids: str = Field(default_factory=lambda: get("BRAIN_SLACK_ALLOWED_CHANNEL_IDS", ""))
-    brain_slack_allowed_user_ids: str = Field(default_factory=lambda: get("BRAIN_SLACK_ALLOWED_USER_IDS", ""))
-    brain_slack_admin_user_ids: str = Field(default_factory=lambda: get("BRAIN_SLACK_ADMIN_USER_IDS", ""))
-    brain_slack_auto_commit_high_confidence: bool = Field(default_factory=lambda: get("BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE", False))
+    brain_slack_allowed_team_ids: str = Field(
+        default_factory=lambda: get("BRAIN_SLACK_ALLOWED_TEAM_IDS", "")
+    )
+    brain_slack_allowed_channel_ids: str = Field(
+        default_factory=lambda: get("BRAIN_SLACK_ALLOWED_CHANNEL_IDS", "")
+    )
+    brain_slack_allowed_user_ids: str = Field(
+        default_factory=lambda: get("BRAIN_SLACK_ALLOWED_USER_IDS", "")
+    )
+    brain_slack_admin_user_ids: str = Field(
+        default_factory=lambda: get("BRAIN_SLACK_ADMIN_USER_IDS", "")
+    )
+    brain_slack_auto_commit_high_confidence: bool = Field(
+        default_factory=lambda: get("BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE", False)
+    )
     brain_log_level: str = Field(default_factory=lambda: get("BRAIN_LOG_LEVEL", "INFO"))
-    brain_prod_root: str = Field(default_factory=lambda: get("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain"))
+    brain_prod_root: str = Field(
+        default_factory=lambda: get("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain")
+    )
     brain_release_env: str = Field(default_factory=lambda: get("BRAIN_RELEASE_ENV", "dev"))
     brain_release_sha: str = Field(default_factory=lambda: get("BRAIN_RELEASE_SHA", "unknown"))
     brain_release_version: str = Field(default_factory=lambda: get("BRAIN_RELEASE_VERSION", "dev"))
-    brain_launchd_label: str = Field(default_factory=lambda: get("BRAIN_LAUNCHD_LABEL", "com.brain.mcp"))
+    brain_launchd_label: str = Field(
+        default_factory=lambda: get("BRAIN_LAUNCHD_LABEL", "com.brain.mcp")
+    )
     brain_health_path: str = Field(default_factory=lambda: get("BRAIN_HEALTH_PATH", "/healthz"))
     brain_ui_enabled: bool = Field(default_factory=lambda: get("BRAIN_UI_ENABLED", False))
     brain_ui_host: str = Field(default_factory=lambda: get("BRAIN_UI_HOST", "127.0.0.1"))
@@ -358,9 +472,16 @@ class Settings(BaseSettings):
     brain_ui_frontend_port: int = Field(default_factory=lambda: get("BRAIN_UI_FRONTEND_PORT", 3000))
     brain_ui_backend_port: int = Field(default_factory=lambda: get("BRAIN_UI_BACKEND_PORT", 8001))
     brain_public_ui_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_UI_PATH", "/ui"))
-    brain_public_ui_api_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_UI_API_PATH", "/ui-api"))
-    brain_ui_session_seconds: int = Field(default_factory=lambda: get("BRAIN_UI_SESSION_SECONDS", 60 * 60 * 12))
-    brain_ui_launchd_label: str = Field(default_factory=lambda: get("BRAIN_UI_LAUNCHD_LABEL", "com.brain.ui"))
+    brain_public_ui_api_path: str = Field(
+        default_factory=lambda: get("BRAIN_PUBLIC_UI_API_PATH", "/ui-api")
+    )
+    brain_ui_session_seconds: int = Field(
+        default_factory=lambda: get("BRAIN_UI_SESSION_SECONDS", 60 * 60 * 12)
+    )
+    brain_ui_cache_dir: str = Field(default_factory=lambda: get("BRAIN_UI_CACHE_DIR", ""))
+    brain_ui_launchd_label: str = Field(
+        default_factory=lambda: get("BRAIN_UI_LAUNCHD_LABEL", "com.brain.ui")
+    )
 
     @model_validator(mode="after")
     def validate_profile(self) -> "Settings":
@@ -375,9 +496,8 @@ class Settings(BaseSettings):
             normalize_provider_name(self.embedding_provider) == "openai"
             and self.openai_auth_mode == "oauth"
         ):
-            self.embedding_api_key = (
-                self.embedding_api_key
-                or self.configured_provider_api_key(self.embedding_provider)
+            self.embedding_api_key = self.embedding_api_key or self.configured_provider_api_key(
+                self.embedding_provider
             )
 
         if self.profile != "openai":
@@ -481,8 +601,7 @@ class Settings(BaseSettings):
     def protected_resource_metadata_url_for_path(self, resource_path: str) -> str:
         path = normalize_path(resource_path).strip("/")
         return (
-            f"{self.brain_public_base_url.rstrip('/')}"
-            f"/.well-known/oauth-protected-resource/{path}"
+            f"{self.brain_public_base_url.rstrip('/')}/.well-known/oauth-protected-resource/{path}"
         )
 
     @property
@@ -713,28 +832,20 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_TASTE_CANONICAL_STORE": settings.brain_taste_canonical_store,
         "BRAIN_TASTE_LLM_MODEL": settings.brain_taste_llm_model,
         "BRAIN_TASTE_LLM_REASONING_EFFORT": settings.brain_taste_llm_reasoning_effort,
-        "BRAIN_TASTE_LLM_ROUTING_ENABLED": str(
-            settings.brain_taste_llm_routing_enabled
-        ).lower(),
-        "BRAIN_TASTE_AUTO_ENRICH_ENABLED": str(
-            settings.brain_taste_auto_enrich_enabled
-        ).lower(),
+        "BRAIN_TASTE_LLM_ROUTING_ENABLED": str(settings.brain_taste_llm_routing_enabled).lower(),
+        "BRAIN_TASTE_AUTO_ENRICH_ENABLED": str(settings.brain_taste_auto_enrich_enabled).lower(),
         "BRAIN_TASTE_WEB_ENRICHMENT_ENABLED": str(
             settings.brain_taste_web_enrichment_enabled
         ).lower(),
         "BRAIN_TASTE_AUTO_WRITE_THRESHOLD": str(settings.brain_taste_auto_write_threshold),
-        "BRAIN_TASTE_CONFIRMATION_THRESHOLD": str(
-            settings.brain_taste_confirmation_threshold
-        ),
+        "BRAIN_TASTE_CONFIRMATION_THRESHOLD": str(settings.brain_taste_confirmation_threshold),
         "BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD": str(
             settings.brain_taste_open_loop_close_threshold
         ),
         "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD": str(
             settings.brain_taste_open_loop_confirmation_threshold
         ),
-        "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS": str(
-            settings.brain_taste_proposal_expiry_hours
-        ),
+        "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS": str(settings.brain_taste_proposal_expiry_hours),
         "BRAIN_SLACK_ENABLED": str(settings.brain_slack_enabled).lower(),
         "BRAIN_SLACK_AGENT_ENABLED": str(settings.brain_slack_agent_enabled).lower(),
         "BRAIN_SLACK_AGENT_HOST": settings.brain_slack_agent_host,
@@ -755,6 +866,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_PUBLIC_UI_PATH": settings.brain_public_ui_path,
         "BRAIN_PUBLIC_UI_API_PATH": settings.brain_public_ui_api_path,
         "BRAIN_UI_SESSION_SECONDS": str(settings.brain_ui_session_seconds),
+        "BRAIN_UI_CACHE_DIR": settings.brain_ui_cache_dir,
         "BRAIN_RELEASE_ENV": settings.brain_release_env,
         "BRAIN_RELEASE_SHA": settings.brain_release_sha,
         "BRAIN_RELEASE_VERSION": settings.brain_release_version,

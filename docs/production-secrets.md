@@ -16,6 +16,28 @@ The staging, production, and release workflows render each environment's
 `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh`
 with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
 
+The rendered config and deploy steps run with passwordless `sudo` on the local
+self-hosted runner. Prod is owned and run by `oric_prod`; staging is owned and
+run by `oric_staging`. `scripts/setup-macos-service-users.sh` creates those
+hidden service users on a new Mac. Deploys install system LaunchDaemons in
+`/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot
+and wait for `/Volumes/xpg_usb4/{staging|prod}/brain/current` before launching.
+Each LaunchDaemon uses `SessionCreate` with its service user and starts from
+`/var/db/brain-{prod|staging}`. LaunchDaemons execute the per-release Python
+environment from `/var/db/brain-{prod|staging}/current-venv` and read a local
+runtime copy of `brain.env` from `/var/db/brain-{prod|staging}/secrets`; they
+also load config from `/var/db/brain-{prod|staging}/cfg` via `BRAIN_CONFIG_DIR`.
+Deploys install `memory-stack` into that venv non-editably so launchd does not
+have to import project code or config through an external-volume `.pth` file.
+Release, data, backup, and log paths are world-readable and writable only by the
+runtime user; `shared/secrets` remains owner-only. Normal deploys update
+ownership incrementally; set `BRAIN_FULL_CHOWN=1` for a first migration or
+repair when the entire prod/staging tree needs to be reclaimed by the service
+user. Local non-GitHub staging deploys refresh an existing release directory for
+the same commit SHA from the working tree so migration iterations can exercise
+uncommitted changes; GitHub Actions and prod deploys keep release directories
+immutable unless `BRAIN_REFRESH_RELEASE=1` is explicitly supplied.
+
 The staging workflow-dispatch `version` input is optional, the release
 workflow-dispatch `version` input is required.
 
@@ -409,4 +431,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 79e2f913d9128fdfaf9e57fa6ba00797ed741fe2eb5f1920722b7bedfd8cde87 -->
+<!-- brain-doc-source-hash: 7aa5cf31a70de1827a9e3120f7f09a6a5dd0c7f298fd0a7f8d2860316cf5fcb6 -->

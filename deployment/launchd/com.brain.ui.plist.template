@@ -6,15 +6,24 @@
   <key>Label</key>
   <string>com.brain.prod.ui</string>
 
+  <key>UserName</key>
+  <string>oric_prod</string>
+
+  <key>GroupName</key>
+  <string>staff</string>
+
+  <key>SessionCreate</key>
+  <true/>
+
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/zsh</string>
-    <string>-lc</string>
-    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python -m memory_stack.ui_service</string>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>until [ -x /var/db/brain-prod/current-venv/bin/python ] &amp;&amp; [ -f /var/db/brain-prod/secrets/brain.env ] &amp;&amp; [ -d /Volumes/xpg_usb4/prod/brain/current ]; do sleep 5; done; unset PYTHONHOME PYTHONPATH; cd /var/db/brain-prod || exit 1; exec /var/db/brain-prod/current-venv/bin/python -m memory_stack.ui_service</string>
   </array>
 
   <key>WorkingDirectory</key>
-  <string>/Users/oric</string>
+  <string>/</string>
 
   <key>RunAtLoad</key>
   <true/>
@@ -24,8 +33,20 @@
 
   <key>EnvironmentVariables</key>
   <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/var/db/brain-prod</string>
+    <key>BRAIN_CONFIG_DIR</key>
+    <string>/var/db/brain-prod/cfg</string>
+    <key>XDG_CACHE_HOME</key>
+    <string>/var/db/brain-prod/cache</string>
+    <key>UV_CACHE_DIR</key>
+    <string>/var/db/brain-prod/uv-cache</string>
+    <key>UV_PYTHON_INSTALL_DIR</key>
+    <string>/var/db/brain-prod/python</string>
     <key>ENV_FILE</key>
-    <string>/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+    <string>/var/db/brain-prod/secrets/brain.env</string>
     <key>BRAIN_UI_ENABLED</key>
     <string>true</string>
     <key>BRAIN_UI_HOST</key>
@@ -37,11 +58,13 @@
     <key>BRAIN_UI_BACKEND_PORT</key>
     <string>18001</string>
     <key>BRAIN_PUBLIC_UI_PATH</key>
-    <string>/ui</string>
+    <string>/cognee</string>
     <key>BRAIN_PUBLIC_UI_API_PATH</key>
-    <string>/ui-api</string>
+    <string>/cognee-api</string>
     <key>BRAIN_UI_SESSION_SECONDS</key>
     <string>43200</string>
+    <key>BRAIN_UI_CACHE_DIR</key>
+    <string>/var/db/brain-prod/ui-cache</string>
   </dict>
 
   <key>StandardOutPath</key>

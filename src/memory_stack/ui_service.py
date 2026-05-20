@@ -69,7 +69,9 @@ def prepare_frontend(settings) -> Path:
 
     isolated_dir = isolate_frontend_cache(
         frontend_dir,
-        cache_root=Path(settings.brain_prod_root) / "shared" / "ui-cache",
+        cache_root=Path(
+            settings.brain_ui_cache_dir or Path(settings.brain_prod_root) / "shared" / "ui-cache"
+        ),
         version=get_cognee_version(),
     )
     run(["npm", "install"], cwd=isolated_dir)
