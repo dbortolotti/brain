@@ -34,6 +34,10 @@ def main() -> int:
     settings = load_settings()
     backup_root = Path(args.backup_dir or settings.brain_backup_dir)
     data_root = Path(args.data_dir or settings.shared_data_path)
+    runtime_data_root = Path(settings.data_root_directory)
+    runtime_system_root = Path(settings.system_root_directory)
+    data_roots = unique_paths([data_root, runtime_data_root])
+    sqlite_roots = unique_paths([*data_roots, runtime_system_root])
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir = backup_root / timestamp
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -42,6 +46,8 @@ def main() -> int:
         "timestamp": timestamp,
         "backup_dir": str(run_dir),
         "data_root": str(data_root),
+        "data_roots": [str(path) for path in data_roots],
+        "sqlite_roots": [str(path) for path in sqlite_roots],
         "sqlite": [],
         "lancedb": [],
         "pgvector": [],
@@ -52,8 +58,13 @@ def main() -> int:
         "blockers": [],
     }
 
-    backup_sqlite(data_root, run_dir, manifest)
-    backup_raw_data(data_root, run_dir, manifest)
+    for sqlite_root in sqlite_roots:
+        backup_sqlite(sqlite_root, run_dir, manifest)
+    if not manifest["sqlite"]:
+        manifest["blockers"].append("No SQLite files found under configured data roots.")
+        console.print("[yellow][WARN][/yellow] no SQLite files found")
+    for raw_root in data_roots:
+        backup_raw_data(raw_root, run_dir, manifest)
     if settings.vector_db_provider == "pgvector":
         backup_pgvector(settings, run_dir, manifest)
     else:
@@ -77,17 +88,27 @@ def main() -> int:
     return 0
 
 
+def unique_paths(paths: list[Path]) -> list[Path]:
+    unique: list[Path] = []
+    seen: set[str] = set()
+    for path in paths:
+        key = str(path.expanduser().resolve() if path.exists() else path.expanduser().absolute())
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(path)
+    return unique
+
+
 def backup_sqlite(data_root: Path, run_dir: Path, manifest: dict[str, Any]) -> None:
     candidates = find_sqlite_databases(data_root)
     if not candidates:
-        manifest["blockers"].append("No SQLite files found under shared/data.")
-        console.print("[yellow][WARN][/yellow] no SQLite files found")
         return
 
     sqlite_dir = run_dir / "sqlite"
     sqlite_dir.mkdir(exist_ok=True)
     for source in candidates:
-        target = sqlite_dir / backup_filename(data_root, source)
+        target = unique_backup_path(sqlite_dir / backup_filename(data_root, source), data_root)
         with sqlite3.connect(source) as src, sqlite3.connect(target) as dst:
             src.backup(dst)
         integrity = sqlite_integrity_check(target)
@@ -136,11 +157,25 @@ def backup_raw_data(data_dir: Path, run_dir: Path, manifest: dict[str, Any]) -> 
 
     archive_dir = run_dir / "raw_data"
     archive_dir.mkdir(exist_ok=True)
-    archive = archive_dir / f"{data_dir.name}.tar.gz"
+    archive = unique_backup_path(archive_dir / f"{data_dir.name}.tar.gz", data_dir)
     with tarfile.open(archive, "w:gz") as tar:
         tar.add(data_dir, arcname=data_dir.name)
     manifest["raw_data"].append({"source": str(data_dir), "archive": str(archive)})
     console.print(f"[green][OK][/green] raw data archive {archive}")
+
+
+def unique_backup_path(path: Path, source_root: Path) -> Path:
+    if not path.exists():
+        return path
+    suffix = "".join(path.suffixes)
+    stem = path.name.removesuffix(suffix) if suffix else path.name
+    root_id = str(source_root.expanduser().absolute()).strip("/").replace("/", "__")
+    candidate = path.with_name(f"{stem}__{root_id}{suffix}")
+    counter = 2
+    while candidate.exists():
+        candidate = path.with_name(f"{stem}__{root_id}__{counter}{suffix}")
+        counter += 1
+    return candidate
 
 
 def backup_lancedb(
