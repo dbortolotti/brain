@@ -61,7 +61,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Local prod and staging deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`. The job starts at 03:00, waits for the environment `current` release path on `/Volumes/xpg_usb4`, the local `/var/db/brain-{prod|staging}/current-venv`, and the local runtime env file under `/var/db/brain-{prod|staging}/secrets`, then runs `/var/db/brain-{prod|staging}/scripts/nightly_maintenance.py`. That script runs `scripts/brain_agent_memory.py` first, then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
+Local prod, staging, and QA deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`; QA renders as `com.brain.qa.maintenance` and runs as `oric`. The job starts at 03:00, waits for the environment `current` release path on `/Volumes/xpg_usb4`, the local `/var/db/brain-{prod|staging|qa}/current-venv`, and the local runtime env file under `/var/db/brain-{prod|staging|qa}/secrets`, then runs `/var/db/brain-{prod|staging|qa}/scripts/nightly_maintenance.py`. That script runs `scripts/brain_agent_memory.py` first, then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
 
 Run the backup script directly with the configured environment:
 
@@ -365,4 +365,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 76e5aed4c67c21172b407e830232bc523aa2722f7d9f8d01c1045302b871bd23 -->
+<!-- brain-doc-source-hash: 2d1685ad60fd2b8ec2aa08fd1ad3622bf2ec99e8b7ab0b9b3782a93582c16871 -->

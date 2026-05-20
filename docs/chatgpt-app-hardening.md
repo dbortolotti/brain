@@ -104,26 +104,28 @@ Before submitting Brain as a ChatGPT App, complete the non-code submission asset
 Workflow reference:
 
 - `Validate` runs on `pull_request` and `workflow_dispatch`.
-- `Deploy Local Staging` runs on `push` and `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
+- `Deploy Local QA` runs on `push` and `workflow_dispatch`; manual dispatch accepts `force_config_override`.
+- `Deploy Local Staging` runs on `workflow_dispatch`; manual dispatch requires `version` and accepts `force_config_override`.
 - `Release` runs on `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
 
 After every merge or push to `main`:
 
-1. Watch the `Deploy Local Staging` GitHub Actions run to completion.
+1. Watch the `Deploy Local QA` GitHub Actions run to completion.
    - The workflow triggers on `push` and `workflow_dispatch`.
-   - Manual dispatch accepts `version` and `force_config_override` inputs.
+   - Manual dispatch accepts `force_config_override`.
 2. Verify the deployed release metadata matches the expected pushed release.
 3. Keep your normal backup checks in the promotion path if they are part of your environment.
 
 For a production release:
 
-1. Run the manual `Release` GitHub Actions workflow with the desired `vX.Y.Z` tag.
+1. Run the manual `Deploy Local Staging` workflow with the desired `vX.Y.Z` tag; it updates generated docs, stamps the docs with that tag, pushes the docs commit to `main`, deploys staging, and creates the tag.
+2. Run the manual `Release` GitHub Actions workflow with the same staged tag.
    - The workflow triggers on `workflow_dispatch`.
    - Manual dispatch accepts `version` and `force_config_override` inputs.
-2. Watch production deployment and verification finish successfully.
-3. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
+3. Watch production deployment and verification finish successfully.
+4. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
    - This verification checks DNS and TLS for the hostname; the public and admin MCP surfaces; the public dashboard, privacy, terms, and support pages; browser security headers; OAuth protected-resource and authorization metadata; and the ChatGPT App tool descriptors. When auth is enabled, it also checks the authenticated public app MCP surface and confirms it remains text-only.
    - For hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
-4. Confirm the deployed release metadata matches the tagged release.
+5. Confirm the deployed release metadata matches the tagged release.
 
-<!-- brain-doc-source-hash: 1667931ce411c1bd180a7f5b183fed7dc2aa529603029f39565aaa5350a5ea08 -->
+<!-- brain-doc-source-hash: b9ab74c176413cc8c26295101123d2cba501598166b3cc5e6cf57c9732ad1548 -->

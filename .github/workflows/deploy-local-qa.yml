@@ -1,24 +1,23 @@
-name: Release
+name: Deploy Local QA
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
-      version:
-        description: "Previously staged release version to promote, for example v2.1.0"
-        required: true
-        type: string
       force_config_override:
-        description: "Bypass prod config conflict checks and establish a new baseline"
+        description: "Bypass QA config conflict checks and establish a new baseline"
         required: false
         default: false
         type: boolean
 
 concurrency:
-  group: brain-release
+  group: brain-qa
   cancel-in-progress: false
 
 jobs:
-  promote:
+  deploy:
     runs-on:
       - self-hosted
       - macOS
@@ -31,71 +30,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve staging release
-        id: staging
+      - name: Resolve QA version
+        id: version
         run: |
           set -euo pipefail
-          TAG="${{ inputs.version }}"
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "version must look like v2.1.0 or v2.1.0-rc.1" >&2
-            exit 2
-          fi
-          STAGING_CURRENT="/Volumes/xpg_usb4/staging/brain/current"
-          STAGING_METADATA="/Volumes/xpg_usb4/staging/brain/shared/release.json"
-          if [[ ! -L "$STAGING_CURRENT" ]]; then
-            echo "staging current symlink is missing: $STAGING_CURRENT" >&2
-            exit 2
-          fi
-          if [[ ! -f "$STAGING_METADATA" ]]; then
-            echo "staging release metadata is missing: $STAGING_METADATA" >&2
-            exit 2
-          fi
-          STAGING_RELEASE="$(readlink "$STAGING_CURRENT")"
-          STAGING_SHA="$(basename "$STAGING_RELEASE")"
-          if ! [[ "$STAGING_SHA" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "staging current does not point at a 40-char git SHA: $STAGING_RELEASE" >&2
-            exit 2
-          fi
-          STAGED_VERSION="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("version", ""))' "$STAGING_METADATA")"
-          STAGED_SHA="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("sha", ""))' "$STAGING_METADATA")"
-          if [[ "$STAGED_VERSION" != "$TAG" ]]; then
-            echo "requested version $TAG is not the staged version $STAGED_VERSION" >&2
-            exit 2
-          fi
-          if [[ "$STAGED_SHA" != "$STAGING_SHA" ]]; then
-            echo "staging metadata sha $STAGED_SHA does not match current symlink $STAGING_SHA" >&2
-            exit 2
-          fi
-          git fetch --tags origin
-          if ! git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-            echo "tag $TAG does not exist; deploy it to staging first" >&2
-            exit 2
-          fi
-          TAG_SHA="$(git rev-list -n 1 "$TAG")"
-          if [[ "$TAG_SHA" != "$STAGING_SHA" ]]; then
-            echo "tag $TAG points at $TAG_SHA, not staged sha $STAGING_SHA" >&2
-            exit 2
-          fi
-          git cat-file -e "$STAGING_SHA^{commit}"
-          git checkout "$STAGING_SHA"
-          echo "sha=$STAGING_SHA" >>"$GITHUB_OUTPUT"
-          echo "tag=$TAG" >>"$GITHUB_OUTPUT"
+          VERSION="qa-${GITHUB_SHA:0:12}"
+          echo "version=$VERSION" >>"$GITHUB_OUTPUT"
 
-      - name: Validate staged revision
+      - name: Validate repository
         run: |
           uv sync --all-extras
           make docs-check
           uv run ruff check src tests scripts
           uv run pytest
 
-      - name: Render production config from GitHub Secrets
+      - name: Render QA config from GitHub Secrets
         id: render-config
         env:
-          GITHUB_SHA: ${{ steps.staging.outputs.sha }}
-          BRAIN_DEPLOY_ENV: prod
-          BRAIN_RELEASE_ENV: prod
-          BRAIN_RELEASE_SHA: ${{ steps.staging.outputs.sha }}
-          BRAIN_RELEASE_VERSION: ${{ steps.staging.outputs.tag }}
+          BRAIN_DEPLOY_ENV: qa
+          BRAIN_RELEASE_ENV: qa
+          BRAIN_RELEASE_SHA: ${{ github.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
           PROFILE: ${{ vars.PROFILE }}
           BRAIN_LLM_ENABLED: ${{ vars.BRAIN_LLM_ENABLED }}
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
@@ -128,7 +83,7 @@ jobs:
           GRAPH_DATABASE_PASSWORD: ${{ secrets.GRAPH_DATABASE_PASSWORD }}
           BRAIN_AUTH_TOKEN: ${{ secrets.BRAIN_AUTH_TOKEN }}
           BRAIN_AUTH_PASSWORD: ${{ secrets.BRAIN_AUTH_PASSWORD }}
-          BRAIN_PUBLIC_BASE_URL: ${{ vars.BRAIN_PUBLIC_BASE_URL }}
+          BRAIN_PUBLIC_BASE_URL: https://brain-qa.dceb.net
           BRAIN_MCP_PATH: /mcp
           BRAIN_ADMIN_MCP_PATH: /admin/mcp
           BRAIN_APP_MCP_PATH: /app/mcp
@@ -138,11 +93,11 @@ jobs:
           BRAIN_OPENAI_APPS_CHALLENGE_TOKEN: ${{ vars.BRAIN_OPENAI_APPS_CHALLENGE_TOKEN }}
           BRAIN_PUBLIC_UI_PATH: /cognee
           BRAIN_PUBLIC_UI_API_PATH: /cognee-api
-          BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: ${{ vars.BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED }}
+          BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"
           BRAIN_GOOGLE_DRIVE_FOLDER: ${{ vars.BRAIN_GOOGLE_DRIVE_FOLDER }}
           BRAIN_GOOGLE_DRIVE_LOCAL_PATH: ${{ vars.BRAIN_GOOGLE_DRIVE_LOCAL_PATH }}
-          BRAIN_NEO4J_DUMP_ENABLED: ${{ vars.BRAIN_NEO4J_DUMP_ENABLED }}
-          BRAIN_NEO4J_STOP_FOR_DUMP: ${{ vars.BRAIN_NEO4J_STOP_FOR_DUMP }}
+          BRAIN_NEO4J_DUMP_ENABLED: "true"
+          BRAIN_NEO4J_STOP_FOR_DUMP: "true"
           BRAIN_REQUEST_LOG_ENABLED: ${{ vars.BRAIN_REQUEST_LOG_ENABLED }}
           BRAIN_REQUEST_LOG_MAX_BODY_BYTES: ${{ vars.BRAIN_REQUEST_LOG_MAX_BODY_BYTES }}
           BRAIN_TASTE_ENABLED: ${{ vars.BRAIN_TASTE_ENABLED }}
@@ -165,38 +120,29 @@ jobs:
           BRAIN_SLACK_ALLOWED_USER_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_USER_IDS }}
           BRAIN_SLACK_ADMIN_USER_IDS: ${{ vars.BRAIN_SLACK_ADMIN_USER_IDS }}
         run: |
-          render_dir="$RUNNER_TEMP/brain-prod-config"
+          render_dir="$RUNNER_TEMP/brain-qa-config"
           mkdir -p "$render_dir"
           args=()
           args+=(--output "$render_dir/brain.env")
           args+=(--base-output "$render_dir/brain.env.last-deployed")
           args+=(--auth-password-file "$render_dir/brain-auth-password")
           args+=(--auth-password-base-file "$render_dir/brain-auth-password.last-deployed")
-          if [[ "${{ inputs.force_config_override }}" == "true" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force_config_override }}" == "true" ]]; then
             args+=(--force-config-override)
           fi
-          uv run python scripts/render_prod_env.py --env prod "${args[@]}"
+          uv run python scripts/render_prod_env.py --env qa "${args[@]}"
           echo "env_file=$render_dir/brain.env" >>"$GITHUB_OUTPUT"
           echo "auth_password_file=$render_dir/brain-auth-password" >>"$GITHUB_OUTPUT"
 
-      - name: Promote staging revision to production
+      - name: Deploy to local QA LaunchDaemons
         run: |
           sudo -n \
-            BRAIN_DEPLOY_ENV=prod \
-            BRAIN_RELEASE_ENV=prod \
-            BRAIN_RELEASE_SHA="${{ steps.staging.outputs.sha }}" \
-            BRAIN_RELEASE_VERSION="${{ steps.staging.outputs.tag }}" \
-            GITHUB_SHA="${{ steps.staging.outputs.sha }}" \
+            BRAIN_DEPLOY_ENV=qa \
+            BRAIN_RELEASE_ENV=qa \
+            BRAIN_RELEASE_SHA="${{ github.sha }}" \
+            BRAIN_RELEASE_VERSION="${{ steps.version.outputs.version }}" \
+            GITHUB_SHA="${{ github.sha }}" \
             /Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh \
             --source-root "$PWD" \
             --rendered-env "${{ steps.render-config.outputs.env_file }}" \
             --rendered-auth-password "${{ steps.render-config.outputs.auth_password_file }}"
-
-      - name: Verify promoted release tag
-        run: |
-          set -euo pipefail
-          TAG_SHA="$(git rev-list -n 1 "${{ steps.staging.outputs.tag }}")"
-          if [[ "$TAG_SHA" != "${{ steps.staging.outputs.sha }}" ]]; then
-            echo "tag moved during release: $TAG_SHA" >&2
-            exit 2
-          fi

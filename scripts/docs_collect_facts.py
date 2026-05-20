@@ -55,7 +55,7 @@ def collect_facts() -> dict[str, Any]:
 def collect_config_facts() -> dict[str, Any]:
     environments = {
         name: cfg.load(name)
-        for name in ("dev", "staging", "prod")
+        for name in ("dev", "qa", "staging", "prod")
     }
     return {
         "common_keys": sorted(cfg.read_yaml(cfg.CONFIG_DIR / "common.yaml")),

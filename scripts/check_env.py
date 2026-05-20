@@ -17,7 +17,7 @@ console = Console()
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check Brain runtime configuration.")
-    parser.add_argument("--env", choices=["dev", "staging", "prod"], default=None, help="Config profile to load.")
+    parser.add_argument("--env", choices=["dev", "qa", "staging", "prod"], default=None, help="Config profile to load.")
     args = parser.parse_args()
 
     settings = load_settings(config_env=args.env)

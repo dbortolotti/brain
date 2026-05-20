@@ -20,7 +20,7 @@ DEFAULT_SESSION_ID = None
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bridge one Cognee agent session into Brain agent memory.")
     parser.add_argument("--session-id", default=DEFAULT_SESSION_ID)
-    parser.add_argument("--env", choices=["dev", "staging", "prod"], default="prod")
+    parser.add_argument("--env", choices=["dev", "qa", "staging", "prod"], default="prod")
     parser.add_argument("--env-file", default=None)
     parser.add_argument("--node-name", action="append", default=None)
     parser.add_argument("--background", action="store_true")

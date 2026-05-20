@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from memory_stack import cfg
 
 
-DEPLOY_ENVS = ("staging", "prod")
+DEPLOY_ENVS = ("qa", "staging", "prod")
 
 
 METADATA_KEYS = {

@@ -173,6 +173,35 @@ def test_render_prod_env_can_render_staging_defaults(tmp_path) -> None:
     assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] == "false"
 
 
+def test_render_prod_env_can_render_qa_defaults(tmp_path) -> None:
+    _, output, _ = run_renderer_with_args(
+        tmp_path,
+        {
+            "BRAIN_PROD_ROOT": "",
+            "BRAIN_PUBLIC_BASE_URL": "",
+            "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED": "",
+        },
+        ["--env", "qa"],
+    )
+
+    values = parse_rendered_env(output.read_text(encoding="utf-8"))
+    assert values["BRAIN_PROD_ROOT"] == "/Volumes/xpg_usb4/qa/brain"
+    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://brain-qa.dceb.net"
+    assert (
+        values["BRAIN_DATABASE_URL"]
+        == "sqlite:////Volumes/xpg_usb4/qa/brain/shared/data/brain/brain.db"
+    )
+    assert values["BRAIN_MCP_PORT"] == "18200"
+    assert values["BRAIN_UI_PROXY_PORT"] == "18202"
+    assert values["BRAIN_UI_FRONTEND_PORT"] == "13200"
+    assert values["BRAIN_UI_BACKEND_PORT"] == "18201"
+    assert values["BRAIN_SLACK_AGENT_PORT"] == "18203"
+    assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/qa/brain/shared/secrets/brain-auth-users.json"
+    assert values["VECTOR_DB_PORT"] == "17432"
+    assert values["DB_PORT"] == "17432"
+    assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] == "false"
+
+
 def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> None:
     _, output, _ = run_renderer(
         tmp_path,

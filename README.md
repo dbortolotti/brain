@@ -279,19 +279,21 @@ make slack-agent-check
 
 ## Deployment and Release Model
 
-Brain deploys on the self-hosted `brain-prod` runner in three environment tiers:
+Brain deploys on the self-hosted `brain-prod` runner in three deployed tiers, plus local dev:
 
 - `dev`: local developer runs.
-- `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually; its version input is optional, and if omitted it deploys a `staging-<12-char-sha>` build version.
+- `qa`: every push or merge to `main` deploys through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain` as `oric`, with read-only repository permissions and the `qa-<12-char-sha>` build version.
+- `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain` as `oric_staging`. The workflow requires a `vX.Y.Z` or prerelease tag, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
 
-The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Prod runs as `oric_prod`; staging runs as `oric_staging`. Both are installed as system LaunchDaemons under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching. `scripts/setup-macos-service-users.sh` creates those hidden service users on a new Mac. Deploys normalize `/Volumes/xpg_usb4/{staging|prod}/brain` ownership to the matching runtime user with world-readable release, data, and log paths and owner-only `shared/secrets`. Local non-GitHub staging deploys refresh an existing release directory for the same commit SHA from the working tree so migration iterations can exercise uncommitted changes.
+The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa`, `staging`, or `prod`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Prod runs as `oric_prod`; staging runs as `oric_staging`; QA runs as `oric`. System LaunchDaemons are installed under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching. `scripts/setup-macos-service-users.sh` creates the hidden staging and prod service users on a new Mac. Deploys normalize `/Volumes/xpg_usb4/{qa|staging|prod}/brain` ownership to the matching runtime user with world-readable release, data, and log paths and owner-only `shared/secrets`. Local non-GitHub QA and staging deploys refresh an existing release directory for the same commit SHA from the working tree so migration iterations can exercise uncommitted changes.
 
 The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline.
 
 Workflow model:
 
-- `.github/workflows/deploy-local-staging.yml` triggers on `push` to `main` and on `workflow_dispatch`, and accepts optional `version` and `force_config_override` inputs.
+- `.github/workflows/deploy-local-qa.yml` triggers on `push` to `main` and on `workflow_dispatch`, and accepts only `force_config_override` for manual re-baselines.
+- `.github/workflows/deploy-local-staging.yml` triggers on `workflow_dispatch`, requires `version`, accepts `force_config_override`, updates generated docs, stamps docs with the tag, pushes that docs commit to `main`, and tags the stamped commit.
 - `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
@@ -322,14 +324,14 @@ GitHub Secrets and GitHub Variables are the source of truth; direct emergency ed
 Every deploy writes runtime release metadata into:
 
 ```text
-/Volumes/xpg_usb4/{staging|prod}/brain/current/release.json
-/Volumes/xpg_usb4/{staging|prod}/brain/shared/release.json
-/Volumes/xpg_usb4/{staging|prod}/brain/shared/current-version
+/Volumes/xpg_usb4/{qa|staging|prod}/brain/current/release.json
+/Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/release.json
+/Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/current-version
 ```
 
 The release metadata records the app name, environment, version, SHA, release directory, deployed_at, and source. The source is `github-actions` for workflow runs and `local` for local runs.
 
-Normal pushes to `main` deploy staging with an automatic build version such as `staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. If you omit the version on a manual staging run, it falls back to `staging-<12-char-sha>`. That staged workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the annotated git tag at the staged SHA when the version starts with `v`. If the tag already exists at a different SHA, the staging run fails instead of retagging.
+Normal pushes to `main` deploy QA with an automatic build version such as `qa-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That workflow refreshes generated docs, records the tag in `docs/generated/release.json`, pushes any docs stamp commit back to `main`, deploys that stamped commit to staging, records `BRAIN_RELEASE_VERSION` as the tag, and creates the annotated git tag at the staged SHA. If the tag already exists at a different SHA, the staging run fails instead of retagging.
 
 Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION` and staged SHA.
 
@@ -339,8 +341,8 @@ The renderer compares three files:
 
 ```text
 proposed: newly rendered GitHub Secrets/Vars config
-live:     /Volumes/xpg_usb4/{staging|prod}/brain/shared/secrets/brain.env
-base:     /Volumes/xpg_usb4/{staging|prod}/brain/shared/secrets/brain.env.last-deployed
+live:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env
+base:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env.last-deployed
 ```
 
 For each non-metadata key:
@@ -440,7 +442,7 @@ make llm-docs       # alias used by the pre-commit hook
 make docs-hash      # refresh source hashes after manual doc review
 ```
 
-The validate workflow and the deploy workflows run `make docs-check`. The local pre-commit hook runs `make llm-docs`, so commits require the configured LLM documentation environment.
+The validate workflow and the QA deploy workflow run `make docs-check`. The staging workflow runs `make docs-generate`, stamps `docs/generated/release.json` with the requested tag, commits those generated docs to `main` when they changed, and then runs `make docs-check`. The local pre-commit hook runs `make llm-docs`, so commits require the configured LLM documentation environment.
 
 For statistical model-role evals, use the Brain eval Make targets. The default target writes `eval_runs/brain-golden.json`:
 
@@ -699,7 +701,8 @@ Environment examples differ by local setup:
 
 - `.env.example` mirrors `cfg/common.yaml`: Postgres Cognee metadata, pgvector vectors, and the default graph provider.
 - `.env.openai.example` is a smaller local/OpenAI-oriented example using Neo4j, LanceDB, and SQLite.
-- `cfg/staging.yaml` is the staging override deployed from `main`.
+- `cfg/qa.yaml` is the QA override deployed automatically from `main`.
+- `cfg/staging.yaml` is the staging override deployed by the manual tagged staging workflow.
 - `cfg/prod.yaml` is the production override promoted by the release workflow. Promotable releases are versioned in staging first; production verifies and keeps that staged `BRAIN_RELEASE_VERSION` instead of creating a new version at promotion time.
 
 Provider API keys can be stored once and reused across every model for that provider:
@@ -726,4 +729,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: f0605b036620291121a0a834a97a65625ee205e54e5d244878d1345a28f0de29 -->
+<!-- brain-doc-source-hash: eb21d6e2b558c3378bab56aaaec199b5149674abc5555cc8bcc5d9d07611263e -->

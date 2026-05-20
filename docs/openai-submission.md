@@ -25,7 +25,8 @@ The current verified production release should be recorded from the deployed env
 Workflow reference:
 
 - `Validate` runs on `pull_request` and `workflow_dispatch`.
-- `Deploy Local Staging` runs on `push` and `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
+- `Deploy Local QA` runs on `push` and `workflow_dispatch`; manual dispatch accepts `force_config_override`.
+- `Deploy Local Staging` runs on `workflow_dispatch`; manual dispatch requires `version` and accepts `force_config_override`.
 - `Release` runs on `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
 
 Run these checks after promoting the staged release:
@@ -187,20 +188,21 @@ Explain these points in the submission:
 
 After every merge or push to `main`:
 
-1. Watch the `Deploy Local Staging` GitHub Actions run to completion.
+1. Watch the `Deploy Local QA` GitHub Actions run to completion.
    - The workflow triggers on `push` and `workflow_dispatch`.
-   - Manual dispatch accepts `version` and `force_config_override` inputs.
+   - Manual dispatch accepts `force_config_override`.
 2. Verify the deployed release metadata matches the expected pushed release.
 3. Keep your normal backup checks in the promotion path if they are part of your environment.
 
 For a production release:
 
-1. Run the manual `Release` GitHub Actions workflow with the desired `vX.Y.Z` tag.
+1. Run the manual `Deploy Local Staging` workflow with the desired `vX.Y.Z` tag; it updates generated docs, stamps the docs with that tag, pushes the docs commit to `main`, deploys staging, and creates the tag.
+2. Run the manual `Release` GitHub Actions workflow with the same staged tag.
    - The workflow triggers on `workflow_dispatch`.
    - Manual dispatch accepts `version` and `force_config_override` inputs.
-2. Watch production deployment and verification finish successfully.
-3. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
+3. Watch production deployment and verification finish successfully.
+4. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
    - This verification checks DNS and TLS for the hostname; the public and admin MCP surfaces; the public dashboard, privacy, terms, and support pages; browser security headers; OAuth protected-resource and authorization metadata; and the ChatGPT App tool descriptors. When auth is enabled, it also checks the authenticated public app MCP surface and confirms it remains text-only.
-4. Keep confirmation and normal backup checks enabled in the promotion path.
+5. Keep confirmation and normal backup checks enabled in the promotion path.
 
-<!-- brain-doc-source-hash: b52d01b88ba3aee080e55038c02744d9d62f14f507a1b5531734882a3b72fe15 -->
+<!-- brain-doc-source-hash: 51f5159de7a32e385fef5d022f9bb936c3ea499e8b302fc3f5f9041d80de1f38 -->

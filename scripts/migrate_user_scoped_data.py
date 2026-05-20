@@ -24,7 +24,7 @@ def main() -> int:
     )
     parser.add_argument("--from-user", default="default")
     parser.add_argument("--to-user", required=True)
-    parser.add_argument("--env", choices=["dev", "staging", "prod"], default="prod")
+    parser.add_argument("--env", choices=["dev", "qa", "staging", "prod"], default="prod")
     parser.add_argument("--env-file", default=None)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument(

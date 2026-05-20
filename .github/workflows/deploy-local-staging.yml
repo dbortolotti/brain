@@ -1,14 +1,11 @@
 name: Deploy Local Staging
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       version:
-        description: "Optional staged release version, for example v2.1.0-rc.1"
-        required: false
+        description: "Staged release version, for example v2.1.0-rc.1"
+        required: true
         type: string
       force_config_override:
         description: "Bypass staging config conflict checks and establish a new baseline"
@@ -32,29 +29,59 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Resolve staging version
         id: version
         run: |
           set -euo pipefail
-          VERSION="${{ github.event.inputs.version }}"
-          if [[ -z "$VERSION" ]]; then
-            VERSION="staging-${GITHUB_SHA:0:12}"
-          fi
-          if ! [[ "$VERSION" =~ ^(staging-[0-9a-f]{12}|v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?)$ ]]; then
-            echo "version must be staging-<12-char-sha> or look like v2.1.0 / v2.1.0-rc.1" >&2
+          VERSION="${{ inputs.version }}"
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "version must look like v2.1.0 or v2.1.0-rc.1" >&2
             exit 2
           fi
+          echo "version=$VERSION" >>"$GITHUB_OUTPUT"
+
+      - name: Stamp docs with staged version
+        id: docs
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          make docs-generate
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          payload = {
+              "environment": "staging",
+              "version": os.environ["VERSION"],
+              "stamped_at": datetime.now(UTC).isoformat(timespec="seconds"),
+          }
+          path = Path("docs/generated/release.json")
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          git add docs/generated/facts.json docs/generated/facts.sha256 docs/generated/release.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Stamp docs for $VERSION"
+            git push origin HEAD:main
+          fi
+          STAGING_SHA="$(git rev-parse HEAD)"
           git fetch --tags origin
-          if [[ "$VERSION" =~ ^v ]] && git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
             TAG_SHA="$(git rev-list -n 1 "$VERSION")"
-            if [[ "$TAG_SHA" != "$GITHUB_SHA" ]]; then
-              echo "tag $VERSION already points at $TAG_SHA, not $GITHUB_SHA" >&2
+            if [[ "$TAG_SHA" != "$STAGING_SHA" ]]; then
+              echo "tag $VERSION already points at $TAG_SHA, not $STAGING_SHA" >&2
               exit 2
             fi
           fi
-          echo "version=$VERSION" >>"$GITHUB_OUTPUT"
+          echo "sha=$STAGING_SHA" >>"$GITHUB_OUTPUT"
 
       - name: Validate repository
         run: |
@@ -68,8 +95,9 @@ jobs:
         env:
           BRAIN_DEPLOY_ENV: staging
           BRAIN_RELEASE_ENV: staging
-          BRAIN_RELEASE_SHA: ${{ github.sha }}
+          BRAIN_RELEASE_SHA: ${{ steps.docs.outputs.sha }}
           BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          GITHUB_SHA: ${{ steps.docs.outputs.sha }}
           PROFILE: ${{ vars.PROFILE }}
           BRAIN_LLM_ENABLED: ${{ vars.BRAIN_LLM_ENABLED }}
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
@@ -158,16 +186,15 @@ jobs:
           sudo -n \
             BRAIN_DEPLOY_ENV=staging \
             BRAIN_RELEASE_ENV=staging \
-            BRAIN_RELEASE_SHA="${{ github.sha }}" \
+            BRAIN_RELEASE_SHA="${{ steps.docs.outputs.sha }}" \
             BRAIN_RELEASE_VERSION="${{ steps.version.outputs.version }}" \
-            GITHUB_SHA="${{ github.sha }}" \
+            GITHUB_SHA="${{ steps.docs.outputs.sha }}" \
             /Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh \
             --source-root "$PWD" \
             --rendered-env "${{ steps.render-config.outputs.env_file }}" \
             --rendered-auth-password "${{ steps.render-config.outputs.auth_password_file }}"
 
       - name: Tag staged release
-        if: startsWith(steps.version.outputs.version, 'v')
         run: |
           set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
@@ -175,5 +202,5 @@ jobs:
             echo "staged tag already exists at $(git rev-list -n 1 "$VERSION")"
             exit 0
           fi
-          git tag -a "$VERSION" "$GITHUB_SHA" -m "Stage $VERSION"
+          git tag -a "$VERSION" "${{ steps.docs.outputs.sha }}" -m "Stage $VERSION"
           git push origin "$VERSION"

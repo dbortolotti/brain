@@ -13,7 +13,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Run Brain nightly maintenance: cognify agent memory, then back up on success."
     )
-    parser.add_argument("--env", choices=["dev", "staging", "prod"], default="prod")
+    parser.add_argument("--env", choices=["dev", "qa", "staging", "prod"], default="prod")
     parser.add_argument("--env-file", default=None)
     parser.add_argument("--session-id", default=None)
     parser.add_argument("--node-name", action="append", default=None)

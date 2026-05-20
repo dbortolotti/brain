@@ -64,9 +64,23 @@ def test_cfg_supports_staging_environment() -> None:
     assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] is False
 
 
+def test_cfg_supports_qa_environment() -> None:
+    values = package_cfg.reload("qa")
+
+    assert package_cfg.active_env() == "qa"
+    assert values["CONFIG_ENV"] == "qa"
+    assert values["BRAIN_DATABASE_URL"] == "sqlite:////Volumes/xpg_usb4/qa/brain/shared/data/brain/brain.db"
+    assert values["BRAIN_PUBLIC_BASE_URL"] == "https://brain-qa.dceb.net"
+    assert values["BRAIN_MCP_PORT"] == 18200
+    assert values["VECTOR_DB_PORT"] == 17432
+    assert values["DB_PORT"] == 17432
+    assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/qa/brain/shared/secrets/brain-auth-users.json"
+    assert values["BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"] is False
+
+
 def test_cfg_rejects_unknown_environment() -> None:
     with pytest.raises(package_cfg.ConfigError, match="Unsupported config environment"):
-        package_cfg.reload("qa")
+        package_cfg.reload("uat")
 
 
 def test_cfg_dir_can_be_overridden(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:

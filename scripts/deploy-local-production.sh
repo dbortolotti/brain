@@ -3,8 +3,8 @@ set -euo pipefail
 
 APP_NAME="brain"
 DEPLOY_ENV="${BRAIN_DEPLOY_ENV:-prod}"
-if [[ "$DEPLOY_ENV" != "prod" && "$DEPLOY_ENV" != "staging" ]]; then
-  printf 'BRAIN_DEPLOY_ENV must be prod or staging, got: %s\n' "$DEPLOY_ENV" >&2
+if [[ "$DEPLOY_ENV" != "prod" && "$DEPLOY_ENV" != "staging" && "$DEPLOY_ENV" != "qa" ]]; then
+  printf 'BRAIN_DEPLOY_ENV must be prod, staging, or qa, got: %s\n' "$DEPLOY_ENV" >&2
   exit 2
 fi
 ENV_SUFFIX="$DEPLOY_ENV"
@@ -20,6 +20,19 @@ DEFAULT_NEO4J_HTTP_PORT="17474"
 DEFAULT_NEO4J_BOLT_PORT="17687"
 DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED="true"
 DEFAULT_SERVICE_USER="oric_prod"
+if [[ "$DEPLOY_ENV" == "qa" ]]; then
+  DEFAULT_PUBLIC_BASE_URL="https://brain-qa.dceb.net"
+  DEFAULT_MCP_PORT="18200"
+  DEFAULT_UI_PROXY_PORT="18202"
+  DEFAULT_UI_FRONTEND_PORT="13200"
+  DEFAULT_UI_BACKEND_PORT="18201"
+  DEFAULT_SLACK_AGENT_PORT="18203"
+  DEFAULT_DB_PORT="17432"
+  DEFAULT_NEO4J_HTTP_PORT="19474"
+  DEFAULT_NEO4J_BOLT_PORT="19687"
+  DEFAULT_GOOGLE_DRIVE_BACKUP_ENABLED="false"
+  DEFAULT_SERVICE_USER="oric"
+fi
 if [[ "$DEPLOY_ENV" == "staging" ]]; then
   DEFAULT_PUBLIC_BASE_URL="https://brain-staging.dceb.net"
   DEFAULT_MCP_PORT="18100"
@@ -47,7 +60,7 @@ BRAIN_SERVICE_USER="${BRAIN_SERVICE_USER:-$DEFAULT_SERVICE_USER}"
 BRAIN_DEPLOY_USER="${BRAIN_DEPLOY_USER:-${SUDO_USER:-${LOGNAME:-oric}}}"
 BRAIN_DEPLOY_PYTHON="${BRAIN_DEPLOY_PYTHON:-3.12}"
 DEFAULT_REFRESH_RELEASE="false"
-if [[ "$DEPLOY_ENV" == "staging" && -z "${GITHUB_ACTIONS:-}" ]]; then
+if [[ ( "$DEPLOY_ENV" == "qa" || "$DEPLOY_ENV" == "staging" ) && -z "${GITHUB_ACTIONS:-}" ]]; then
   DEFAULT_REFRESH_RELEASE="true"
 fi
 BRAIN_REFRESH_RELEASE="${BRAIN_REFRESH_RELEASE:-$DEFAULT_REFRESH_RELEASE}"
@@ -137,12 +150,12 @@ SHOW_USAGE="false"
 
 usage() {
   cat <<EOF
-Usage: BRAIN_DEPLOY_ENV=prod|staging $0
+Usage: BRAIN_DEPLOY_ENV=prod|staging|qa $0
 
 Deploy Brain to $PROD_ROOT, install LaunchDaemons, and restart the $DEPLOY_ENV services.
 
 Environment:
-  BRAIN_DEPLOY_ENV             prod or staging (default: prod)
+  BRAIN_DEPLOY_ENV             prod, staging, or qa (default: prod)
   BRAIN_SERVICE_USER           macOS service user (default: $DEFAULT_SERVICE_USER)
   BRAIN_DOCKER_HOST_USER       macOS user running Docker Desktop (default: $BRAIN_DOCKER_HOST_USER)
   BRAIN_NEO4J_CONTAINER_USER   uid:gid for Neo4j Docker process (default: Docker host user)
@@ -1262,10 +1275,9 @@ write_release_metadata "$SHARED_DIR/release.json"
 printf '%s\n' "$RELEASE_VERSION" >"$SHARED_DIR/current-version"
 ln -sfn "$LOCAL_VENV_DIR" "$LOCAL_CURRENT_VENV_LINK"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+launchd_log_stems=(brain-$DEPLOY_ENV brain-$DEPLOY_ENV-ui brain-$DEPLOY_ENV-slack-agent brain-$DEPLOY_ENV-docker-runtime brain-$DEPLOY_ENV-databases brain-$DEPLOY_ENV-maintenance brain-$DEPLOY_ENV-log-rotation)
 if [[ "$DEPLOY_ENV" == "prod" ]]; then
   launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-docker-runtime brain-databases brain-maintenance brain-log-rotation)
-else
-  launchd_log_stems=(brain-staging brain-staging-ui brain-staging-slack-agent brain-staging-docker-runtime brain-staging-databases brain-staging-maintenance brain-staging-log-rotation)
 fi
 for stem in "${launchd_log_stems[@]}"; do
   touch "$LAUNCHD_LOG_DIR/$stem.out.log" "$LAUNCHD_LOG_DIR/$stem.err.log"

@@ -1,56 +1,62 @@
 # Production Secrets
 
-The staging, production, and release workflows run on the self-hosted `brain-prod` runner. The deployment model has three environments:
+The QA, staging, production, and release workflows run on the self-hosted `brain-prod` runner. The deployment model has three deployed environments, plus local dev:
 
 - `dev`: local developer runs.
-- `staging`: `main` deploys through `.github/workflows/deploy-local-staging.yml`
-  to `/Volumes/xpg_usb4/staging/brain`. That workflow can also be run manually;
-  its `version` input is optional, and if omitted it deploys a
-  `staging-<12-char-sha>` build version.
+- `qa`: pushes and merges to `main` deploy through
+  `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`.
+  QA runs as `oric`, uses read-only repository permissions, and records a
+  `qa-<12-char-sha>` build version.
+- `staging`: manual versioned staging runs through
+  `.github/workflows/deploy-local-staging.yml` to
+  `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or
+  prerelease tag, refreshes generated docs, writes
+  `docs/generated/release.json` with that tag, pushes the docs stamp to
+  `main`, deploys the stamped commit, and creates the annotated git tag.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml`
   and deploys the currently staged release version to
   `/Volumes/xpg_usb4/prod/brain`.
 
-The staging, production, and release workflows render each environment's
+The QA, staging, production, and release workflows render each environment's
 `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with
 `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh`
-with `BRAIN_DEPLOY_ENV=staging` or `BRAIN_DEPLOY_ENV=prod`.
+with `BRAIN_DEPLOY_ENV=qa`, `staging`, or `prod`.
 
 The rendered config and deploy steps run with passwordless `sudo` on the local
 self-hosted runner. Prod is owned and run by `oric_prod`; staging is owned and
-run by `oric_staging`. `scripts/setup-macos-service-users.sh` creates those
-hidden service users on a new Mac. Deploys install system LaunchDaemons in
+run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh`
+creates the hidden staging and prod service users on a new Mac. Deploys install system LaunchDaemons in
 `/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot
-and wait for `/Volumes/xpg_usb4/{staging|prod}/brain/current` before launching.
+and wait for `/Volumes/xpg_usb4/{qa|staging|prod}/brain/current` before launching.
 Each LaunchDaemon uses `SessionCreate` with its service user and starts from
-`/var/db/brain-{prod|staging}`. LaunchDaemons execute the per-release Python
-environment from `/var/db/brain-{prod|staging}/current-venv` and read a local
-runtime copy of `brain.env` from `/var/db/brain-{prod|staging}/secrets`; they
-also load config from `/var/db/brain-{prod|staging}/cfg` via `BRAIN_CONFIG_DIR`.
+`/var/db/brain-{prod|staging|qa}`. LaunchDaemons execute the per-release Python
+environment from `/var/db/brain-{prod|staging|qa}/current-venv` and read a local
+runtime copy of `brain.env` from `/var/db/brain-{prod|staging|qa}/secrets`; they
+also load config from `/var/db/brain-{prod|staging|qa}/cfg` via `BRAIN_CONFIG_DIR`.
 Deploys install `memory-stack` into that venv non-editably so launchd does not
 have to import project code or config through an external-volume `.pth` file.
 Release, data, backup, and log paths are world-readable and writable only by the
 runtime user; `shared/secrets` remains owner-only. Normal deploys update
 ownership incrementally; set `BRAIN_FULL_CHOWN=1` for a first migration or
-repair when the entire prod/staging tree needs to be reclaimed by the service
-user. Local non-GitHub staging deploys refresh an existing release directory for
+repair when the entire prod/staging/QA tree needs to be reclaimed by the service
+user. Local non-GitHub QA and staging deploys refresh an existing release directory for
 the same commit SHA from the working tree so migration iterations can exercise
 uncommitted changes; GitHub Actions and prod deploys keep release directories
 immutable unless `BRAIN_REFRESH_RELEASE=1` is explicitly supplied.
 
-The staging workflow-dispatch `version` input is optional, the release
-workflow-dispatch `version` input is required.
+The staging and release workflow-dispatch `version` inputs are required. QA has
+no version input and derives its build version from the pushed commit SHA.
 
-`force_config_override` is available only on workflow-dispatch runs for staging,
-and release. It defaults to `false`. Push-based staging deploys do not use it.
+`force_config_override` is available only on workflow-dispatch runs for QA,
+staging, and release. It defaults to `false`. Push-based QA deploys do not use it.
 
 ## Release Versioning
 
 Every deploy writes runtime release metadata into:
 
 ```text
-/Volumes/xpg_usb4/{staging|prod}/brain/current/release.json
-/Volumes/xpg_usb4/{staging|prod}/brain/shared/release.json
+/Volumes/xpg_usb4/{qa|staging|prod}/brain/current/release.json
+/Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/release.json
 ```
 
 The release metadata records the app name, environment, version, SHA, release
@@ -76,13 +82,14 @@ BRAIN_RELEASE_VERSION
 These metadata keys are deployment metadata, not repository variables. The
 conflict checker ignores both metadata families.
 
-Normal pushes to `main` deploy staging with an automatic build version such as
-`staging-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
-workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. If you omit the version
-on a manual staging run, it falls back to `staging-<12-char-sha>`. That staged
-workflow deploys the SHA, records `BRAIN_RELEASE_VERSION`, and creates the
-annotated git tag at the staged SHA when the version starts with `v`. If the tag
-already exists at a different SHA, the staging run fails instead of retagging.
+Normal pushes to `main` deploy QA with an automatic build version such as
+`qa-1a2b3c4d5e6f`. To create a promotable release, manually run the staging
+workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That workflow refreshes
+generated docs, records the tag in `docs/generated/release.json`, pushes any docs
+stamp commit back to `main`, deploys that stamped commit, records
+`BRAIN_RELEASE_VERSION` as the tag, and creates the annotated git tag at the
+staged SHA. If the tag already exists at a different SHA, the staging run fails
+instead of retagging.
 
 Production promotion does not mint a new version. The release workflow reads
 staging `shared/release.json`, verifies the requested version is the active
@@ -100,8 +107,8 @@ The renderer compares three files:
 
 ```text
 proposed: newly rendered GitHub Secrets/Vars config
-live:     /Volumes/xpg_usb4/{staging|prod}/brain/shared/secrets/brain.env
-base:     /Volumes/xpg_usb4/{staging|prod}/brain/shared/secrets/brain.env.last-deployed
+live:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env
+base:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env.last-deployed
 ```
 
 For each non-metadata key:
@@ -431,4 +438,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 941bf0a94b2a4b014c793b10b036cc8a7adb3c3f7b8c60b6c351f637fc428ea6 -->
+<!-- brain-doc-source-hash: 817511987a970e04fdcb84f2cff5225bb15e80ada12377398b3158607c31ee6c -->

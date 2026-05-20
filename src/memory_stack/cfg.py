@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 CONFIG_DIR = Path(os.environ.get("BRAIN_CONFIG_DIR", Path(__file__).resolve().parents[2] / "cfg"))
 DEFAULT_ENV = "dev"
-SUPPORTED_ENVS = {"dev", "staging", "prod"}
+SUPPORTED_ENVS = {"dev", "qa", "staging", "prod"}
 
 _CACHE: dict[str, Any] | None = None
 _CACHE_ENV: str | None = None

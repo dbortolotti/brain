@@ -9,4 +9,4 @@ def test_brain_agent_memory_script_defaults_to_portable_session() -> None:
     assert "agent_memory_session_id_for_user(settings)" in script
     assert "agent_memory_dataset_for_user(settings)" in script
     assert "session_ids=[session_id]" in script
-    assert 'choices=["dev", "staging", "prod"]' in script
+    assert 'choices=["dev", "qa", "staging", "prod"]' in script
