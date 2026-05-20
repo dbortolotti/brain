@@ -23,16 +23,11 @@ def compile_memory(
     llm_client: LLMClient | None = None,
 ) -> CompiledInput:
     rule_result = compile_input(request, settings)
-    if rule_result.sufficient and rule_result.confidence == "high":
-        return rule_result
-
-    active_client = llm_client or build_llm_client(settings)
-    if settings.brain_llm_enabled and active_client is not None:
-        try:
-            return compile_with_llm(request, settings, rule_result, active_client)
-        except Exception:
-            if llm_client is not None:
-                raise
+    if settings.brain_llm_enabled:
+        active_client = llm_client or build_llm_client(settings)
+        if active_client is None:
+            raise RuntimeError("Brain LLM is enabled but no LLM client is available.")
+        return compile_with_llm(request, settings, rule_result, active_client)
 
     return rule_result
 

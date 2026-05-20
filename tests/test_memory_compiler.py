@@ -6,9 +6,33 @@ from memory_stack.cfg import Settings
 from memory_stack.llm.fake import FakeLLMClient
 
 
-def test_rule_compiler_fast_path_skips_llm_when_confident(tmp_path) -> None:
+def test_llm_enabled_uses_llm_even_when_rule_compiler_is_confident(tmp_path) -> None:
     settings = brain_test_settings(tmp_path, brain_llm_enabled=True)
-    fake_llm = FakeLLMClient([])
+    fake_llm = FakeLLMClient(
+        {
+            "classification": "family_fact",
+            "source": {"should_create": False},
+            "memory_cards": [
+                {
+                    "kind": "family_fact",
+                    "statement": "Nur and Sara are Daniele's twin daughters.",
+                    "confidence": "high",
+                    "entities": [
+                        {"name": "Daniele", "type": "person", "role": "parent"},
+                        {"name": "Nur", "type": "person", "role": "child"},
+                        {"name": "Sara", "type": "person", "role": "child"},
+                    ],
+                    "relationships": [
+                        {"subject": "Nur", "predicate": "daughter_of", "object": "Daniele"},
+                        {"subject": "Sara", "predicate": "daughter_of", "object": "Daniele"},
+                        {"subject": "Nur", "predicate": "twin_of", "object": "Sara"},
+                    ],
+                }
+            ],
+            "possible_conflicts": [],
+            "questions_for_user": [],
+        }
+    )
 
     receipt = remember(
         RememberRequest(input="Nur and Sara are my twin daughters."),
@@ -17,7 +41,7 @@ def test_rule_compiler_fast_path_skips_llm_when_confident(tmp_path) -> None:
     )
 
     assert receipt.classification == "family_fact"
-    assert fake_llm.calls == []
+    assert fake_llm.calls
 
 
 def test_fake_llm_transcript_extracts_multiple_cards(tmp_path) -> None:
