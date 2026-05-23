@@ -187,7 +187,7 @@ def upsert_brain_user(
 
 
 def update_profile_metadata(conn: Any, *, from_user: str, to_user: str) -> None:
-    for table in (schema.memory_cards, schema.entities):
+    for table in (schema.entities, schema.brain_context_records):
         rows = conn.execute(select(table.c.id, table.c.metadata_json)).all()
         for row in rows:
             metadata = dict(row.metadata_json or {})

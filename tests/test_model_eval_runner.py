@@ -237,8 +237,8 @@ def test_open_loop_detector_derivation_uses_open_loop_semantics_not_repair_paths
     )
     by_id = {fixture.id: fixture for fixture in fixtures}
 
-    assert by_id["slack_no_durable_value_repair_001"].expected["expected_open_loop"] is False
-    assert by_id["slack_conflict_buttons_001"].expected["expected_open_loop_any"] == [False, True]
+    assert by_id["memory_intake_no_durable_value_repair_001"].expected["expected_open_loop"] is False
+    assert by_id["memory_intake_conflict_buttons_001"].expected["expected_open_loop_any"] == [False, True]
     assert by_id["small_table_preferences_001"].expected["expected_open_loop"] is False
     assert by_id["ambiguous_time_reference_001"].expected["expected_open_loop"] is True
 
@@ -250,7 +250,7 @@ def test_role_contracts_cover_remaining_fixture_failure_guidance() -> None:
         role="intent_router",
         input_text="I want to learn more about knowledge graphs.",
         expected={"decision": "commit_success"},
-        context={"source_role": "slack_intake"},
+        context={"source_role": "memory_intake"},
     )
     source = ModelEvalFixture(
         id="article_url_fetch_failure_001",
@@ -292,22 +292,22 @@ def test_role_contracts_cover_remaining_fixture_failure_guidance() -> None:
 
 def test_role_contracts_include_agent_markdown_alignment() -> None:
     intent = ModelEvalFixture(
-        id="slack_router",
-        scenario_group="slack_intake",
+        id="memory_intake_router",
+        scenario_group="memory_intake",
         role="intent_router",
         input_text="/brain recall what do I know about Sam?",
         expected={},
     )
     source = ModelEvalFixture(
-        id="slack_source",
-        scenario_group="slack_intake",
+        id="memory_intake_source",
+        scenario_group="memory_intake",
         role="source_classifier",
         input_text="/brain source https://example.com/article",
         expected={},
     )
     repair = ModelEvalFixture(
-        id="slack_repair",
-        scenario_group="slack_intake",
+        id="memory_intake_repair",
+        scenario_group="memory_intake",
         role="repair_option_generator",
         input_text="Existing: Sam works at Goldman. New: Sam left Goldman.",
         expected={},
@@ -317,7 +317,7 @@ def test_role_contracts_include_agent_markdown_alignment() -> None:
     repair_prompt = fixture_prompt(repair)
 
     assert "Agent markdown excerpt from src/memory_stack/agents/shared/memory_agent_rules.md#Mission" in intent_prompt
-    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#7. Slack message routing" in intent_prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#7. Memory intake message routing" in intent_prompt
     assert "Role markdown from src/memory_stack/agents/roles/intent_router.md" in intent_prompt
     assert "Explicit slash commands override LLM classification." in intent_prompt
     assert "ingest_source" in intent_prompt
@@ -473,7 +473,7 @@ def test_entity_mention_extractor_drops_non_entity_fixture_terms() -> None:
     )
     clean_fact = next(item for item in fixtures if item.id == "cascade_clean_fact_no_escalation_001")
     low_confidence = next(item for item in fixtures if item.id == "cascade_low_confidence_asks_user_001")
-    no_durable = next(item for item in fixtures if item.id == "slack_no_durable_value_repair_001")
+    no_durable = next(item for item in fixtures if item.id == "memory_intake_no_durable_value_repair_001")
 
     assert clean_fact.expected["entity_terms"] == ["Nur", "Sara"]
     assert "entity_terms" not in low_confidence.expected
@@ -592,12 +592,12 @@ def test_unsupported_inference_zero_tolerance_requires_forbidden_content() -> No
 
 def test_intent_router_scores_router_aliases_from_source_role() -> None:
     fixture = ModelEvalFixture(
-        id="router_from_slack",
+        id="router_from_memory_intake",
         role="intent_router",
-        scenario_group="slack_intake",
+        scenario_group="memory_intake",
         input_text="/brain remember Sam likes jazz",
         expected={"decision": "commit_success"},
-        context={"source_role": "slack_intake"},
+        context={"source_role": "memory_intake"},
     )
 
     scores, zero, _types = score_model_output(fixture, {"intent": "store_fact"}, status="ok")
@@ -611,10 +611,10 @@ def test_intent_router_accepts_open_question_and_research_question_routes() -> N
         fixture = ModelEvalFixture(
             id=f"router_{intent}",
             role="intent_router",
-            scenario_group="slack_intake",
+            scenario_group="memory_intake",
             input_text="I want to learn more about knowledge graphs.",
             expected={"decision": "commit_success"},
-            context={"source_role": "slack_intake"},
+            context={"source_role": "memory_intake"},
         )
 
         scores, zero, _types = score_model_output(fixture, {"intent": intent}, status="ok")
@@ -651,7 +651,6 @@ def test_source_classifier_ignores_extraction_zero_tolerance_checks() -> None:
             "input_class": "source",
             "source_kind": "table",
             "should_create_source": True,
-            "should_extract_memories": True,
             "memory_cards": [{"statement": "wrong downstream extraction"}],
         },
         status="ok",
@@ -699,7 +698,6 @@ def test_source_classifier_quality_ignores_downstream_extraction_boolean() -> No
             "input_class": "source",
             "source_kind": "article",
             "should_create_source": True,
-            "should_extract_memories": False,
             "answer": "Classified as an article source.",
             "citations": ["https://example.com/a"],
         },
@@ -719,7 +717,7 @@ def test_source_classifier_long_source_zero_tolerance_allows_source_subtype_miss
         input_text=(
             "# Chat Summary\n"
             "Brain DB remains source of truth. Cognee is a rebuildable projection. "
-            "Slack should be a strict intake agent. Telegram may be considered later."
+            "Memory intake should be a strict intake agent. Telegram may be considered later."
         ),
         expected={"source_memory_split": True},
         zero_tolerance_checks=("long_source_classified_as_memory",),
@@ -731,7 +729,6 @@ def test_source_classifier_long_source_zero_tolerance_allows_source_subtype_miss
             "input_class": "source",
             "source_kind": "article",
             "should_create_source": True,
-            "should_extract_memories": True,
             "answer": "Classified as a source, though with the wrong subtype.",
             "citations": [],
         },
@@ -765,7 +762,6 @@ def test_source_classifier_uses_fixture_specific_source_expectations() -> None:
             "input_class": "source",
             "source_kind": "chat_log",
             "should_create_source": True,
-            "should_extract_memories": True,
         },
         status="ok",
     )
@@ -775,7 +771,6 @@ def test_source_classifier_uses_fixture_specific_source_expectations() -> None:
             "input_class": "source",
             "source_kind": "table",
             "should_create_source": True,
-            "should_extract_memories": False,
         },
         status="ok",
     )
@@ -793,10 +788,10 @@ def test_source_classifier_accepts_role_scoped_memory_or_source_boundaries() -> 
         expected={},
     )
     retry_event = ModelEvalFixture(
-        id="slack_retry_event_001",
+        id="memory_intake_retry_event_001",
         role="source_classifier",
-        scenario_group="slack_retry_event",
-        input_text="Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans.",
+        scenario_group="memory_intake_retry_event",
+        input_text="Same Memory intake event ID delivered twice for: Sam from Goldman likes Bill Evans.",
         expected={},
     )
     compiler_takeaway = ModelEvalFixture(
@@ -818,7 +813,6 @@ def test_source_classifier_accepts_role_scoped_memory_or_source_boundaries() -> 
             "input_class": "source",
             "source_kind": "chat_log",
             "should_create_source": True,
-            "should_extract_memories": True,
         },
         status="ok",
     )
@@ -828,7 +822,6 @@ def test_source_classifier_accepts_role_scoped_memory_or_source_boundaries() -> 
             "input_class": "source",
             "source_kind": "chat_log",
             "should_create_source": True,
-            "should_extract_memories": True,
         },
         status="ok",
     )
@@ -838,7 +831,6 @@ def test_source_classifier_accepts_role_scoped_memory_or_source_boundaries() -> 
             "input_class": "memory",
             "source_kind": None,
             "should_create_source": False,
-            "should_extract_memories": True,
             "answer": "Classified as a memory input because it is a short explicit takeaway.",
         },
         status="ok",
@@ -1050,7 +1042,7 @@ def test_durability_filter_accepts_safe_clarification_decision_over_boolean() ->
     assert types == []
 
 
-def test_durability_filter_treats_slack_retry_as_non_new_write() -> None:
+def test_durability_filter_treats_memory_intake_retry_as_non_new_write() -> None:
     fixture = next(
         fixture
         for fixture in select_fixtures(
@@ -1058,7 +1050,7 @@ def test_durability_filter_treats_slack_retry_as_non_new_write() -> None:
             roles={"durability_filter"},
             mode="fine-grained",
         )
-        if fixture.id == "slack_retry_event_001"
+        if fixture.id == "memory_intake_retry_event_001"
     )
 
     scores, zero, types = score_model_output(
@@ -1066,9 +1058,9 @@ def test_durability_filter_treats_slack_retry_as_non_new_write() -> None:
         {
             "decision": "do_not_store",
             "durable": False,
-            "reason": "Duplicate Slack event delivery; no new durable write should occur.",
-            "answer": "Do not store this duplicate Slack retry event.",
-            "citations": ["Same Slack event ID delivered twice."],
+            "reason": "Duplicate Memory intake event delivery; no new durable write should occur.",
+            "answer": "Do not store this duplicate Memory intake retry event.",
+            "citations": ["Same Memory intake event ID delivered twice."],
         },
         status="ok",
     )
@@ -1633,7 +1625,7 @@ def test_statistical_aggregation_outputs_ci_and_zero_bound() -> None:
         EvalRecord(
             model="openai:gpt-5.4-nano",
             provider="openai",
-            role="slack_intake",
+            role="memory_intake",
             scenario_group="a",
             fixture_id="f1",
             variant_id="base",
@@ -1649,7 +1641,7 @@ def test_statistical_aggregation_outputs_ci_and_zero_bound() -> None:
         EvalRecord(
             model="openai:gpt-5.4-nano",
             provider="openai",
-            role="slack_intake",
+            role="memory_intake",
             scenario_group="b",
             fixture_id="f2",
             variant_id="base",
@@ -1686,7 +1678,7 @@ def test_embeddings_do_not_satisfy_runtime_roles() -> None:
     deployable, missing = is_stack_deployable(eligible)
 
     assert deployable is False
-    assert "slack_intake" in missing
+    assert "memory_intake" in missing
 
 
 def test_router_capability_satisfied_by_intent_router() -> None:
@@ -1793,7 +1785,7 @@ def test_pairwise_semantic_excludes_provider_errors() -> None:
 def test_non_deployable_report_suppresses_production_defaults() -> None:
     report = render_report(
         deployable_stack=False,
-        missing_roles=["slack_intake"],
+        missing_roles=["memory_intake"],
         partial_recommendations={"router": "model_x"},
     )
 
@@ -1982,7 +1974,7 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     report = tmp_path / "report.md"
     config = ModelEvalRunConfig(
         fixture_set="smoke",
-        roles={"slack_intake"},
+        roles={"memory_intake"},
         model_refs=["openai:gpt-5.4-nano"],
         include_judge=False,
         repeat_runs=1,
@@ -1995,7 +1987,7 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
 
     rows = [json.loads(line) for line in output.read_text().splitlines()]
     assert result["record_count"] >= 3
-    assert "slack_intake_family_twins" in {row["fixture_id"] for row in rows}
+    assert "memory_intake_family_twins" in {row["fixture_id"] for row in rows}
     assert rows[0]["status"] == "ok"
     assert report.read_text().startswith("# Executive verdict")
 
@@ -2024,16 +2016,16 @@ def test_build_work_items_makes_repeat_the_outer_loop() -> None:
     candidates = select_model_candidates(
         Settings(),
         model_refs=["openai:gpt-5.5"],
-        roles={"slack_intake"},
-        fixture_roles={"slack_intake"},
+        roles={"memory_intake"},
+        fixture_roles={"memory_intake"},
     )
     fixtures = select_fixtures(
         fixture_set="smoke",
-        roles={"slack_intake"},
+        roles={"memory_intake"},
         mode="broad",
     )
 
-    items = build_work_items(candidates, {"slack_intake"}, fixtures, 2)
+    items = build_work_items(candidates, {"memory_intake"}, fixtures, 2)
 
     assert items
     first_repeat_count = sum(1 for item in items if item.repeat_idx == 0)
@@ -2066,7 +2058,7 @@ def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_p
     config = ModelEvalRunConfig(
         fixture_set="smoke",
         mode="broad",
-        roles={"slack_intake"},
+        roles={"memory_intake"},
         model_refs=["openai:gpt-5.4-nano"],
         include_judge=False,
         repeat_runs=1,
@@ -2156,7 +2148,7 @@ def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
         ModelEvalRunConfig(
             fixture_set="smoke",
             mode="broad",
-            roles={"slack_intake"},
+            roles={"memory_intake"},
             model_refs=["openai:gpt-5.4-nano"],
             include_judge=False,
             repeat_runs=1,

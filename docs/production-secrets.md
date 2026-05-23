@@ -162,7 +162,7 @@ The workflows set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRA
 
 ## Required Secrets
 
-Configure these in GitHub repository secrets for staging and production deploys:
+Configure these in GitHub repository secrets for QA, staging, and production deploys:
 
 ```text
 OPENAI_API_KEY
@@ -170,7 +170,7 @@ GRAPH_DATABASE_PASSWORD
 BRAIN_AUTH_PASSWORD
 ```
 
-The staging and production workflows also pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`.
+The deploy workflows also pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`.
 
 `GRAPH_DATABASE_PASSWORD` is treated as required by the renderer and cannot be empty. The renderer rejects empty or placeholder values for `OPENAI_API_KEY` (``, `replace-me`, `sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
 
@@ -284,18 +284,19 @@ BRAIN_AUTH_REQUIRE_PKCE
 BRAIN_AUTH_SCOPES
 BRAIN_AUTH_STATE_PATH
 BRAIN_AUTH_USERS_FILE
-BRAIN_AUTH_PASSWORD_FILE
 BRAIN_AUTH_SUPERUSER_IDS
-BRAIN_AGENT_MEMORY_SESSION_ID
+BRAIN_AUTH_PASSWORD_FILE
+
 BRAIN_BACKUP_DIR
 BRAIN_COGNEE_ENABLED
-BRAIN_COGNEE_AGENT_MEMORY_DATASET
 BRAIN_COGNEE_DATA_DATASET
 BRAIN_COGNEE_MEMORY_DATASET
 BRAIN_COGNEE_PALATE_DATASET
 BRAIN_COGNEE_RECALL_ENABLED
 BRAIN_COGNEE_RECALL_TOP_K
 BRAIN_COGNEE_SOURCES_DATASET
+BRAIN_COGNEE_SYNC_ON_INGEST
+BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT
 BRAIN_TASTE_ENABLED
 BRAIN_TASTE_CANONICAL_STORE
 BRAIN_TASTE_LLM_MODEL
@@ -308,6 +309,7 @@ BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD
 BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD
 BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS
 BRAIN_TASTE_WEB_ENRICHMENT_ENABLED
+BRAIN_INGEST_BACKGROUND_AUTO_CHARS
 DATA_ROOT_DIRECTORY
 DB_HOST
 DB_NAME
@@ -345,7 +347,7 @@ BRAIN_APP_WRITE_RATE_LIMIT_COUNT
 BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 ```
 
-The renderer also reads additional environment variables in staging and prod, including the `BRAIN_COGNEE_*` family, `CONFIG_ENV`, `BRAIN_DATABASE_URL`, `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`, `BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown above.
+The renderer also reads additional environment variables in staging and prod, including the `BRAIN_COGNEE_*` family, `BRAIN_COGNEE_SYNC_ON_INGEST`, `BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT`, `BRAIN_INGEST_BACKGROUND_AUTO_CHARS`, `CONFIG_ENV`, `BRAIN_DATABASE_URL`, `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`, `BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_AUTH_SUPERUSER_IDS`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown above.
 
 ## Local Backup
 
@@ -355,4 +357,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under `local-s
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 492fdd813a8527d33c0f39b01f0aa84ed4e3725cd9d09c5ed2b195a675ac3c91 -->
+<!-- brain-doc-source-hash: 4e57c3380b709ce55cc9bef100293954c2dd3b4fe1aca2c237265b0ae440e8f5 -->

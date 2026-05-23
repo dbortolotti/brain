@@ -1,0 +1,43 @@
+flowchart TB
+  N01["N-01 Nightly scheduler<br/>runs scripts/nightly_maintenance.py"]
+  N02["N-02 Parse flags<br/>env, env-file,<br/>backup-dir, data-dir,<br/>skip-google-drive"]
+  N03["N-03 Build subprocess env<br/>copy os.environ and<br/>set ENV_FILE if provided"]
+  N04["N-04 Build backup command<br/>python backup_stores.py<br/>with backup options"]
+  N05["N-05 Run backup_stores.py<br/>as subprocess"]
+  N06["N-06 Load Settings<br/>backup root, data roots,<br/>runtime roots"]
+  N07["N-07 Create timestamped<br/>backup run directory<br/>and manifest"]
+  N08["N-08 Backup SQLite files<br/>with integrity checks"]
+  N09["N-09 Archive raw data roots<br/>as tar.gz"]
+  N10{"N-10 Vector provider<br/>is pgvector?"}
+  N11["N-11 Backup pgvector"]
+  N12["N-12 Backup LanceDB"]
+  N13["N-13 Backup secrets files"]
+  N14["N-14 Backup Neo4j<br/>dump, stop service if configured,<br/>or archive raw graph data"]
+  N15["N-15 Write manifest.json"]
+  N16{"N-16 Google Drive backup<br/>enabled and not skipped?"}
+  N17["N-17 Verify/upload with rclone<br/>update manifest"]
+  N18{"N-18 Backup command succeeded?"}
+  N19["N-19 Nightly complete<br/>return 0"]
+  NFAIL["N-20 Return backup exit code"]
+
+  N01 --> N02
+  N02 --> N03
+  N03 --> N04
+  N04 --> N05
+  N05 --> N06
+  N06 --> N07
+  N07 --> N08
+  N08 --> N09
+  N09 --> N10
+  N10 -- yes --> N11
+  N10 -- no --> N12
+  N11 --> N13
+  N12 --> N13
+  N13 --> N14
+  N14 --> N15
+  N15 --> N16
+  N16 -- yes --> N17
+  N16 -- no --> N18
+  N17 --> N18
+  N18 -- yes --> N19
+  N18 -- no --> NFAIL

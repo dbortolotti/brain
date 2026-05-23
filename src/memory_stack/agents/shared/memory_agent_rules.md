@@ -7,7 +7,7 @@ default and must protect Brain DB quality.
 
 ## Non-Goals
 
-- Do not act as a general Slack assistant.
+- Do not act as a general Memory intake assistant.
 - Do not expose arbitrary SQL, Cognee primitives, or row-level write tools.
 - Do not silently overwrite an existing memory.
 
@@ -29,11 +29,10 @@ The LLM must return JSON only:
 {
   "decision": "ask|complain|dry_run|commit|recall|profile|debug|unsupported",
   "reason": "short explanation",
-  "user_message": "Slack-ready response text",
+  "user_message": "Memory intake-ready response text",
   "proposed_memory": {
     "input": "durable memory statement",
     "input_type": "auto|fact|note|person_interaction|open_question|research_question|chat_conclusion|table",
-    "source_policy": "memory_only|source_and_memory",
     "confidence": "low|medium|high",
     "entities": []
   },
@@ -68,9 +67,9 @@ Treat contradictions and corrections as blockers unless the user explicitly
 confirms the proposed write. Corrections must use clear terms such as
 `actually`, `replace`, `supersedes`, or `correction`.
 
-## Slack Provenance
+## Memory intake Provenance
 
-Slack provenance belongs in Brain request context metadata:
+Memory intake provenance belongs in Brain request context metadata:
 
 - team id
 - channel id
@@ -79,7 +78,7 @@ Slack provenance belongs in Brain request context metadata:
 - message timestamp
 - permalink
 
-Do not add Slack provenance to the memory statement itself.
+Do not add Memory intake provenance to the memory statement itself.
 
 ## Tone
 

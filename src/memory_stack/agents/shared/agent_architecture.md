@@ -25,16 +25,16 @@ Brain memory agents should **not** be general assistants. They are narrow, speci
 
 ## 1. Architectural decision
 
-### 1.1 Slack bridge is separate from MCP
+### 1.1 Memory intake bridge is separate from MCP
 
-Do **not** implement Slack as an MCP client.
+Do **not** implement Memory intake as an MCP client.
 
 Use this structure:
 
 ```text
-Slack app
+Memory intake app
   ↓
-Slack intake agent / router
+Memory intake intake agent / router
   ↓
 Brain service layer
   ↓
@@ -51,7 +51,7 @@ Brain DB
 Cognee projection
 ```
 
-Slack and MCP should share the same core domain layer:
+Memory intake and MCP should share the same core domain layer:
 
 ```text
 BrainService
@@ -64,16 +64,16 @@ RecallAgent
 CogneeProjector
 ```
 
-Do not duplicate memory logic inside Slack handlers.
+Do not duplicate memory logic inside Memory intake handlers.
 
-### 1.2 Slack agent has an extra LLM layer
+### 1.2 Memory intake agent has an extra LLM layer
 
-The Slack bridge should include a dedicated LLM layer:
+The Memory intake bridge should include a dedicated LLM layer:
 
 ```text
-Slack message
+Memory intake message
   ↓
-Slack Intake Agent LLM
+Memory intake Intake Agent LLM
   ↓
 MemoryProposal
   ↓
@@ -101,7 +101,7 @@ Cognee = rebuildable projection
 
 ## 2. Core behaviour
 
-The Slack agent must support these outcomes:
+The Memory intake agent must support these outcomes:
 
 ```text
 COMMIT_SUCCESS
@@ -152,17 +152,17 @@ Add or adapt the following structure.
 
 ```text
 src/memory_stack/
-  slack/
+  intake/
     __init__.py
-    app.py                    # Slack Bolt entrypoint
+    app.py                    # Memory intake Bolt entrypoint
     router.py                 # intent routing
     intake_agent.py           # LLM-backed intake agent
     policy_loader.py          # loads rule/context files
-    formatter.py              # Slack Block Kit formatting
+    formatter.py              # Memory intake Block Kit formatting
     commands.py               # slash command handlers
     actions.py                # button/modal handlers
     admin_tools.py            # guarded inspection/debug tools
-    auth.py                   # Slack user allowlist/admin checks
+    auth.py                   # Memory intake user allowlist/admin checks
 
   rules/
     memory_policy.md          # human-readable policy for LLM context
@@ -171,9 +171,9 @@ src/memory_stack/
     tool_permissions.yaml     # normal/debug/admin tool permissions
 
   prompts/
-    slack_intake_system.md
-    slack_recall_system.md
-    slack_debug_system.md
+    memory_intake_system.md
+    memory_intake_recall_system.md
+    memory_intake_debug_system.md
 
   ingestion/
     proposal_validator.py     # deterministic validator
@@ -193,7 +193,7 @@ src/memory_stack/
     synthesizer.py
 ```
 
-The Slack package must call existing Brain service methods rather than writing directly to storage.
+The Memory intake package must call existing Brain service methods rather than writing directly to storage.
 
 ---
 
@@ -202,17 +202,6 @@ The Slack package must call existing Brain service methods rather than writing d
 Add or confirm the following environment variables.
 
 ```text
-BRAIN_SLACK_ENABLED=false
-
-SLACK_BOT_TOKEN=
-SLACK_APP_TOKEN=
-SLACK_SIGNING_SECRET=
-
-BRAIN_SLACK_ALLOWED_USER_IDS=
-BRAIN_SLACK_ADMIN_USER_IDS=
-
-BRAIN_SLACK_DEFAULT_MODE=strict
-
 BRAIN_LLM_ENABLED=false
 
 BRAIN_DEBUG_SQL_ENABLED=false
@@ -223,16 +212,16 @@ BRAIN_DEBUG_SQL_TIMEOUT_SECONDS=5
 Default behaviour:
 
 ```text
-Slack disabled by default.
+Memory intake disabled by default.
 LLM disabled in tests.
 Debug SQL disabled by default.
-Admin tools restricted to allowlisted Slack user IDs.
+Admin tools restricted to allowlisted Memory intake user IDs.
 Hard delete disabled unless explicitly confirmed.
 ```
 
 ---
 
-## 5. Slack vs MCP boundary
+## 5. Memory intake vs MCP boundary
 
 ### 5.1 MCP remains high-level
 
@@ -252,9 +241,9 @@ brain_forget
 
 Do not expose low-level database or Cognee operations through normal MCP tools.
 
-### 5.2 Slack gets extra debug/admin flows
+### 5.2 Memory intake gets extra debug/admin flows
 
-Slack should support diagnostic tools for verification, but these must be gated.
+Memory intake should support diagnostic tools for verification, but these must be gated.
 
 Normal users:
 
@@ -296,7 +285,7 @@ Do not expose dangerous operations by default.
 
 ---
 
-## 6. Slack commands
+## 6. Memory intake commands
 
 Implement these commands.
 
@@ -332,7 +321,7 @@ Behaviour:
 3. Check entities/conflicts.
 4. Auto-commit only if safe.
 5. Otherwise ask, repair, or reject with repair path.
-6. Always return a clear Slack receipt.
+6. Always return a clear Memory intake receipt.
 
 ### 6.2 `/brain source`
 
@@ -405,7 +394,7 @@ Must include buttons:
 
 ### 6.7 `/brain undo-last`
 
-Soft-deletes the latest ingestion run for the current Slack user/session.
+Soft-deletes the latest ingestion run for the current Memory intake user/session.
 
 Never hard delete.
 
@@ -450,11 +439,11 @@ Admin SQL must be SELECT-only, allowlisted, logged, time-limited, and row-limite
 
 ---
 
-## 7. Slack message routing
+## 7. Memory intake message routing
 
-Implement `slack/router.py`.
+Implement `intake/router.py`.
 
-The router classifies incoming Slack messages into intents:
+The router classifies incoming Memory intake messages into intents:
 
 ```text
 remember
@@ -475,7 +464,7 @@ Routing rules:
 ```text
 Explicit slash commands override LLM classification.
 
-Free-form DM messages may be classified by the Slack Intake Agent.
+Free-form DM messages may be classified by the Memory intake Intake Agent.
 
 Channel messages should only be handled if:
   - bot is mentioned
@@ -489,7 +478,7 @@ Do not allow arbitrary workspace users to write memories unless allowlisted.
 
 ## 8. MemoryProposal model
 
-Add a proposal layer before committing Slack ingestions.
+Add a proposal layer before committing Memory intake ingestions.
 
 ### 8.1 Database table
 
@@ -505,8 +494,8 @@ CREATE TABLE memory_proposals (
     prompt_version      TEXT NOT NULL,
     validation_json     JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_by          TEXT,
-    slack_channel_id    TEXT,
-    slack_message_ts    TEXT,
+    memory_intake_channel_id    TEXT,
+    memory_intake_message_ts    TEXT,
     committed_run_id    TEXT,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -541,7 +530,7 @@ class MemoryProposal(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 ```
 
-Every Slack ingestion must create a proposal, even if it auto-commits.
+Every Memory intake ingestion must create a proposal, even if it auto-commits.
 
 ---
 
@@ -618,7 +607,7 @@ Create this file.
 ```markdown
 # Brain Memory Policy
 
-You are Brain's strict Slack memory intake agent.
+You are Brain's strict Memory intake memory intake agent.
 
 Your purpose is to help Daniele store durable, high-quality personal memory.
 
@@ -720,12 +709,6 @@ reject_or_complain_when:
   - malformed_input
   - overly_broad_memory
 
-source_policy:
-  long_text_min_chars: 3000
-  store_long_text_as_source: true
-  extract_memories_from_sources: true
-  never_store_full_transcript_as_single_memory_card: true
-
 conflict_policy:
   default: append_only
   delete_on_conflict: false
@@ -811,16 +794,16 @@ tiers:
 
 ---
 
-## 11. Slack intake prompt
+## 11. Memory intake intake prompt
 
-Create `prompts/slack_intake_system.md`.
+Create `prompts/memory_intake_system.md`.
 
 ```markdown
-# Slack Intake Agent System Prompt
+# Memory intake Intake Agent System Prompt
 
-You are the Brain Slack Memory Intake Agent.
+You are the Brain Memory intake Memory Intake Agent.
 
-Your job is to convert Slack messages into high-quality Brain memory proposals.
+Your job is to convert Memory intake messages into high-quality Brain memory proposals.
 
 You are not a general assistant.
 You are not a note-taking trash can.
@@ -945,7 +928,7 @@ Input:
 /brain remember Nur and Sara are my twin daughters.
 ```
 
-Expected Slack response:
+Expected Memory intake response:
 
 ```text
 Stored 1 memory.
@@ -977,7 +960,7 @@ Input:
 /brain remember Sam from Goldman mentioned that he likes Bill Evans.
 ```
 
-Expected Slack response:
+Expected Memory intake response:
 
 ```text
 Stored 1 memory.
@@ -1164,11 +1147,11 @@ Default action should not store.
 
 ---
 
-## 14. Slack formatting requirements
+## 14. Memory intake formatting requirements
 
-Use Slack Block Kit style receipts.
+Use Memory intake Block Kit style receipts.
 
-Each response type should have a renderer in `slack/formatter.py`.
+Each response type should have a renderer in `intake/formatter.py`.
 
 Renderers:
 
@@ -1213,9 +1196,9 @@ For debug/admin responses, include:
 
 ---
 
-## 15. Slack actions and modals
+## 15. Memory intake actions and modals
 
-Implement `slack/actions.py`.
+Implement `intake/actions.py`.
 
 Required actions:
 
@@ -1312,7 +1295,7 @@ Reject new:
 
 ## 16. Debug and inspection tools
 
-Implement read-only diagnostic tools for Slack verification.
+Implement read-only diagnostic tools for Memory intake verification.
 
 These should be callable from `/brain inspect` and `/brain debug`.
 
@@ -1469,7 +1452,7 @@ If implemented at all, only allow:
 Requirements:
 
 ```text
-- admin Slack user only
+- admin Memory intake user only
 - explicit command only
 - never auto-called by LLM
 - SELECT only
@@ -1579,7 +1562,7 @@ do not invent memory cards
 
 ## 20. Auto-commit policy
 
-Default Slack mode is strict.
+Default Memory intake mode is strict.
 
 Auto-commit only when:
 
@@ -1613,19 +1596,19 @@ Sam left the firm.             # ambiguous if multiple Sams/firms
 
 ## 21. Test requirements
 
-Do not require real Slack, real LLM, real Cognee, or real network in unit tests.
+Do not require real Memory intake, real LLM, real Cognee, or real network in unit tests.
 
 Use:
 
 ```text
-FakeSlackClient
+FakeMemory intakeClient
 FakeLLMClient
 FakeCogneeAdapter
 temporary test database
 mocked source fetcher
 ```
 
-### 21.1 Slack ingestion tests
+### 21.1 Memory intake ingestion tests
 
 Add tests for:
 
@@ -1640,7 +1623,7 @@ high-confidence conflict → needs_user_choice
 no durable value → reject_with_repair_path
 ```
 
-### 21.2 Slack action tests
+### 21.2 Memory intake action tests
 
 Add tests for:
 
@@ -1696,25 +1679,25 @@ LLM proposes table with too many rows as memory cards → validator blocks
 
 ## 22. Implementation phases
 
-### Phase 1 — Add Slack skeleton
+### Phase 1 — Add Memory intake skeleton
 
 Tasks:
 
 ```text
-- Add slack/app.py
-- Add slack/router.py
-- Add slack/commands.py
-- Add slack/actions.py
-- Add slack/formatter.py
-- Add slack/auth.py
+- Add intake/app.py
+- Add intake/router.py
+- Add intake/commands.py
+- Add intake/actions.py
+- Add intake/formatter.py
+- Add intake/auth.py
 - Add config flags
-- Add fake Slack tests
+- Add fake Memory intake tests
 ```
 
 Acceptance:
 
 ```text
-- Slack disabled by default
+- Memory intake disabled by default
 - app can start when enabled
 - slash command routing works in tests
 - allowlist/admin checks work
@@ -1729,7 +1712,7 @@ Tasks:
 - Add rules/memory_policy.yaml
 - Add rules/examples.yaml
 - Add rules/tool_permissions.yaml
-- Add prompts/slack_intake_system.md
+- Add prompts/memory_intake_system.md
 - Add policy_loader.py
 ```
 
@@ -1756,17 +1739,17 @@ Tasks:
 Acceptance:
 
 ```text
-- every Slack ingestion creates proposal
+- every Memory intake ingestion creates proposal
 - proposal can be approved/rejected/committed
 - dry-run proposals do not write memory cards
 ```
 
-### Phase 4 — Add Slack intake agent
+### Phase 4 — Add Memory intake intake agent
 
 Tasks:
 
 ```text
-- Add slack/intake_agent.py
+- Add intake/intake_agent.py
 - Integrate FakeLLMClient for tests
 - Produce strict MemoryProposal/IngestionDecision JSON
 - Fall back to rule compiler if LLM disabled
@@ -1801,7 +1784,7 @@ Acceptance:
 - no durable value rejected with repair path
 ```
 
-### Phase 6 — Add Slack repair UX
+### Phase 6 — Add Memory intake repair UX
 
 Tasks:
 
@@ -1829,7 +1812,7 @@ Tasks:
 - /brain recall
 - /brain profile
 - /brain open
-- Slack formatting for recall/profile responses
+- Memory intake formatting for recall/profile responses
 ```
 
 Acceptance:
@@ -1907,7 +1890,7 @@ Acceptance:
 
 ## 23. Final acceptance criteria
 
-The Slack agent is complete when these flows work end-to-end.
+The Memory intake agent is complete when these flows work end-to-end.
 
 ### A. Clean memory success
 
@@ -2082,9 +2065,9 @@ Expected:
 Do not violate these.
 
 ```text
-1. Slack must not bypass BrainService.
+1. Memory intake must not bypass BrainService.
 
-2. Slack LLM must not directly write DB rows.
+2. Memory intake LLM must not directly write DB rows.
 
 3. Bad memory must not be committed just because the LLM produced it.
 
@@ -2092,7 +2075,7 @@ Do not violate these.
 
 5. Success must be explicitly confirmed.
 
-6. Hard delete must not be available in normal Slack ingestion.
+6. Hard delete must not be available in normal Memory intake ingestion.
 
 7. Debug/admin tools must be gated.
 
@@ -2107,7 +2090,7 @@ Do not violate these.
 
 ## 25. Summary
 
-Implement Slack as a specialised Brain Memory Agent.
+Implement Memory intake as a specialised Brain Memory Agent.
 
 It should be:
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 
 from memory_stack.ui_service import (
     frontend_dependencies_ready,
@@ -106,25 +105,3 @@ def test_prepare_frontend_skips_npm_install_when_dependencies_exist(monkeypatch,
     assert frontend_dependencies_ready(frontend)
     assert prepare_frontend(Settings()) == frontend
 
-
-def test_dashboard_login_asks_for_username_without_autosuggest() -> None:
-    html = Path("src/memory_stack/static/brain_app/index.html").read_text(encoding="utf-8")
-
-    assert 'id="loginForm"' in html
-    assert 'autocomplete="off"' in html
-    assert 'id="loginUserId"' in html
-    assert 'aria-label="Username"' in html
-    assert 'placeholder="username"' in html
-    assert 'autocomplete="username"' not in html
-
-
-def test_dashboard_layout_constrains_work_surface_width() -> None:
-    css = Path("src/memory_stack/static/brain_app/app.css").read_text(encoding="utf-8")
-
-    assert "--content-max: 1280px;" in css
-    assert "max-width: var(--content-max);" in css
-    assert "margin-inline: auto;" in css
-    assert ".content-head > div" in css
-    assert "overflow-wrap: anywhere;" in css
-    assert ".form-row > .field.inline" in css
-    assert "flex-basis: 100%;" in css

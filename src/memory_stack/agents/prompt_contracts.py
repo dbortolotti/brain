@@ -5,15 +5,6 @@ from pathlib import Path
 from memory_stack.agents.role_specs import markdown_section_lines, role_spec_lines
 
 
-SLACK_RUNTIME_ROLES = (
-    "intent_router",
-    "source_classifier",
-    "durability_filter",
-    "memory_kind_classifier",
-    "open_loop_detector",
-    "repair_option_generator",
-)
-
 MEMORY_COMPILER_RUNTIME_ROLES = (
     "source_classifier",
     "source_takeaway_extractor",
@@ -52,15 +43,15 @@ def agent_markdown_contract_lines(role: str) -> list[str]:
         [
             ("src/memory_stack/agents/shared/memory_agent_rules.md", "Mission"),
             ("src/memory_stack/agents/shared/memory_agent_rules.md", "Non-Goals"),
-            ("src/memory_stack/agents/shared/agent_architecture.md", "1.2 Slack agent has an extra LLM layer"),
+            ("src/memory_stack/agents/shared/agent_architecture.md", "1.2 Memory intake agent has an extra LLM layer"),
         ],
         max_lines_per_section=10,
     )
     if role == "intent_router":
         lines += agent_markdown_excerpt_lines(
             [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6. Slack commands"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "7. Slack message routing"),
+                ("src/memory_stack/agents/shared/agent_architecture.md", "6. Memory intake commands"),
+                ("src/memory_stack/agents/shared/agent_architecture.md", "7. Memory intake message routing"),
             ],
             max_lines_per_section=21,
         )

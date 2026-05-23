@@ -4,13 +4,9 @@ import json
 import re
 from typing import Any
 
-from memory_stack.brain_store import BrainStore
+from memory_stack.brain_store import BrainStore, content_hash
 from memory_stack.cognee_adapter import recall_text, run_async
 from memory_stack.cfg import Settings
-
-
-MEMORY_ID_RE = re.compile(r"\bmem_[A-Za-z0-9]+\b")
-SOURCE_ID_RE = re.compile(r"\bsrc_[A-Za-z0-9]+\b")
 
 
 class DefaultCogneeSearchAdapter:
@@ -43,37 +39,7 @@ def retrieve_memories(
     include_conflicts: bool = True,
     limit: int = 20,
 ) -> list[dict[str, Any]]:
-    db_results = store.search_memory(
-        query,
-        include_superseded=include_superseded,
-        include_conflicts=include_conflicts,
-        limit=limit,
-    )
-    if len(db_results) >= limit:
-        return db_results
-
-    hydrated = retrieve_cognee_memories(
-        store,
-        query,
-        settings=settings,
-        cognee_searcher=cognee_searcher,
-        include_superseded=include_superseded,
-        include_conflicts=include_conflicts,
-        limit=limit,
-    )
-    return _merge_memories(db_results, hydrated, limit=limit)
-
-
-def retrieve_cognee_memories(
-    store: BrainStore,
-    query: str,
-    *,
-    settings: Settings | None,
-    cognee_searcher: Any = None,
-    include_superseded: bool = False,
-    include_conflicts: bool = True,
-    limit: int = 20,
-) -> list[dict[str, Any]]:
+    del store, include_superseded, include_conflicts
     if settings is None:
         return []
     if not settings.brain_cognee_recall_enabled and cognee_searcher is None:
@@ -88,89 +54,97 @@ def retrieve_cognee_memories(
         )
     except Exception:
         return []
+    return raw_memories_from_cognee_result(result, limit=limit)
 
-    memory_ids, _source_ids = extract_brain_ids_from_cognee_result(result)
+
+def cognee_payloads_from_result(result: Any) -> list[dict[str, Any]]:
+    payloads: list[dict[str, Any]] = []
+    _collect_cognee_payloads(result, payloads)
+    return payloads
+
+
+def raw_memories_from_cognee_result(result: Any, *, limit: int = 20) -> list[dict[str, Any]]:
     memories: list[dict[str, Any]] = []
-    for memory_id in memory_ids:
-        memory = store.get_memory(memory_id)
-        if memory is None:
+    seen: set[str] = set()
+    for text in _iter_raw_text_chunks(result):
+        normalized = _normalize_raw_text(text)
+        if not normalized or normalized in seen:
             continue
-        if not _visible_memory(
-            memory,
-            include_superseded=include_superseded,
-            include_conflicts=include_conflicts,
-        ):
-            continue
-        memories.append(memory)
+        seen.add(normalized)
+        memories.append(
+            {
+                "id": f"cognee_raw_{content_hash(normalized)[:16]}",
+                "kind": "cognee_raw",
+                "statement": normalized,
+                "status": "current",
+                "confidence": "medium",
+                "metadata_json": {"source": "cognee_raw_result"},
+            }
+        )
         if len(memories) >= limit:
             break
     return memories
 
 
-def retrieve_open_loops(
-    store: BrainStore,
-    *,
-    topic: str | None = None,
-    status: str = "open",
-    limit: int = 20,
-) -> list[dict[str, Any]]:
-    return store.list_open_loops(topic=topic, status=status, limit=limit)
+def _collect_cognee_payloads(value: Any, payloads: list[dict[str, Any]]) -> None:
+    if value is None:
+        return
+    if isinstance(value, dict):
+        if isinstance(value.get("datapoint_type"), str):
+            payloads.append(value)
+        for key in ("text", "content", "chunk_text", "payload", "data", "document", "result"):
+            if key in value:
+                _collect_cognee_payloads(value[key], payloads)
+        return
+    if isinstance(value, list | tuple):
+        for item in value:
+            _collect_cognee_payloads(item, payloads)
+        return
+    if isinstance(value, str):
+        parsed = _parse_json_string(value)
+        if parsed is not None:
+            _collect_cognee_payloads(parsed, payloads)
 
 
-def extract_brain_ids_from_cognee_result(result: Any) -> tuple[list[str], list[str]]:
-    text = _result_text(result)
-    return (_unique(MEMORY_ID_RE.findall(text)), _unique(SOURCE_ID_RE.findall(text)))
+def _iter_raw_text_chunks(value: Any) -> list[str]:
+    chunks: list[str] = []
+    _collect_raw_text_chunks(value, chunks)
+    return chunks
 
 
-def _result_text(result: Any) -> str:
-    if isinstance(result, str):
-        return result
+def _collect_raw_text_chunks(value: Any, chunks: list[str]) -> None:
+    if value is None:
+        return
+    if isinstance(value, str):
+        chunks.append(value)
+        return
+    if isinstance(value, list | tuple):
+        for item in value:
+            _collect_raw_text_chunks(item, chunks)
+        return
+    if isinstance(value, dict):
+        if isinstance(value.get("datapoint_type"), str):
+            return
+        for key in ("text", "content", "chunk_text", "payload", "data", "document", "result", "answer"):
+            if key in value:
+                _collect_raw_text_chunks(value[key], chunks)
+
+
+def _normalize_raw_text(text: str) -> str:
+    normalized = re.sub(r"\s+", " ", text).strip()
+    if not normalized:
+        return ""
+    parsed = _parse_json_string(normalized)
+    if parsed is not None:
+        return json.dumps(parsed, ensure_ascii=True, sort_keys=True, default=str)
+    return normalized
+
+
+def _parse_json_string(value: str) -> Any | None:
+    text = value.strip()
+    if not text:
+        return None
     try:
-        return json.dumps(result, ensure_ascii=True, sort_keys=True, default=str)
-    except TypeError:
-        return str(result)
-
-
-def _merge_memories(
-    primary: list[dict[str, Any]],
-    secondary: list[dict[str, Any]],
-    *,
-    limit: int,
-) -> list[dict[str, Any]]:
-    seen: set[str] = set()
-    merged: list[dict[str, Any]] = []
-    for memory in [*primary, *secondary]:
-        if memory["id"] in seen:
-            continue
-        seen.add(memory["id"])
-        merged.append(memory)
-        if len(merged) >= limit:
-            break
-    return merged
-
-
-def _visible_memory(
-    memory: dict[str, Any],
-    *,
-    include_superseded: bool,
-    include_conflicts: bool,
-) -> bool:
-    status = memory["status"]
-    if status == "current":
-        return True
-    if status == "conflicted":
-        return include_conflicts
-    if status == "superseded":
-        return include_superseded
-    return False
-
-
-def _unique(values: list[str]) -> list[str]:
-    seen: set[str] = set()
-    result: list[str] = []
-    for value in values:
-        if value in seen:
-            continue
-        seen.add(value)
-        result.append(value)
-    return result
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return None

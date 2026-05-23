@@ -33,7 +33,7 @@ def test_docs_manifest_tracks_user_and_operator_docs() -> None:
     paths = {entry["path"] for entry in manifest["docs"]}
 
     assert "docs/USER_GUIDE.md" in paths
-    assert "USER_MANUAL.md" in paths
+    assert "docs/AGENT_TOOL_GUIDE.md" in paths
     assert "docs/API_SETUP_GUIDE.md" in paths
     assert "docs/production-secrets.md" in paths
 

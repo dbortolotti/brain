@@ -1960,7 +1960,7 @@ def categorized_recommendations(summaries: list[Summary | dict[str, Any]]) -> di
     mandatory = {
         role: model
         for role, model in all_recommendations.items()
-        if role in {"router", "slack_intake", "memory_compiler", "conflict_classifier", "recall_synthesizer", "embeddings"}
+        if role in {"router", "memory_intake", "memory_compiler", "conflict_classifier", "recall_synthesizer", "embeddings"}
     }
     return {"all": all_recommendations, "mandatory": mandatory}
 
@@ -2022,7 +2022,7 @@ def mandatory_role_rows(
         if summary.eligible:
             by_role[summary.role].append(summary.model)
     rows: list[str] = []
-    for role in sorted({"router", "slack_intake", "memory_compiler", "conflict_classifier", "recall_synthesizer", "embeddings"}):
+    for role in sorted({"router", "memory_intake", "memory_compiler", "conflict_classifier", "recall_synthesizer", "embeddings"}):
         models = ", ".join(f"`{model}`" for model in sorted(by_role.get(role, []))) or "none"
         status = "OK" if by_role.get(role) else "MISSING"
         rows.append(f"| `{role}` | yes | {models} | {status} |")

@@ -14,7 +14,6 @@ DEFAULT_MCP_PORT="18000"
 DEFAULT_UI_PROXY_PORT="18002"
 DEFAULT_UI_FRONTEND_PORT="13000"
 DEFAULT_UI_BACKEND_PORT="18001"
-DEFAULT_SLACK_AGENT_PORT="18003"
 DEFAULT_DB_PORT="15432"
 DEFAULT_NEO4J_HTTP_PORT="17474"
 DEFAULT_NEO4J_BOLT_PORT="17687"
@@ -26,7 +25,6 @@ if [[ "$DEPLOY_ENV" == "qa" ]]; then
   DEFAULT_UI_PROXY_PORT="18202"
   DEFAULT_UI_FRONTEND_PORT="13200"
   DEFAULT_UI_BACKEND_PORT="18201"
-  DEFAULT_SLACK_AGENT_PORT="18203"
   DEFAULT_DB_PORT="17432"
   DEFAULT_NEO4J_HTTP_PORT="19474"
   DEFAULT_NEO4J_BOLT_PORT="19687"
@@ -39,7 +37,6 @@ if [[ "$DEPLOY_ENV" == "staging" ]]; then
   DEFAULT_UI_PROXY_PORT="18102"
   DEFAULT_UI_FRONTEND_PORT="13100"
   DEFAULT_UI_BACKEND_PORT="18101"
-  DEFAULT_SLACK_AGENT_PORT="18103"
   DEFAULT_DB_PORT="16432"
   DEFAULT_NEO4J_HTTP_PORT="18474"
   DEFAULT_NEO4J_BOLT_PORT="18687"
@@ -48,12 +45,10 @@ if [[ "$DEPLOY_ENV" == "staging" ]]; then
 fi
 LABEL="${BRAIN_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.mcp}"
 UI_LABEL="${BRAIN_UI_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.ui}"
-SLACK_LABEL="${BRAIN_SLACK_AGENT_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.slack-agent}"
 DOCKER_RUNTIME_LABEL="${BRAIN_DOCKER_RUNTIME_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.docker-runtime}"
 DATABASES_LABEL="${BRAIN_DATABASES_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.databases}"
 MAINTENANCE_LABEL="${BRAIN_MAINTENANCE_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.maintenance}"
 LOG_ROTATION_LABEL="${BRAIN_LOG_ROTATION_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.log-rotation}"
-LEGACY_AGENT_MEMORY_LABEL="${BRAIN_AGENT_MEMORY_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.agent-memory}"
 LEGACY_BACKUP_LABEL="${BRAIN_BACKUP_LAUNCHD_LABEL:-com.brain.$ENV_SUFFIX.backup}"
 PROD_ROOT="${BRAIN_PROD_ROOT:-$DEFAULT_ROOT}"
 BRAIN_SERVICE_USER="${BRAIN_SERVICE_USER:-$DEFAULT_SERVICE_USER}"
@@ -69,7 +64,6 @@ BRAIN_MCP_PORT="${BRAIN_MCP_PORT:-$DEFAULT_MCP_PORT}"
 BRAIN_UI_PROXY_PORT="${BRAIN_UI_PROXY_PORT:-$DEFAULT_UI_PROXY_PORT}"
 BRAIN_UI_FRONTEND_PORT="${BRAIN_UI_FRONTEND_PORT:-$DEFAULT_UI_FRONTEND_PORT}"
 BRAIN_UI_BACKEND_PORT="${BRAIN_UI_BACKEND_PORT:-$DEFAULT_UI_BACKEND_PORT}"
-BRAIN_SLACK_AGENT_PORT="${BRAIN_SLACK_AGENT_PORT:-$DEFAULT_SLACK_AGENT_PORT}"
 DB_PORT="${DB_PORT:-$DEFAULT_DB_PORT}"
 VECTOR_DB_PORT="${VECTOR_DB_PORT:-$DB_PORT}"
 BRAIN_NEO4J_HTTP_PORT="${BRAIN_NEO4J_HTTP_PORT:-$DEFAULT_NEO4J_HTTP_PORT}"
@@ -128,8 +122,6 @@ PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.mcp.plist.template"
 PLIST_DST="/Library/LaunchDaemons/$LABEL.plist"
 UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
 UI_PLIST_DST="/Library/LaunchDaemons/$UI_LABEL.plist"
-SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template"
-SLACK_PLIST_DST="/Library/LaunchDaemons/$SLACK_LABEL.plist"
 DOCKER_RUNTIME_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.docker-runtime.plist.template"
 DOCKER_RUNTIME_PLIST_DST="/Library/LaunchDaemons/$DOCKER_RUNTIME_LABEL.plist"
 DATABASES_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.databases.plist.template"
@@ -138,7 +130,6 @@ MAINTENANCE_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plis
 MAINTENANCE_PLIST_DST="/Library/LaunchDaemons/$MAINTENANCE_LABEL.plist"
 LOG_ROTATION_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template"
 LOG_ROTATION_PLIST_DST="/Library/LaunchDaemons/$LOG_ROTATION_LABEL.plist"
-LEGACY_AGENT_MEMORY_PLIST_DST="/Library/LaunchDaemons/$LEGACY_AGENT_MEMORY_LABEL.plist"
 LEGACY_BACKUP_PLIST_DST="/Library/LaunchDaemons/$LEGACY_BACKUP_LABEL.plist"
 NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
 NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
@@ -758,12 +749,10 @@ retire_legacy_launch_agents() {
   labels=(
     "$LABEL"
     "$UI_LABEL"
-    "$SLACK_LABEL"
     "$DOCKER_RUNTIME_LABEL"
     "$DATABASES_LABEL"
     "$MAINTENANCE_LABEL"
     "$LOG_ROTATION_LABEL"
-    "$LEGACY_AGENT_MEMORY_LABEL"
     "$LEGACY_BACKUP_LABEL"
   )
 
@@ -813,7 +802,7 @@ render_plist() {
   local dst="$2"
   python3 - "$src" "$dst" "$DEPLOY_ENV" "$PROD_ROOT" "$BRAIN_PUBLIC_BASE_URL" \
     "$BRAIN_MCP_PORT" "$BRAIN_UI_PROXY_PORT" "$BRAIN_UI_FRONTEND_PORT" \
-    "$BRAIN_UI_BACKEND_PORT" "$BRAIN_SLACK_AGENT_PORT" "$BRAIN_SERVICE_USER" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" <<'PY'
+    "$BRAIN_UI_BACKEND_PORT" "$BRAIN_SERVICE_USER" "$LAUNCHD_LOG_DIR" "$LOCAL_SUPPORT_DIR" <<'PY'
 from pathlib import Path
 import sys
 
@@ -827,7 +816,6 @@ import sys
     ui_proxy_port,
     ui_frontend_port,
     ui_backend_port,
-    slack_agent_port,
     service_user,
     launchd_log_dir,
     local_support_dir,
@@ -841,7 +829,6 @@ replacements = {
     "18002": ui_proxy_port,
     "13000": ui_frontend_port,
     "18001": ui_backend_port,
-    "18003": slack_agent_port,
     "brain-prod": f"brain-{deploy_env}",
     "oric_prod": service_user,
     "/Users/oric/Library/Logs": launchd_log_dir,
@@ -853,7 +840,6 @@ if deploy_env != "prod":
     replacements.update(
         {
             "brain-ui.": f"brain-{deploy_env}-ui.",
-            "brain-slack-agent.": f"brain-{deploy_env}-slack-agent.",
             "brain-docker-runtime.": f"brain-{deploy_env}-docker-runtime.",
             "brain-databases.": f"brain-{deploy_env}-databases.",
             "brain-maintenance.": f"brain-{deploy_env}-maintenance.",
@@ -935,16 +921,12 @@ BRAIN_MCP_HOST=127.0.0.1
 BRAIN_MCP_PORT=$BRAIN_MCP_PORT
 BRAIN_MCP_PATH=/mcp
 BRAIN_ADMIN_MCP_PATH=/admin/mcp
-BRAIN_APP_MCP_PATH=/app/mcp
 BRAIN_PUBLIC_BASE_URL=$BRAIN_PUBLIC_BASE_URL
 BRAIN_PUBLIC_MCP_PATH=/mcp
 BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp
-BRAIN_PUBLIC_APP_MCP_PATH=/mcp
-BRAIN_OPENAI_APPS_CHALLENGE_TOKEN=
 BRAIN_BACKUP_DIR=$BACKUP_DIR
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=$BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED
 BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
-BRAIN_AUTH_ENABLED=true
 BRAIN_AUTH_PASSWORD_FILE=$SECRETS_DIR/brain-auth-password
 BRAIN_AUTH_USERS_FILE=$SECRETS_DIR/brain-auth-users.json
 BRAIN_AUTH_SUPERUSER_IDS=default
@@ -979,17 +961,6 @@ BRAIN_UI_BACKEND_PORT=$BRAIN_UI_BACKEND_PORT
 BRAIN_PUBLIC_UI_PATH=/cognee
 BRAIN_PUBLIC_UI_API_PATH=/cognee-api
 BRAIN_UI_SESSION_SECONDS=43200
-BRAIN_SLACK_AGENT_ENABLED=true
-BRAIN_SLACK_AGENT_HOST=127.0.0.1
-BRAIN_SLACK_AGENT_PORT=$BRAIN_SLACK_AGENT_PORT
-BRAIN_SLACK_SIGNING_SECRET=
-BRAIN_SLACK_BOT_TOKEN=
-BRAIN_SLACK_ALLOWED_TEAM_IDS=
-BRAIN_SLACK_ALLOWED_CHANNEL_IDS=
-BRAIN_SLACK_ALLOWED_USER_IDS=
-BRAIN_SLACK_ADMIN_USER_IDS=
-BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false
-BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session
 BRAIN_RELEASE_ENV=$DEPLOY_ENV
 BRAIN_RELEASE_SHA=$SHA
 BRAIN_RELEASE_VERSION=$FALLBACK_RELEASE_VERSION
@@ -1013,7 +984,6 @@ if [[ "$RELEASE_SHA" != "$SHA" ]]; then
   exit 2
 fi
 
-ensure_env_var "BRAIN_AUTH_ENABLED" "true"
 set_env_var "BRAIN_RELEASE_ENV" "$RELEASE_ENV"
 set_env_var "BRAIN_RELEASE_SHA" "$RELEASE_SHA"
 set_env_var "BRAIN_RELEASE_VERSION" "$RELEASE_VERSION"
@@ -1030,6 +1000,15 @@ ensure_env_var "BRAIN_AUTH_SCOPES" '"brain.memory.read brain.memory.write"'
 ensure_env_var "BRAIN_AUTH_REQUIRE_PKCE" "true"
 ensure_env_var "BRAIN_AUTH_ACCESS_TOKEN_SECONDS" "3600"
 ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
+if [[ -z "$(read_env_var BRAIN_AUTH_TOKEN)" ]]; then
+  log "creating Brain service bearer token in $SECRETS_DIR/brain.env"
+  set_env_var "BRAIN_AUTH_TOKEN" "$(python3 - <<'PY'
+import secrets
+
+print(secrets.token_urlsafe(32))
+PY
+)"
+fi
 ensure_env_var "BRAIN_USER_ID" "default"
 ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
 set_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests/{date}.jsonl"
@@ -1043,12 +1022,9 @@ set_env_var "BRAIN_PROD_ROOT" "$PROD_ROOT"
 set_env_var "BRAIN_MCP_PORT" "$BRAIN_MCP_PORT"
 set_env_var "BRAIN_MCP_PATH" "/mcp"
 set_env_var "BRAIN_ADMIN_MCP_PATH" "/admin/mcp"
-set_env_var "BRAIN_APP_MCP_PATH" "/app/mcp"
 set_env_var "BRAIN_PUBLIC_BASE_URL" "$BRAIN_PUBLIC_BASE_URL"
 set_env_var "BRAIN_PUBLIC_MCP_PATH" "/mcp"
 set_env_var "BRAIN_PUBLIC_ADMIN_MCP_PATH" "/admin/mcp"
-set_env_var "BRAIN_PUBLIC_APP_MCP_PATH" "/mcp"
-ensure_env_var "BRAIN_OPENAI_APPS_CHALLENGE_TOKEN" ""
 set_env_var "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED" "$BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED"
 set_env_var "GRAPH_DATABASE_URL" "bolt://127.0.0.1:$BRAIN_NEO4J_BOLT_PORT"
 set_env_var "VECTOR_DB_PROVIDER" "pgvector"
@@ -1092,18 +1068,6 @@ set_env_var "BRAIN_UI_BACKEND_PORT" "$BRAIN_UI_BACKEND_PORT"
 set_env_var "BRAIN_PUBLIC_UI_PATH" "/cognee"
 set_env_var "BRAIN_PUBLIC_UI_API_PATH" "/cognee-api"
 ensure_env_var "BRAIN_UI_SESSION_SECONDS" "43200"
-ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"
-ensure_env_var "BRAIN_SLACK_AGENT_HOST" "127.0.0.1"
-set_env_var "BRAIN_SLACK_AGENT_PORT" "$BRAIN_SLACK_AGENT_PORT"
-ensure_env_var "BRAIN_SLACK_SIGNING_SECRET" ""
-ensure_env_var "BRAIN_SLACK_BOT_TOKEN" ""
-ensure_env_var "BRAIN_SLACK_ALLOWED_TEAM_IDS" ""
-ensure_env_var "BRAIN_SLACK_ALLOWED_CHANNEL_IDS" ""
-ensure_env_var "BRAIN_SLACK_ALLOWED_USER_IDS" ""
-ensure_env_var "BRAIN_SLACK_ADMIN_USER_IDS" ""
-ensure_env_var "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE" "false"
-ensure_env_var "BRAIN_AGENT_MEMORY_SESSION_ID" "portable_agent_session"
-
 if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then
   log "creating Brain OAuth password at $SECRETS_DIR/brain-auth-password"
   umask 077
@@ -1262,8 +1226,6 @@ render_plist "$PLIST_SRC" "$PLIST_DST"
 plutil -lint "$PLIST_DST" >/dev/null
 render_plist "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
-render_plist "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
-plutil -lint "$SLACK_PLIST_DST" >/dev/null
 render_plist "$DOCKER_RUNTIME_PLIST_SRC" "$DOCKER_RUNTIME_PLIST_DST"
 plutil -lint "$DOCKER_RUNTIME_PLIST_DST" >/dev/null
 render_plist "$DATABASES_PLIST_SRC" "$DATABASES_PLIST_DST"
@@ -1284,9 +1246,9 @@ write_release_metadata "$SHARED_DIR/release.json"
 printf '%s\n' "$RELEASE_VERSION" >"$SHARED_DIR/current-version"
 ln -sfn "$LOCAL_VENV_DIR" "$LOCAL_CURRENT_VENV_LINK"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
-launchd_log_stems=(brain-$DEPLOY_ENV brain-$DEPLOY_ENV-ui brain-$DEPLOY_ENV-slack-agent brain-$DEPLOY_ENV-docker-runtime brain-$DEPLOY_ENV-databases brain-$DEPLOY_ENV-maintenance brain-$DEPLOY_ENV-log-rotation)
+launchd_log_stems=(brain-$DEPLOY_ENV brain-$DEPLOY_ENV-ui brain-$DEPLOY_ENV-docker-runtime brain-$DEPLOY_ENV-databases brain-$DEPLOY_ENV-maintenance brain-$DEPLOY_ENV-log-rotation)
 if [[ "$DEPLOY_ENV" == "prod" ]]; then
-  launchd_log_stems=(brain-prod brain-ui brain-slack-agent brain-docker-runtime brain-databases brain-maintenance brain-log-rotation)
+  launchd_log_stems=(brain-prod brain-ui brain-docker-runtime brain-databases brain-maintenance brain-log-rotation)
 fi
 for stem in "${launchd_log_stems[@]}"; do
   touch "$LAUNCHD_LOG_DIR/$stem.out.log" "$LAUNCHD_LOG_DIR/$stem.err.log"
@@ -1303,14 +1265,11 @@ if command -v launchctl >/dev/null 2>&1; then
   enable_launch_daemon "$LABEL" "$PLIST_DST"
   log "restarting launchd service $UI_LABEL"
   enable_launch_daemon "$UI_LABEL" "$UI_PLIST_DST"
-  log "restarting launchd service $SLACK_LABEL"
-  enable_launch_daemon "$SLACK_LABEL" "$SLACK_PLIST_DST"
   log "reloading launchd job $MAINTENANCE_LABEL"
   enable_launch_daemon "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"
   log "reloading launchd job $LOG_ROTATION_LABEL"
   enable_launch_daemon "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"
-  log "removing legacy launchd jobs $LEGACY_AGENT_MEMORY_LABEL and $LEGACY_BACKUP_LABEL"
-  disable_launch_daemon "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"
+  log "removing legacy launchd job $LEGACY_BACKUP_LABEL"
   disable_launch_daemon "$LEGACY_BACKUP_LABEL" "$LEGACY_BACKUP_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
@@ -1340,21 +1299,8 @@ for attempt in {1..120}; do
   sleep 1
 done
 
-log "waiting for local Slack agent health"
-for attempt in {1..30}; do
-  if curl -fsS "http://${BRAIN_SLACK_AGENT_HOST:-127.0.0.1}:${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" >/dev/null 2>&1; then
-    break
-  fi
-  if [[ "$attempt" == "30" ]]; then
-    echo "local Slack agent health did not become ready" >&2
-    exit 1
-  fi
-  sleep 1
-done
-
 log "running $DEPLOY_ENV verifier"
 run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/verify_mcp_production.py --skip-backups
 run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/verify_cognee_ui_production.py
-run_in_release_env "$LOCAL_VENV_DIR/bin/python" scripts/verify_slack_agent.py
 
 log "deployed $APP_NAME $RELEASE_VERSION ($SHA)"

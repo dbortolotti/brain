@@ -15,12 +15,12 @@ def load_nightly_maintenance():
     return module
 
 
-def test_nightly_maintenance_runs_backup_only_after_agent_memory_success(monkeypatch) -> None:
+def test_nightly_maintenance_runs_backup(monkeypatch) -> None:
     module = load_nightly_maintenance()
-    calls: list[list[str]] = []
+    calls: list[tuple[list[str], dict[str, str]]] = []
 
     def fake_run(command, *, env, check):
-        calls.append(command)
+        calls.append((command, env))
         return SimpleNamespace(returncode=0)
 
     monkeypatch.setattr(module.subprocess, "run", fake_run)
@@ -29,8 +29,6 @@ def test_nightly_maintenance_runs_backup_only_after_agent_memory_success(monkeyp
         "argv",
         [
             "nightly_maintenance.py",
-            "--env",
-            "staging",
             "--env-file",
             "/tmp/brain.env",
             "--skip-google-drive",
@@ -38,23 +36,24 @@ def test_nightly_maintenance_runs_backup_only_after_agent_memory_success(monkeyp
     )
 
     assert module.main() == 0
-    assert calls[0][1].endswith("brain_agent_memory.py")
-    assert calls[0][-2:] == ["--env-file", "/tmp/brain.env"]
-    assert calls[1][1].endswith("backup_stores.py")
-    assert calls[1][-1] == "--skip-google-drive"
+    assert len(calls) == 1
+    command, env = calls[0]
+    assert command[1].endswith("backup_stores.py")
+    assert command[-1] == "--skip-google-drive"
+    assert env["ENV_FILE"] == "/tmp/brain.env"
 
 
-def test_nightly_maintenance_skips_backup_after_agent_memory_failure(monkeypatch) -> None:
+def test_nightly_maintenance_returns_backup_failure(monkeypatch) -> None:
     module = load_nightly_maintenance()
-    calls: list[list[str]] = []
+    calls: list[tuple[list[str], dict[str, str]]] = []
 
     def fake_run(command, *, env, check):
-        calls.append(command)
+        calls.append((command, env))
         return SimpleNamespace(returncode=42)
 
     monkeypatch.setattr(module.subprocess, "run", fake_run)
-    monkeypatch.setattr(module.sys, "argv", ["nightly_maintenance.py", "--env", "prod"])
+    monkeypatch.setattr(module.sys, "argv", ["nightly_maintenance.py"])
 
     assert module.main() == 42
     assert len(calls) == 1
-    assert calls[0][1].endswith("brain_agent_memory.py")
+    assert calls[0][0][1].endswith("backup_stores.py")

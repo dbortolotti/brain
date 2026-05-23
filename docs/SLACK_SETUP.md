@@ -1,5 +1,9 @@
 # Slack Setup Guide
 
+> Legacy adapter note: Slack is no longer a supported Brain surface in the
+> Cognee-first cutover. Default configs disable Slack, and this document is kept
+> only for dormant adapter maintenance or removal work.
+
 Brain's Slack memory agent is a separate HTTP service from the main Brain/MCP surface. It verifies Slack request signatures and configured allowlists before handling memory operations. Slack writes use proposal rules and confirmation flows, and `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false` is the safer setting.
 
 ## Architecture
@@ -266,4 +270,4 @@ Slack URL verification fails.
 
 Confirm the Event Subscriptions request URL points to `/slack/events`, the public URL forwards to the Slack agent port, and the signing secret matches the Slack app.
 
-<!-- brain-doc-source-hash: 8725b67d62953513bf8ee18a75aeed69d506c220325c4b6aa9a60678a572c67b -->
+<!-- brain-doc-source-hash: 10fd1f09d89bcebd7c3c7ee49328ad428a64a5163db6ba8f209f7b6389f26efe -->

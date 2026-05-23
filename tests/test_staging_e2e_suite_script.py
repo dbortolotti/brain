@@ -32,7 +32,6 @@ def test_staging_e2e_script_primes_memory_sources_and_palate_organically() -> No
     assert "remember 2016 Cuvee Sasha in palate" in text
     assert "Mayfair Food Fayre Caesar salad wrap" in text
     assert "Kind of Blue" in text
-    assert "confirmed_by_user" in text
 
 
 def test_staging_e2e_script_uses_llm_judge_schema() -> None:

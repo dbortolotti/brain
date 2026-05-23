@@ -423,7 +423,6 @@ def build_role_e2e_fixtures(seed: E2EDatabaseSeed) -> tuple[ModelEvalFixture, ..
                 "input_class": "source",
                 "source_kind": "markdown",
                 "should_create_source": True,
-                "should_extract_memories": True,
                 "must_include": ["Brain", "Cognee"],
             },
         ),

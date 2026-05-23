@@ -1,12 +1,12 @@
 # Brain User Guide
 
-Brain is a personal memory, taste, and portable agent-memory system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, commitments, and, when your client exposes it, chat-session continuity through a dedicated agent-memory workflow.
+Brain is a personal memory, taste, and portable chat-continuity system. Use it to save durable facts, decisions, preferences, open questions, useful source material, standing profile context, taste signals, reminders of things you want to recall later, commitments, and, when your client exposes it, chat-session continuity through a dedicated chat-continuity workflow.
 
 Most users should interact with Brain through Slack, through an LLM client that has Brain tools enabled, or through the browser user dashboard. You do not need to think in database terms while using it: write clear memory requests, confirm them when asked, and use recall or review when you need the saved context back.
 
 Palate is Brain's taste layer. Use it for wine, restaurants, media, music, cigars, experiences, and other taste-related preferences.
 
-If your client exposes `brain_agent_memory`, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
+If your client exposes external chat-continuity workflow, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
 
 Practical model:
 
@@ -24,7 +24,7 @@ Use Brain and Palate for these day-to-day jobs:
 - Recall stored context: `what do we know about...`
 - Review or correct memory: `show recent writes`, `undo the last one`, or `actually, replace the old fact with...`
 - Save or rank taste-related preferences with Palate.
-- Preserve chat handovers with `brain_session` and your client's dedicated agent-memory workflow when it is available. If your client exposes `brain_agent_memory`, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
+- Preserve chat handovers with `brain_session` and your client's dedicated chat-continuity workflow when it is available. If your client exposes external chat-continuity workflow, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
 
 Slack is the strictest interface. It may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
@@ -94,18 +94,6 @@ Profile an entity:
 /brain profile Brain
 ```
 
-List open loops:
-
-```text
-/brain open-loops Brain
-```
-
-Fetch a specific memory if you have its id:
-
-```text
-/brain get-memory mem_...
-```
-
 Review recent writes:
 
 ```text
@@ -132,7 +120,7 @@ table
 ```
 
 Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
-For chat-session continuity and handovers, prefer the dedicated `brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
+For chat-session continuity and handovers, prefer the dedicated external chat-continuity workflow workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
 
 ## Using the User Dashboard
 
@@ -180,7 +168,6 @@ Useful auth and session endpoints:
 - `/.well-known/oauth-authorization-server`
 - `/.well-known/oauth-protected-resource`
 - `/.well-known/oauth-protected-resource/{resource_path:path}`
-- `/.well-known/openai-apps-challenge`
 - `/.well-known/openid-configuration`
 - `/authorize`
 - `/login`
@@ -198,15 +185,10 @@ Useful memory endpoints:
 - `/memory/ingest_source`
 - `/memory/recall`
 - `/memory/profile_entity`
-- `/memory/open_loops`
-- `/memory/{memory_id}`
 - `/memory/review_recent`
 - `/memory/undo_last`
 - `/memory/forget`
-- `/memory/resolve_conflict`
-- `/memory/sync_cognee`
-- `/memory/rebuild_cognee`
-- `/memory/merge_entities`
+- `/memory/{memory_id}` — fetch one specific memory by id
 
 Datasource endpoints also exist:
 
@@ -217,13 +199,6 @@ Datasource endpoints also exist:
 - `/datasources/{datasource}`
 - `/delete_datasource/{datasource}`
 
-Slack agent endpoints include:
-
-- `/slack/healthz`
-- `/slack/events`
-- `/slack/commands`
-- `/slack/interactions`
-
 Other common endpoints include `/healthz`, `/docs`, `/redoc`, `/openapi.json`, `/favicon.ico`, `/icon.png`, and `/apple-touch-icon.png`.
 
 MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated alias `/app/mcp`. The MCP catch-all route is `/{path:path}`.
@@ -232,13 +207,7 @@ MCP surfaces for clients include `/mcp`, `/admin/mcp`, and the legacy curated al
 
 When an LLM has Brain tools available, ask it to use Brain explicitly. Good prompts tell the LLM whether to save, recall, profile, review, or use Palate.
 
-Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset of tools. It does expose `brain_session`, `brain_remember`, `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_app_data_controls`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_list_open_loops`, `brain_get_memory`, `brain_review_recent`, `brain_undo_last`, `brain_agent_memory`, `brain_agent_memory_recall`, `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. It does not expose `brain_agent_memory_clear`.
-
-If you are using the ChatGPT app surface and want to inspect data controls or related dashboard state, use `brain_app_data_controls`.
-
-Internal or admin surfaces also expose tools such as `brain_app_open_review_panel`, `brain_profile_context_sync`, `brain_get_source`, `brain_resolve_conflict`, `brain_forget`, `brain_merge_entities`, `brain_sync_cognee`, `brain_rebuild_cognee`, `brain_agent_memory_clear`, `brain_palate_remember`, `brain_palate_log_decision`, `brain_palate_refresh_enrichment`, and `cognee_improve`.
-
-`brain_session` can resolve the active user's Brain profile and standing context. On internal or admin surfaces it also returns the user-scoped `session_id` for portable agent-memory calls; the ChatGPT app surface hides session ids.
+Tool availability varies by surface. The ChatGPT app surface exposes a smaller subset of tools than internal or admin surfaces. Internal or admin surfaces also expose profile-context, bias-context, maintenance, and full Palate tooling. `brain_session` can resolve the active user's Brain profile and standing context. On internal or admin surfaces it also returns the user-scoped `session_id` for portable chat-continuity calls; the ChatGPT app surface hides session ids.
 
 Save one durable memory:
 
@@ -271,7 +240,7 @@ Context: this came from the May architecture review.
 Preserve chat/session context for handover:
 
 ```text
-Use brain_session to get my user-scoped session id. If my client exposes an agent-memory workflow, use it to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
+Use brain_session to get my user-scoped session id. If my client exposes an chat-continuity workflow, use it to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
 ```
 
 Recall context:
@@ -304,11 +273,13 @@ Load profile context before answering:
 Load my preferences from Brain before answering.
 ```
 
+Internal or admin surfaces also expose tools such as `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_profile_context_sync`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_review_recent`, `brain_undo_last`, `brain_forget`, `brain_bias_context_remember`, `brain_bias_context_list`, `brain_bias_context_forget`, `cognee_improve`, `brain_palate_describe_item`, `brain_palate_remember`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_log_decision`, `brain_palate_confirm`, `brain_palate_cancel`, `brain_palate_correct_proposal`, and `brain_palate_refresh_enrichment`.
+
 ## Using Palate
 
 Palate is Brain's taste layer. It normalizes messy user input into structured items, enriches those items, stores taste signals, and ranks recommendations.
 
-The ChatGPT app surface exposes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. Internal or admin surfaces also expose `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
+Availability varies by surface. Palate tooling includes `brain_palate_describe_item`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_confirm`, `brain_palate_cancel`, and `brain_palate_correct_proposal`. Internal or admin surfaces also expose `brain_palate_remember`, `brain_palate_log_decision`, and `brain_palate_refresh_enrichment`.
 
 Palate is best for:
 
@@ -364,7 +335,7 @@ Do not save:
 - Temporary chatter: `that was funny.`
 - Guesses as facts: `Maybe Sam likes Bill Evans.`
 - Sensitive personal facts unless there is a clear reason and permission.
-- Chat-session handovers, conversation summaries, or agent workflow learnings; use the dedicated agent-memory workflow in clients that expose it, and keep those handovers separate from ordinary durable facts.
+- Chat-session handovers, conversation summaries, or agent workflow learnings; use the dedicated chat-continuity workflow in clients that expose it, and keep those handovers separate from ordinary durable facts.
 - Full raw dumps when only a concise memory is needed.
 
 ## Supported Memory Types
@@ -407,7 +378,7 @@ table
 ```
 
 Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
-For chat-session continuity and handovers, prefer the dedicated `brain_agent_memory` workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
+For chat-session continuity and handovers, prefer the dedicated external chat-continuity workflow workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
 
 ## How Memories Are Stored
 
@@ -551,12 +522,6 @@ Ask for entity profiles:
 /brain profile Cognee
 ```
 
-Ask for open loops:
-
-```text
-/brain open-loops model eval
-```
-
 Ask for evidence when using an LLM:
 
 ```text
@@ -588,8 +553,8 @@ When Brain detects a possible conflict, Slack may refuse to commit until you con
 If you need to remove or revert data, prefer the safest available action:
 
 - `undo-last` reverts the latest ingestion run.
-- `forget` is available on internal/admin surfaces for soft-delete, and with confirmation can hard-delete a Brain object.
-- `resolve_conflict` is for choosing how to handle contradictions or duplicates between memories.
+- `forget` is available on internal/admin surfaces for Cognee-backed memories and sources, using Cognee native forget with audit evidence.
+- deletion and conflict-resolution workflows should be used deliberately and only when you understand the effect on stored memory and audit evidence.
 
 ## Privacy And Safety
 
@@ -614,16 +579,15 @@ For safe review:
 
 - inspect Recent Cards and Open Loops first
 - click a memory card to inspect its contents and evidence
-- use `brain_get_memory` when you already have a memory id
+- use the browser Review tab when you want to inspect data without changing it
 - use `brain_review_recent` before assuming a recall output is correct
 - use `undo-last` for the latest write when you need to reverse a mistake
-- use the browser Review tab when you want to inspect data without changing it
 
 For destructive operations, be careful:
 
-- `brain_forget` and `delete`-style actions are not the same as a normal correction
-- `brain_undo_last` only targets the latest ingestion run
-- deletion, conflict resolution, and rebuild workflows should be used deliberately and only when you understand the effect on stored memory and projections
+- `brain_forget` and delete-style actions are not the same as a normal correction
+- `brain_undo_last` targets Cognee objects recorded in the latest undoable receipt
+- deletion workflows should be used deliberately and only when you understand the effect on stored memory and audit evidence
 
 ## Quick Examples
 
@@ -634,7 +598,7 @@ For destructive operations, be careful:
 /brain remember Alex said the contract renewal is due in June.
 /brain recall What do we know about Priya's working style?
 /brain profile Brain
-/brain open-loops OAuth
+/brain review
 /brain help
 ```
 
@@ -672,4 +636,4 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 873bdc3f1e6417d07aa8d75322a4ea7d8a1322527c0032d2fa609e2ccf4ead2e -->
+<!-- brain-doc-source-hash: 9866c590cde5c1f858954347eac081d96ebfda8cb0209d1128b7cb2881c5a602 -->

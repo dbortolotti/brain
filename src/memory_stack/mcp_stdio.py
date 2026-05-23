@@ -1,26 +1,26 @@
 from __future__ import annotations
 
+import os
+import secrets
 from typing import Any
 
+from memory_stack.brain_store import normalize_user_id
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
+from memory_stack.bias_context import (
+    forget_bias_context,
+    list_bias_context,
+    remember_bias_context,
+)
 from memory_stack.brain_service import (
     forget as brain_forget,
-    get_memory as brain_get_memory,
-    get_source as brain_get_source,
     ingest_source as brain_ingest_source,
-    list_open_loops as brain_list_open_loops,
-    merge_entities as brain_merge_entities,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
-    rebuild_cognee as brain_rebuild_cognee,
-    resolve_conflict as brain_resolve_conflict,
     review_recent as brain_review_recent,
-    sync_cognee as brain_sync_cognee,
     undo_last as brain_undo_last,
 )
-from memory_stack.cognee_adapter import delete_datasource as delete_cognee_datasource
-from memory_stack.cognee_adapter import improve_cognee, recall_text
+from memory_stack.cognee_adapter import improve_cognee
 from memory_stack.cfg import load_settings
 from memory_stack.domain_constants import COGNEE_IMPROVE_DATASETS
 from memory_stack.io import to_jsonable
@@ -30,7 +30,7 @@ from memory_stack.profile_context import (
     remember_profile_context,
     sync_profile_context,
 )
-from memory_stack.session import agent_memory_dataset_for_user, brain_session_payload
+from memory_stack.session import brain_session_payload
 from memory_stack.taste.models import (
     TasteDescribeRequest,
     TasteLogDecisionRequest,
@@ -41,13 +41,44 @@ from memory_stack.taste.models import (
 from memory_stack.taste.service import TasteService
 
 
+def _normalize_stdio_bearer_token(value: str | None) -> str:
+    token = (value or "").strip()
+    if token.lower().startswith("bearer "):
+        token = token[7:].strip()
+    return token
+
+
+def _validate_stdio_launch_auth(settings: Any) -> Any:
+    expected_token = _normalize_stdio_bearer_token(settings.brain_auth_token)
+    if not expected_token:
+        raise RuntimeError("BRAIN_AUTH_TOKEN is required for stdio MCP.")
+
+    supplied_token = _normalize_stdio_bearer_token(os.environ.get("BRAIN_STDIO_BEARER_TOKEN"))
+    if not supplied_token:
+        raise RuntimeError("BRAIN_STDIO_BEARER_TOKEN is required for stdio MCP.")
+    if not secrets.compare_digest(supplied_token, expected_token):
+        raise RuntimeError("BRAIN_STDIO_BEARER_TOKEN does not match BRAIN_AUTH_TOKEN.")
+
+    supplied_user_id = (os.environ.get("BRAIN_STDIO_USER_ID") or "").strip()
+    if not supplied_user_id:
+        raise RuntimeError("BRAIN_STDIO_USER_ID is required for stdio MCP.")
+    stdio_user_id = normalize_user_id(supplied_user_id)
+    configured_user_id = normalize_user_id(settings.brain_user_id)
+    if stdio_user_id != configured_user_id:
+        raise RuntimeError("BRAIN_STDIO_USER_ID must match BRAIN_USER_ID for stdio MCP.")
+
+    if stdio_user_id == settings.brain_user_id:
+        return settings
+    return settings.model_copy(update={"brain_user_id": stdio_user_id})
+
+
 def build_server():
     try:
         from mcp.server.fastmcp import FastMCP
     except Exception as exc:
         raise RuntimeError("Install MCP support with `uv sync --all-extras`.") from exc
 
-    settings = load_settings()
+    settings = _validate_stdio_launch_auth(load_settings())
     mcp = FastMCP("Brain")
 
     @mcp.tool(name="brain_session", structured_output=True)
@@ -84,11 +115,34 @@ def build_server():
         """Project profile context into the normal Brain memory/entity graph."""
         return sync_profile_context(settings)
 
+    @mcp.tool(name="brain_bias_context_remember", structured_output=True)
+    async def bias_context_remember(
+        statement: str,
+        scope: str = "response_style",
+        source: str | None = None,
+    ) -> dict[str, Any]:
+        """Store stable user bias/preference context returned by brain_session."""
+        return remember_bias_context(
+            settings,
+            statement=statement,
+            scope=scope,
+            source=source,
+        )
+
+    @mcp.tool(name="brain_bias_context_list", structured_output=True)
+    async def bias_context_list() -> dict[str, Any]:
+        """List stable user bias/preference context."""
+        return {"bias_context": list_bias_context(settings)}
+
+    @mcp.tool(name="brain_bias_context_forget", structured_output=True)
+    async def bias_context_forget(context_id: str) -> dict[str, Any]:
+        """Remove stable user bias/preference context by id."""
+        return forget_bias_context(settings, context_id=context_id)
+
     @mcp.tool(name="brain_remember", structured_output=True)
     async def remember(
         input: str,
         input_type: str = "auto",
-        source_policy: str = "auto",
         dry_run: bool = False,
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -96,7 +150,6 @@ def build_server():
         request = RememberRequest(
             input=input,
             input_type=input_type,
-            source_policy=source_policy,
             dry_run=dry_run,
             context=context or {},
         )
@@ -108,9 +161,8 @@ def build_server():
         source_kind: str = "auto",
         title: str | None = None,
         why_saved: str | None = None,
-        extract_memories: bool = True,
         dry_run: bool = False,
-        run_in_background: bool = False,
+        run_in_background: bool | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Store source material; Taste mentions are selective and never mass-written."""
@@ -119,20 +171,16 @@ def build_server():
             source_kind=source_kind,
             title=title,
             why_saved=why_saved,
-            extract_memories=extract_memories,
             dry_run=dry_run,
             run_in_background=run_in_background,
             metadata=metadata or {},
         )
         receipt = brain_ingest_source(request, settings).model_dump(mode="json")
+        status = receipt.get("cognee_sync_status", "pending")
         return {
-            "source_id": receipt.get("source", {}).get("source_id"),
-            "status": "queued" if receipt.get("cognee_sync_status") == "queued" else "processed",
-            "memory_cards_created": [
-                card["id"] for card in receipt.get("memory_cards", []) if card.get("created")
-            ],
+            "status": "queued" if status == "queued" else "dry_run" if dry_run else "processed",
             "summary": title or why_saved or source[:500],
-            "cognee_sync_status": receipt.get("cognee_sync_status", "pending"),
+            "cognee_sync_status": status,
             "ingestion": receipt,
         }
 
@@ -140,7 +188,6 @@ def build_server():
     async def recall(
         query: str,
         mode: str = "auto",
-        include_sources: bool = True,
         include_superseded: bool = False,
         include_conflicts: bool = True,
         limit: int = 20,
@@ -149,7 +196,6 @@ def build_server():
         request = RecallRequest(
             query=query,
             mode=mode,
-            include_sources=include_sources,
             include_superseded=include_superseded,
             include_conflicts=include_conflicts,
             limit=limit,
@@ -160,13 +206,12 @@ def build_server():
     async def profile_entity(
         name: str,
         entity_type: str = "auto",
-        include_sources: bool = True,
         include_superseded: bool = False,
         include_conflicts: bool = True,
         limit: int = 50,
     ) -> dict[str, Any]:
         """Build an entity-centric Brain profile."""
-        del include_sources, limit
+        del limit
         resolved_type = None if entity_type == "auto" else entity_type
         return brain_profile_entity(
             settings,
@@ -176,70 +221,6 @@ def build_server():
             include_conflicts=include_conflicts,
         ).model_dump(mode="json")
 
-    @mcp.tool(name="brain_list_open_loops", structured_output=True)
-    async def list_open_loops(
-        topic: str | None = None,
-        status: str = "open",
-        include_recently_reminded: bool = False,
-        limit: int = 20,
-    ) -> dict[str, Any]:
-        """List open questions, ideas, reminders, and parked research threads."""
-        del include_recently_reminded
-        return {
-            "open_loops": brain_list_open_loops(
-                settings,
-                topic=topic,
-                status=status,
-                limit=limit,
-            )
-        }
-
-    @mcp.tool(name="brain_get_memory", structured_output=True)
-    async def get_memory(
-        memory_id: str,
-        include_links: bool = True,
-        include_entities: bool = True,
-        include_source: bool = True,
-    ) -> dict[str, Any]:
-        """Read one Brain memory card by id."""
-        del include_links, include_entities, include_source
-        return {"memory": brain_get_memory(memory_id, settings)}
-
-    @mcp.tool(name="brain_get_source", structured_output=True)
-    async def get_source(
-        source_id: str,
-        include_text: bool = False,
-        max_chars: int = 10_000,
-    ) -> dict[str, Any]:
-        """Read Brain source metadata and optionally truncated source text."""
-        source = brain_get_source(
-            source_id,
-            settings,
-            include_text=include_text,
-            max_chars=max(1_000, min(100_000, max_chars)),
-        )
-        text = source.get("text") if source and "text" in source else None
-        source_without_text = (
-            {key: value for key, value in source.items() if key != "text"} if source else None
-        )
-        return {"source": source_without_text, "text": text}
-
-    @mcp.tool(name="brain_resolve_conflict", structured_output=True)
-    async def resolve_conflict(
-        conflict_memory_id: str,
-        target_memory_id: str,
-        action: str,
-        note: str | None = None,
-    ) -> dict[str, Any]:
-        """Resolve a contradiction or duplicate between two Brain memories."""
-        return brain_resolve_conflict(
-            settings,
-            conflict_memory_id=conflict_memory_id,
-            target_memory_id=target_memory_id,
-            action=action,
-            note=note,
-        )
-
     @mcp.tool(name="brain_forget", structured_output=True)
     async def forget(
         object_type: str,
@@ -248,7 +229,7 @@ def build_server():
         reason: str | None = None,
         confirm: bool = False,
     ) -> dict[str, Any]:
-        """Soft delete a Brain object. Hard delete requires confirm=true."""
+        """Forget a Cognee-backed Brain memory/source and write audit evidence."""
         if hard and not confirm:
             raise ValueError("brain_forget requires confirm=true for hard deletes.")
         payload = brain_forget(
@@ -260,17 +241,16 @@ def build_server():
         )
         return {
             **payload,
-            "mode": "hard" if hard else "soft",
-            "cognee_sync_status": "stale",
+            "mode": "hard" if hard else payload.get("mode", "forget"),
+            "cognee_sync_status": payload.get("cognee_sync_status", "stale"),
         }
 
     @mcp.tool(name="brain_review_recent", structured_output=True)
     async def review_recent(
         since: str | None = None,
         limit: int = 20,
-        include_sources: bool = True,
     ) -> dict[str, Any]:
-        """Review recent Brain ingestion runs, sources, memories, and conflict links."""
+        """Review recent Brain control receipts, confirmations, and context records."""
         from datetime import datetime
 
         parsed_since = None
@@ -280,7 +260,6 @@ def build_server():
             settings,
             since=parsed_since,
             limit=limit,
-            include_sources=include_sources,
         )
 
     @mcp.tool(name="brain_undo_last", structured_output=True)
@@ -288,41 +267,10 @@ def build_server():
         """Soft-delete objects created by one recent ingestion run."""
         return brain_undo_last(settings, ingestion_run_id=ingestion_run_id)
 
-    @mcp.tool(name="brain_sync_cognee", structured_output=True)
-    async def sync_cognee(
-        object_type: str = "all",
-        object_id: str | None = None,
-        dataset: str = "all",
-        force: bool = False,
-    ) -> dict[str, Any]:
-        """Manually sync pending Brain projections to Cognee."""
-        return brain_sync_cognee(
-            settings,
-            object_type=object_type,
-            object_id=object_id,
-            dataset=dataset,
-            force=force,
-        )
-
-    @mcp.tool(name="brain_rebuild_cognee", structured_output=True)
-    async def rebuild_cognee(
-        dataset: str = "all",
-        prune_first: bool = False,
-        confirm: bool = False,
-    ) -> dict[str, Any]:
-        """Mark Cognee projections stale so they can be rebuilt from Brain DB."""
-        return brain_rebuild_cognee(
-            settings,
-            dataset=dataset,
-            prune_first=prune_first,
-            confirm=confirm,
-        )
-
     @mcp.tool(name="cognee_improve", structured_output=True)
     async def cognee_improve(
         dataset: str = "memory",
         node_name: list[str] | None = None,
-        session_ids: list[str] | None = None,
         run_in_background: bool = False,
     ) -> dict[str, Any]:
         """Run Cognee native improve on a configured dataset."""
@@ -330,7 +278,6 @@ def build_server():
         result = await improve_cognee(
             dataset=resolved_dataset,
             node_name=node_name,
-            session_ids=session_ids,
             run_in_background=run_in_background,
             settings=settings,
         )
@@ -338,84 +285,9 @@ def build_server():
             "dataset": dataset,
             "resolved_dataset": resolved_dataset,
             "node_name": node_name or [],
-            "session_ids": session_ids or [],
             "run_in_background": run_in_background,
             "result": to_jsonable(result),
         }
-
-    @mcp.tool(name="brain_agent_memory", structured_output=True)
-    async def agent_memory(
-        session_id: str,
-        node_name: list[str] | None = None,
-        run_in_background: bool = False,
-    ) -> dict[str, Any]:
-        """Bridge one Cognee agent session into the user's dedicated agent-memory dataset."""
-        normalized_session_id = session_id.strip()
-        if not normalized_session_id:
-            raise ValueError("session_id must not be blank.")
-        result = await improve_cognee(
-            dataset=agent_memory_dataset_for_user(settings),
-            node_name=node_name,
-            session_ids=[normalized_session_id],
-            run_in_background=run_in_background,
-            settings=settings,
-        )
-        return {
-            "session_id": normalized_session_id,
-            "dataset": "agent_memory",
-            "resolved_dataset": agent_memory_dataset_for_user(settings),
-            "node_name": node_name or [],
-            "run_in_background": run_in_background,
-            "result": to_jsonable(result),
-        }
-
-    @mcp.tool(name="brain_agent_memory_recall", structured_output=True)
-    async def agent_memory_recall(query: str, top_k: int = 10) -> dict[str, Any]:
-        """Recall directly from the user's dedicated agent-memory dataset."""
-        result = await recall_text(
-            query=query,
-            dataset=agent_memory_dataset_for_user(settings),
-            search_type="GRAPH_COMPLETION",
-            top_k=max(1, min(50, int(top_k))),
-            settings=settings,
-        )
-        return {
-            "query": query,
-            "dataset": "agent_memory",
-            "resolved_dataset": agent_memory_dataset_for_user(settings),
-            "result": to_jsonable(result),
-        }
-
-    @mcp.tool(name="brain_agent_memory_clear", structured_output=True)
-    async def agent_memory_clear(confirm: bool = False) -> dict[str, Any]:
-        """Clear the user's dedicated agent-memory dataset after explicit confirmation."""
-        if not confirm:
-            raise ValueError("brain_agent_memory_clear requires confirm=true.")
-        result = await delete_cognee_datasource(
-            agent_memory_dataset_for_user(settings),
-            settings=settings,
-        )
-        return {
-            "dataset": "agent_memory",
-            "resolved_dataset": agent_memory_dataset_for_user(settings),
-            "result": to_jsonable(result),
-        }
-
-    @mcp.tool(name="brain_merge_entities", structured_output=True)
-    async def merge_entities(
-        primary_entity_id: str,
-        duplicate_entity_id: str,
-        reason: str | None = None,
-        confirm: bool = False,
-    ) -> dict[str, Any]:
-        """Merge a duplicate entity into a primary entity after confirmation."""
-        return brain_merge_entities(
-            settings,
-            primary_entity_id=primary_entity_id,
-            duplicate_entity_id=duplicate_entity_id,
-            reason=reason,
-            confirm=confirm,
-        )
 
     @mcp.tool(name="brain_palate_describe_item", structured_output=True)
     async def taste_describe_item(
@@ -586,10 +458,8 @@ def build_server():
 def _configured_cognee_dataset(dataset: str, settings: Any) -> str:
     mapping = {
         "memory": settings.brain_cognee_memory_dataset,
-        "sources": settings.brain_cognee_sources_dataset,
         "data": settings.brain_cognee_data_dataset,
         "palate": settings.brain_cognee_palate_dataset,
-        "agent_memory": agent_memory_dataset_for_user(settings),
     }
     if dataset not in mapping:
         raise ValueError(f"dataset must be one of: {', '.join(COGNEE_IMPROVE_DATASETS)}")

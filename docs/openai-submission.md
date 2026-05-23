@@ -72,7 +72,7 @@ Do not store passwords, API keys, OAuth tokens, or other secrets in Brain memori
 
 Brain exposes the curated public ChatGPT App MCP surface at `/mcp`. `/app/mcp` remains a legacy alias for older clients. In production, the public app and admin MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with `BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`.
 
-This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`. Selected Palate read and interaction tools, plus `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall`, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors and confirms the public app component resource (`ui://brain/review.v2.html`) remains text-only; when auth is enabled, the authenticated public app MCP surface is also checked and must remain text-only.
+This surface is curated for user-facing memory workflows and excludes admin tools, raw Cognee primitives, hard-delete operations, and external chat-continuity cleanup. Selected Palate read and interaction tools, plus `brain_ingest_source`, external chat-continuity workflow, and external chat-continuity recall, are included on the public app surface; internal admin-only Palate persistence tools stay on `/admin/mcp`. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. Production verification checks the ChatGPT App tool descriptors and confirms the public app component resource (`ui://brain/review.v2.html`) remains text-only; when auth is enabled, the authenticated public app MCP surface is also checked and must remain text-only.
 
 ChatGPT App responses are minimized on this surface. They strip internal identifiers such as user ids, session ids, OAuth client ids, request ids, raw metadata JSON, datasets, timestamps, tokens, and password fields.
 
@@ -91,8 +91,8 @@ The public ChatGPT App surface includes exactly these tools:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_app_data_controls`
-- `brain_agent_memory`
-- `brain_agent_memory_recall`
+- external chat-continuity workflow
+- external chat-continuity recall
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -112,7 +112,7 @@ Read-only tools advertise and require `brain.memory.read`:
 - `brain_review_recent`
 - `brain_profile_context_list`
 - `brain_app_data_controls`
-- `brain_agent_memory_recall`
+- external chat-continuity recall
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -124,7 +124,7 @@ Write or mutating tools advertise and require `brain.memory.write` as well:
 - `brain_profile_context_remember`
 - `brain_profile_context_forget`
 - `brain_undo_last`
-- `brain_agent_memory`
+- external chat-continuity workflow
 - `brain_palate_confirm`
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
@@ -141,8 +141,8 @@ Explain these points in the submission:
 
 - Brain is a private personal-memory service.
 - Users authenticate before any memory is read or written.
-- The public ChatGPT App surface is curated and excludes admin tools, raw Cognee primitives, hard-delete operations, and `brain_agent_memory_clear`.
-- Selected Palate read and interaction tools plus `brain_ingest_source`, `brain_agent_memory`, and `brain_agent_memory_recall` are exposed on the public app surface.
+- The public ChatGPT App surface is curated and excludes admin tools, raw Cognee primitives, hard-delete operations, and external chat-continuity cleanup.
+- Selected Palate read and interaction tools plus `brain_ingest_source`, external chat-continuity workflow, and external chat-continuity recall are exposed on the public app surface.
 - Memory writes preview first and require explicit user confirmation before storage or deletion.
 - Users can inspect recent writes, profile context, latest session data, open loops, and app write audit records.
 - Users can change their password and remove user-level profile context in the dashboard.
@@ -207,4 +207,4 @@ For a production release:
    - This verification checks DNS and TLS for the hostname; the public and admin MCP surfaces; the public dashboard, privacy, terms, and support pages; browser security headers; OAuth protected-resource and authorization metadata for the public app and admin surfaces; and the ChatGPT App tool descriptors. When auth is enabled, it also checks the authenticated public app MCP surface and confirms it remains text-only.
 5. Keep confirmation and normal backup checks enabled in the promotion path.
 
-<!-- brain-doc-source-hash: b7b1a71e8297afc4cfba4b4a8225b38ec42a71d86c5a62fcf403cbb8d45f3323 -->
+<!-- brain-doc-source-hash: 6906023f1f625f972c4b0b53f7792b22c9907273aa14d9ef6fad1ff93c58bf40 -->

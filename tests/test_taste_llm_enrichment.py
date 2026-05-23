@@ -7,6 +7,7 @@ from memory_stack.llm.fake import FakeLLMClient
 from memory_stack.taste.llm_enrichment import enrichment_schema_for_type
 from memory_stack.taste.models import TasteDescribeRequest, TasteRememberRequest
 from memory_stack.taste.schema import attribute_keys_for_type
+from memory_stack.taste.cognee_store import CogneePalateStore, InMemoryPalateCogneeAdapter
 from memory_stack.taste.service import TasteService
 
 
@@ -31,9 +32,11 @@ def test_taste_describe_uses_llm_enrichment_when_attributes_are_missing(tmp_path
             "metadata": {},
         }
     )
+    settings = brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False)
     service = TasteService(
-        brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False),
+        settings,
         llm_client=llm_client,
+        canonical_store=memory_palate_store(settings),
     )
 
     result = service.describe_item(
@@ -68,10 +71,8 @@ def test_client_attributes_skip_llm_enrichment(tmp_path) -> None:
             "metadata": {},
         }
     )
-    service = TasteService(
-        brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False),
-        llm_client=llm_client,
-    )
+    settings = brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False)
+    service = TasteService(settings, llm_client=llm_client, canonical_store=memory_palate_store(settings))
 
     result = service.remember(
         TasteRememberRequest(
@@ -106,10 +107,8 @@ def test_llm_music_metadata_is_normalized_and_stored(tmp_path) -> None:
             },
         }
     )
-    service = TasteService(
-        brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False),
-        llm_client=llm_client,
-    )
+    settings = brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False)
+    service = TasteService(settings, llm_client=llm_client, canonical_store=memory_palate_store(settings))
 
     result = service.remember(
         TasteRememberRequest(
@@ -165,10 +164,8 @@ def test_restaurant_llm_enrichment_uses_web_search_schema(tmp_path) -> None:
             },
         }
     )
-    service = TasteService(
-        brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False),
-        llm_client=llm_client,
-    )
+    settings = brain_test_settings(tmp_path, brain_taste_web_enrichment_enabled=False)
+    service = TasteService(settings, llm_client=llm_client, canonical_store=memory_palate_store(settings))
 
     result = service.describe_item(
         TasteDescribeRequest(
@@ -199,4 +196,11 @@ def brain_test_settings(tmp_path, **overrides: Any) -> Settings:
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
         brain_taste_omdb_api_key=None,
         **overrides,
+    )
+
+
+def memory_palate_store(settings: Settings) -> CogneePalateStore:
+    return CogneePalateStore(
+        settings,
+        adapter=InMemoryPalateCogneeAdapter(settings.brain_cognee_palate_dataset),
     )

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "usage: run_launchd_service.sh mcp|ui|slack-agent|maintenance|log-rotation" >&2
+  echo "usage: run_launchd_service.sh mcp|ui|maintenance|log-rotation" >&2
   exit 2
 fi
 
@@ -61,9 +61,6 @@ case "$SERVICE" in
     ;;
   ui)
     exec "$PYTHON" -m memory_stack.ui_service
-    ;;
-  slack-agent)
-    exec "$PYTHON" -m memory_stack.slack_agent_server
     ;;
   maintenance)
     exec "$PYTHON" "$LOCAL_SUPPORT_DIR/scripts/nightly_maintenance.py" \

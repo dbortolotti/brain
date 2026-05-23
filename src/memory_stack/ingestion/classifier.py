@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from memory_stack.brain_models import IngestSourceRequest, RememberRequest
+from memory_stack.brain_models import IngestSourceRequest
 from memory_stack.domain_constants import SOURCE_KINDS as SOURCE_KIND_VALUES
-from memory_stack.text_utils import string_or_none
 
 
 SOURCE_KINDS = set(SOURCE_KIND_VALUES)
@@ -13,45 +12,20 @@ SOURCE_KINDS = set(SOURCE_KIND_VALUES)
 class SourceClassification(BaseModel):
     source_kind: str
     should_create_source: bool
-    should_extract_memories: bool
     reason: str
     confidence: str = "medium"
 
 
-def classify_source_request(request: IngestSourceRequest | RememberRequest) -> SourceClassification:
-    if isinstance(request, IngestSourceRequest):
-        source_kind = source_kind_for_input_type(
-            input_type_for_source_kind(request.source_kind, request.source),
-            request.source_kind,
-        )
-        return SourceClassification(
-            source_kind=source_kind,
-            should_create_source=True,
-            should_extract_memories=request.extract_memories,
-            reason=f"Explicit source ingestion request classified as {source_kind}.",
-            confidence="high" if request.source_kind != "auto" else "medium",
-        )
-
-    text = request.input.strip()
-    input_type = request.input_type if request.input_type != "auto" else infer_input_type(text)
+def classify_source_request(request: IngestSourceRequest) -> SourceClassification:
     source_kind = source_kind_for_input_type(
-        input_type,
-        string_or_none(request.context.get("source_kind")),
+        input_type_for_source_kind(request.source_kind, request.source),
+        request.source_kind,
     )
-    should_create = request.source_policy in {"source_only", "source_and_memory"} or input_type in {
-        "article_url",
-        "article",
-        "transcript",
-        "markdown",
-        "source_text",
-        "table",
-    }
     return SourceClassification(
         source_kind=source_kind,
-        should_create_source=should_create,
-        should_extract_memories=request.source_policy != "source_only",
-        reason=f"Remember request classified as {input_type}.",
-        confidence="medium",
+        should_create_source=True,
+        reason=f"Explicit source ingestion request classified as {source_kind}.",
+        confidence="high" if request.source_kind != "auto" else "medium",
     )
 
 

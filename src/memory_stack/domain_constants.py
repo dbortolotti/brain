@@ -25,7 +25,7 @@ SOURCE_KINDS = (
     "other",
 )
 
-RECALL_MODES = ("auto", "evidence", "profile", "open_loops", "sources", "memories", "debug")
+RECALL_MODES = ("auto", "evidence", "profile", "memories", "debug")
 ENTITY_TYPES = ("auto", "person", "organization", "place", "concept", "project", "artifact")
 OPEN_LOOP_STATUSES = ("open", "parked", "in_progress", "closed", "archived", "any")
 CONFLICT_ACTIONS = (
@@ -36,20 +36,9 @@ CONFLICT_ACTIONS = (
     "reject_new",
     "mark_contradiction",
 )
-FORGET_OBJECT_TYPES = ("memory", "source", "entity", "relationship", "open_loop")
+FORGET_OBJECT_TYPES = ("cognee_remember", "entity")
 ADMIN_COGNEE_OBJECT_TYPES = ("memory", "source", "data", "all")
-ADMIN_COGNEE_DATASETS = ("memory", "sources", "data", "all")
-COGNEE_IMPROVE_DATASETS = ("memory", "sources", "data", "palate", "agent_memory")
+ADMIN_COGNEE_DATASETS = ("memory", "data", "all")
+COGNEE_IMPROVE_DATASETS = ("memory", "data", "palate")
 
-SLACK_PROPOSAL_INPUT_TYPES = (
-    "auto",
-    "fact",
-    "note",
-    "person_interaction",
-    "open_question",
-    "research_question",
-    "chat_conclusion",
-    "table",
-)
-SLACK_SOURCE_POLICIES = ("memory_only", "source_and_memory")
 CONFIDENCE_VALUES = ("low", "medium", "high")

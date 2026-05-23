@@ -36,7 +36,7 @@ BRAIN_NEO4J_DUMP_ENABLED=false
 BRAIN_NEO4J_STOP_FOR_DUMP=false
 ```
 
-Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend. The deployed auth registry file is configured as `BRAIN_AUTH_USERS_FILE` in prod and staging, but it is not part of the default backup inputs unless the script is explicitly extended to capture it.
+Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend. The deployed auth registry file is configured as `BRAIN_AUTH_USERS_FILE` in prod, staging, and QA, but it is not part of the default backup inputs unless the script is explicitly extended to capture it.
 
 Each backup run creates:
 
@@ -61,7 +61,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Local prod, staging, and QA deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`; QA renders as `com.brain.qa.maintenance` and runs as `oric`. The maintenance job runs `scripts/nightly_maintenance.py`, which runs `scripts/brain_agent_memory.py` first and then runs `scripts/backup_stores.py` only if the agent-memory cognify step exits successfully. A failed cognify run therefore skips backup instead of creating a snapshot from a partially refreshed projection.
+Local prod, staging, and QA deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`; QA renders as `com.brain.qa.maintenance` and runs as `oric`. The maintenance job runs `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`.
 
 Run the backup script directly with the configured environment:
 
@@ -367,4 +367,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 6af448aa00b910413402a082cbac52a7c786d0c737acd0de7b70116fe87b5dee -->
+<!-- brain-doc-source-hash: 383f801bcf4c21f3a1f00903adb86ccf2400cf2e3d418ab63ac0b6a0bca6d054 -->

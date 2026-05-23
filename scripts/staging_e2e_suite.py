@@ -181,9 +181,8 @@ def remember(client: StagingClient, text: str, *, input_type: str = "fact") -> d
         {
             "input": text,
             "input_type": input_type,
-            "confirmed_by_user": True,
             "dry_run": False,
-            "context": {"confirmed_by_user": True, "e2e_suite": "staging"},
+            "context": {"e2e_suite": "staging"},
         },
     )
     if not payload.get("memory_cards"):
@@ -210,7 +209,6 @@ records, so raw article text should stay separate from derived memory cards.
             "why_saved": "Staging E2E source-ingestion coverage.",
             "extract_memories": True,
             "dry_run": False,
-            "confirmed_by_user": True,
             "metadata": {"run_id": run_id, "suite": "staging_e2e"},
         },
     )
@@ -225,9 +223,8 @@ def remember_and_confirm_palate(client: StagingClient, text: str) -> dict[str, A
         {
             "input": text,
             "input_type": "auto",
-            "confirmed_by_user": True,
             "dry_run": False,
-            "context": {"confirmed_by_user": True, "e2e_suite": "staging_palate"},
+            "context": {"e2e_suite": "staging_palate"},
         },
     )
     taste = proposal.get("taste") or {}

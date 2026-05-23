@@ -149,14 +149,14 @@ def run_acceptance_evals(settings: Settings) -> dict[str, Any]:
         avoided["id"] not in {item["id"] for item in negative["ranked_results"]},
     )
 
-    decision_id = service.store.log_decision(
+    decision_id = service.canonical_store.log_decision(
         "Which wine should I choose?",
         {},
         [],
         [{"id": known["id"], "name": known["canonical_name"], "score": 1.0}],
         chosen_taste_item_id=known["id"],
     )
-    feedback = service.store.decision_feedback("Which wine should I choose tonight?", [known["id"]])
+    feedback = service.canonical_store.decision_feedback("Which wine should I choose tonight?", [known["id"]])
     record("decision_feedback", decision_id.startswith("tdec_") and feedback[known["id"]]["chosen"] == 1)
 
     projected = service.remember(
@@ -169,10 +169,13 @@ def run_acceptance_evals(settings: Settings) -> dict[str, Any]:
         )
     )
     projection = projected["brain_projection"]
-    record("brain_entity_projection", bool(projection["entity_id"]))
-    record("brain_memory_projection", bool(projection["memory_ids"]))
-    record("relationship_creation", bool(projection["relationship_ids"]))
-    record("open_loop_creation", bool(projection["open_loop_ids"]))
+    record("palate_control_entity_id", str(projection["entity_id"]).startswith("taste_entity_"))
+    record(
+        "palate_evidence_external_id",
+        projection["brain_db_semantic_rows_written"] is False and "memory_ids" not in projection,
+    )
+    record("no_legacy_relationship_projection", "relationship_ids" not in projection)
+    record("palate_open_loop_external_id", "open_loop_ids" not in projection)
 
     closed = service.remember(
         TasteRememberRequest(
@@ -183,12 +186,12 @@ def run_acceptance_evals(settings: Settings) -> dict[str, Any]:
             fetch_external_ratings=False,
         )
     )
-    record("open_loop_closure", bool(closed["brain_projection"]["closed_open_loop_ids"]))
+    record("no_legacy_open_loop_closure", "closed_open_loop_ids" not in closed["brain_projection"])
 
-    recall_receipt = recall(RecallRequest(query="Eval Noble Rot"), settings)
+    recall_receipt = recall(RecallRequest(query="Which restaurant should I choose?"), settings)
     record(
-        "generic_recall_taste_evidence",
-        bool((recall_receipt.taste or {}).get("linked_evidence")),
+        "taste_query_recall_evidence",
+        bool((recall_receipt.taste or {}).get("ranked_results")),
     )
 
     failed = service.remember(
@@ -208,7 +211,6 @@ def run_acceptance_evals(settings: Settings) -> dict[str, Any]:
         IngestSourceRequest(
             source=" ".join(f"I want to try Eval Restaurant {index}." for index in range(12)),
             source_kind="markdown",
-            extract_memories=True,
         ),
         settings,
     )

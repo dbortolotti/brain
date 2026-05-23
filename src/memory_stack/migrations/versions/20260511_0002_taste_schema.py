@@ -18,10 +18,6 @@ depends_on = None
 
 
 TASTE_TABLES = (
-    schema.taste_items,
-    schema.taste_attributes,
-    schema.taste_signals,
-    schema.taste_decisions,
     schema.taste_proposals,
 )
 

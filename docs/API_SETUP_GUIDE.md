@@ -1,19 +1,13 @@
 # API Setup Guide
 
-This guide is for developers and operators who want to connect Brain to an LLM
-client, MCP client, ChatGPT app client, or direct HTTP integration. For
-end-user memory examples, see the [User Guide](USER_GUIDE.md).
+This guide is for developers and operators who want to connect Brain to an LLM client, MCP client, ChatGPT app client, or direct HTTP integration. For end-user memory examples, see the [User Guide](USER_GUIDE.md).
 
 Brain exposes two API surfaces:
 
 - HTTP and JSON-RPC MCP over the FastAPI server.
 - MCP stdio for local desktop clients that launch Brain as a subprocess.
 
-Slack is separate and uses its own service and routes. See
-[Slack Setup](SLACK_SETUP.md) for Slack app configuration. The Slack agent
-serves routes such as `/slack/commands`, `/slack/events`,
-`/slack/interactions`, and `/slack/healthz` on the Slack agent port, not the
-Brain MCP server.
+Slack is not a supported Brain surface in the Cognee-first cutover. The legacy adapter remains disabled by default and should not be used for new integrations.
 
 ## Install
 
@@ -38,7 +32,6 @@ BRAIN_MCP_HOST=127.0.0.1
 BRAIN_MCP_PORT=8000
 BRAIN_MCP_PATH=/mcp
 BRAIN_ADMIN_MCP_PATH=/admin/mcp
-BRAIN_APP_MCP_PATH=/app/mcp
 BRAIN_AUTH_ENABLED=false
 ```
 
@@ -88,18 +81,11 @@ The full admin MCP endpoint is:
 GET|POST /admin/mcp
 ```
 
-The legacy ChatGPT App MCP alias is:
-
-```text
-GET|POST /app/mcp
-```
-
 The path is controlled by:
 
 ```env
 BRAIN_MCP_PATH=/mcp
 BRAIN_ADMIN_MCP_PATH=/admin/mcp
-BRAIN_APP_MCP_PATH=/app/mcp
 ```
 
 The health path is controlled separately by `BRAIN_HEALTH_PATH`.
@@ -109,24 +95,13 @@ The health path is controlled separately by `BRAIN_HEALTH_PATH`.
 Core memory endpoints:
 
 ```text
-GET  /
-GET  /user
-GET  /admin
-GET  /cognee
-GET  /admin/cognee
 POST /memory/remember
 POST /memory/ingest_source
 POST /memory/recall
 POST /memory/profile_entity
-GET  /memory/open_loops
-GET  /memory/{memory_id}
 POST /memory/forget
-POST /memory/resolve_conflict
 POST /memory/review_recent
 POST /memory/undo_last
-POST /memory/sync_cognee
-POST /memory/rebuild_cognee
-POST /memory/merge_entities
 ```
 
 OAuth, auth, and browser session endpoints:
@@ -148,21 +123,19 @@ GET  /api/session
 PUT  /account/password
 ```
 
-The dashboard and public app pages are served by the same Brain HTTP process at
-the configured public base URL:
+The public UI and dashboard are served by the same Brain HTTP process at the configured public base URL. The public UI paths are controlled by `BRAIN_PUBLIC_UI_PATH` and `BRAIN_PUBLIC_UI_API_PATH`.
+
+Public UI and docs pages:
 
 ```text
-GET /app
-GET /app-assets/{asset_name}
-GET /app/oauth/callback
-GET /privacy
-GET /terms
-GET /support
 GET /docs
 GET /docs/oauth2-redirect
 GET /redoc
 GET /openapi.json
 GET /healthz
+GET /privacy
+GET /terms
+GET /support
 GET /apple-touch-icon.png
 GET /favicon.ico
 GET /icon.png
@@ -212,21 +185,11 @@ POST   /delete_datasource
 DELETE /delete_datasource/{datasource}
 ```
 
-Raw SQL and arbitrary Cognee primitives are not exposed as public MCP tools.
-Brain does expose curated Cognee/admin operations such as sync, rebuild, merge
-entities, conflict resolution, forget, and configured improve.
+Raw SQL and arbitrary Cognee primitives are not exposed as public MCP tools. Brain does expose curated Cognee/admin operations such as forget, review_recent, undo_last, profile context sync, and configured improve.
 
 ## ChatGPT App Surface
 
-Use the public app MCP surface for ChatGPT App or any user-facing client that
-should not see admin tools. The internal `/admin/mcp` surface exposes
-`brain_app_open_review_panel`; the public app surface does not. In production,
-the public MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL` together with
-`BRAIN_PUBLIC_MCP_PATH`, `BRAIN_PUBLIC_APP_MCP_PATH`, and
-`BRAIN_PUBLIC_ADMIN_MCP_PATH`.
-
-`/app/mcp` remains a compatibility alias for older clients. The browser
-dashboard is served by the same HTTP process at the configured public base URL.
+Use the public app MCP surface for ChatGPT App or any user-facing client that should not see admin tools. The internal `/admin/mcp` surface exposes `brain_app_open_review_panel`; the public app surface does not. In production, the public MCP URLs are configured by `BRAIN_PUBLIC_BASE_URL`, `BRAIN_PUBLIC_MCP_PATH`, and `BRAIN_PUBLIC_ADMIN_MCP_PATH`. The public UI paths use `BRAIN_PUBLIC_UI_PATH` and `BRAIN_PUBLIC_UI_API_PATH`.
 
 The curated app tool set is:
 
@@ -239,8 +202,8 @@ brain_profile_entity
 brain_list_open_loops
 brain_get_memory
 brain_review_recent
-brain_agent_memory
-brain_agent_memory_recall
+external chat-continuity workflow
+external chat-continuity recall
 brain_undo_last
 brain_profile_context_list
 brain_profile_context_remember
@@ -254,17 +217,11 @@ brain_palate_cancel
 brain_palate_correct_proposal
 ```
 
-Read-only app tools require `brain.memory.read`; write tools require
-`brain.memory.write` as well and are rate-limited by
-`BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`.
-The app surface treats `brain_undo_last` and `brain_profile_context_forget` as
-destructive tools. The app surface includes selected Palate read/interaction
-tools; internal Palate persistence tools stay on `/admin/mcp`.
+Read-only app tools require `brain.memory.read`; write tools require `brain.memory.write` as well and are rate-limited by `BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`. The app surface treats `brain_undo_last` and `brain_profile_context_forget` as destructive tools. The app surface includes selected Palate read/interaction tools; internal Palate persistence tools stay on `/admin/mcp`.
 
 Public app support pages are available at `/privacy`, `/terms`, and `/support`.
 
-Production verification also checks ChatGPT App tool descriptor metadata and
-that the public app surface remains text-only.
+Production verification also checks ChatGPT App tool descriptor metadata and that the public app surface remains text-only.
 
 ## Authentication
 
@@ -274,8 +231,7 @@ Local development usually runs with:
 BRAIN_AUTH_ENABLED=false
 ```
 
-When auth is enabled, HTTP and MCP client requests require a bearer token
-accepted by one of these paths:
+When auth is enabled, HTTP and MCP client requests require a bearer token accepted by one of these paths:
 
 - Static token: `BRAIN_AUTH_TOKEN`
 - Brain OAuth access token from the built-in authorization flow
@@ -290,12 +246,10 @@ BRAIN_AUTH_TOKEN=replace-with-a-long-random-token
 Then call:
 
 ```bash
-curl http://127.0.0.1:8000/healthz \
-  -H "Authorization: Bearer $BRAIN_AUTH_TOKEN"
+curl http://127.0.0.1:8000/healthz -H "Authorization: Bearer $BRAIN_AUTH_TOKEN"
 ```
 
-Protected unauthenticated requests return `401` with a `WWW-Authenticate`
-challenge that advertises Brain's protected-resource metadata.
+Protected unauthenticated requests return `401` with a `WWW-Authenticate` challenge that advertises Brain's protected-resource metadata.
 
 OAuth metadata routes:
 
@@ -321,37 +275,15 @@ GET  /api/session
 PUT  /account/password
 ```
 
-`/auth/session` and `/api/session` return the public current-user record and a
-CSRF token for dashboard write requests. `/api/session` remains a compatibility
-alias.
+`/auth/session` and `/api/session` return the public current-user record and a CSRF token for dashboard write requests. `/api/session` remains a compatibility alias. Use `/account/password` to change the signed-in user's password.
 
-The Cognee UI proxy also uses the Brain user registry. `/cognee-login` and
-`/ui-login` are login routes; `/cognee-logout` and `/ui-logout` are logout
-routes. `/admin/cognee` requires a superuser user record. `/ui`, `/ui-api`,
-`/cognee`, `/cognee-api`, `/admin/cognee`, `/admin/cognee-api`, and their path
-variants remain compatibility aliases.
+The Cognee UI proxy also uses the Brain user registry. `/cognee-login` and `/ui-login` are login routes; `/cognee-logout` and `/ui-logout` are logout routes. `/admin/cognee` requires a superuser user record. `/ui`, `/ui-api`, `/cognee`, `/cognee-api`, `/admin/cognee`, `/admin/cognee-api`, and their path variants remain compatibility aliases.
 
-Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`,
-`BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`,
-`BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`,
-`BRAIN_AUTH_USERS_FILE`, and `BRAIN_AUTH_SUPERUSER_IDS`. See [Production Secrets](production-secrets.md) for
-secret handling.
+Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`, `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_USERS_FILE`, and `BRAIN_AUTH_SUPERUSER_IDS`. See [Production Secrets](production-secrets.md) for secret handling.
 
-For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of
-records with `id`/`user_id`, an Argon2id `password_hash`, optional
-`password_scheme`, optional `password_updated_at`, optional `display_name`,
-optional `email`, and optional `superuser` fields. Legacy records with a
-plaintext `password` are accepted only for migration; after successful login,
-or after running `scripts/migrate_auth_user_passwords.py`, Brain rewrites the
-registry without plaintext password fields. OAuth authorization stores the
-selected `user_id` in issued tokens; HTTP and MCP memory operations then scope
-Brain DB rows, profile context files, Palate data, recall logs, and app audit
-records to that user. Auth-enabled deployments fail closed if the configured
-users file is missing or empty.
+For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of records with `id`/`user_id`, an Argon2id `password_hash`, optional `password_scheme`, optional `password_updated_at`, optional `display_name`, optional `email`, and optional `superuser` fields. Legacy records with a plaintext `password` are accepted only for migration; after successful login, or after running `scripts/migrate_auth_user_passwords.py`, Brain rewrites the registry without plaintext password fields. OAuth authorization stores the selected `user_id` in issued tokens; HTTP and MCP memory operations then scope Brain DB rows, profile context files, Palate data, recall logs, and app audit records to that user. Auth-enabled deployments fail closed if the configured users file is missing or empty.
 
-Superusers can manage users from the Brain dashboard's User Admin tab. The
-dashboard calls the admin HTTP endpoints below with the user's web session and
-CSRF token; MCP/API clients may still use an OAuth bearer token:
+Superusers can manage users from the Brain dashboard's User Admin tab. The dashboard calls the admin HTTP endpoints below with the user's web session and CSRF token; MCP/API clients may still use an OAuth bearer token:
 
 ```text
 GET    /admin/users
@@ -360,65 +292,52 @@ PUT    /admin/users/{user_id}
 DELETE /admin/users/{user_id}
 ```
 
-These endpoints require full Brain auth plus a superuser user record. They never
-return passwords and refresh the in-process OAuth user registry after edits.
-Created or changed passwords are stored as Argon2id hashes.
+These endpoints require full Brain auth plus a superuser user record. They never return passwords and refresh the in-process OAuth user registry after edits. Created or changed passwords are stored as Argon2id hashes.
 
 ## MCP Over HTTP
 
 List MCP tools:
 
 ```bash
-curl -s http://127.0.0.1:8000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "tools/list"
-  }'
+curl -s http://127.0.0.1:8000/mcp -H "Content-Type: application/json" -d '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list"
+}'
 ```
 
 Call `brain_session` first when an agent needs the active user's portable session id:
 
 ```bash
-curl -s http://127.0.0.1:8000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "tools/call",
-    "params": {
-      "name": "brain_session",
-      "arguments": {}
-    }
-  }'
+curl -s http://127.0.0.1:8000/mcp -H "Content-Type: application/json" -d '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "brain_session",
+    "arguments": {}
+  }
+}'
 ```
 
 Call `brain_remember` for a durable fact or decision:
 
 ```bash
-curl -s http://127.0.0.1:8000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "tools/call",
-    "params": {
-      "name": "brain_remember",
-      "arguments": {
-        "input": "Brain DB is the source of truth.",
-        "input_type": "fact",
-        "source_policy": "memory_only",
-        "dry_run": true
-      }
+curl -s http://127.0.0.1:8000/mcp -H "Content-Type: application/json" -d '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "brain_remember",
+    "arguments": {
+      "input": "Brain DB is the source of truth.",
+      "input_type": "fact",
+      "source_policy": "memory_only",
+      "dry_run": true
     }
-  }'
+  }
+}'
 ```
-
-Use `brain_agent_memory`, not `brain_remember`, for chat-session handovers,
-conversation summaries, agent workflow learnings, and preserved chat context.
-Pass the `session_id` returned by `brain_session`. Brain derives that session id
-and the backing Cognee agent-memory dataset from the authenticated user id.
 
 If auth is enabled, add:
 
@@ -430,8 +349,7 @@ If you changed `BRAIN_MCP_PATH`, replace `/mcp` in the examples.
 
 ## MCP Stdio
 
-Use stdio when a local MCP client should launch Brain directly rather than call
-an already-running HTTP service.
+Use stdio when a local MCP client should launch Brain directly rather than call an already-running HTTP service.
 
 Export a Claude Desktop config:
 
@@ -457,8 +375,7 @@ The generated config runs:
 python -m memory_stack.mcp_stdio
 ```
 
-from the repository root with environment values derived from your active
-Brain settings.
+from the repository root with environment values derived from your active Brain settings.
 
 ## Internal MCP Tools
 
@@ -470,26 +387,17 @@ brain_session
 brain_profile_context_remember
 brain_profile_context_list
 brain_profile_context_forget
+brain_bias_context_remember
+brain_bias_context_list
+brain_bias_context_forget
 brain_profile_context_sync
-brain_app_data_controls
-brain_remember
 brain_ingest_source
 brain_recall
 brain_profile_entity
-brain_list_open_loops
-brain_get_memory
-brain_get_source
-brain_resolve_conflict
 brain_forget
 brain_review_recent
 brain_undo_last
-brain_sync_cognee
-brain_rebuild_cognee
 cognee_improve
-brain_agent_memory
-brain_agent_memory_recall
-brain_agent_memory_clear
-brain_merge_entities
 brain_palate_describe_item
 brain_palate_remember
 brain_palate_query
@@ -526,8 +434,7 @@ Use `brain_ingest_source` for longer source material:
 }
 ```
 
-Set `run_in_background` for very long documents or chat clients with short tool
-timeouts.
+Set `run_in_background` for very long documents or chat clients with short tool timeouts.
 
 Use `brain_recall` to answer from memory:
 
@@ -558,9 +465,7 @@ chat_conclusion
 table
 ```
 
-`chat_conclusion` is for durable conclusions made in chat. It is not the
-handover/session-memory path. Use `brain_agent_memory` for chat-session memory
-and handovers.
+`chat_conclusion` is for durable conclusions made in chat.
 
 Common `brain_ingest_source` source kinds:
 
@@ -585,68 +490,56 @@ source_only
 source_and_memory
 ```
 
-Use `dry_run=true` when integrating a new client or when the LLM should ask for
-user confirmation before writing.
+Use `dry_run=true` when integrating a new client or when the LLM should ask for user confirmation before writing.
 
 ## Direct HTTP Examples
 
 Remember:
 
 ```bash
-curl -s http://127.0.0.1:8000/memory/remember \
-  -H "Content-Type: application/json" \
-  -d '{
-    "input": "Sam from Goldman prefers morning calls.",
-    "input_type": "fact",
-    "source_policy": "memory_only",
-    "dry_run": false
-  }'
+curl -s http://127.0.0.1:8000/memory/remember -H "Content-Type: application/json" -d '{
+  "input": "Sam from Goldman prefers morning calls.",
+  "input_type": "fact",
+  "source_policy": "memory_only",
+  "dry_run": false
+}'
 ```
 
-Brain may classify the stored memory card as kind `person_fact`; `fact` is the
-client input type.
+Brain may classify the stored memory card as kind `person_fact`; `fact` is the client input type.
 
 Ingest source:
 
 ```bash
-curl -s http://127.0.0.1:8000/memory/ingest_source \
-  -H "Content-Type: application/json" \
-  -d '{
-    "source_kind": "markdown",
-    "title": "Meeting notes",
-    "source": "Decision: use Brain DB as the source of truth. Cognee remains rebuildable.",
-    "why_saved": "Architecture decision from project planning.",
-    "extract_memories": true
-  }'
+curl -s http://127.0.0.1:8000/memory/ingest_source -H "Content-Type: application/json" -d '{
+  "source_kind": "markdown",
+  "title": "Meeting notes",
+  "source": "Decision: use Brain DB as the source of truth. Cognee remains rebuildable.",
+  "why_saved": "Architecture decision from project planning.",
+  "extract_memories": true
+}'
 ```
 
 Recall:
 
 ```bash
-curl -s http://127.0.0.1:8000/memory/recall \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "What do we know about Sam from Goldman?",
-    "include_sources": true,
-    "include_conflicts": true,
-    "limit": 10
-  }'
+curl -s http://127.0.0.1:8000/memory/recall -H "Content-Type: application/json" -d '{
+  "query": "What do we know about Sam from Goldman?",
+  "include_sources": true,
+  "include_conflicts": true,
+  "limit": 10
+}'
 ```
 
 Review recent writes:
 
 ```bash
-curl -s http://127.0.0.1:8000/memory/review_recent \
-  -H "Content-Type: application/json" \
-  -d '{"limit": 10, "include_sources": true}'
+curl -s http://127.0.0.1:8000/memory/review_recent -H "Content-Type: application/json" -d '{"limit": 10, "include_sources": true}'
 ```
 
 Undo the latest write:
 
 ```bash
-curl -s http://127.0.0.1:8000/memory/undo_last \
-  -H "Content-Type: application/json" \
-  -d '{}'
+curl -s http://127.0.0.1:8000/memory/undo_last -H "Content-Type: application/json" -d '{}'
 ```
 
 ## Production Checks
@@ -663,24 +556,13 @@ Verify public Cloudflare routing:
 ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make cloudflare-verify
 ```
 
-The production verifier checks runtime paths, health, release metadata, MCP
-route behavior, the local Brain dashboard, the public app MCP surface, OAuth
-metadata when auth is enabled, and backup manifests unless `--skip-backups` is
-used. The Cloudflare verifier checks DNS/TLS, public curated, admin, and app
-MCP URLs, dashboard, privacy, terms, and support pages, OAuth
-protected-resource metadata, and the authenticated public app MCP surface when
-auth is enabled. It also checks browser security headers, ChatGPT App tool
-descriptor metadata, and that the public app surface remains text-only. For
-authenticated verification against hashed user registries, set
-`BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or
-`BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
+The production verifier checks runtime paths, health, release metadata, MCP route behavior, the local Brain dashboard, the public app MCP surface, OAuth metadata when auth is enabled, and backup manifests unless `--skip-backups` is used. The Cloudflare verifier checks DNS/TLS, public curated, admin, and app MCP URLs, dashboard, privacy, terms, and support pages, OAuth protected-resource metadata, and the authenticated public app MCP surface when auth is enabled. It also checks browser security headers, ChatGPT App tool descriptor metadata, and that the public app surface remains text-only. For authenticated verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 ## Troubleshooting
 
 `401 authentication_required`
 
-Auth is enabled. Add `Authorization: Bearer ...`, configure OAuth, or disable
-auth for local development.
+Auth is enabled. Add `Authorization: Bearer ...`, configure OAuth, or disable auth for local development.
 
 `404 Not found` on `/mcp`
 
@@ -688,25 +570,16 @@ Check `BRAIN_MCP_PATH`. The server only accepts the configured MCP path.
 
 No tools appear in an MCP client.
 
-Confirm the client is calling `tools/list`, using the generated stdio config, or
-pointing at the right HTTP URL and path.
+Confirm the client is calling `tools/list`, using the generated stdio config, or pointing at the right HTTP URL and path.
 
-Writes succeed but recall misses new data.
+Writes fail because Cognee is unavailable.
 
-Brain DB is authoritative, but optional Cognee/vector projection may be pending.
-Use `brain_recall` with direct Brain evidence first, then run
-`brain_sync_cognee` if projection is enabled.
-
-Slack routes hit the MCP server.
-
-Route `/slack/*` to the Slack agent port, not the MCP server. See
-[Slack Setup](SLACK_SETUP.md).
+Cognee is required for durable memory/source writes. Restore Cognee before retrying the write; Brain does not fall back to semantic Brain DB rows.
 
 ## Related Docs
 
 - [User Guide](USER_GUIDE.md) covers end-user memory usage patterns.
-- [Slack Setup](SLACK_SETUP.md) covers Slack app and route configuration.
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 796a3c1ebb46cee807b0235e93c5c202fcdabbfb28eaefaaa427d8faf338bb4b -->
+<!-- brain-doc-source-hash: ef0e172f819658e7b966b1a1d29bf6606fe6fd3501f8f1fe409dffa5198e18e1 -->

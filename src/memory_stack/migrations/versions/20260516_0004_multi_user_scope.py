@@ -1,7 +1,7 @@
 """add user scope columns
 
 Revision ID: 20260516_0004
-Revises: 20260515_0003
+Revises: 20260511_0002
 Create Date: 2026-05-16 00:00:00
 """
 from __future__ import annotations
@@ -13,7 +13,7 @@ from memory_stack import brain_schema as schema
 
 
 revision = "20260516_0004"
-down_revision = "20260515_0003"
+down_revision = "20260511_0002"
 branch_labels = None
 depends_on = None
 
@@ -30,11 +30,6 @@ USER_TABLES = (
     "cognee_sync",
     "ingestion_runs",
     "recall_logs",
-    "app_write_audit",
-    "taste_items",
-    "taste_attributes",
-    "taste_signals",
-    "taste_decisions",
     "taste_proposals",
 )
 
@@ -84,8 +79,6 @@ def upgrade() -> None:
     _create_index_if_missing("memory_links_user_relation_idx", "memory_links", ["user_id", "relation"])
     _create_index_if_missing("open_loops_user_status_idx", "open_loops", ["user_id", "status"])
     _create_index_if_missing("ingestion_runs_user_started_idx", "ingestion_runs", ["user_id", "started_at"])
-    _create_index_if_missing("app_write_audit_user_created_idx", "app_write_audit", ["user_id", "created_at"])
-    _create_index_if_missing("taste_items_user_name_idx", "taste_items", ["user_id", "type", "normalized_name"])
 
 
 def downgrade() -> None:

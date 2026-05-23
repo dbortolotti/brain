@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import inspect
 
-from memory_stack import brain_schema as schema
 from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
 from memory_stack.taste.cognee_store import CogneePalateStore, InMemoryPalateCogneeAdapter
-from memory_stack.taste.models import TasteQueryRequest, TasteRememberRequest
+from memory_stack.taste.models import TasteQueryRequest, TasteRefreshRequest, TasteRememberRequest
 from memory_stack.taste.ranking import rank_candidates, retrieve_candidates
 from memory_stack.taste.service import TasteService
 
@@ -90,8 +89,8 @@ def test_cognee_palate_store_soft_delete_removes_current_item(tmp_path) -> None:
     assert store.list_entities() == []
 
 
-def test_taste_service_can_use_cognee_as_canonical_store_without_sqlite_items(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path, brain_taste_canonical_store="cognee")
+def test_taste_service_uses_cognee_as_canonical_store_without_sqlite_items(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
     canonical = CogneePalateStore(settings, adapter=InMemoryPalateCogneeAdapter("palate_test"))
     service = TasteService(settings, canonical_store=canonical)
 
@@ -118,12 +117,42 @@ def test_taste_service_can_use_cognee_as_canonical_store_without_sqlite_items(tm
         )
     )
 
-    with BrainStore(settings).engine.begin() as conn:
-        sqlite_item_count = conn.execute(select(func.count()).select_from(schema.taste_items)).scalar_one()
+    store = BrainStore(settings)
 
     assert canonical.get_item(record["id"])["canonical_name"] == "Service Rioja"
-    assert sqlite_item_count == 0
+    assert "taste_items" not in set(inspect(store.engine).get_table_names())
+    assert_legacy_semantic_tables_absent(store)
+    assert record["metadata"]["brain_db_semantic_rows_written"] is False
+    assert "evidence_memory_id" not in record
     assert result["ranked_results"][0]["id"] == record["id"]
+
+
+def test_taste_service_refresh_enrichment_keeps_material_changes_in_cognee_only(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    canonical = CogneePalateStore(settings, adapter=InMemoryPalateCogneeAdapter("palate_test"))
+    service = TasteService(settings, canonical_store=canonical)
+    record = service.remember(
+        TasteRememberRequest(
+            type="wine",
+            canonical_name="Refresh Rioja",
+            description="I want to try Refresh Rioja.",
+            wanted=True,
+            metadata={"producer": "Old"},
+            fetch_external_ratings=False,
+        )
+    )["taste_records"][0]
+
+    refreshed = service.refresh_enrichment(TasteRefreshRequest(taste_item_id=record["id"]))
+
+    assert refreshed["refreshed"] is True
+    assert refreshed["material_memory_id"] is None
+    assert refreshed["brain_db_semantic_rows_written"] is False
+    assert_legacy_semantic_tables_absent(BrainStore(settings))
+
+
+def assert_legacy_semantic_tables_absent(store: BrainStore) -> None:
+    tables = set(inspect(store.engine).get_table_names())
+    assert not {"memory_cards", "relationships", "open_loops", "cognee_sync", "sources"} & tables
 
 
 def brain_test_settings(tmp_path, **overrides: Any) -> Settings:

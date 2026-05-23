@@ -50,7 +50,7 @@ async def healthz() -> dict[str, str | int | bool]:
     return {
         "status": "ok",
         "service": "Brain UI",
-        "auth_enabled": settings.brain_auth_enabled,
+        "auth_required": True,
         "frontend_port": settings.brain_ui_frontend_port,
         "backend_port": settings.brain_ui_backend_port,
         "public_ui_url": settings.public_ui_url,
@@ -190,7 +190,7 @@ async def proxy_frontend_root_paths(path: str, request: Request) -> Response:
 
 
 def authenticate_user(user_id: str, password: str) -> dict[str, str] | None:
-    if settings.brain_auth_enabled:
+    if settings.brain_auth_users_file:
         try:
             users = load_auth_users(settings, default_password=auth_password)
         except Exception:
@@ -254,7 +254,7 @@ def valid_session(cookie_value: str | None) -> dict[str, str] | None:
         return None
     if not hmac.compare_digest(signature, session_signature(issued_at, user_id)):
         return None
-    if settings.brain_auth_enabled:
+    if settings.brain_auth_users_file:
         try:
             users = load_auth_users(settings, default_password=auth_password)
         except Exception:
@@ -376,23 +376,16 @@ def is_mcp_passthrough_path(path: str) -> bool:
     if normalized in {
         settings.brain_mcp_path,
         settings.brain_admin_mcp_path,
-        settings.brain_app_mcp_path,
         settings.brain_health_path,
-        "/app",
-        "/app/oauth/callback",
-        "/privacy",
-        "/terms",
-        "/support",
         "/authorize",
         "/token",
         "/register",
         "/revoke",
         "/icon.png",
-        "/apple-touch-icon.png",
         "/favicon.ico",
     }:
         return True
-    return normalized.startswith(("/.well-known/", "/app-assets/"))
+    return normalized.startswith("/.well-known/")
 
 
 async def proxy_request(request: Request, upstream_base_url: str, upstream_path: str) -> Response:

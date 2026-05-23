@@ -2,53 +2,56 @@ from __future__ import annotations
 
 from concurrent.futures import Future, ThreadPoolExecutor
 from datetime import datetime
+import inspect
+import json
 import logging
 import re
 from typing import Any
+from uuid import UUID
 
 from memory_stack.brain_models import (
     EntityReceipt,
     IngestSourceRequest,
     IngestionReceipt,
-    MemoryReceipt,
     RecallRequest,
     RecallResponse,
     RememberRequest,
-    SourceReceipt,
 )
 from memory_stack.brain_store import BrainStore, content_hash, stable_id
-from memory_stack.cognee.rebuild import rebuild_cognee as rebuild_cognee_projection
-from memory_stack.cognee.serializers import (
-    serialize_memory_for_cognee,
-    serialize_source_for_cognee,
+from memory_stack.cognee.datapoints import (
+    client_session_id_from_context,
+    common_node_sets,
+    datapoint_text,
+    profile_name_from_context,
+    status_event_datapoint,
+    status_event_node_sets,
+    surface_from_context,
 )
-from memory_stack.cognee.sync_worker import sync_one, sync_pending_cognee
+from memory_stack.cognee_adapter import forget_cognee as _cognee_forget
+from memory_stack.cognee_adapter import remember_text as _cognee_remember_text
+from memory_stack.cognee_adapter import recall_text as _cognee_recall_text
+from memory_stack.cognee_adapter import run_async
 from memory_stack.cfg import Settings
 from memory_stack.ingestion.classifier import input_type_for_source_kind
-from memory_stack.ingestion.memory_compiler import compile_memory
 from memory_stack.llm.client import LLMClient, build_llm_client
+from memory_stack.profile_context import list_profile_context
 from memory_stack.recall.evidence_builder import build_evidence, build_facts
 from memory_stack.recall.planner import extract_profile_name, infer_recall_mode
-from memory_stack.recall.profile_builder import build_profile_response
-from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
-from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
-from memory_stack.resolution.conflict_detector import detect_and_apply_memory_resolution
-from memory_stack.resolution.entity_resolver import EntityResolver
+from memory_stack.recall.retriever import retrieve_memories
+from memory_stack.recall.synthesizer import render_memory_answer
 from memory_stack.route_logging import log_taste_route
 from memory_stack.taste.models import TasteQueryRequest
 from memory_stack.taste.routing import classify_palate_memory_route, classify_taste_route
-from memory_stack.taste.service import TasteService, canonical_taste_store, remember_request_from_route
-from memory_stack.taste.store import TasteStore
+from memory_stack.taste.cognee_store import CogneePalateStore
+from memory_stack.taste.service import TasteService, remember_request_from_route
 
 
 _LOGGER = logging.getLogger(__name__)
 _INGEST_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brain-ingest")
-_COGNEE_SYNC_EXECUTOR = ThreadPoolExecutor(max_workers=1, thread_name_prefix="brain-cognee-sync")
-CogneeSyncTarget = tuple[str, str]
 
 
 def _submit_background_ingest(
-    request: IngestSourceRequest | RememberRequest,
+    request: IngestSourceRequest,
     settings: Settings,
     *,
     llm_client: LLMClient | None = None,
@@ -72,67 +75,290 @@ def _log_background_ingest_result(future: Future[IngestionReceipt]) -> None:
     _LOGGER.info("Background source ingestion completed: %s", receipt.ingestion_run_id)
 
 
-def _submit_background_cognee_sync(
-    settings: Settings,
-    targets: list[CogneeSyncTarget],
-) -> Future[list[dict[str, Any]]] | None:
-    if not targets or not settings.brain_cognee_enabled or not settings.brain_cognee_sync_on_ingest:
-        return None
-    unique_targets = list(dict.fromkeys(targets))
-    future = _COGNEE_SYNC_EXECUTOR.submit(_sync_cognee_targets, settings, unique_targets)
-    future.add_done_callback(_log_background_cognee_sync_result)
-    return future
-
-
-def _sync_cognee_targets(
-    settings: Settings,
-    targets: list[CogneeSyncTarget],
-) -> list[dict[str, Any]]:
-    results = [
-        sync_cognee(settings, object_type=object_type, object_id=object_id)
-        for object_type, object_id in targets
-    ]
-    if settings.brain_cognee_sync_on_ingest_sweep_limit > 0:
-        results.append(
-            sync_pending_cognee(
-                settings=settings,
-                limit=settings.brain_cognee_sync_on_ingest_sweep_limit,
-            )
-        )
-    return results
-
-
-def _log_background_cognee_sync_result(future: Future[list[dict[str, Any]]]) -> None:
-    try:
-        results = future.result()
-    except Exception:
-        _LOGGER.exception("Background Cognee sync failed.")
-        return
-    processed = sum(int(result.get("processed", 0)) for result in results)
-    succeeded = sum(int(result.get("succeeded", 0)) for result in results)
-    failed = sum(int(result.get("failed", 0)) for result in results)
-    _LOGGER.info(
-        "Background Cognee sync completed: processed=%s succeeded=%s failed=%s",
-        processed,
-        succeeded,
-        failed,
-    )
-
-
-def _queued_ingestion_receipt(request: IngestSourceRequest | RememberRequest) -> IngestionReceipt:
-    source_text = request.source if isinstance(request, IngestSourceRequest) else request.input
-    source_type = (
-        request.source_kind
-        if isinstance(request, IngestSourceRequest)
-        else request.input_type
-    )
+def _queued_ingestion_receipt(request: IngestSourceRequest) -> IngestionReceipt:
+    source_text = request.source
+    source_type = request.source_kind
     return IngestionReceipt(
         ingestion_run_id=stable_id("queued_ing", content_hash(source_text, source_type)),
         classification="queued",
-        source=SourceReceipt(created=False, source_id=None),
         cognee_sync_status="queued",
         dry_run=request.dry_run,
     )
+
+
+def _remember_request_from_ingest_source(request: IngestSourceRequest) -> RememberRequest:
+    return RememberRequest(
+        input=request.source,
+        input_type=input_type_for_source_kind(request.source_kind, request.source),
+        dry_run=request.dry_run,
+        context={
+            "title": request.title,
+            "why_saved": request.why_saved,
+            "metadata": request.metadata,
+            **request.context,
+            "source_kind": request.source_kind,
+            "taste_skip": True,
+            "source_ingest": True,
+        },
+    )
+
+
+def _should_run_ingest_in_background(
+    request: IngestSourceRequest,
+    remember_request: RememberRequest,
+    settings: Settings,
+) -> bool:
+    if request.run_in_background is not None:
+        return request.run_in_background
+    if remember_request.dry_run:
+        return False
+    threshold = settings.brain_ingest_background_auto_chars
+    return threshold > 0 and len(remember_request.input) > threshold
+
+
+def _raw_classification(request: RememberRequest) -> str:
+    if request.context.get("source_ingest"):
+        source_kind = str(request.context.get("source_kind") or "auto")
+        return input_type_for_source_kind(source_kind, request.input)
+    return request.input_type if request.input_type != "auto" else "direct_memory"
+
+
+def _cognee_dataset_for_raw_write(settings: Settings) -> str:
+    return settings.brain_cognee_memory_dataset
+
+
+def _raw_dry_run_receipt(
+    *,
+    request: RememberRequest,
+    run_id: str,
+    settings: Settings,
+) -> IngestionReceipt:
+    classification = _raw_classification(request)
+    if request.context.get("confirmation_required"):
+        store = BrainStore(settings)
+        action = "ingest_source" if request.context.get("source_ingest") else "remember"
+        confirmation = store.create_pending_confirmation(
+            surface=str(request.context.get("confirmation_surface") or surface_from_context(request.context)),
+            action=action,
+            original_input=request.input,
+            proposed_payload_json={
+                "classification": classification,
+                "text_hash": content_hash(request.input),
+                "cognee_operation": "remember",
+            },
+            reason="Explicit user confirmation is required before committing this durable write.",
+            options_json=["confirm", "cancel"],
+            metadata_json={
+                "context": request.context,
+                "semantic_compiler": "cognee",
+                "brain_db_semantic_rows_written": False,
+            },
+        )
+        run_id = confirmation["id"]
+    return IngestionReceipt(
+        ingestion_run_id=run_id,
+        classification=classification,
+        cognee_sync_status="not_applicable",
+        dry_run=True,
+    )
+
+
+def _write_raw_to_cognee(
+    *,
+    request: RememberRequest,
+    settings: Settings,
+) -> IngestionReceipt:
+    store = BrainStore(settings)
+    profile_name = profile_name_from_context(request.context, settings)
+    surface = surface_from_context(request.context)
+    client_session_id = client_session_id_from_context(request.context)
+    base_node_sets = common_node_sets(user_id=store.user_id, profile_name=profile_name)
+    classification = _raw_classification(request)
+    tool_name = "brain_ingest_source" if request.context.get("source_ingest") else "brain_remember"
+    action = "ingest_source" if request.context.get("source_ingest") else "remember"
+    primary_dataset = _cognee_dataset_for_raw_write(settings)
+    session_map = store.get_or_create_session_map(
+        profile_name=profile_name,
+        surface=surface,
+        client_session_id=client_session_id,
+        cognee_dataset=primary_dataset,
+        node_sets_json=base_node_sets,
+        metadata_json={
+            "classification": classification,
+            "semantic_compiler": "cognee",
+        },
+    )
+    cognee_results: list[dict[str, Any]] = []
+    datasets: list[str] = []
+
+    try:
+        content_hash_value = content_hash("cognee_remember", request.input)
+        cognee_remember_id = store.make_external_id("cog", "remember", content_hash_value)
+        node_sets = common_node_sets(user_id=store.user_id, profile_name=profile_name)
+        cognee_result = _call_cognee_remember_text(
+            request.input,
+            dataset_name=primary_dataset,
+            node_set=node_sets,
+            settings=settings,
+        )
+        datasets.append(primary_dataset)
+        cognee_results.append(
+            {
+                "object_type": "cognee_remember",
+                "external_id": cognee_remember_id,
+                "content_hash": content_hash_value,
+                "dataset": primary_dataset,
+                "operation": "remember",
+                "node_sets": node_sets,
+                "cognee_result": _json_safe(cognee_result),
+            }
+        )
+    except Exception as exc:
+        failure_receipt = store.create_external_receipt(
+            surface=surface,
+            tool_name=tool_name,
+            action=action,
+            status="failed",
+            summary=f"Cognee write failed for {classification}.",
+            cognee_dataset=",".join(sorted(set(datasets))) if datasets else None,
+            cognee_reference=_combined_cognee_reference(cognee_results),
+            cognee_result_json={
+                "session_map": session_map,
+                "objects": cognee_results,
+            },
+            warnings_json=[str(exc)],
+            metadata_json={
+                "classification": classification,
+                "context": request.context,
+                "semantic_compiler": "cognee",
+                "brain_db_semantic_rows_written": False,
+            },
+        )
+        raise RuntimeError(
+            "Cognee durable write failed; Brain semantic fallback is disabled "
+            f"(receipt_id={failure_receipt['id']}): {exc}"
+        ) from exc
+
+    status = "synced" if cognee_results else "not_applicable"
+    receipt = store.create_external_receipt(
+        surface=surface,
+        tool_name=tool_name,
+        action=action,
+        status=status,
+        summary=f"Stored raw text once in Cognee dataset: {', '.join(sorted(set(datasets))) or 'none'}.",
+        cognee_dataset=",".join(sorted(set(datasets))) if datasets else None,
+        cognee_reference=_combined_cognee_reference(cognee_results),
+        cognee_result_json={
+            "session_map": session_map,
+            "objects": cognee_results,
+        },
+        metadata_json={
+            "classification": classification,
+            "context": request.context,
+            "semantic_compiler": "cognee",
+            "brain_db_semantic_rows_written": False,
+        },
+    )
+    return IngestionReceipt(
+        ingestion_run_id=receipt["id"],
+        classification=classification,
+        cognee_sync_status=status,
+        dry_run=False,
+    )
+
+
+def _call_cognee_remember_text(
+    text: str,
+    *,
+    dataset_name: str,
+    node_set: list[str],
+    settings: Settings,
+) -> Any:
+    result = _cognee_remember_text(
+        text,
+        dataset_name=dataset_name,
+        node_set=node_set,
+        settings=settings,
+    )
+    if inspect.isawaitable(result):
+        return run_async(result)
+    return result
+
+
+def _call_cognee_forget(
+    *,
+    data_id: str | UUID | None = None,
+    dataset: str | UUID | None = None,
+    everything: bool = False,
+    memory_only: bool = False,
+    settings: Settings,
+) -> Any:
+    result = _cognee_forget(
+        data_id=data_id,
+        dataset=dataset,
+        everything=everything,
+        memory_only=memory_only,
+        settings=settings,
+    )
+    if inspect.isawaitable(result):
+        return run_async(result)
+    return result
+
+
+def _call_cognee_recall_text(
+    *,
+    query: str,
+    dataset: str,
+    search_type: str = "CHUNKS",
+    top_k: int = 10,
+    settings: Settings,
+) -> Any:
+    result = _cognee_recall_text(
+        query=query,
+        dataset=dataset,
+        search_type=search_type,
+        top_k=top_k,
+        settings=settings,
+    )
+    if inspect.isawaitable(result):
+        return run_async(result)
+    return result
+
+
+def _combined_cognee_reference(results: list[dict[str, Any]]) -> str | None:
+    references = [
+        reference
+        for result in results
+        if (reference := _cognee_reference(result.get("cognee_result"))) is not None
+    ]
+    if not references:
+        return None
+    return ",".join(references)
+
+
+def _cognee_reference(result: Any) -> str | None:
+    if result is None:
+        return None
+    if isinstance(result, dict):
+        for key in ("id", "data_id", "dataset_id", "pipeline_run_id", "cognee_reference", "reference", "name"):
+            value = result.get(key)
+            if value:
+                return str(value)
+        items = result.get("items")
+        if isinstance(items, list) and items:
+            return _cognee_reference(items[0])
+    if isinstance(result, list) and result:
+        return _cognee_reference(result[0])
+    return str(result)[:200]
+
+
+def _json_safe(value: Any) -> Any:
+    def default(item: Any) -> Any:
+        if hasattr(item, "to_dict"):
+            return item.to_dict()
+        return str(item)
+
+    return json.loads(json.dumps(value, ensure_ascii=True, sort_keys=True, default=default))
 
 
 def remember(
@@ -211,226 +437,29 @@ def remember(
                     },
                 )
 
-    compiled = compile_memory(request, settings, llm_client=llm_client)
     input_hash = content_hash(request.input, request.input_type, request.context)
     run_id = stable_id("dry_ing", input_hash)
     if request.dry_run:
-        return IngestionReceipt(
-            ingestion_run_id=run_id,
-            classification=compiled.classification,
-            source=SourceReceipt(created=compiled.source is not None, source_id=None),
-            memory_cards=[
-                MemoryReceipt(
-                    id=stable_id("dry_mem", card.kind, card.statement),
-                    kind=str(card.kind),
-                    statement=card.statement,
-                    status=card.status,
-                    confidence=card.confidence,
-                    created=False,
-                )
-                for card in compiled.memory_cards
-            ],
-            dry_run=True,
+        return _raw_dry_run_receipt(
+            request=request,
+            run_id=run_id,
+            settings=settings,
         )
 
-    store = BrainStore(settings)
-    run = store.create_ingestion_run(
-        input_type=compiled.classification,
-        input_hash=input_hash,
-        raw_input_preview=request.input,
-        metadata_json={"context": request.context, "source_policy": request.source_policy},
+    return _write_raw_to_cognee(
+        request=request,
+        settings=settings,
     )
-    source_id = None
-    source_created = False
-    cognee_sync_targets: list[CogneeSyncTarget] = []
-    try:
-        if compiled.source is not None:
-            raw_source_text = compiled.source.raw_text or ""
-            source_metadata = {
-                **compiled.source.metadata,
-                "ingestion_run_id": run["id"],
-                "raw_text_hash": content_hash(raw_source_text),
-                "raw_text_chars": len(raw_source_text),
-                "raw_text_storage": "brain_db_pending_cognee",
-            }
-            source, source_created = store.upsert_source(
-                {
-                    "kind": compiled.source.kind,
-                    "title": compiled.source.title,
-                    "uri": compiled.source.uri,
-                    "file_path": compiled.source.file_path,
-                    "raw_text": raw_source_text,
-                    "summary": compiled.source.summary,
-                    "metadata_json": source_metadata,
-                    "status": compiled.source.status,
-                    "content_hash": content_hash(
-                        compiled.source.kind,
-                        compiled.source.uri,
-                        compiled.source.title,
-                        raw_source_text,
-                    ),
-                }
-            )
-            source_id = source["id"]
-            store.mark_cognee_pending(
-                object_type="source",
-                object_id=source_id,
-                dataset=settings.brain_cognee_sources_dataset,
-                projection_hash=content_hash(
-                    source_id,
-                    compiled.source.status,
-                    raw_source_text,
-                ),
-            )
-            cognee_sync_targets.append(("source", source_id))
-
-        receipt = IngestionReceipt(
-            ingestion_run_id=run["id"],
-            classification=compiled.classification,
-            source=SourceReceipt(created=source_created, source_id=source_id),
-        )
-        entity_resolver = EntityResolver(store)
-        entity_receipts: dict[str, dict[str, Any]] = {}
-        for card in compiled.memory_cards:
-            memory_metadata = {**card.metadata, "ingestion_run_id": run["id"]}
-            if "slack" in request.context:
-                memory_metadata["slack"] = request.context["slack"]
-            source_quote = card.source_quote
-            if card.kind == "source_record":
-                source_quote = None
-            memory, memory_created = store.upsert_memory_card(
-                {
-                    "kind": str(card.kind),
-                    "statement": card.statement,
-                    "summary": card.summary,
-                    "confidence": card.confidence,
-                    "status": card.status,
-                    "observed_at": card.observed_at,
-                    "source_id": source_id,
-                    "source_quote": source_quote,
-                    "metadata_json": memory_metadata,
-                }
-            )
-            memory_receipt = MemoryReceipt(
-                id=memory["id"],
-                kind=memory["kind"],
-                statement=memory["statement"],
-                status=memory["status"],
-                confidence=memory["confidence"],
-                created=memory_created,
-            )
-            receipt.memory_cards.append(memory_receipt)
-            entity_map: dict[str, dict[str, Any]] = {}
-            for mention in card.entities:
-                aliases = [mention.alias] if mention.alias else []
-                resolution = entity_resolver.resolve_entity(
-                    entity_type=mention.type,
-                    canonical_name=mention.name,
-                    aliases=aliases,
-                    confidence=mention.confidence,
-                    metadata_json=mention.metadata,
-                )
-                entity = resolution.entity
-                entity_map[mention.name] = entity
-                if mention.alias:
-                    entity_map[mention.alias] = entity
-                entity_receipts[entity["id"]] = {
-                    "id": entity["id"],
-                    "canonical_name": entity["canonical_name"],
-                    "type": entity["type"],
-                    "created": resolution.created,
-                }
-                store.link_memory_entity(
-                    memory_id=memory["id"],
-                    entity_id=entity["id"],
-                    role=mention.role,
-                    confidence=mention.confidence,
-                )
-
-            for relationship in card.relationships:
-                subject = entity_map.get(relationship.subject)
-                object_ = entity_map.get(relationship.object)
-                if subject is None:
-                    subject = entity_resolver.resolve_entity(
-                        entity_type="concept",
-                        canonical_name=relationship.subject,
-                    ).entity
-                if object_ is None:
-                    object_ = entity_resolver.resolve_entity(
-                        entity_type="concept",
-                        canonical_name=relationship.object,
-                    ).entity
-                rel, rel_created = store.create_relationship(
-                    subject_entity_id=subject["id"],
-                    predicate=relationship.predicate,
-                    object_entity_id=object_["id"],
-                    evidence_memory_id=memory["id"],
-                    confidence=relationship.confidence,
-                    status=relationship.status,
-                    metadata_json=relationship.metadata,
-                )
-                receipt.relationships.append({**rel, "created": rel_created})
-
-            if card.open_loop is not None:
-                loop, loop_created = store.create_open_loop(
-                    memory_id=memory["id"],
-                    status=card.open_loop.get("status", "open"),
-                    priority=card.open_loop.get("priority", "normal"),
-                    reminder_policy=card.open_loop.get("reminder_policy"),
-                    metadata_json={k: v for k, v in card.open_loop.items() if k not in {"status", "priority", "reminder_policy"}},
-                )
-                receipt.open_loops.append({**loop, "created": loop_created})
-
-            detections = detect_and_apply_memory_resolution(store, memory["id"])
-            if detections:
-                receipt.conflicts.extend(detections)
-                for detection in detections:
-                    target_memory_id = detection.get("target_memory_id")
-                    if target_memory_id:
-                        store.mark_cognee_stale(
-                            object_type="memory",
-                            object_id=str(target_memory_id),
-                        )
-
-            refreshed_memory = store.get_memory(memory["id"]) or memory
-            memory_receipt.status = refreshed_memory["status"]
-            projection_hash = content_hash(
-                refreshed_memory["id"],
-                refreshed_memory["statement"],
-                refreshed_memory["status"],
-            )
-            store.mark_cognee_pending(
-                object_type="memory",
-                object_id=refreshed_memory["id"],
-                dataset=settings.brain_cognee_memory_dataset,
-                projection_hash=projection_hash,
-            )
-            cognee_sync_targets.append(("memory", refreshed_memory["id"]))
-
-        receipt.entities = [
-            EntityReceipt(
-                id=value["id"],
-                canonical_name=value["canonical_name"],
-                type=value["type"],
-                created=value["created"],
-            )
-            for value in entity_receipts.values()
-        ]
-        store.finish_ingestion_run(run["id"], status="processed", source_id=source_id)
-        _submit_background_cognee_sync(settings, cognee_sync_targets)
-        return IngestionReceipt.model_validate(receipt)
-    except Exception as exc:
-        store.finish_ingestion_run(run["id"], status="failed", error_message=str(exc))
-        raise
 
 
 def ingest_source(
-    request: IngestSourceRequest | RememberRequest,
+    request: IngestSourceRequest,
     settings: Settings,
     *,
     llm_client: LLMClient | None = None,
 ) -> IngestionReceipt:
-    if request.run_in_background:
+    remember_request = _remember_request_from_ingest_source(request)
+    if _should_run_ingest_in_background(request, remember_request, settings):
         queued_request = request.model_copy(update={"run_in_background": False})
         _submit_background_ingest(
             queued_request,
@@ -439,32 +468,6 @@ def ingest_source(
         )
         return _queued_ingestion_receipt(request)
 
-    if isinstance(request, RememberRequest):
-        return remember(
-            request.model_copy(
-                update={
-                    "source_policy": "source_and_memory",
-                    "context": {**request.context, "taste_skip": True, "source_ingest": True},
-                }
-            ),
-            settings,
-            llm_client=llm_client,
-        )
-
-    remember_request = RememberRequest(
-        input=request.source,
-        input_type=input_type_for_source_kind(request.source_kind, request.source),
-        source_policy="source_and_memory" if request.extract_memories else "source_only",
-        dry_run=request.dry_run,
-        context={
-            "title": request.title,
-            "why_saved": request.why_saved,
-            "metadata": request.metadata,
-            "source_kind": request.source_kind,
-            "taste_skip": True,
-            "source_ingest": True,
-        },
-    )
     receipt = remember(remember_request, settings, llm_client=llm_client)
     if settings.brain_taste_enabled:
         candidates = taste_source_candidates(request.source, settings=settings, llm_client=llm_client)
@@ -507,9 +510,6 @@ def ingest_source(
                             "selection_required": True,
                             "proposed_taste_records": [],
                             "proposed_brain_entities": [],
-                            "proposed_memory_cards": [],
-                            "proposed_relationships": [],
-                            "proposed_open_loops": [],
                             "allowed_actions": ["confirm", "cancel", "correct"],
                         },
                         warnings=[
@@ -562,42 +562,42 @@ def recall(
     mode = request.mode if request.mode != "auto" else infer_recall_mode(query)
     if mode == "profile":
         name = extract_profile_name(query)
-        profile = build_profile_response(
-            name,
-            settings,
-            include_superseded=request.include_superseded,
-            include_conflicts=request.include_conflicts,
-        )
-        if profile is not None:
-            profile_memory_ids = [fact["memory_id"] for fact in profile.facts if "memory_id" in fact]
-            profile_memories = [
-                memory
-                for memory_id in profile_memory_ids
-                if (memory := store.get_memory(memory_id)) is not None
-            ]
-            taste_evidence = collect_taste_evidence(settings, profile_memories)
-            store.log_recall(
-                query=query,
-                mode=mode,
-                retrieved_memory_ids=profile_memory_ids,
-                retrieved_source_ids=[],
-                answer_preview=profile.answer,
-            )
-            if taste_evidence:
-                return profile.model_copy(update={"taste": taste_evidence})
-            return profile
-    if mode == "open_loops":
-        loops = retrieve_open_loops(store, limit=request.limit)
-        answer = render_open_loops(loops)
-        response = RecallResponse(answer=answer, open_loops=loops)
-        store.log_recall(
-            query=query,
-            mode=mode,
-            retrieved_memory_ids=[loop["memory_id"] for loop in loops],
-            retrieved_source_ids=[],
-            answer_preview=answer,
-        )
-        return response
+        owner_names = {
+            settings.brain_owner_name.casefold(),
+            settings.brain_owner_full_name.casefold(),
+            "me",
+            "myself",
+            "the user",
+            "profile owner",
+        }
+        if name.strip().casefold() in {value for value in owner_names if value}:
+            records = list_profile_context(settings)
+            if records:
+                facts = [
+                    {
+                        "context_id": record["id"],
+                        "kind": record.get("kind", "profile"),
+                        "statement": record["statement"],
+                        "status": record.get("status", "current"),
+                        "scope": record.get("scope"),
+                    }
+                    for record in records
+                ]
+                evidence = [
+                    {
+                        "context_id": record["id"],
+                        "quote": record["statement"],
+                        "source": record.get("source"),
+                        "status": record.get("status", "current"),
+                    }
+                    for record in records
+                ]
+                answer = "Profile context\n" + "\n".join(
+                    f"- {record['statement']} [{record['id']}; {record.get('scope')}]"
+                    for record in records
+                )
+                return RecallResponse(answer=answer, facts=facts, evidence=evidence)
+        return RecallResponse(answer=f"No profile context found for {name}.")
 
     memories = retrieve_memories(
         store,
@@ -609,45 +609,10 @@ def recall(
         limit=request.limit,
     )
     facts = build_facts(memories)
-    evidence = build_evidence(memories, include_sources=request.include_sources)
+    evidence = build_evidence(memories)
     answer = render_memory_answer(memories)
     taste_evidence = collect_taste_evidence(settings, memories)
-    store.log_recall(
-        query=query,
-        mode=mode,
-        retrieved_memory_ids=[memory["id"] for memory in memories],
-        retrieved_source_ids=[memory["source_id"] for memory in memories if memory.get("source_id")],
-        answer_preview=answer,
-    )
     return RecallResponse(answer=answer, facts=facts, evidence=evidence, taste=taste_evidence)
-
-
-def get_memory(memory_id: str, settings: Settings) -> dict[str, Any] | None:
-    return BrainStore(settings).get_memory(memory_id)
-
-
-def get_source(
-    source_id: str,
-    settings: Settings,
-    *,
-    include_text: bool = False,
-    max_chars: int = 10_000,
-) -> dict[str, Any] | None:
-    return BrainStore(settings).get_source(
-        source_id,
-        include_text=include_text,
-        max_chars=max_chars,
-    )
-
-
-def list_open_loops(
-    settings: Settings,
-    *,
-    topic: str | None = None,
-    status: str = "open",
-    limit: int = 20,
-) -> list[dict[str, Any]]:
-    return BrainStore(settings).list_open_loops(topic=topic, status=status, limit=limit)
 
 
 def profile_entity(
@@ -658,16 +623,43 @@ def profile_entity(
     include_superseded: bool = False,
     include_conflicts: bool = True,
 ) -> RecallResponse:
-    response = build_profile_response(
-        name,
-        settings,
-        entity_type=entity_type,
-        include_superseded=include_superseded,
-        include_conflicts=include_conflicts,
-    )
-    if response is None:
-        return RecallResponse(answer=f"No entity found for {name}.")
-    return response
+    del entity_type, include_superseded, include_conflicts
+    owner_names = {
+        settings.brain_owner_name.casefold(),
+        settings.brain_owner_full_name.casefold(),
+        "me",
+        "myself",
+        "the user",
+        "profile owner",
+    }
+    if name.strip().casefold() in {value for value in owner_names if value}:
+        records = list_profile_context(settings)
+        if records:
+            facts = [
+                {
+                    "context_id": record["id"],
+                    "kind": record.get("kind", "profile"),
+                    "statement": record["statement"],
+                    "status": record.get("status", "current"),
+                    "scope": record.get("scope"),
+                }
+                for record in records
+            ]
+            evidence = [
+                {
+                    "context_id": record["id"],
+                    "quote": record["statement"],
+                    "source": record.get("source"),
+                    "status": record.get("status", "current"),
+                }
+                for record in records
+            ]
+            answer = "Profile context\n" + "\n".join(
+                f"- {record['statement']} [{record['id']}; {record.get('scope')}]"
+                for record in records
+            )
+            return RecallResponse(answer=answer, facts=facts, evidence=evidence)
+    return RecallResponse(answer=f"No profile context found for {name}.")
 
 
 def forget(
@@ -678,69 +670,75 @@ def forget(
     hard: bool = False,
     reason: str | None = None,
 ) -> dict[str, Any]:
-    del reason
-    deleted = BrainStore(settings).forget(object_type=object_type, object_id=object_id, hard=hard)
-    return {"object_type": object_type, "object_id": object_id, "status": "deleted" if deleted else "not_found"}
-
-
-def resolve_conflict(
-    settings: Settings,
-    *,
-    conflict_memory_id: str,
-    target_memory_id: str,
-    action: str,
-    note: str | None = None,
-) -> dict[str, Any]:
+    if hard:
+        raise ValueError("Hard delete is intentionally not implemented at the service layer.")
     store = BrainStore(settings)
-    if action == "supersede":
-        store.update_memory_status(target_memory_id, "superseded")
-        store.update_memory_status(conflict_memory_id, "current")
-        link, _ = store.create_memory_link(
-            from_memory_id=conflict_memory_id,
-            relation="supersedes",
-            to_memory_id=target_memory_id,
-            metadata_json={"note": note} if note else {},
+    if object_type == "cognee_remember":
+        source_receipt, targets = _find_receipt_targets_for_object(
+            store,
+            object_type=object_type,
+            object_id=object_id,
         )
-        return {"action": action, "link": link}
-    if action == "keep_both":
-        store.update_memory_status(conflict_memory_id, "current")
-        store.update_memory_status(target_memory_id, "current")
-        link, _ = store.create_memory_link(
-            from_memory_id=conflict_memory_id,
-            relation="contradicts",
-            to_memory_id=target_memory_id,
-            metadata_json={"note": note} if note else {},
+        if source_receipt is None:
+            return {
+                "object_type": object_type,
+                "object_id": object_id,
+                "status": "not_found",
+                "receipt_id": None,
+                "source_receipt_id": None,
+                "forget_results": [],
+                "status_events": [],
+                "mode": "receipt",
+                "cognee_sync_status": "not_applicable",
+            }
+        forget_results, status_events, cognee_failures = _forget_targets_with_audit(
+            store=store,
+            settings=settings,
+            source_receipt=source_receipt,
+            targets=targets,
+            action="brain_forget",
+            reason=reason or "Forget requested through Brain admin tool.",
         )
-        return {"action": action, "link": link}
-    if action == "mark_contradiction":
-        store.update_memory_status(conflict_memory_id, "current")
-        store.update_memory_status(target_memory_id, "current")
-        link, _ = store.create_memory_link(
-            from_memory_id=conflict_memory_id,
-            relation="contradicts",
-            to_memory_id=target_memory_id,
-            metadata_json={"note": note} if note else {},
+        receipt = store.create_external_receipt(
+            surface="admin",
+            tool_name="brain_forget",
+            action="forget",
+            status="deleted" if not cognee_failures else "failed",
+            summary=f"Forget requested for {object_type} {object_id}.",
+            cognee_dataset=_target_dataset_summary(targets),
+            cognee_reference=source_receipt.get("cognee_reference"),
+            cognee_result_json={
+                "source_receipt": source_receipt,
+                "targets": targets,
+                "forget_results": forget_results,
+                "status_events": status_events,
+            },
+            warnings_json=cognee_failures,
+            metadata_json={
+                "brain_db_semantic_rows_written": False,
+                "source_receipt_id": source_receipt["id"],
+                "reason": reason,
+            },
         )
-        return {"action": action, "link": link}
-    if action == "mark_duplicate":
-        store.update_memory_status(conflict_memory_id, "archived")
-        link, _ = store.create_memory_link(
-            from_memory_id=conflict_memory_id,
-            relation="duplicates",
-            to_memory_id=target_memory_id,
-            metadata_json={"note": note} if note else {},
-        )
-        return {"action": action, "link": link}
-    if action == "archive_old":
-        store.update_memory_status(target_memory_id, "archived")
-        return {"action": action, "target_memory_id": target_memory_id, "status": "archived"}
-    if action == "reject_new":
-        store.update_memory_status(conflict_memory_id, "rejected")
-        return {"action": action, "conflict_memory_id": conflict_memory_id, "status": "rejected"}
-    raise ValueError(
-        "action must be supersede, keep_both, mark_duplicate, archive_old, "
-        "reject_new, or mark_contradiction."
-    )
+        return {
+            "object_type": object_type,
+            "object_id": object_id,
+            "status": "deleted" if not cognee_failures else "failed",
+            "receipt_id": receipt["id"],
+            "source_receipt_id": source_receipt["id"],
+            "forget_results": forget_results,
+            "status_events": status_events,
+            "warnings": cognee_failures,
+            "mode": "receipt",
+            "cognee_sync_status": "synced" if not cognee_failures else "failed",
+        }
+
+    deleted = store.forget(object_type=object_type, object_id=object_id, hard=hard)
+    return {
+        "object_type": object_type,
+        "object_id": object_id,
+        "status": "deleted" if deleted else "not_found",
+    }
 
 
 def review_recent(
@@ -748,18 +746,19 @@ def review_recent(
     *,
     since: datetime | None = None,
     limit: int = 20,
-    include_sources: bool = True,
 ) -> dict[str, Any]:
     store = BrainStore(settings)
+    receipts = store.list_external_receipts(since=since, limit=limit)
+    pending_confirmations = store.list_pending_confirmations(status=None, limit=limit)
+    context_records = [
+        *store.list_context_records(kind="profile", limit=limit),
+        *store.list_context_records(kind="bias", limit=limit),
+    ][:limit]
     return {
-        "ingestion_runs": store.list_ingestion_runs(since=since, limit=limit),
-        "sources": store.list_sources(since=since, limit=limit) if include_sources else [],
-        "memory_cards": store.list_memory_cards(since=since, limit=limit),
-        "conflicts": store.list_memory_links(
-            relations=("duplicates", "supersedes", "contradicts"),
-            since=since,
-            limit=limit,
-        ),
+        "external_receipts": receipts,
+        "pending_confirmations": pending_confirmations,
+        "context_records": context_records,
+        "conflicts": [],
     }
 
 
@@ -769,156 +768,326 @@ def undo_last(
     ingestion_run_id: str | None = None,
 ) -> dict[str, Any]:
     store = BrainStore(settings)
-    run = (
-        store.get_ingestion_run(ingestion_run_id)
+    receipt = (
+        store.get_external_receipt(ingestion_run_id)
         if ingestion_run_id
-        else (store.list_ingestion_runs(limit=1)[0] if store.list_ingestion_runs(limit=1) else None)
+        else _latest_undoable_receipt(store)
     )
-    if run is None:
-        return {"status": "not_found", "deleted_memories": [], "deleted_sources": []}
+    if receipt is None:
+        return {
+            "status": "not_found",
+            "ingestion_run_id": ingestion_run_id,
+            "receipt_id": None,
+            "deleted_objects": [],
+            "forget_results": [],
+            "status_events": [],
+            "mode": "receipt",
+            "cognee_sync_status": "not_applicable",
+        }
 
-    memory_rows = store.list_memory_cards(include_deleted=True, limit=100_000)
-    memory_ids = [
-        memory["id"]
-        for memory in memory_rows
-        if (memory.get("metadata_json") or {}).get("ingestion_run_id") == run["id"]
-        or (run.get("source_id") and memory.get("source_id") == run.get("source_id"))
+    targets = _receipt_cognee_objects(receipt)
+    forget_results, status_events, cognee_failures = _forget_targets_with_audit(
+        store=store,
+        settings=settings,
+        source_receipt=receipt,
+        targets=targets,
+        action="undo_last",
+        reason="Undo requested through Brain admin tool.",
+    )
+    forgotten_targets = {
+        result["target_external_id"]
+        for result in forget_results
+        if result.get("status") == "forgotten"
+    }
+    deleted_objects = [
+        target["external_id"]
+        for target in targets
+        if target["external_id"] in forgotten_targets
     ]
-    deleted_memories = []
-    for memory_id in memory_ids:
-        if store.update_memory_status(memory_id, "deleted"):
-            deleted_memories.append(memory_id)
 
-    deleted_sources = []
-    if run.get("source_id") and store.update_source_status(run["source_id"], "deleted"):
-        deleted_sources.append(run["source_id"])
-
+    undo_receipt = store.create_external_receipt(
+        surface="admin",
+        tool_name="brain_undo_last",
+        action="undo_last",
+        status="undone" if not cognee_failures else "failed",
+        summary=f"Undo requested for receipt {receipt['id']}.",
+        cognee_dataset=_target_dataset_summary(targets),
+        cognee_reference=receipt.get("cognee_reference"),
+        cognee_result_json={
+            "source_receipt": receipt,
+            "targets": targets,
+            "forget_results": forget_results,
+            "status_events": status_events,
+        },
+        warnings_json=cognee_failures,
+        metadata_json={
+            "brain_db_semantic_rows_written": False,
+            "source_receipt_id": receipt["id"],
+        },
+    )
+    if cognee_failures:
+        return {
+            "status": "failed",
+            "ingestion_run_id": receipt["id"],
+            "receipt_id": undo_receipt["id"],
+            "source_receipt_id": receipt["id"],
+            "deleted_objects": deleted_objects,
+            "forget_results": forget_results,
+            "status_events": status_events,
+            "warnings": cognee_failures,
+            "mode": "receipt",
+            "cognee_sync_status": "failed",
+        }
     return {
         "status": "undone",
-        "ingestion_run_id": run["id"],
-        "deleted_memories": deleted_memories,
-        "deleted_sources": deleted_sources,
-        "mode": "soft",
-        "cognee_sync_status": "stale",
+        "ingestion_run_id": receipt["id"],
+        "receipt_id": undo_receipt["id"],
+        "source_receipt_id": receipt["id"],
+        "deleted_objects": deleted_objects,
+        "forget_results": forget_results,
+        "status_events": status_events,
+        "mode": "receipt",
+        "cognee_sync_status": "synced" if status_events else "not_applicable",
     }
 
 
-def sync_cognee(
-    settings: Settings,
+def _forget_targets_with_audit(
     *,
-    object_type: str = "all",
-    object_id: str | None = None,
-    dataset: str = "all",
-    force: bool = False,
-    adapter: Any = None,
-) -> dict[str, Any]:
-    store = BrainStore(settings)
-    if object_id:
-        if object_type not in {"memory", "source"}:
-            raise ValueError("object_type must be memory or source when object_id is provided.")
-        _ensure_projection_row(
-            store,
-            settings,
-            object_type=object_type,
-            object_id=object_id,
-            force=force,
-        )
-        rows = store.list_cognee_sync(
-            statuses=("pending", "stale", "failed"),
-            object_type=object_type,
-            object_id=object_id,
-            limit=100,
-        )
-        results = [
-            sync_one(row["id"], settings=settings, store=store, adapter=adapter)
-            for row in rows
-            if row["status"] in {"pending", "stale"} or force
-        ]
-        return {
-            "status": "complete",
-            "processed": len(results),
-            "succeeded": len([result for result in results if result.get("status") == "synced"]),
-            "failed": len([result for result in results if result.get("status") == "failed"]),
-            "results": results,
-        }
-
-    if force:
-        rebuild_cognee_projection(
-            settings=settings,
-            store=store,
-            dataset=dataset,
-            confirm=True,
-            sync=False,
-        )
-    return sync_pending_cognee(settings=settings, store=store, adapter=adapter)
-
-
-def rebuild_cognee(
-    settings: Settings,
-    *,
-    dataset: str = "all",
-    prune_first: bool = False,
-    confirm: bool = False,
-    sync: bool = False,
-    adapter: Any = None,
-) -> dict[str, Any]:
-    return rebuild_cognee_projection(
-        settings=settings,
-        dataset=dataset,
-        prune_first=prune_first,
-        confirm=confirm,
-        sync=sync,
-        adapter=adapter,
-    )
-
-
-def merge_entities(
-    settings: Settings,
-    *,
-    primary_entity_id: str,
-    duplicate_entity_id: str,
-    reason: str | None = None,
-    confirm: bool = False,
-) -> dict[str, Any]:
-    if not confirm:
-        raise ValueError("brain_merge_entities requires confirm=true.")
-    store = BrainStore(settings)
-    result = store.merge_entities(
-        primary_entity_id=primary_entity_id,
-        duplicate_entity_id=duplicate_entity_id,
-        reason=reason,
-    )
-    for memory in store.list_memories_by_entity(primary_entity_id, include_superseded=True, limit=100_000):
-        store.mark_cognee_stale(object_type="memory", object_id=memory["id"])
-    return {"status": "merged", **result}
-
-
-def _ensure_projection_row(
     store: BrainStore,
     settings: Settings,
+    source_receipt: dict[str, Any],
+    targets: list[dict[str, Any]],
+    action: str,
+    reason: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+    forget_results: list[dict[str, Any]] = []
+    status_events: list[dict[str, Any]] = []
+    cognee_failures: list[str] = []
+    if not targets:
+        return forget_results, status_events, cognee_failures
+
+    for target in targets:
+        dataset = str(target.get("dataset") or settings.brain_cognee_memory_dataset)
+        target_external_id = str(target["external_id"])
+        data_id = _target_cognee_data_id(target)
+        if data_id is None:
+            message = (
+                "Cannot call cognee.forget for "
+                f"{target.get('object_type')} {target_external_id}: missing Cognee data item id."
+            )
+            cognee_failures.append(message)
+            forget_results.append(
+                {
+                    "target_external_id": target_external_id,
+                    "object_type": target.get("object_type"),
+                    "dataset": dataset,
+                    "status": "skipped",
+                    "reason": "missing_cognee_data_id",
+                }
+            )
+            continue
+
+        try:
+            forget_result = _call_cognee_forget(
+                data_id=data_id,
+                dataset=dataset,
+                settings=settings,
+            )
+        except Exception as exc:
+            cognee_failures.append(
+                f"cognee.forget failed for {target.get('object_type')} "
+                f"{target_external_id}: {exc}"
+            )
+            forget_results.append(
+                {
+                    "target_external_id": target_external_id,
+                    "object_type": target.get("object_type"),
+                    "dataset": dataset,
+                    "data_id": data_id,
+                    "status": "failed",
+                    "error": str(exc),
+                }
+            )
+            continue
+
+        forget_results.append(
+            {
+                "target_external_id": target_external_id,
+                "object_type": target.get("object_type"),
+                "dataset": dataset,
+                "data_id": data_id,
+                "status": "forgotten",
+                "cognee_result": _json_safe(forget_result),
+            }
+        )
+        try:
+            status_events.append(
+                _write_forget_status_event(
+                    store=store,
+                    settings=settings,
+                    source_receipt=source_receipt,
+                    target=target,
+                    dataset=dataset,
+                    action=action,
+                    reason=reason,
+                    data_id=data_id,
+                    forget_result=forget_result,
+                )
+            )
+        except Exception as exc:
+            cognee_failures.append(
+                f"status-event audit write failed after cognee.forget for "
+                f"{target.get('object_type')} {target_external_id}: {exc}"
+            )
+    return forget_results, status_events, cognee_failures
+
+
+def _write_forget_status_event(
+    *,
+    store: BrainStore,
+    settings: Settings,
+    source_receipt: dict[str, Any],
+    target: dict[str, Any],
+    dataset: str,
+    action: str,
+    reason: str,
+    data_id: str,
+    forget_result: Any,
+) -> dict[str, Any]:
+    event_id = store.make_external_id(
+        "evt",
+        action,
+        source_receipt["id"],
+        target.get("external_id"),
+        datetime.now().isoformat(),
+    )
+    payload = status_event_datapoint(
+        external_id=event_id,
+        receipt_id=source_receipt["id"],
+        target_external_id=str(target["external_id"]),
+        action=action,
+        status="deleted",
+        reason=reason,
+        timestamp=datetime.now().astimezone(),
+        metadata={
+            "source_receipt_id": source_receipt["id"],
+            "source_action": source_receipt.get("action"),
+            "object_type": target.get("object_type"),
+            "dataset": dataset,
+            "cognee_data_id": data_id,
+            "cognee_forget_result": _json_safe(forget_result),
+            "audit_only": True,
+        },
+    )
+    nodes = status_event_node_sets(
+        user_id=store.user_id,
+        profile_name=settings.brain_owner_name,
+        action=action,
+        status="deleted",
+    )
+    result = _call_cognee_remember_text(
+        datapoint_text(payload),
+        dataset_name=dataset,
+        node_set=nodes,
+        settings=settings,
+    )
+    return {
+        "id": event_id,
+        "target_external_id": target["external_id"],
+        "object_type": target.get("object_type"),
+        "dataset": dataset,
+        "data_id": data_id,
+        "audit_only": True,
+        "cognee_result": _json_safe(result),
+    }
+
+
+def _latest_undoable_receipt(store: BrainStore) -> dict[str, Any] | None:
+    for receipt in store.list_external_receipts(limit=100):
+        if receipt.get("tool_name") in {"brain_forget", "brain_undo_last"}:
+            continue
+        if receipt.get("status") not in {"synced", "not_applicable"}:
+            continue
+        if _receipt_cognee_objects(receipt):
+            return receipt
+    return None
+
+
+def _find_receipt_targets_for_object(
+    store: BrainStore,
     *,
     object_type: str,
     object_id: str,
-    force: bool,
-) -> None:
-    if object_type == "memory":
-        text = serialize_memory_for_cognee(object_id, store=store)
-        store.mark_cognee_pending(
-            object_type="memory",
-            object_id=object_id,
-            dataset=settings.brain_cognee_memory_dataset,
-            projection_hash=content_hash(text),
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+    for receipt in store.list_external_receipts(limit=500):
+        if receipt.get("tool_name") in {"brain_forget", "brain_undo_last"}:
+            continue
+        if receipt.get("status") not in {"synced", "not_applicable"}:
+            continue
+        targets = [
+            target
+            for target in _receipt_cognee_objects(receipt)
+            if target.get("object_type") == object_type and target.get("external_id") == object_id
+        ]
+        if targets:
+            return receipt, targets
+    return None, []
+
+
+def _target_dataset_summary(targets: list[dict[str, Any]]) -> str | None:
+    datasets = sorted({str(target.get("dataset")) for target in targets if target.get("dataset")})
+    return ",".join(datasets) if datasets else None
+
+
+def _receipt_cognee_objects(receipt: dict[str, Any]) -> list[dict[str, Any]]:
+    result = receipt.get("cognee_result_json") or {}
+    objects = result.get("objects") if isinstance(result, dict) else []
+    if not isinstance(objects, list):
+        return []
+    targets: list[dict[str, Any]] = []
+    for item in objects:
+        if not isinstance(item, dict):
+            continue
+        external_id = item.get("external_id")
+        object_type = item.get("object_type")
+        if not external_id or object_type != "cognee_remember":
+            continue
+        targets.append(
+            {
+                "external_id": str(external_id),
+                "object_type": str(object_type),
+                "dataset": item.get("dataset"),
+                "node_sets": item.get("node_sets") or [],
+                "cognee_result": item.get("cognee_result"),
+            }
         )
-    elif object_type == "source":
-        text = serialize_source_for_cognee(object_id, store=store)
-        store.mark_cognee_pending(
-            object_type="source",
-            object_id=object_id,
-            dataset=settings.brain_cognee_sources_dataset,
-            projection_hash=content_hash(text),
+    return targets
+
+
+def _target_cognee_data_id(target: dict[str, Any]) -> str | None:
+    result = target.get("cognee_result")
+    candidates: list[Any] = [target.get("data_id")]
+    if isinstance(result, dict):
+        candidates.extend(
+            [
+                result.get("data_id"),
+                result.get("data_item_id"),
+                result.get("id"),
+            ]
         )
-    if force:
-        store.mark_cognee_stale(object_type=object_type, object_id=object_id)
+        items = result.get("items")
+        if isinstance(items, list):
+            for item in items:
+                if isinstance(item, dict):
+                    candidates.extend([item.get("data_id"), item.get("data_item_id"), item.get("id")])
+    for candidate in candidates:
+        if not candidate:
+            continue
+        try:
+            return str(UUID(str(candidate)))
+        except (TypeError, ValueError):
+            continue
+    return None
 
 
 def should_route_recall_to_taste(query: str) -> bool:
@@ -940,8 +1109,7 @@ def collect_taste_evidence(settings: Settings, memories: list[dict[str, Any]]) -
     ]
     if not taste_memory_ids:
         return {}
-    sqlite_store = TasteStore(settings)
-    store = canonical_taste_store(settings, sqlite_store)
+    store = CogneePalateStore(settings)
     linked = []
     for memory in memories:
         taste_item_id = (memory.get("metadata_json") or {}).get("taste_item_id")
@@ -991,54 +1159,25 @@ def taste_result_to_ingestion_receipt(
             dry_run=bool(taste_result.get("dry_run")),
             taste=taste_result,
         )
-    store = BrainStore(settings)
     projection = taste_result.get("brain_projection") or {}
-    memory_ids = projection.get("memory_ids") or []
     records = taste_result.get("taste_records") or []
-    memory_receipts = []
-    cognee_sync_targets: list[CogneeSyncTarget] = []
-    for memory_id in memory_ids:
-        memory = store.get_memory(memory_id)
-        if memory is None:
-            continue
-        cognee_sync_targets.append(("memory", memory["id"]))
-        memory_receipts.append(
-            MemoryReceipt(
-                id=memory["id"],
-                kind=memory["kind"],
-                statement=memory["statement"],
-                status=memory["status"],
-                confidence=memory["confidence"],
-                created=True,
-            )
-        )
-    _submit_background_cognee_sync(settings, cognee_sync_targets)
-    entity_receipts = []
+    entity_receipts: list[EntityReceipt] = []
     for record in records:
-        entity = store.get_entity(record["brain_entity_id"])
-        if entity is None:
+        entity_id = record.get("brain_entity_id")
+        if not entity_id:
             continue
         entity_receipts.append(
             EntityReceipt(
-                id=entity["id"],
-                canonical_name=entity["canonical_name"],
-                type=entity["type"],
-                created=bool(projection.get("entity_created")),
+                id=str(entity_id),
+                canonical_name=str(record["canonical_name"]),
+                type=str(record["type"]),
+                created=False,
             )
         )
     return IngestionReceipt(
         ingestion_run_id=stable_id("taste_ing", jsonable_hashable(taste_result)),
         classification=f"taste_{route.get('taste_intent', 'remember')}",
-        memory_cards=memory_receipts,
         entities=entity_receipts,
-        relationships=[
-            {"id": rel_id, "created": True}
-            for rel_id in projection.get("relationship_ids", [])
-        ],
-        open_loops=[
-            {"id": loop_id, "created": True}
-            for loop_id in projection.get("open_loop_ids", [])
-        ],
         taste=taste_result,
     )
 

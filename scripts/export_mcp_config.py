@@ -49,6 +49,10 @@ def main() -> int:
         "DB_NAME": settings.db_name,
         "SYSTEM_ROOT_DIRECTORY": str(repo_path(settings.system_root_directory)),
         "DATA_ROOT_DIRECTORY": str(repo_path(settings.data_root_directory)),
+        "BRAIN_AUTH_TOKEN": settings.brain_auth_token or "",
+        "BRAIN_USER_ID": settings.brain_user_id,
+        "BRAIN_STDIO_BEARER_TOKEN": settings.brain_auth_token or "",
+        "BRAIN_STDIO_USER_ID": settings.brain_user_id,
     }
     env.update(provider_api_environment(settings))
     config = {

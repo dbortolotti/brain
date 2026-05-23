@@ -4,10 +4,9 @@ import json
 import re
 from typing import Any
 
-from memory_stack.brain_store import content_hash, normalize_name, stable_id
+from memory_stack.brain_store import normalize_name, stable_id
 from memory_stack.cfg import Settings
 from memory_stack.llm.client import LLMClient, build_llm_client
-from memory_stack.resolution.entity_resolver import EntityResolver
 from memory_stack.taste.enrichment import TasteEnrichmentService, metadata_has_content
 from memory_stack.taste.models import (
     TasteDescribeRequest,
@@ -20,13 +19,7 @@ from memory_stack.taste.ranking import build_grounding, rank_candidates, retriev
 from memory_stack.taste.routing import classify_taste_route, taste_domain_router
 from memory_stack.taste.schema import ENTITY_TYPES, INTENTS, attribute_keys_for_type
 from memory_stack.taste.cognee_store import CogneePalateStore
-from memory_stack.taste.store import TasteStore
-
-
-def canonical_taste_store(settings: Settings, sqlite_store: TasteStore) -> Any:
-    if settings.brain_taste_canonical_store == "cognee":
-        return CogneePalateStore(settings)
-    return sqlite_store
+from memory_stack.taste.store import TasteProposalStore
 
 
 class TasteService:
@@ -37,8 +30,8 @@ class TasteService:
         canonical_store: Any | None = None,
     ) -> None:
         self.settings = settings
-        self.store = TasteStore(settings)
-        self.canonical_store = canonical_store or canonical_taste_store(settings, self.store)
+        self.store = TasteProposalStore(settings)
+        self.canonical_store = canonical_store or CogneePalateStore(settings)
         self.brain_store = self.store.brain_store
         self.enrichment = TasteEnrichmentService(
             settings,
@@ -164,24 +157,20 @@ class TasteService:
                 },
             }
 
-        entity, entity_created = self._resolve_taste_entity(
-            request.type,
-            request.canonical_name,
-            enriched["normalized_metadata"],
-        )
-        projected = self._project_to_brain(
-            request=request,
-            taste_entity=entity,
-            enrichment=enriched,
-        )
+        projected = self._palate_control_projection(request=request, enrichment=enriched)
         item_payload = {
             "id": request.id,
-            "brain_entity_id": entity["id"],
+            "brain_entity_id": projected["entity_id"],
             "type": request.type,
             "canonical_name": request.canonical_name,
             "source_text": request.description,
             "notes": request.notes or enriched.get("notes") or request.description,
-            "metadata_json": enriched["normalized_metadata"],
+            "metadata_json": {
+                **enriched["normalized_metadata"],
+                "brain_db_semantic_rows_written": False,
+                "semantic_store": "cognee",
+                "brain_control_projection": projected,
+            },
             "enrichment_metadata_json": enriched["enrichment_metadata"],
             "enrichment_status": enriched["enrichment_status"],
             "attributes": enriched["attributes"],
@@ -189,14 +178,11 @@ class TasteService:
             "signals": self._signals_for_request(request, projected),
         }
         taste_item, created = self.canonical_store.upsert_item(item_payload)
-        self._attach_taste_metadata_to_memory(projected["memory_id"], taste_item["id"])
 
         return {
             "stored": True,
-            "canonical_store": self.settings.brain_taste_canonical_store,
-            "canonical_dataset": self.settings.brain_cognee_palate_dataset
-            if self.settings.brain_taste_canonical_store == "cognee"
-            else None,
+            "canonical_store": "cognee",
+            "canonical_dataset": self.settings.brain_cognee_palate_dataset,
             "taste_records_created": 1 if created else 0,
             "taste_records_updated": 0 if created else 1,
             "taste_records": [
@@ -205,7 +191,6 @@ class TasteService:
                     "type": taste_item["type"],
                     "canonical_name": taste_item["canonical_name"],
                     "brain_entity_id": taste_item["brain_entity_id"],
-                    "evidence_memory_id": projected["memory_id"],
                     "attributes": taste_item["attributes"],
                     "attribute_intervals_95": taste_item["attribute_intervals_95"],
                     "metadata": taste_item["metadata"],
@@ -214,16 +199,10 @@ class TasteService:
                 }
             ],
             "brain_projection": {
-                "entity_id": entity["id"],
-                "entity_created": entity_created,
-                "memory_ids": [projected["memory_id"]],
-                "relationship_ids": projected["relationship_ids"],
-                "open_loop_ids": projected["open_loop_ids"],
-                "closed_open_loop_ids": projected.get("closed_open_loop_ids", []),
-                "open_loop_confirmation_proposal_ids": projected.get(
-                    "open_loop_confirmation_proposal_ids",
-                    [],
-                ),
+                "entity_id": projected["entity_id"],
+                "entity_created": False,
+                "semantic_store": "cognee",
+                "brain_db_semantic_rows_written": False,
             },
             "enrichment": {
                 "status": enriched["enrichment_status"],
@@ -259,7 +238,7 @@ class TasteService:
         )
         return {
             "decision_id": decision_id,
-            "canonical_store": self.settings.brain_taste_canonical_store,
+            "canonical_store": "cognee",
             "intent": intent,
             "extracted_entities": extracted_entities or [],
             "retrieval": describe_retrieval(retrieval),
@@ -302,7 +281,7 @@ class TasteService:
         return {
             "logged": True,
             "decision_id": decision_id,
-            "canonical_store": self.settings.brain_taste_canonical_store,
+            "canonical_store": "cognee",
             "chosen_taste_item_id": request.chosen_taste_item_id,
             "updated_existing_decision": updated,
         }
@@ -340,9 +319,6 @@ class TasteService:
                 "query_payload": {"query": text} if route.get("taste_intent") == "query" else None,
                 "proposed_taste_records": [],
                 "proposed_brain_entities": [],
-                "proposed_memory_cards": [],
-                "proposed_relationships": [],
-                "proposed_open_loops": [],
                 "allowed_actions": ["confirm", "cancel", "correct"],
             }
         return self.store.create_proposal(
@@ -407,19 +383,6 @@ class TasteService:
                     "canonical_name": request.canonical_name,
                 }
             ],
-            "proposed_memory_cards": [
-                {
-                    "statement": taste_statement(request, self.settings.brain_owner_name),
-                    "kind": "preference"
-                    if request.recommended_by or request.wanted
-                    else "experience",
-                }
-            ],
-            "proposed_relationships": proposed_relationships_for_request(
-                request,
-                self.settings.brain_owner_name,
-            ),
-            "proposed_open_loops": proposed_open_loops_for_request(request),
             "allowed_actions": ["confirm", "cancel", "correct"],
             "broader_search_policy": (
                 "Strict-source lookup did not verify this item. Broader web search "
@@ -440,16 +403,10 @@ class TasteService:
                 update={"store_anyway": True}
             )
         )
-        closure = payload.get("proposed_open_loop_closure") or {}
-        closed_open_loop_id = None
-        if closure.get("open_loop_id"):
-            self.brain_store.update_open_loop_status(closure["open_loop_id"], "closed")
-            closed_open_loop_id = closure["open_loop_id"]
         self.store.update_proposal(proposal_id, status="confirmed")
         return {
             "confirmed": True,
             "proposal_id": proposal_id,
-            "closed_open_loop_id": closed_open_loop_id,
             "result": result,
         }
 
@@ -539,150 +496,39 @@ class TasteService:
             }
         )
         material_memory_id = None
-        if material_changes:
-            memory, _ = self.brain_store.upsert_memory_card(
-                {
-                    "kind": "experience",
-                    "statement": (
-                        f"Taste enrichment for {item['canonical_name']} changed: "
-                        f"{', '.join(material_changes)}."
-                    ),
-                    "confidence": "high",
-                    "metadata_json": {
-                        "taste": True,
-                        "taste_item_id": item["id"],
-                        "taste_refresh": True,
-                        "material_changes": material_changes,
-                    },
-                }
-            )
-            self.brain_store.link_memory_entity(
-                memory_id=memory["id"],
-                entity_id=item["brain_entity_id"],
-                role="taste_item",
-                confidence="high",
-            )
-            material_memory_id = memory["id"]
+        material_event_id = (
+            stable_id("taste_refresh", item["id"], json.dumps(material_changes, sort_keys=True))
+            if material_changes
+            else None
+        )
         return {
             "refreshed": True,
             "taste_record_id": item["id"],
-            "canonical_store": self.settings.brain_taste_canonical_store,
+            "canonical_store": "cognee",
             "previous_enrichment_checked_at": previous.get("checked_at"),
             "new_enrichment_checked_at": enriched["enrichment_metadata"].get("checked_at"),
             "changed_fields": changed_fields,
             "material_changes": material_changes,
             "material_memory_id": material_memory_id,
+            "material_event_id": material_event_id,
+            "brain_db_semantic_rows_written": False,
             "warnings": enriched["warnings"],
         }
 
-    def _resolve_taste_entity(
-        self,
-        entity_type: str,
-        canonical_name: str,
-        metadata: dict[str, Any],
-    ) -> tuple[dict[str, Any], bool]:
-        resolver = EntityResolver(self.brain_store)
-        resolution = resolver.resolve_entity(
-            entity_type=entity_type,
-            canonical_name=canonical_name,
-            confidence="high",
-            metadata_json={"taste": True, **metadata},
-        )
-        return resolution.entity, resolution.created
-
-    def _project_to_brain(
+    def _palate_control_projection(
         self,
         *,
         request: TasteRememberRequest,
-        taste_entity: dict[str, Any],
         enrichment: dict[str, Any],
     ) -> dict[str, Any]:
-        statement = taste_statement(request, self.settings.brain_owner_name)
-        memory, _ = self.brain_store.upsert_memory_card(
-            {
-                "kind": "preference" if request.recommended_by or request.wanted else "experience",
-                "statement": statement,
-                "confidence": "high",
-                "metadata_json": {
-                    "taste": True,
-                    "taste_type": request.type,
-                    "enrichment_status": enrichment["enrichment_status"],
-                    "source": request.source,
-                    **request.context,
-                },
-            }
-        )
-        self.brain_store.link_memory_entity(
-            memory_id=memory["id"],
-            entity_id=taste_entity["id"],
-            role="taste_item",
-            confidence="high",
-        )
-        projection_hash = content_hash(memory["id"], memory["statement"], memory["status"])
-        self.brain_store.mark_cognee_pending(
-            object_type="memory",
-            object_id=memory["id"],
-            dataset=self.settings.brain_cognee_memory_dataset,
-            projection_hash=projection_hash,
-        )
-
-        relationship_ids = []
-        open_loop_ids = []
-        subject = None
-        predicate = None
-        if request.recommended_by:
-            person = self.brain_store.upsert_entity(
-                entity_type="person",
-                canonical_name=request.recommended_by,
-                confidence="high",
-            )[0]
-            self.brain_store.link_memory_entity(
-                memory_id=memory["id"],
-                entity_id=person["id"],
-                role="recommender",
-                confidence="high",
-            )
-            subject = person
-            predicate = "recommended"
-        elif request.wanted:
-            subject = self._owner_entity()
-            predicate = wanted_predicate(request.type)
-        elif request.rating is not None:
-            subject = self._owner_entity()
-            predicate = "rated"
-        elif request.disliked or request.avoid or request.not_my_style or request.bad_fit:
-            subject = self._owner_entity()
-            predicate = negative_predicate(request)
-        elif request.tried or request.watched or request.listened:
-            subject = self._owner_entity()
-            predicate = "experienced"
-
-        if subject is not None and predicate is not None:
-            rel, _ = self.brain_store.create_relationship(
-                subject_entity_id=subject["id"],
-                predicate=predicate,
-                object_entity_id=taste_entity["id"],
-                evidence_memory_id=memory["id"],
-                confidence="high",
-                metadata_json={"taste": True},
-            )
-            relationship_ids.append(rel["id"])
-
-        if request.wanted:
-            loop, _ = self.brain_store.create_open_loop(
-                memory_id=memory["id"],
-                metadata_json={"taste": True, "taste_type": request.type},
-            )
-            open_loop_ids.append(loop["id"])
-        closed = {"closed_open_loop_ids": [], "open_loop_confirmation_proposal_ids": []}
-        if request.tried or request.watched or request.listened or request.rating is not None:
-            closed = self._close_matching_open_loops(request)
-
+        normalized_name = normalize_name(request.canonical_name)
+        entity_id = stable_id("taste_entity", request.type, normalized_name)
         return {
-            "memory_id": memory["id"],
-            "relationship_ids": relationship_ids,
-            "open_loop_ids": open_loop_ids,
-            **closed,
+            "entity_id": entity_id,
+            "statement": taste_statement(request, self.settings.brain_owner_name),
+            "enrichment_status": enrichment["enrichment_status"],
+            "source": request.source,
+            "brain_db_semantic_rows_written": False,
         }
 
     def _signals_for_request(
@@ -696,7 +542,6 @@ class TasteService:
                 {
                     "type": "rating",
                     "value": float(request.rating),
-                    "provenance_memory_id": projected["memory_id"],
                     "source": request.source,
                 }
             )
@@ -705,7 +550,6 @@ class TasteService:
                 {
                     "type": "tried",
                     "value": True,
-                    "provenance_memory_id": projected["memory_id"],
                     "source": request.source,
                 }
             )
@@ -714,7 +558,6 @@ class TasteService:
                 {
                     "type": "watched",
                     "value": True,
-                    "provenance_memory_id": projected["memory_id"],
                     "source": request.source,
                 }
             )
@@ -723,7 +566,6 @@ class TasteService:
                 {
                     "type": "listened",
                     "value": True,
-                    "provenance_memory_id": projected["memory_id"],
                     "source": request.source,
                 }
             )
@@ -732,7 +574,6 @@ class TasteService:
                 {
                     "type": wanted_signal_type(request.type),
                     "value": True,
-                    "provenance_memory_id": projected["memory_id"],
                     "source": request.source,
                 }
             )
@@ -747,7 +588,6 @@ class TasteService:
                     {
                         "type": signal_type,
                         "value": True,
-                        "provenance_memory_id": projected["memory_id"],
                         "source": request.source,
                     }
                 )
@@ -756,78 +596,10 @@ class TasteService:
                 {
                     "type": "recommended_by",
                     "value": request.recommended_by,
-                    "provenance_memory_id": projected["memory_id"],
                     "source": request.source,
                 }
             )
         return signals
-
-    def _owner_entity(self) -> dict[str, Any]:
-        return self.brain_store.upsert_entity(
-            entity_type="person",
-            canonical_name=self.settings.brain_owner_name,
-            confidence="high",
-        )[0]
-
-    def _close_matching_open_loops(self, request: TasteRememberRequest) -> dict[str, list[str]]:
-        closed_ids: list[str] = []
-        proposal_ids: list[str] = []
-        for loop in self.brain_store.list_open_loops(
-            topic=request.canonical_name,
-            status="open",
-            limit=20,
-        ):
-            confidence = open_loop_match_confidence(request.canonical_name, loop["statement"])
-            if confidence >= self.settings.brain_taste_open_loop_close_threshold:
-                self.brain_store.update_open_loop_status(loop["id"], "closed")
-                closed_ids.append(loop["id"])
-                continue
-            if confidence >= self.settings.brain_taste_open_loop_confirmation_threshold:
-                proposal = self.store.create_proposal(
-                    original_text=request.description,
-                    proposal={
-                        "route": {
-                            "domain": "taste",
-                            "taste_intent": "remember",
-                            "entity_type_hint": request.type,
-                            "confidence": confidence,
-                            "requires_enrichment": False,
-                            "requires_confirmation": True,
-                            "ambiguity_reasons": [
-                                "Completion may close a matching taste open loop."
-                            ],
-                        },
-                        "remember_payload": request.model_dump(mode="json"),
-                        "proposed_open_loop_closure": {
-                            "open_loop_id": loop["id"],
-                            "statement": loop["statement"],
-                            "confidence": round(confidence, 3),
-                        },
-                        "allowed_actions": ["confirm", "cancel", "correct"],
-                    },
-                    warnings=["Confirm before closing the matching taste open loop."],
-                )
-                proposal_ids.append(proposal["id"])
-        return {
-            "closed_open_loop_ids": closed_ids,
-            "open_loop_confirmation_proposal_ids": proposal_ids,
-        }
-
-    def _attach_taste_metadata_to_memory(self, memory_id: str, taste_item_id: str) -> None:
-        memory = self.brain_store.get_memory(memory_id)
-        if memory is None:
-            return
-        metadata = dict(memory.get("metadata_json") or {})
-        metadata["taste_item_id"] = taste_item_id
-        with self.brain_store.engine.begin() as conn:
-            from memory_stack import brain_schema as brain_schema
-            from sqlalchemy import update
-
-            conn.execute(
-                update(brain_schema.memory_cards)
-                .where(brain_schema.memory_cards.c.id == memory_id)
-                .values(metadata_json=metadata)
-            )
 
     def _match_existing(self, name: str, entity_type: str) -> dict[str, Any]:
         matches = self.canonical_store.match_entities_by_names([name])
@@ -1125,11 +897,7 @@ def detailed_ranking_explanation(
                 "negative_signals": result["facts"].get("negative_signals", []),
                 "signal_facts": result["facts"].get("signal_facts", []),
                 "attribute_intervals_95": result["entity"].get("attribute_intervals_95") or {},
-                "evidence_ids": [
-                    signal.get("provenance_memory_id")
-                    for signal in result["entity"].get("signals") or []
-                    if signal.get("provenance_memory_id")
-                ],
+                "evidence_ids": [],
             }
             for result in ranked
         ],
@@ -1272,80 +1040,9 @@ def wanted_signal_type(entity_type: str) -> str:
     return "wanted_to_try"
 
 
-def wanted_predicate(entity_type: str) -> str:
-    return wanted_signal_type(entity_type)
-
-
-def negative_predicate(request: TasteRememberRequest) -> str:
-    if request.avoid:
-        return "avoids"
-    if request.not_my_style:
-        return "not_my_style"
-    if request.bad_fit:
-        return "bad_fit"
-    return "disliked"
-
-
-def proposed_relationships_for_request(
-    request: TasteRememberRequest,
-    owner_name: str,
-) -> list[dict[str, Any]]:
-    if request.recommended_by:
-        return [
-            {
-                "subject": request.recommended_by,
-                "predicate": "recommended",
-                "object": request.canonical_name,
-            }
-        ]
-    predicate = None
-    if request.wanted:
-        predicate = wanted_predicate(request.type)
-    elif request.rating is not None:
-        predicate = "rated"
-    elif request.disliked or request.avoid or request.not_my_style or request.bad_fit:
-        predicate = negative_predicate(request)
-    elif request.tried or request.watched or request.listened:
-        predicate = "experienced"
-    if predicate is None:
-        return []
-    return [
-        {
-            "subject": owner_name,
-            "predicate": predicate,
-            "object": request.canonical_name,
-        }
-    ]
-
-
-def proposed_open_loops_for_request(request: TasteRememberRequest) -> list[dict[str, Any]]:
-    if not request.wanted:
-        return []
-    return [
-        {
-            "text": f"{wanted_verb(request.type).capitalize()} {request.canonical_name}.",
-            "signal_type": wanted_signal_type(request.type),
-        }
-    ]
-
-
 def wanted_verb(entity_type: str) -> str:
     if entity_type in {"movie", "series"}:
         return "watch"
     if entity_type == "music":
         return "listen to"
     return "try"
-
-
-def open_loop_match_confidence(canonical_name: str, statement: str) -> float:
-    normalized_name = normalize_name(canonical_name)
-    normalized_statement = normalize_name(statement)
-    if not normalized_name or not normalized_statement:
-        return 0.0
-    if normalized_name in normalized_statement:
-        return 1.0
-    name_tokens = set(normalized_name.split())
-    statement_tokens = set(normalized_statement.split())
-    if not name_tokens:
-        return 0.0
-    return len(name_tokens & statement_tokens) / len(name_tokens)

@@ -14,8 +14,8 @@ from memory_stack.taste.models import TasteLogDecisionRequest, TasteRememberRequ
 from memory_stack.taste.omdb import omdb_payload_to_metadata
 from memory_stack.taste.ranking import rank_candidates
 from memory_stack.taste.schema import invalid_attribute_keys
+from memory_stack.taste.cognee_store import CogneePalateStore, InMemoryPalateCogneeAdapter
 from memory_stack.taste.service import TasteService
-from memory_stack.taste.store import TasteStore
 
 
 def test_strict_attribute_schema_rejects_cross_category_keys() -> None:
@@ -119,12 +119,12 @@ def test_ranking_uses_latest_rating_and_excludes_negative_signals() -> None:
 
 def test_decision_feedback_records_chosen_and_rejected_options(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
-    service = TasteService(settings)
+    service = make_taste_service(settings)
     alpha = remember_wine(service, "Alpha Wine", rating=7)
     beta = remember_wine(service, "Beta Wine", rating=8)
     gamma = remember_wine(service, "Gamma Wine", rating=6)
 
-    decision_id = service.store.log_decision(
+    decision_id = service.canonical_store.log_decision(
         query="Which wine should I choose?",
         context={},
         options=[],
@@ -138,7 +138,7 @@ def test_decision_feedback_records_chosen_and_rejected_options(tmp_path) -> None
         TasteLogDecisionRequest(decision_id=decision_id, chosen_taste_item_id=beta["id"])
     )
 
-    feedback = service.store.decision_feedback(
+    feedback = service.canonical_store.decision_feedback(
         "Which wine should I choose tonight?",
         [alpha["id"], beta["id"], gamma["id"]],
     )
@@ -149,11 +149,11 @@ def test_decision_feedback_records_chosen_and_rejected_options(tmp_path) -> None
     assert feedback[gamma["id"]]["rejected"] == 1
 
 
-def test_soft_and_hard_delete_taste_items(tmp_path) -> None:
+def test_soft_and_hard_delete_palate_items(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
-    service = TasteService(settings)
+    service = make_taste_service(settings)
     record = remember_wine(service, "Delete Me Wine", rating=5)
-    store = TasteStore(settings)
+    store = service.canonical_store
 
     assert store.soft_delete_item(record["id"]) is True
     assert store.get_item(record["id"]) is None
@@ -164,15 +164,16 @@ def test_soft_and_hard_delete_taste_items(tmp_path) -> None:
     with pytest.raises(ValueError, match="confirm=True"):
         store.hard_delete_item(record["id"])
     assert store.hard_delete_item(record["id"], confirm=True) is True
-    assert store.get_item(record["id"], include_deleted=True) is None
+    assert store.get_item(record["id"], include_deleted=True)["status"] == "deleted"
 
 
 def test_store_rejects_unknown_taste_signal_types(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
-    record = remember_wine(TasteService(settings), "Signal Wine", rating=5)
+    service = make_taste_service(settings)
+    record = remember_wine(service, "Signal Wine", rating=5)
 
     with pytest.raises(ValueError, match="signal_type must be one of"):
-        TasteStore(settings).add_signal(record["id"], "saved", True)
+        service.canonical_store.add_signal(record["id"], "saved", True)
 
 
 def remember_wine(
@@ -197,4 +198,14 @@ def brain_test_settings(tmp_path, **overrides: Any) -> Settings:
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
         brain_taste_omdb_api_key=None,
         **overrides,
+    )
+
+
+def make_taste_service(settings: Settings) -> TasteService:
+    return TasteService(
+        settings,
+        canonical_store=CogneePalateStore(
+            settings,
+            adapter=InMemoryPalateCogneeAdapter(settings.brain_cognee_palate_dataset),
+        ),
     )

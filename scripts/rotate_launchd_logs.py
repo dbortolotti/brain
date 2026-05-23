@@ -47,7 +47,6 @@ def launchd_log_names(env: str) -> list[str]:
         stems = [
             "brain-prod",
             "brain-ui",
-            "brain-slack-agent",
             "brain-maintenance",
             "brain-log-rotation",
         ]
@@ -55,7 +54,6 @@ def launchd_log_names(env: str) -> list[str]:
         stems = [
             "brain-staging",
             "brain-staging-ui",
-            "brain-staging-slack-agent",
             "brain-staging-maintenance",
             "brain-staging-log-rotation",
         ]

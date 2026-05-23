@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import Engine, and_, create_engine, delete, insert, or_, select, update
+from sqlalchemy import Engine, and_, create_engine, insert, select, update
 from sqlalchemy.exc import IntegrityError
 
 from memory_stack import brain_schema as schema
@@ -47,19 +47,6 @@ def normalize_user_id(value: str | None) -> str:
     return normalized or DEFAULT_USER_ID
 
 
-def visible_memory_status_filter(
-    *,
-    include_superseded: bool = False,
-    include_conflicts: bool = True,
-) -> Any:
-    statuses = ["current"]
-    if include_conflicts:
-        statuses.append("conflicted")
-    if include_superseded:
-        statuses.append("superseded")
-    return schema.memory_cards.c.status.in_(statuses)
-
-
 def brain_database_url(settings: Settings) -> str:
     url = settings.brain_database_url
     if not url.startswith("sqlite:///") or url == "sqlite:///:memory:":
@@ -86,6 +73,10 @@ def init_brain_db(settings: Settings) -> None:
 
 def row_dict(row: Any) -> dict[str, Any]:
     return dict(row._mapping)
+
+
+def jsonable(value: Any) -> Any:
+    return json.loads(json.dumps(value, ensure_ascii=True, sort_keys=True, default=str))
 
 
 class BrainStore:
@@ -127,94 +118,8 @@ class BrainStore:
             return self._scoped_id(prefix, "external", raw_id)
         return stable_id(prefix, *fallback_values)
 
-    def create_ingestion_run(
-        self,
-        *,
-        input_type: str,
-        input_hash: str,
-        raw_input_preview: str,
-        metadata_json: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        run_id = self._scoped_id("ing", input_type, input_hash, now_utc().isoformat())
-        values = {
-            "id": run_id,
-            "user_id": self.user_id,
-            "input_type": input_type,
-            "input_hash": input_hash,
-            "raw_input_preview": raw_input_preview[:500],
-            "status": "started",
-            "metadata_json": metadata_json or {},
-        }
-        with self.engine.begin() as conn:
-            conn.execute(insert(schema.ingestion_runs).values(**values))
-            row = conn.execute(
-                select(schema.ingestion_runs).where(
-                    and_(schema.ingestion_runs.c.id == run_id, self._user_filter(schema.ingestion_runs))
-                )
-            ).one()
-        return row_dict(row)
-
-    def finish_ingestion_run(
-        self,
-        run_id: str,
-        *,
-        status: str,
-        source_id: str | None = None,
-        error_message: str | None = None,
-    ) -> None:
-        with self.engine.begin() as conn:
-            conn.execute(
-                update(schema.ingestion_runs)
-                .where(and_(schema.ingestion_runs.c.id == run_id, self._user_filter(schema.ingestion_runs)))
-                .values(
-                    status=status,
-                    source_id=source_id,
-                    error_message=error_message,
-                    finished_at=now_utc(),
-                )
-            )
-
-    def upsert_source(self, values: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-        raw_text = values.get("raw_text") or ""
-        raw_source_hash = values.get("content_hash") or content_hash(
-            values.get("kind"),
-            values.get("uri"),
-            values.get("title"),
-            raw_text,
-        )
-        source_hash = self._scoped_hash("source", raw_source_hash)
-        source_id = self._object_id("src", values.get("id"), source_hash)
-        payload = {
-            "id": source_id,
-            "user_id": self.user_id,
-            "kind": values["kind"],
-            "title": values.get("title"),
-            "uri": values.get("uri"),
-            "file_path": values.get("file_path"),
-            "raw_text": raw_text,
-            "summary": values.get("summary"),
-            "content_hash": source_hash,
-            "metadata_json": values.get("metadata_json") or {},
-            "status": values.get("status") or "processed",
-            "captured_at": values.get("captured_at") or now_utc(),
-            "processed_at": values.get("processed_at") or now_utc(),
-        }
-
-        with self.engine.begin() as conn:
-            try:
-                conn.execute(insert(schema.sources).values(**payload))
-                created = True
-            except IntegrityError:
-                created = False
-            row = conn.execute(
-                select(schema.sources).where(
-                    and_(
-                        schema.sources.c.content_hash == source_hash,
-                        self._user_filter(schema.sources),
-                    )
-                )
-            ).one()
-        return row_dict(row), created
+    def make_external_id(self, prefix: str, *values: Any) -> str:
+        return self._scoped_id(prefix, *values)
 
     def upsert_entity(
         self,
@@ -317,7 +222,6 @@ class BrainStore:
         *,
         entity_id: str,
         alias: str,
-        source_memory_id: str | None = None,
         confidence: str = "medium",
     ) -> None:
         with self.engine.begin() as conn:
@@ -325,7 +229,6 @@ class BrainStore:
                 conn,
                 entity_id=entity_id,
                 alias=alias,
-                source_memory_id=source_memory_id,
                 confidence=confidence,
             )
 
@@ -335,7 +238,6 @@ class BrainStore:
         *,
         entity_id: str,
         alias: str,
-        source_memory_id: str | None,
         confidence: str = "medium",
     ) -> None:
         normalized = normalize_name(alias)
@@ -350,287 +252,11 @@ class BrainStore:
                     entity_id=entity_id,
                     alias=alias,
                     normalized_alias=normalized,
-                    source_memory_id=source_memory_id,
                     confidence=confidence,
                 )
             )
         except IntegrityError:
             return
-
-    def upsert_memory_card(self, values: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-        raw_card_hash = values.get("content_hash") or content_hash(
-            values.get("kind"),
-            values.get("statement"),
-            values.get("observed_at"),
-            values.get("source_id"),
-        )
-        card_hash = self._scoped_hash("memory", raw_card_hash)
-        memory_id = self._object_id("mem", values.get("id"), card_hash)
-        payload = {
-            "id": memory_id,
-            "user_id": self.user_id,
-            "kind": values["kind"],
-            "statement": values["statement"],
-            "summary": values.get("summary"),
-            "confidence": values.get("confidence") or "medium",
-            "status": values.get("status") or "current",
-            "observed_at": values.get("observed_at"),
-            "source_id": values.get("source_id"),
-            "source_quote": values.get("source_quote"),
-            "metadata_json": values.get("metadata_json") or {},
-            "content_hash": card_hash,
-        }
-
-        with self.engine.begin() as conn:
-            try:
-                conn.execute(insert(schema.memory_cards).values(**payload))
-                created = True
-            except IntegrityError:
-                created = False
-            row = conn.execute(
-                select(schema.memory_cards).where(
-                    and_(
-                        schema.memory_cards.c.content_hash == card_hash,
-                        self._user_filter(schema.memory_cards),
-                    )
-                )
-            ).one()
-        return row_dict(row), created
-
-    def link_memory_entity(
-        self,
-        *,
-        memory_id: str,
-        entity_id: str,
-        role: str,
-        confidence: str = "medium",
-    ) -> None:
-        with self.engine.begin() as conn:
-            try:
-                conn.execute(
-                    insert(schema.memory_entities).values(
-                        user_id=self.user_id,
-                        memory_id=memory_id,
-                        entity_id=entity_id,
-                        role=role,
-                        confidence=confidence,
-                    )
-                )
-            except IntegrityError:
-                return
-
-    def create_relationship(
-        self,
-        *,
-        subject_entity_id: str,
-        predicate: str,
-        object_entity_id: str,
-        evidence_memory_id: str | None,
-        confidence: str = "medium",
-        status: str = "current",
-        metadata_json: dict[str, Any] | None = None,
-    ) -> tuple[dict[str, Any], bool]:
-        relationship_id = self._scoped_id(
-            "rel",
-            subject_entity_id,
-            predicate,
-            object_entity_id,
-            evidence_memory_id,
-        )
-        payload = {
-            "id": relationship_id,
-            "user_id": self.user_id,
-            "subject_entity_id": subject_entity_id,
-            "predicate": predicate,
-            "object_entity_id": object_entity_id,
-            "evidence_memory_id": evidence_memory_id,
-            "confidence": confidence,
-            "status": status,
-            "metadata_json": metadata_json or {},
-        }
-        with self.engine.begin() as conn:
-            try:
-                conn.execute(insert(schema.relationships).values(**payload))
-                created = True
-            except IntegrityError:
-                created = False
-            row = conn.execute(
-                select(schema.relationships).where(
-                    and_(
-                        schema.relationships.c.id == relationship_id,
-                        self._user_filter(schema.relationships),
-                    )
-                )
-            ).one()
-        return row_dict(row), created
-
-    def create_memory_link(
-        self,
-        *,
-        from_memory_id: str,
-        relation: str,
-        to_memory_id: str,
-        confidence: str = "medium",
-        metadata_json: dict[str, Any] | None = None,
-    ) -> tuple[dict[str, Any], bool]:
-        link_id = self._scoped_id("mlink", from_memory_id, relation, to_memory_id)
-        payload = {
-            "id": link_id,
-            "user_id": self.user_id,
-            "from_memory_id": from_memory_id,
-            "relation": relation,
-            "to_memory_id": to_memory_id,
-            "confidence": confidence,
-            "metadata_json": metadata_json or {},
-        }
-        with self.engine.begin() as conn:
-            try:
-                conn.execute(insert(schema.memory_links).values(**payload))
-                created = True
-            except IntegrityError:
-                created = False
-            row = conn.execute(
-                select(schema.memory_links).where(
-                    and_(schema.memory_links.c.id == link_id, self._user_filter(schema.memory_links))
-                )
-            ).one()
-        return row_dict(row), created
-
-    def create_open_loop(
-        self,
-        *,
-        memory_id: str,
-        status: str = "open",
-        priority: str = "normal",
-        next_review_at: datetime | None = None,
-        reminder_policy: str | None = None,
-        metadata_json: dict[str, Any] | None = None,
-    ) -> tuple[dict[str, Any], bool]:
-        open_loop_id = self._scoped_id("loop", memory_id)
-        payload = {
-            "id": open_loop_id,
-            "user_id": self.user_id,
-            "memory_id": memory_id,
-            "status": status,
-            "priority": priority,
-            "next_review_at": next_review_at,
-            "reminder_policy": reminder_policy,
-            "metadata_json": metadata_json or {},
-        }
-        with self.engine.begin() as conn:
-            try:
-                conn.execute(insert(schema.open_loops).values(**payload))
-                created = True
-            except IntegrityError:
-                created = False
-            row = conn.execute(
-                select(schema.open_loops).where(
-                    and_(schema.open_loops.c.id == open_loop_id, self._user_filter(schema.open_loops))
-                )
-            ).one()
-        return row_dict(row), created
-
-    def mark_cognee_pending(
-        self,
-        *,
-        object_type: str,
-        object_id: str,
-        dataset: str,
-        projection_hash: str,
-    ) -> None:
-        sync_id = self._scoped_id("sync", object_type, object_id, dataset)
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                select(schema.cognee_sync).where(
-                    and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync))
-                )
-            ).first()
-            if row:
-                conn.execute(
-                    update(schema.cognee_sync)
-                    .where(and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync)))
-                    .values(
-                        projection_hash=projection_hash,
-                        status="pending",
-                        error_message=None,
-                        updated_at=now_utc(),
-                    )
-                )
-                return
-            conn.execute(
-                insert(schema.cognee_sync).values(
-                    id=sync_id,
-                    user_id=self.user_id,
-                    object_type=object_type,
-                    object_id=object_id,
-                    dataset=dataset,
-                    projection_hash=projection_hash,
-                    status="pending",
-                )
-            )
-
-    def mark_cognee_stale(
-        self,
-        *,
-        object_type: str,
-        object_id: str,
-        dataset: str | None = None,
-        projection_hash: str | None = None,
-    ) -> int:
-        filters = [
-            self._user_filter(schema.cognee_sync),
-            schema.cognee_sync.c.object_type == object_type,
-            schema.cognee_sync.c.object_id == object_id,
-        ]
-        if dataset is not None:
-            filters.append(schema.cognee_sync.c.dataset == dataset)
-        values: dict[str, Any] = {"status": "stale", "updated_at": now_utc()}
-        if projection_hash is not None:
-            values["projection_hash"] = projection_hash
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                update(schema.cognee_sync)
-                .where(and_(*filters))
-                .values(**values)
-            )
-        return result.rowcount
-
-    def get_memory(self, memory_id: str) -> dict[str, Any] | None:
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                select(schema.memory_cards).where(
-                    and_(schema.memory_cards.c.id == memory_id, self._user_filter(schema.memory_cards))
-                )
-            ).first()
-            if row is None:
-                return None
-            payload = row_dict(row)
-            payload["entities"] = self._memory_entities(conn, memory_id)
-            payload["relationships"] = self._memory_relationships(conn, memory_id)
-            payload["links"] = self._memory_links(conn, memory_id)
-            return payload
-
-    def get_source(
-        self,
-        source_id: str,
-        *,
-        include_text: bool = False,
-        max_chars: int = 10_000,
-    ) -> dict[str, Any] | None:
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                select(schema.sources).where(
-                    and_(schema.sources.c.id == source_id, self._user_filter(schema.sources))
-                )
-            ).first()
-        if row is None:
-            return None
-
-        source = row_dict(row)
-        raw_text = source.pop("raw_text", None)
-        if include_text:
-            source["text"] = (raw_text or "")[:max_chars]
-        return source
 
     def get_entity(self, entity_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
@@ -651,366 +277,434 @@ class BrainStore:
             ).fetchall()
         return {**row_dict(row), "aliases": [row_dict(alias) for alias in aliases]}
 
-    def get_open_loop(self, loop_id: str) -> dict[str, Any] | None:
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                select(schema.open_loops, schema.memory_cards.c.statement)
-                .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
-                .where(
-                    and_(
-                        schema.open_loops.c.id == loop_id,
-                        self._user_filter(schema.open_loops),
-                        self._user_filter(schema.memory_cards),
-                    )
-                )
-            ).first()
-        if row is None:
-            return None
-        return {**row_dict(row), "statement": row._mapping["statement"]}
-
-    def get_ingestion_run(self, run_id: str) -> dict[str, Any] | None:
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                select(schema.ingestion_runs).where(
-                    and_(
-                        schema.ingestion_runs.c.id == run_id,
-                        self._user_filter(schema.ingestion_runs),
-                    )
-                )
-            ).first()
-        return row_dict(row) if row is not None else None
-
-    def get_cognee_sync(self, object_id: str) -> list[dict[str, Any]]:
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.cognee_sync).where(
-                    and_(schema.cognee_sync.c.object_id == object_id, self._user_filter(schema.cognee_sync))
-                )
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def get_cognee_sync_by_id(self, sync_id: str) -> dict[str, Any] | None:
-        with self.engine.begin() as conn:
-            row = conn.execute(
-                select(schema.cognee_sync).where(
-                    and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync))
-                )
-            ).first()
-        return row_dict(row) if row is not None else None
-
-    def list_cognee_sync(
+    def get_or_create_session_map(
         self,
         *,
-        statuses: list[str] | tuple[str, ...] | None = None,
-        object_type: str | None = None,
-        object_id: str | None = None,
-        dataset: str | None = None,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.cognee_sync)]
-        if statuses:
-            filters.append(schema.cognee_sync.c.status.in_(list(statuses)))
-        if object_type:
-            filters.append(schema.cognee_sync.c.object_type == object_type)
-        if object_id:
-            filters.append(schema.cognee_sync.c.object_id == object_id)
-        if dataset:
-            filters.append(schema.cognee_sync.c.dataset == dataset)
-        where_clause = and_(*filters) if filters else True
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.cognee_sync)
-                .where(where_clause)
-                .order_by(schema.cognee_sync.c.updated_at.asc())
-                .limit(limit)
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def update_cognee_sync_status(
-        self,
-        sync_id: str,
-        *,
-        status: str,
-        projection_hash: str | None = None,
-        cognee_reference: str | None = None,
-        error_message: str | None = None,
-        last_synced_at: datetime | None = None,
-    ) -> bool:
-        values: dict[str, Any] = {
-            "status": status,
-            "error_message": error_message,
-            "updated_at": now_utc(),
-        }
-        if projection_hash is not None:
-            values["projection_hash"] = projection_hash
-        if cognee_reference is not None:
-            values["cognee_reference"] = cognee_reference
-        if last_synced_at is not None:
-            values["last_synced_at"] = last_synced_at
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                update(schema.cognee_sync)
-                .where(and_(schema.cognee_sync.c.id == sync_id, self._user_filter(schema.cognee_sync)))
-                .values(**values)
-            )
-        return result.rowcount > 0
-
-    def list_memory_cards(
-        self,
-        *,
-        since: datetime | None = None,
-        source_id: str | None = None,
-        include_deleted: bool = False,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.memory_cards)]
-        if since is not None:
-            filters.append(schema.memory_cards.c.created_at >= since)
-        if source_id is not None:
-            filters.append(schema.memory_cards.c.source_id == source_id)
-        if not include_deleted:
-            filters.append(schema.memory_cards.c.status != "deleted")
-        where_clause = and_(*filters) if filters else True
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.memory_cards)
-                .where(where_clause)
-                .order_by(schema.memory_cards.c.created_at.desc())
-                .limit(limit)
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def list_memories_by_entity(
-        self,
-        entity_id: str,
-        *,
-        include_superseded: bool = False,
-        include_conflicts: bool = True,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        status_filter = visible_memory_status_filter(
-            include_superseded=include_superseded,
-            include_conflicts=include_conflicts,
-        )
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.memory_cards)
-                .join(
-                    schema.memory_entities,
-                    schema.memory_entities.c.memory_id == schema.memory_cards.c.id,
-                )
-                .where(and_(schema.memory_entities.c.entity_id == entity_id, status_filter))
-                .where(
-                    and_(
-                        self._user_filter(schema.memory_cards),
-                        self._user_filter(schema.memory_entities),
-                    )
-                )
-                .order_by(schema.memory_cards.c.created_at.desc())
-                .limit(limit)
-            ).fetchall()
-            results = []
-            for row in rows:
-                payload = row_dict(row)
-                payload["entities"] = self._memory_entities(conn, payload["id"])
-                payload["relationships"] = self._memory_relationships(conn, payload["id"])
-                payload["links"] = self._memory_links(conn, payload["id"])
-                results.append(payload)
-        return results
-
-    def list_sources(
-        self,
-        *,
-        since: datetime | None = None,
-        include_deleted: bool = False,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.sources)]
-        if since is not None:
-            filters.append(schema.sources.c.created_at >= since)
-        if not include_deleted:
-            filters.append(schema.sources.c.status != "deleted")
-        where_clause = and_(*filters) if filters else True
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.sources)
-                .where(where_clause)
-                .order_by(schema.sources.c.created_at.desc())
-                .limit(limit)
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def list_ingestion_runs(
-        self,
-        *,
-        since: datetime | None = None,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.ingestion_runs)]
-        if since is not None:
-            filters.append(schema.ingestion_runs.c.started_at >= since)
-        where_clause = and_(*filters) if filters else True
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.ingestion_runs)
-                .where(where_clause)
-                .order_by(schema.ingestion_runs.c.started_at.desc())
-                .limit(limit)
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def create_app_write_audit(
-        self,
-        *,
-        tool_name: str,
-        status: str,
-        confirmed_by_user: bool,
-        client_id: str | None = None,
-        subject: str | None = None,
-        request_id: str | None = None,
-        target_id: str | None = None,
-        summary: str | None = None,
+        profile_name: str,
+        surface: str,
+        client_session_id: str,
+        cognee_dataset: str,
+        cognee_session_id: str | None = None,
+        node_sets_json: list[str] | None = None,
         metadata_json: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        audit_id = self._scoped_id(
-            "awa",
+        session_id = self._scoped_id(
+            "sess",
+            profile_name,
+            surface,
+            client_session_id,
+        )
+        mapped_cognee_session_id = cognee_session_id or self._scoped_id(
+            "cog_sess",
+            profile_name,
+            surface,
+            client_session_id,
+        )
+        filters = [
+            self._user_filter(schema.brain_session_maps),
+            schema.brain_session_maps.c.profile_name == profile_name,
+            schema.brain_session_maps.c.surface == surface,
+            schema.brain_session_maps.c.client_session_id == client_session_id,
+        ]
+        values = {
+            "id": session_id,
+            "user_id": self.user_id,
+            "profile_name": profile_name,
+            "surface": surface,
+            "client_session_id": client_session_id,
+            "cognee_session_id": mapped_cognee_session_id,
+            "cognee_dataset": cognee_dataset,
+            "node_sets_json": jsonable(node_sets_json or []),
+            "metadata_json": jsonable(metadata_json or {}),
+        }
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.brain_session_maps).where(and_(*filters))
+            ).first()
+            if row is None:
+                try:
+                    conn.execute(insert(schema.brain_session_maps).values(**values))
+                except IntegrityError:
+                    pass
+            update_values = {
+                "cognee_dataset": cognee_dataset,
+                "node_sets_json": jsonable(node_sets_json or []),
+                "metadata_json": jsonable(metadata_json or {}),
+                "updated_at": now_utc(),
+                "last_used_at": now_utc(),
+            }
+            if cognee_session_id is not None:
+                update_values["cognee_session_id"] = cognee_session_id
+            conn.execute(
+                update(schema.brain_session_maps)
+                .where(and_(*filters))
+                .values(**update_values)
+            )
+            row = conn.execute(
+                select(schema.brain_session_maps).where(and_(*filters))
+            ).one()
+        return row_dict(row)
+
+    def get_session_map(self, session_map_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.brain_session_maps).where(
+                    and_(
+                        schema.brain_session_maps.c.id == session_map_id,
+                        self._user_filter(schema.brain_session_maps),
+                    )
+                )
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def create_external_receipt(
+        self,
+        *,
+        surface: str,
+        tool_name: str,
+        action: str,
+        status: str,
+        summary: str | None = None,
+        cognee_dataset: str | None = None,
+        cognee_reference: str | None = None,
+        cognee_result_json: dict[str, Any] | list[Any] | None = None,
+        warnings_json: list[Any] | None = None,
+        metadata_json: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        receipt_id = self._scoped_id(
+            "rcpt",
+            surface,
             tool_name,
+            action,
             status,
-            client_id,
-            request_id,
-            target_id,
+            content_hash(summary, cognee_dataset, cognee_reference, metadata_json or {}),
             now_utc().isoformat(),
         )
         values = {
-            "id": audit_id,
+            "id": receipt_id,
             "user_id": self.user_id,
+            "surface": surface,
             "tool_name": tool_name,
-            "client_id": client_id,
-            "subject": subject,
-            "request_id": request_id,
-            "target_id": target_id,
+            "action": action,
             "status": status,
-            "confirmed_by_user": 1 if confirmed_by_user else 0,
-            "summary": (summary or "")[:500] if summary else None,
-            "metadata_json": metadata_json or {},
+            "summary": summary,
+            "cognee_dataset": cognee_dataset,
+            "cognee_reference": cognee_reference,
+            "cognee_result_json": jsonable(cognee_result_json or {}),
+            "warnings_json": jsonable(warnings_json or []),
+            "metadata_json": jsonable(metadata_json or {}),
         }
         with self.engine.begin() as conn:
-            conn.execute(insert(schema.app_write_audit).values(**values))
+            conn.execute(insert(schema.brain_external_receipts).values(**values))
             row = conn.execute(
-                select(schema.app_write_audit).where(
-                    and_(schema.app_write_audit.c.id == audit_id, self._user_filter(schema.app_write_audit))
+                select(schema.brain_external_receipts).where(
+                    and_(
+                        schema.brain_external_receipts.c.id == receipt_id,
+                        self._user_filter(schema.brain_external_receipts),
+                    )
                 )
             ).one()
         return row_dict(row)
 
-    def list_app_write_audit(
-        self,
-        *,
-        since: datetime | None = None,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.app_write_audit)]
-        if since is not None:
-            filters.append(schema.app_write_audit.c.created_at >= since)
-        where_clause = and_(*filters) if filters else True
+    def get_external_receipt(self, receipt_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.app_write_audit)
-                .where(where_clause)
-                .order_by(schema.app_write_audit.c.created_at.desc())
-                .limit(limit)
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def list_memory_links(
-        self,
-        *,
-        relations: list[str] | tuple[str, ...] | None = None,
-        since: datetime | None = None,
-        limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.memory_links)]
-        if relations:
-            filters.append(schema.memory_links.c.relation.in_(list(relations)))
-        if since is not None:
-            filters.append(schema.memory_links.c.created_at >= since)
-        where_clause = and_(*filters) if filters else True
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.memory_links)
-                .where(where_clause)
-                .order_by(schema.memory_links.c.created_at.desc())
-                .limit(limit)
-            ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def search_memory(
-        self,
-        query: str,
-        *,
-        include_superseded: bool = False,
-        include_conflicts: bool = True,
-        limit: int = 20,
-    ) -> list[dict[str, Any]]:
-        terms = WORD_RE.findall(query.casefold())
-        if not terms:
-            return []
-
-        status_filter = visible_memory_status_filter(
-            include_superseded=include_superseded,
-            include_conflicts=include_conflicts,
-        )
-        text_filters = [
-            or_(
-                schema.memory_cards.c.statement.ilike(f"%{term}%"),
-                schema.memory_cards.c.summary.ilike(f"%{term}%"),
-                schema.memory_cards.c.kind.ilike(f"%{term}%"),
-            )
-            for term in terms
-        ]
-
-        with self.engine.begin() as conn:
-            direct = conn.execute(
-                select(schema.memory_cards)
-                .where(and_(self._user_filter(schema.memory_cards), status_filter, or_(*text_filters)))
-                .limit(limit)
-            ).fetchall()
-            entity_rows = conn.execute(
-                select(schema.memory_cards)
-                .join(
-                    schema.memory_entities,
-                    schema.memory_entities.c.memory_id == schema.memory_cards.c.id,
-                )
-                .join(schema.entities, schema.entities.c.id == schema.memory_entities.c.entity_id)
-                .where(
+            row = conn.execute(
+                select(schema.brain_external_receipts).where(
                     and_(
-                        status_filter,
-                        self._user_filter(schema.memory_cards),
-                        self._user_filter(schema.memory_entities),
-                        self._user_filter(schema.entities),
-                        or_(
-                            *[
-                                schema.entities.c.normalized_name.ilike(f"%{term}%")
-                                for term in terms
-                            ]
-                        ),
+                        schema.brain_external_receipts.c.id == receipt_id,
+                        self._user_filter(schema.brain_external_receipts),
                     )
                 )
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def update_external_receipt(
+        self,
+        receipt_id: str,
+        *,
+        status: str | None = None,
+        summary: str | None = None,
+        cognee_result_json: dict[str, Any] | list[Any] | None = None,
+        warnings_json: list[Any] | None = None,
+        metadata_json: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
+        values: dict[str, Any] = {}
+        if status is not None:
+            values["status"] = status
+        if summary is not None:
+            values["summary"] = summary
+        if cognee_result_json is not None:
+            values["cognee_result_json"] = jsonable(cognee_result_json)
+        if warnings_json is not None:
+            values["warnings_json"] = jsonable(warnings_json)
+        if metadata_json is not None:
+            values["metadata_json"] = jsonable(metadata_json)
+        if not values:
+            return self.get_external_receipt(receipt_id)
+        with self.engine.begin() as conn:
+            conn.execute(
+                update(schema.brain_external_receipts)
+                .where(
+                    and_(
+                        schema.brain_external_receipts.c.id == receipt_id,
+                        self._user_filter(schema.brain_external_receipts),
+                    )
+                )
+                .values(**values)
+            )
+            row = conn.execute(
+                select(schema.brain_external_receipts).where(
+                    and_(
+                        schema.brain_external_receipts.c.id == receipt_id,
+                        self._user_filter(schema.brain_external_receipts),
+                    )
+                )
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def list_external_receipts(
+        self,
+        *,
+        status: str | None = None,
+        action: str | None = None,
+        since: datetime | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = [self._user_filter(schema.brain_external_receipts)]
+        if status is not None:
+            filters.append(schema.brain_external_receipts.c.status == status)
+        if action is not None:
+            filters.append(schema.brain_external_receipts.c.action == action)
+        if since is not None:
+            filters.append(schema.brain_external_receipts.c.created_at >= since)
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.brain_external_receipts)
+                .where(and_(*filters))
+                .order_by(schema.brain_external_receipts.c.created_at.desc())
                 .limit(limit)
             ).fetchall()
+        return [row_dict(row) for row in rows]
 
-            seen: set[str] = set()
-            results: list[dict[str, Any]] = []
-            for row in [*direct, *entity_rows]:
-                payload = row_dict(row)
-                if payload["id"] in seen:
-                    continue
-                seen.add(payload["id"])
-                payload["entities"] = self._memory_entities(conn, payload["id"])
-                results.append(payload)
-                if len(results) >= limit:
-                    break
-        return results
+    def create_pending_confirmation(
+        self,
+        *,
+        surface: str,
+        action: str,
+        original_input: str,
+        proposed_payload_json: dict[str, Any] | list[Any],
+        reason: str | None = None,
+        options_json: list[Any] | None = None,
+        expires_at: datetime | None = None,
+        metadata_json: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        confirmation_id = self._scoped_id(
+            "conf",
+            surface,
+            action,
+            content_hash(original_input, proposed_payload_json, metadata_json or {}),
+            now_utc().isoformat(),
+        )
+        values = {
+            "id": confirmation_id,
+            "user_id": self.user_id,
+            "surface": surface,
+            "action": action,
+            "original_input": original_input,
+            "proposed_payload_json": jsonable(proposed_payload_json),
+            "reason": reason,
+            "options_json": jsonable(options_json or []),
+            "status": "pending",
+            "expires_at": expires_at,
+            "metadata_json": jsonable(metadata_json or {}),
+        }
+        with self.engine.begin() as conn:
+            conn.execute(insert(schema.brain_pending_confirmations).values(**values))
+            row = conn.execute(
+                select(schema.brain_pending_confirmations).where(
+                    and_(
+                        schema.brain_pending_confirmations.c.id == confirmation_id,
+                        self._user_filter(schema.brain_pending_confirmations),
+                    )
+                )
+            ).one()
+        return row_dict(row)
+
+    def get_pending_confirmation(self, confirmation_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.brain_pending_confirmations).where(
+                    and_(
+                        schema.brain_pending_confirmations.c.id == confirmation_id,
+                        self._user_filter(schema.brain_pending_confirmations),
+                    )
+                )
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def update_pending_confirmation_status(
+        self,
+        confirmation_id: str,
+        status: str,
+        *,
+        confirmed_at: datetime | None = None,
+    ) -> bool:
+        values: dict[str, Any] = {
+            "status": status,
+            "updated_at": now_utc(),
+        }
+        if confirmed_at is not None:
+            values["confirmed_at"] = confirmed_at
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.brain_pending_confirmations)
+                .where(
+                    and_(
+                        schema.brain_pending_confirmations.c.id == confirmation_id,
+                        self._user_filter(schema.brain_pending_confirmations),
+                    )
+                )
+                .values(**values)
+            )
+        return result.rowcount > 0
+
+    def list_pending_confirmations(
+        self,
+        *,
+        status: str | None = "pending",
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = [self._user_filter(schema.brain_pending_confirmations)]
+        if status is not None:
+            filters.append(schema.brain_pending_confirmations.c.status == status)
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.brain_pending_confirmations)
+                .where(and_(*filters))
+                .order_by(schema.brain_pending_confirmations.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def create_context_record(
+        self,
+        *,
+        record_id: str | None = None,
+        kind: str,
+        statement: str,
+        scope: str = "profile",
+        source: str | None = None,
+        status: str = "current",
+        metadata_json: dict[str, Any] | None = None,
+        cognee_reference: str | None = None,
+    ) -> dict[str, Any]:
+        resolved_record_id = record_id or self._scoped_id(
+            "ctx",
+            kind,
+            scope,
+            content_hash(statement, source, metadata_json or {}),
+        )
+        values = {
+            "id": resolved_record_id,
+            "user_id": self.user_id,
+            "kind": kind,
+            "statement": statement,
+            "scope": scope,
+            "source": source,
+            "status": status,
+            "metadata_json": jsonable(metadata_json or {}),
+            "cognee_reference": cognee_reference,
+        }
+        with self.engine.begin() as conn:
+            existing = conn.execute(
+                select(schema.brain_context_records).where(
+                    and_(
+                        schema.brain_context_records.c.id == resolved_record_id,
+                        self._user_filter(schema.brain_context_records),
+                    )
+                )
+            ).first()
+            if existing is None:
+                conn.execute(insert(schema.brain_context_records).values(**values))
+            else:
+                conn.execute(
+                    update(schema.brain_context_records)
+                    .where(
+                        and_(
+                            schema.brain_context_records.c.id == resolved_record_id,
+                            self._user_filter(schema.brain_context_records),
+                        )
+                    )
+                    .values(
+                        kind=kind,
+                        statement=statement,
+                        scope=scope,
+                        source=source,
+                        status=status,
+                        metadata_json=jsonable(metadata_json or {}),
+                        cognee_reference=cognee_reference,
+                        updated_at=now_utc(),
+                    )
+                )
+            row = conn.execute(
+                select(schema.brain_context_records).where(
+                    and_(
+                        schema.brain_context_records.c.id == resolved_record_id,
+                        self._user_filter(schema.brain_context_records),
+                    )
+                )
+            ).one()
+        return row_dict(row)
+
+    def get_context_record(self, record_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.brain_context_records).where(
+                    and_(
+                        schema.brain_context_records.c.id == record_id,
+                        self._user_filter(schema.brain_context_records),
+                    )
+                )
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def list_context_records(
+        self,
+        *,
+        kind: str | None = None,
+        scope: str | None = None,
+        include_deleted: bool = False,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = [self._user_filter(schema.brain_context_records)]
+        if kind is not None:
+            filters.append(schema.brain_context_records.c.kind == kind)
+        if scope is not None:
+            filters.append(schema.brain_context_records.c.scope == scope)
+        if not include_deleted:
+            filters.append(schema.brain_context_records.c.status != "deleted")
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.brain_context_records)
+                .where(and_(*filters))
+                .order_by(schema.brain_context_records.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def update_context_record_status(self, record_id: str, status: str) -> bool:
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.brain_context_records)
+                .where(
+                    and_(
+                        schema.brain_context_records.c.id == record_id,
+                        self._user_filter(schema.brain_context_records),
+                    )
+                )
+                .values(status=status, updated_at=now_utc())
+            )
+        return result.rowcount > 0
 
     def resolve_entity(self, name: str, entity_type: str | None = None) -> dict[str, Any] | None:
         normalized = normalize_name(name)
@@ -1060,297 +754,21 @@ class BrainStore:
                 return row_dict(row)
         return None
 
-    def entity_profile(
-        self,
-        name: str,
-        *,
-        entity_type: str | None = None,
-        include_superseded: bool = False,
-        include_conflicts: bool = True,
-    ) -> dict[str, Any] | None:
-        entity = self.resolve_entity(name, entity_type)
-        if entity is None:
-            return None
-        status_filter = visible_memory_status_filter(
-            include_superseded=include_superseded,
-            include_conflicts=include_conflicts,
-        )
-        subject_entities = schema.entities.alias("subject_entities")
-        object_entities = schema.entities.alias("object_entities")
-        with self.engine.begin() as conn:
-            memory_rows = conn.execute(
-                select(schema.memory_cards, schema.memory_entities.c.role)
-                .join(
-                    schema.memory_entities,
-                    schema.memory_entities.c.memory_id == schema.memory_cards.c.id,
-                )
-                .where(
-                    and_(
-                        schema.memory_entities.c.entity_id == entity["id"],
-                        self._user_filter(schema.memory_cards),
-                        self._user_filter(schema.memory_entities),
-                        status_filter,
-                    )
-                )
-                .order_by(schema.memory_cards.c.created_at.desc())
-            ).fetchall()
-            relationship_rows = conn.execute(
-                select(
-                    schema.relationships,
-                    subject_entities.c.canonical_name.label("subject_name"),
-                    object_entities.c.canonical_name.label("object_name"),
-                )
-                .join(
-                    subject_entities,
-                    subject_entities.c.id == schema.relationships.c.subject_entity_id,
-                )
-                .join(
-                    object_entities,
-                    object_entities.c.id == schema.relationships.c.object_entity_id,
-                )
-                .outerjoin(
-                    schema.memory_cards,
-                    schema.memory_cards.c.id == schema.relationships.c.evidence_memory_id,
-                )
-                .where(
-                    and_(
-                        or_(
-                            schema.relationships.c.subject_entity_id == entity["id"],
-                            schema.relationships.c.object_entity_id == entity["id"],
-                        ),
-                        self._user_filter(schema.relationships),
-                        self._user_filter(subject_entities),
-                        self._user_filter(object_entities),
-                        schema.relationships.c.status == "current",
-                        or_(
-                            schema.relationships.c.evidence_memory_id.is_(None),
-                            and_(self._user_filter(schema.memory_cards), status_filter),
-                        ),
-                    )
-                )
-            ).fetchall()
-            open_loop_rows = conn.execute(
-                select(schema.open_loops, schema.memory_cards.c.statement)
-                .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
-                .join(
-                    schema.memory_entities,
-                    schema.memory_entities.c.memory_id == schema.memory_cards.c.id,
-                )
-                .where(
-                    and_(
-                        schema.memory_entities.c.entity_id == entity["id"],
-                        self._user_filter(schema.open_loops),
-                        self._user_filter(schema.memory_cards),
-                        self._user_filter(schema.memory_entities),
-                        schema.open_loops.c.status == "open",
-                        status_filter,
-                    )
-                )
-            ).fetchall()
-            aliases = conn.execute(
-                select(schema.entity_aliases).where(
-                    and_(
-                        schema.entity_aliases.c.entity_id == entity["id"],
-                        self._user_filter(schema.entity_aliases),
-                    )
-                )
-            ).fetchall()
-
-        memories = [
-            {**row_dict(row), "role": row._mapping["role"]}
-            for row in memory_rows
-        ]
-        relationships = [
-            {
-                **row_dict(row),
-                "subject_name": row._mapping["subject_name"],
-                "object_name": row._mapping["object_name"],
-                "direction_relative_to_profile_entity": (
-                    "outgoing"
-                    if row._mapping[schema.relationships.c.subject_entity_id] == entity["id"]
-                    else "incoming"
-                ),
-            }
-            for row in relationship_rows
-        ]
-        return {
-            "entity": entity,
-            "aliases": [row_dict(row) for row in aliases],
-            "memories": memories,
-            "relationships": relationships,
-            "open_loops": [
-                {**row_dict(row), "statement": row._mapping["statement"]}
-                for row in open_loop_rows
-            ],
-        }
-
-    def list_open_loops(
-        self,
-        *,
-        topic: str | None = None,
-        status: str = "open",
-        limit: int = 20,
-    ) -> list[dict[str, Any]]:
-        filters = [self._user_filter(schema.open_loops), self._user_filter(schema.memory_cards)]
-        if status != "any":
-            filters.append(schema.open_loops.c.status == status)
-        if topic:
-            filters.append(schema.memory_cards.c.statement.ilike(f"%{topic}%"))
-        with self.engine.begin() as conn:
-            rows = conn.execute(
-                select(schema.open_loops, schema.memory_cards)
-                .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
-                .where(and_(*filters, visible_memory_status_filter()))
-                .order_by(schema.open_loops.c.next_review_at.is_(None), schema.open_loops.c.created_at.desc())
-                .limit(limit)
-            ).fetchall()
-        return [
-            {
-                "id": row._mapping[schema.open_loops.c.id],
-                "memory_id": row._mapping[schema.open_loops.c.memory_id],
-                "status": row._mapping[schema.open_loops.c.status],
-                "priority": row._mapping[schema.open_loops.c.priority],
-                "next_review_at": row._mapping[schema.open_loops.c.next_review_at],
-                "last_reminded_at": row._mapping[schema.open_loops.c.last_reminded_at],
-                "reminder_policy": row._mapping[schema.open_loops.c.reminder_policy],
-                "statement": row._mapping[schema.memory_cards.c.statement],
-                "topics": (row._mapping[schema.memory_cards.c.metadata_json] or {}).get("topics", []),
-            }
-            for row in rows
-        ]
-
-    def list_due_open_loops(
-        self,
-        *,
-        now: datetime | None = None,
-        include_recently_reminded: bool = False,
-        recent_seconds: int = 60 * 60 * 24,
-        limit: int = 20,
-    ) -> list[dict[str, Any]]:
-        active_now = as_utc(now or now_utc())
-        loops = self.list_open_loops(status="open", limit=limit * 5)
-        due: list[dict[str, Any]] = []
-        for loop in loops:
-            next_review_at = loop.get("next_review_at")
-            if next_review_at is not None and as_utc(next_review_at) > active_now:
-                continue
-            last_reminded_at = loop.get("last_reminded_at")
-            if (
-                not include_recently_reminded
-                and last_reminded_at is not None
-                and (active_now - as_utc(last_reminded_at)).total_seconds() < recent_seconds
-            ):
-                continue
-            due.append(loop)
-            if len(due) >= limit:
-                break
-        return due
-
-    def mark_open_loop_reminded(
-        self,
-        loop_id: str,
-        *,
-        reminded_at: datetime | None = None,
-        next_review_at: datetime | None = None,
-    ) -> bool:
-        values: dict[str, Any] = {
-            "last_reminded_at": reminded_at or now_utc(),
-            "updated_at": now_utc(),
-        }
-        if next_review_at is not None:
-            values["next_review_at"] = next_review_at
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                update(schema.open_loops)
-                .where(and_(schema.open_loops.c.id == loop_id, self._user_filter(schema.open_loops)))
-                .values(**values)
-            )
-        return result.rowcount > 0
-
-    def update_open_loop_status(self, loop_id: str, status: str) -> bool:
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                update(schema.open_loops)
-                .where(and_(schema.open_loops.c.id == loop_id, self._user_filter(schema.open_loops)))
-                .values(status=status, updated_at=now_utc())
-            )
-        return result.rowcount > 0
-
     def forget(self, *, object_type: str, object_id: str, hard: bool = False) -> bool:
         if hard:
             raise ValueError("Hard delete is intentionally not implemented at the service layer.")
         table_by_type = {
-            "memory": schema.memory_cards,
-            "source": schema.sources,
             "entity": schema.entities,
-            "relationship": schema.relationships,
-            "open_loop": schema.open_loops,
         }
         table = table_by_type.get(object_type)
         if table is None:
-            raise ValueError(
-                "object_type must be memory, source, entity, relationship, or open_loop."
-            )
+            raise ValueError("object_type must be entity.")
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(table)
                 .where(and_(table.c.id == object_id, self._user_filter(table)))
                 .values(status="deleted", updated_at=now_utc())
             )
-            if result.rowcount > 0 and object_type in {"memory", "source"}:
-                conn.execute(
-                    update(schema.cognee_sync)
-                    .where(
-                        and_(
-                            schema.cognee_sync.c.object_type == object_type,
-                            schema.cognee_sync.c.object_id == object_id,
-                            self._user_filter(schema.cognee_sync),
-                        )
-                    )
-                    .values(status="stale", updated_at=now_utc())
-                )
-        return result.rowcount > 0
-
-    def update_memory_status(self, memory_id: str, status: str) -> bool:
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                update(schema.memory_cards)
-                .where(and_(schema.memory_cards.c.id == memory_id, self._user_filter(schema.memory_cards)))
-                .values(status=status, updated_at=now_utc())
-            )
-            if result.rowcount > 0:
-                conn.execute(
-                    update(schema.cognee_sync)
-                    .where(
-                        and_(
-                            schema.cognee_sync.c.object_type == "memory",
-                            schema.cognee_sync.c.object_id == memory_id,
-                            self._user_filter(schema.cognee_sync),
-                        )
-                    )
-                    .values(status="stale", updated_at=now_utc())
-                )
-        return result.rowcount > 0
-
-    def update_source_status(self, source_id: str, status: str) -> bool:
-        with self.engine.begin() as conn:
-            result = conn.execute(
-                update(schema.sources)
-                .where(and_(schema.sources.c.id == source_id, self._user_filter(schema.sources)))
-                .values(status=status, updated_at=now_utc())
-            )
-            if result.rowcount > 0:
-                conn.execute(
-                    update(schema.cognee_sync)
-                    .where(
-                        and_(
-                            schema.cognee_sync.c.object_type == "source",
-                            schema.cognee_sync.c.object_id == source_id,
-                            self._user_filter(schema.cognee_sync),
-                        )
-                    )
-                    .values(status="stale", updated_at=now_utc())
-                )
         return result.rowcount > 0
 
     def update_entity_status(
@@ -1373,246 +791,6 @@ class BrainStore:
                 .values(**values)
             )
         return result.rowcount > 0
-
-    def merge_entities(
-        self,
-        *,
-        primary_entity_id: str,
-        duplicate_entity_id: str,
-        reason: str | None = None,
-    ) -> dict[str, Any]:
-        primary = self.get_entity(primary_entity_id)
-        duplicate = self.get_entity(duplicate_entity_id)
-        if primary is None or duplicate is None:
-            raise ValueError("Both primary_entity_id and duplicate_entity_id must exist.")
-        if primary_entity_id == duplicate_entity_id:
-            raise ValueError("primary_entity_id and duplicate_entity_id must be different.")
-
-        moved_aliases = 0
-        repointed_memories = 0
-        repointed_relationships = 0
-        archived = False
-        with self.engine.begin() as conn:
-            canonical_alias_exists = conn.execute(
-                select(schema.entity_aliases).where(
-                    and_(
-                        schema.entity_aliases.c.entity_id == primary_entity_id,
-                        self._user_filter(schema.entity_aliases),
-                        schema.entity_aliases.c.normalized_alias
-                        == normalize_name(duplicate["canonical_name"]),
-                    )
-                )
-            ).first()
-            if canonical_alias_exists is None:
-                self._insert_alias(
-                    conn,
-                    entity_id=primary_entity_id,
-                    alias=duplicate["canonical_name"],
-                    source_memory_id=None,
-                    confidence=duplicate.get("confidence") or "medium",
-                )
-                moved_aliases += 1
-            duplicate_alias_rows = conn.execute(
-                select(schema.entity_aliases).where(
-                    and_(
-                        schema.entity_aliases.c.entity_id == duplicate_entity_id,
-                        self._user_filter(schema.entity_aliases),
-                    )
-                )
-            ).fetchall()
-            for alias_row in duplicate_alias_rows:
-                alias = row_dict(alias_row)
-                before = conn.execute(
-                    select(schema.entity_aliases).where(
-                        and_(
-                            schema.entity_aliases.c.entity_id == primary_entity_id,
-                            self._user_filter(schema.entity_aliases),
-                            schema.entity_aliases.c.normalized_alias == alias["normalized_alias"],
-                        )
-                    )
-                ).first()
-                if before is None:
-                    self._insert_alias(
-                        conn,
-                        entity_id=primary_entity_id,
-                        alias=alias["alias"],
-                        source_memory_id=alias.get("source_memory_id"),
-                        confidence=alias.get("confidence") or "medium",
-                    )
-                    moved_aliases += 1
-            conn.execute(
-                delete(schema.entity_aliases).where(
-                    and_(
-                        schema.entity_aliases.c.entity_id == duplicate_entity_id,
-                        self._user_filter(schema.entity_aliases),
-                    )
-                )
-            )
-
-            duplicate_memory_rows = conn.execute(
-                select(schema.memory_entities).where(
-                    and_(
-                        schema.memory_entities.c.entity_id == duplicate_entity_id,
-                        self._user_filter(schema.memory_entities),
-                    )
-                )
-            ).fetchall()
-            for memory_row in duplicate_memory_rows:
-                memory_link = row_dict(memory_row)
-                existing = conn.execute(
-                    select(schema.memory_entities).where(
-                        and_(
-                            schema.memory_entities.c.memory_id == memory_link["memory_id"],
-                            schema.memory_entities.c.entity_id == primary_entity_id,
-                            schema.memory_entities.c.role == memory_link["role"],
-                            self._user_filter(schema.memory_entities),
-                        )
-                    )
-                ).first()
-                if existing is None:
-                    conn.execute(
-                        insert(schema.memory_entities).values(
-                            user_id=self.user_id,
-                            memory_id=memory_link["memory_id"],
-                            entity_id=primary_entity_id,
-                            role=memory_link["role"],
-                            confidence=memory_link["confidence"],
-                        )
-                    )
-                    repointed_memories += 1
-                conn.execute(
-                    delete(schema.memory_entities).where(
-                        and_(
-                            schema.memory_entities.c.memory_id == memory_link["memory_id"],
-                            schema.memory_entities.c.entity_id == duplicate_entity_id,
-                            schema.memory_entities.c.role == memory_link["role"],
-                            self._user_filter(schema.memory_entities),
-                        )
-                    )
-                )
-
-            subject_result = conn.execute(
-                update(schema.relationships)
-                .where(
-                    and_(
-                        schema.relationships.c.subject_entity_id == duplicate_entity_id,
-                        self._user_filter(schema.relationships),
-                    )
-                )
-                .values(subject_entity_id=primary_entity_id, updated_at=now_utc())
-            )
-            object_result = conn.execute(
-                update(schema.relationships)
-                .where(
-                    and_(
-                        schema.relationships.c.object_entity_id == duplicate_entity_id,
-                        self._user_filter(schema.relationships),
-                    )
-                )
-                .values(object_entity_id=primary_entity_id, updated_at=now_utc())
-            )
-            repointed_relationships = subject_result.rowcount + object_result.rowcount
-
-            duplicate_metadata = dict(duplicate.get("metadata_json") or {})
-            duplicate_metadata.update(
-                {
-                    "merged_into": primary_entity_id,
-                    "merge_reason": reason,
-                    "merged_at": now_utc().isoformat(),
-                }
-            )
-            archive_result = conn.execute(
-                update(schema.entities)
-                .where(and_(schema.entities.c.id == duplicate_entity_id, self._user_filter(schema.entities)))
-                .values(
-                    status="archived",
-                    metadata_json=duplicate_metadata,
-                    updated_at=now_utc(),
-                )
-            )
-            archived = archive_result.rowcount > 0
-
-        return {
-            "primary_entity_id": primary_entity_id,
-            "duplicate_entity_id": duplicate_entity_id,
-            "moved_aliases": moved_aliases,
-            "repointed_memories": repointed_memories,
-            "repointed_relationships": repointed_relationships,
-            "duplicate_status": "archived" if archived else duplicate["status"],
-        }
-
-    def log_recall(
-        self,
-        *,
-        query: str,
-        mode: str,
-        retrieved_memory_ids: list[str],
-        retrieved_source_ids: list[str],
-        answer_preview: str,
-        metadata_json: dict[str, Any] | None = None,
-    ) -> None:
-        with self.engine.begin() as conn:
-            conn.execute(
-                insert(schema.recall_logs).values(
-                    id=self._scoped_id("recall", query, mode, now_utc().isoformat()),
-                    user_id=self.user_id,
-                    query=query,
-                    mode=mode,
-                    retrieved_memory_ids=retrieved_memory_ids,
-                    retrieved_source_ids=retrieved_source_ids,
-                    answer_preview=answer_preview[:500],
-                    metadata_json=metadata_json or {},
-                )
-            )
-
-    def _memory_entities(self, conn: Any, memory_id: str) -> list[dict[str, Any]]:
-        rows = conn.execute(
-            select(schema.memory_entities, schema.entities)
-            .join(schema.entities, schema.entities.c.id == schema.memory_entities.c.entity_id)
-            .where(
-                and_(
-                    schema.memory_entities.c.memory_id == memory_id,
-                    self._user_filter(schema.memory_entities),
-                    self._user_filter(schema.entities),
-                )
-            )
-        ).fetchall()
-        return [
-            {
-                "entity_id": row._mapping[schema.entities.c.id],
-                "canonical_name": row._mapping[schema.entities.c.canonical_name],
-                "type": row._mapping[schema.entities.c.type],
-                "role": row._mapping[schema.memory_entities.c.role],
-                "confidence": row._mapping[schema.memory_entities.c.confidence],
-            }
-            for row in rows
-        ]
-
-    def _memory_relationships(self, conn: Any, memory_id: str) -> list[dict[str, Any]]:
-        rows = conn.execute(
-            select(schema.relationships).where(
-                and_(
-                    schema.relationships.c.evidence_memory_id == memory_id,
-                    self._user_filter(schema.relationships),
-                )
-            )
-        ).fetchall()
-        return [row_dict(row) for row in rows]
-
-    def _memory_links(self, conn: Any, memory_id: str) -> list[dict[str, Any]]:
-        rows = conn.execute(
-            select(schema.memory_links).where(
-                and_(
-                    or_(
-                        schema.memory_links.c.from_memory_id == memory_id,
-                        schema.memory_links.c.to_memory_id == memory_id,
-                    ),
-                    self._user_filter(schema.memory_links),
-                )
-            )
-        ).fetchall()
-        return [row_dict(row) for row in rows]
-
 
 def ensure_parent_dir_for_sqlite(settings: Settings) -> None:
     url = brain_database_url(settings)

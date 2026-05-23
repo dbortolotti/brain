@@ -57,20 +57,13 @@ def test_icon_routes_do_not_require_ui_session(monkeypatch) -> None:
     assert response.content.startswith(b"\x89PNG")
 
 
-def test_mcp_and_app_paths_passthrough_to_mcp(monkeypatch) -> None:
+def test_mcp_paths_passthrough_to_mcp(monkeypatch) -> None:
     ui_proxy = load_ui_proxy(monkeypatch)
 
     assert ui_proxy.is_mcp_passthrough_path("mcp") is True
     assert ui_proxy.is_mcp_passthrough_path("admin/mcp") is True
-    assert ui_proxy.is_mcp_passthrough_path("app/mcp") is True
     assert ui_proxy.is_mcp_passthrough_path(".well-known/oauth-protected-resource/mcp") is True
     assert ui_proxy.is_mcp_passthrough_path(".well-known/oauth-protected-resource/admin/mcp") is True
-    assert ui_proxy.is_mcp_passthrough_path("app") is True
-    assert ui_proxy.is_mcp_passthrough_path("app/oauth/callback") is True
-    assert ui_proxy.is_mcp_passthrough_path("privacy") is True
-    assert ui_proxy.is_mcp_passthrough_path("terms") is True
-    assert ui_proxy.is_mcp_passthrough_path("support") is True
-    assert ui_proxy.is_mcp_passthrough_path("app-assets/app.js") is True
     assert ui_proxy.is_mcp_passthrough_path("cognee") is False
 
 
@@ -81,7 +74,6 @@ def test_cognee_login_uses_user_registry_and_admin_requires_superuser(monkeypatc
         '{"id":"default","password":"root-pass","display_name":"Root","superuser":true}]',
         encoding="utf-8",
     )
-    monkeypatch.setenv("BRAIN_AUTH_ENABLED", "true")
     monkeypatch.setenv("BRAIN_AUTH_USERS_FILE", str(users_file))
     ui_proxy = load_ui_proxy(monkeypatch)
     client = TestClient(ui_proxy.app)

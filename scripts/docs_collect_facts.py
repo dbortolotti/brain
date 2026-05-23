@@ -15,7 +15,7 @@ SRC_ROOT = REPO_ROOT / "src"
 sys.path.insert(0, str(SRC_ROOT))
 
 from memory_stack import cfg  # noqa: E402
-from memory_stack import mcp_server, slack_agent_server, ui_proxy  # noqa: E402
+from memory_stack import mcp_server, ui_proxy  # noqa: E402
 
 
 def main() -> int:
@@ -44,11 +44,9 @@ def collect_facts() -> dict[str, Any]:
         "http_routes": {
             "brain": app_routes(mcp_server.app),
             "cognee_ui_proxy": app_routes(ui_proxy.app),
-            "slack_agent": app_routes(slack_agent_server.app),
         },
         "mcp_tools": collect_mcp_tools(),
         "workflows": collect_workflows(),
-        "ui": collect_ui_facts(),
     }
 
 
@@ -99,8 +97,7 @@ def app_routes(app: Any) -> list[dict[str, Any]]:
 
 def collect_mcp_tools() -> dict[str, list[dict[str, Any]]]:
     surfaces = {
-        "chatgpt_app": mcp_server.MCP_SURFACE_CHATGPT_APP,
-        "internal_admin": mcp_server.MCP_SURFACE_INTERNAL,
+        "internal": mcp_server.MCP_SURFACE_INTERNAL,
     }
     return {
         name: [
@@ -132,16 +129,6 @@ def collect_workflows() -> dict[str, Any]:
             "jobs": sorted((data.get("jobs") or {}).keys()),
         }
     return workflows
-
-
-def collect_ui_facts() -> dict[str, Any]:
-    app_dir = SRC_ROOT / "memory_stack" / "static" / "brain_app"
-    files = {
-        "html_pages": sorted(path.name for path in app_dir.glob("*.html")),
-        "js_actions": javascript_actions(app_dir / "app.js"),
-        "visible_text": visible_text(app_dir),
-    }
-    return files
 
 
 def javascript_actions(path: Path) -> list[str]:

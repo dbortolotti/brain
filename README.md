@@ -1,17 +1,17 @@
 # Brain
 
-Brain is a local personal memory control plane exposed through a small MCP surface. Brain DB is the source of truth for memory identity, lifecycle, entity resolution, conflicts, open loops, and Cognee sync state. Cognee is an optional semantic projection that can be rebuilt from Brain DB.
+Brain is a local personal memory control plane exposed through a small MCP surface. Brain DB is the control store for user scope, profile/bias policy, session mapping, confirmations, receipts, and app audit records. Cognee is the required semantic memory substrate for durable memory, source ingestion, graph/vector retrieval, and improvement.
 
 ## Documentation
 
-- [User Guide](docs/USER_GUIDE.md) - end-user guidance for saving and recalling memories through Slack or an LLM.
+- [User Guide](docs/USER_GUIDE.md) - end-user guidance for saving and recalling memories through Brain tools and the browser app.
+- [Agent Tool Guide](docs/AGENT_TOOL_GUIDE.md) - advanced MCP tool usage, tool-selection rules, and agent-facing examples.
 - [API Setup Guide](docs/API_SETUP_GUIDE.md) - HTTP, MCP, auth, client setup, and integration examples.
-- [Slack Setup Guide](docs/SLACK_SETUP.md) - Slack app configuration, routes, allowlists, and troubleshooting.
 - [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification, Google Drive replication, and restore outline.
 - [Production Secrets](docs/production-secrets.md) - staging, prod, and release flow, secret handling, and config conflict rules.
 - [ChatGPT App Hardening](docs/chatgpt-app-hardening.md) - app review hardening model and post-merge production verification checklist.
 - [OpenAI Submission Checklist](docs/openai-submission.md) - remaining non-code checklist for ChatGPT App review.
-- [Runtime Flow Diagrams](docs/role_flow_diagram.md) - current runtime flow and model-role topology notes.
+- [Proposed Brain/Cognee Flow](docs/proposed_brain_cognee_flow.md) - proposed thinner Brain facade with Cognee as the semantic memory substrate.
 
 ## Local Dev Setup
 
@@ -22,7 +22,7 @@ make check
 uv run pytest
 ```
 
-If you want the smaller local/OpenAI-oriented example, use `.env.openai.example` instead of `.env.example`. `.env.example` mirrors `cfg/common.yaml`: Postgres Cognee metadata, pgvector vectors, and the default graph provider.
+If you want the smaller local/OpenAI-oriented example, use `.env.openai.example` instead of `.env.example`. `.env.example` mirrors `cfg/common.yaml`: Postgres Cognee metadata, pgvector vectors, and the default graph provider. `.env.openai.example` is the smaller local/OpenAI-oriented example using Neo4j, LanceDB, and SQLite.
 
 If you need the local compose stack:
 
@@ -48,6 +48,8 @@ Equivalent command:
 ```bash
 uv run python -m memory_stack.mcp_server
 ```
+
+The default local URL is `http://127.0.0.1:8000`. The health check is served at the configured `BRAIN_HEALTH_PATH` (default `/healthz`).
 
 Selected user-facing HTTP endpoints include:
 
@@ -110,8 +112,8 @@ Public ChatGPT App surface:
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
-- `brain_agent_memory`
-- `brain_agent_memory_recall`
+- external chat-continuity workflow
+- external chat-continuity recall
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -137,15 +139,18 @@ Internal admin surface:
 - `brain_profile_context_remember`
 - `brain_profile_context_list`
 - `brain_profile_context_forget`
+- `brain_bias_context_remember`
+- `brain_bias_context_list`
+- `brain_bias_context_forget`
 - `brain_profile_context_sync`
 - `brain_app_data_controls`
-- `brain_sync_cognee`
-- `brain_rebuild_cognee`
+- `brain_sync_cognee` (hard-deprecated; durable semantic writes go directly to Cognee)
+- `brain_rebuild_cognee` (hard-deprecated; use Cognee-native forget/cognify maintenance)
 - `cognee_improve`
-- `brain_agent_memory`
-- `brain_agent_memory_recall`
-- `brain_agent_memory_clear`
-- `brain_merge_entities`
+- external chat-continuity workflow
+- external chat-continuity recall
+- external chat-continuity cleanup
+- `brain_merge_entities` (hard-deprecated; Brain no longer owns semantic entity merges)
 - `brain_palate_describe_item`
 - `brain_palate_remember`
 - `brain_palate_query`
@@ -211,8 +216,8 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_get_memory`
 - `brain_review_recent`
 - `brain_undo_last`
-- `brain_agent_memory`
-- `brain_agent_memory_recall`
+- external chat-continuity workflow
+- external chat-continuity recall
 - `brain_palate_describe_item`
 - `brain_palate_query`
 - `brain_palate_evaluate_options`
@@ -220,7 +225,7 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
 
-Admin, raw projection, hard-delete, profile-context-sync, agent-memory-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. On `/mcp`, read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
+Admin, raw projection, hard-delete, profile-context-sync, bias-context, chat-continuity-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. On `/mcp`, read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
 
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
 
@@ -241,43 +246,9 @@ Public app support pages:
 
 See `docs/chatgpt-app-hardening.md` for the app review hardening model and the post-merge production verification checklist.
 
-## Running The Slack Memory Agent
+## Legacy Slack Adapter
 
-The Slack memory agent is a separate HTTP service. It does not serve `/mcp`, and Slack paths should be routed to its own port:
-
-```bash
-make slack-agent
-```
-
-Equivalent command:
-
-```bash
-uv run python -m memory_stack.slack_agent_server
-```
-
-Routes:
-
-- `GET /slack/healthz`
-- `POST /slack/events`
-- `POST /slack/commands`
-- `POST /slack/interactions`
-
-The agent verifies Slack signatures, timestamp freshness, team, channel, and user allowlists, and admin-only debug access before it touches Brain internals. By default, Slack writes require confirmation.
-
-Supported Slack commands:
-
-- `/brain remember <text>`
-- `/brain recall <query>`
-- `/brain profile <entity>`
-- `/brain open-loops [topic]`
-- `/brain get-memory <memory_id>`
-- `/brain debug ...` for admin-only read-only inspection
-
-The agent listens on local port `8003` by default; see `BRAIN_SLACK_AGENT_PORT=8003`. Verify route separation and fail-closed signature behavior with:
-
-```bash
-make slack-agent-check
-```
+Slack is no longer a supported Brain surface. The legacy adapter code remains dormant for compatibility and cleanup work, but default configs disable it and product docs should not route new users through Slack.
 
 ## Deployment and Release Model
 
@@ -428,7 +399,7 @@ make palate-probe
 make backup
 make reset
 make reset-hard
-make agent-memory
+make maintenance
 make maintenance
 ```
 
@@ -502,7 +473,7 @@ Deployment, routing, and auth-related settings worth calling out:
 
 - `ALLOW_EMBEDDING_DIMENSION_CHANGE`
 - `BRAIN_ADMIN_MCP_PATH`
-- `BRAIN_AGENT_MEMORY_SESSION_ID`
+- ``
 - `BRAIN_APP_MCP_PATH`
 - `BRAIN_APP_WRITE_RATE_LIMIT_COUNT`
 - `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`
@@ -517,13 +488,15 @@ Deployment, routing, and auth-related settings worth calling out:
 - `BRAIN_AUTH_TOKEN`
 - `BRAIN_AUTH_USERS_FILE`
 - `BRAIN_BACKUP_DIR`
-- `BRAIN_COGNEE_AGENT_MEMORY_DATASET`
+- ``
 - `BRAIN_COGNEE_DATA_DATASET`
 - `BRAIN_COGNEE_ENABLED`
 - `BRAIN_COGNEE_MEMORY_DATASET`
 - `BRAIN_COGNEE_PALATE_DATASET`
 - `BRAIN_COGNEE_RECALL_ENABLED`
 - `BRAIN_COGNEE_RECALL_TOP_K`
+- `BRAIN_COGNEE_SYNC_ON_INGEST`
+- `BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT`
 - `BRAIN_COGNEE_SOURCES_DATASET`
 - `BRAIN_DATABASE_URL`
 - `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED`
@@ -531,6 +504,7 @@ Deployment, routing, and auth-related settings worth calling out:
 - `BRAIN_GOOGLE_DRIVE_LOCAL_PATH`
 - `BRAIN_GOOGLE_DRIVE_REMOTE`
 - `BRAIN_HEALTH_PATH`
+- `BRAIN_INGEST_BACKGROUND_AUTO_CHARS`
 - `BRAIN_LAUNCHD_LABEL`
 - `BRAIN_LOG_LEVEL`
 - `BRAIN_LLM_ENABLED`
@@ -669,9 +643,9 @@ Cognee projection settings:
 - `BRAIN_COGNEE_MEMORY_DATASET=memory`
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
-- `BRAIN_COGNEE_AGENT_MEMORY_DATASET=agent_memory`
+- `=chat_continuity`
 - `BRAIN_COGNEE_PALATE_DATASET=palate`
-- `BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session`
+- `=portable_agent_session`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
 - `GRAPH_DATABASE_PROVIDER=ladybug`
 - `VECTOR_DB_PROVIDER=pgvector`
@@ -679,7 +653,7 @@ Cognee projection settings:
 - `DB_PROVIDER=postgres`
 - `ENABLE_BACKEND_ACCESS_CONTROL=false`
 
-`BRAIN_AGENT_MEMORY_SESSION_ID` and `BRAIN_COGNEE_AGENT_MEMORY_DATASET` are base names. At runtime, authenticated users receive a derived session id and Cognee agent-memory dataset scoped to their Brain user id, so one user cannot recall or improve another user's chat-session memory.
+`` and `` are base names. At runtime, authenticated users receive a derived session id and Cognee chat-continuity dataset scoped to their Brain user id, so one user cannot recall or improve another user's chat-session memory.
 
 Brain defaults Cognee's rebuildable projection to Postgres and pgvector for vector storage and Postgres for Cognee metadata. The configured Postgres role must be able to create the `vector` extension; with Cognee's pgvector dataset handler it also needs permission to create per-dataset databases.
 
@@ -697,7 +671,7 @@ Brain Taste settings:
 - `BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80`
 - `BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS=24`
 
-Slack capture settings, optional:
+Legacy Slack adapter settings, unsupported and disabled by default:
 
 - `BRAIN_SLACK_ENABLED=false`
 - `BRAIN_SLACK_AGENT_ENABLED=false`
@@ -711,7 +685,7 @@ Slack capture settings, optional:
 - `BRAIN_SLACK_ADMIN_USER_IDS`
 - `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false`
 
-Slack command handling is a thin optional layer over Brain service methods. It does not bypass Brain DB.
+Slack command handling is retained only as dormant legacy code and is not part of the supported Brain/Cognee cutover surface.
 
 ## Profiles
 
@@ -749,4 +723,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: 114f5b51ebc5cb5437a2cb68135bc1b38ba5aadb30b69b6b623339af486af74b -->
+<!-- brain-doc-source-hash: 0265d4100a3edf8bd5b0ab3a7a931f6cfc9ffa332debdbb0c09176a3e76a9942 -->

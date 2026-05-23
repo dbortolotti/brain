@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Proposed Brain/Cognee Flow</title>
+    <style>
+      :root {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #111827;
+        background: #f8fafc;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        max-width: 1380px;
+        margin: 0 auto;
+        padding: 32px 24px 56px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+        line-height: 1.15;
+      }
+
+      h2 {
+        margin-top: 40px;
+        padding-top: 22px;
+        border-top: 1px solid #d1d5db;
+        font-size: 22px;
+      }
+
+      p,
+      li {
+        line-height: 1.55;
+      }
+
+      code {
+        border-radius: 4px;
+        background: #e5e7eb;
+        padding: 2px 5px;
+      }
+
+      .mermaid {
+        margin: 18px 0 30px;
+        padding: 18px;
+        overflow: auto;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Proposed Brain/Cognee Flow</h1>
+      <p>Brain becomes the policy, profile, bias, and session facade. Cognee becomes the canonical semantic memory substrate for durable memory, source ingestion, entity/relationship graph, vector retrieval, session memory, and graph improvement. The flow is split into data ingestion/write and data recall/read paths.</p>
+
+      <h2>Data Ingestion / Write Flow</h2>
+      <div class="mermaid">
+flowchart TD
+    classDef client fill:#fef3c7,stroke:#a16207,color:#3f2d05;
+    classDef brain fill:#dcfce7,stroke:#15803d,color:#08331a;
+    classDef policy fill:#e0f2fe,stroke:#0369a9,color:#082f49;
+    classDef store fill:#ede9fe,stroke:#6d28d9,color:#241044;
+    classDef cognee fill:#f3f4f6,stroke:#374151,color:#111827;
+    classDef palate fill:#fce7f3,stroke:#be185d,color:#500724;
+    classDef guard fill:#fee2e2,stroke:#b91c1c,color:#450a0a;
+
+    subgraph CLIENTS[Clients and operators]
+        REST[REST callers]:::client
+        MCP[HTTP and stdio MCP tools]:::client
+        APP[Browser app and ChatGPT app]:::client
+        OPS[Scripts and maintenance jobs]:::client
+    end
+
+    subgraph BRAIN[Brain ingestion policy facade]
+        INGRESS[Ingress adapters<br/>REST, MCP, app, scripts]:::brain
+        AUTH[Auth, scopes, rate limits,<br/>surface-specific permissions]:::policy
+        CONTEXT[Resolve context<br/>user, profile, bias, session_id,<br/>dataset and node-set scope]:::brain
+        ROUTER[Tool and intent router]:::brain
+        WRITEPOLICY[Write policy<br/>durability, safety, dry-run,<br/>confirmation, receipt shape]:::guard
+        PROFILEBIAS[Profile and bias manager]:::brain
+        PALATE[Palate policy<br/>normalize, enrich, rank,<br/>proposal gate, decision feedback]:::palate
+    end
+
+    subgraph BRAINCTRL[Small Brain control store]
+        CONTROL[(Control DB / files<br/>users, profile context, bias context,<br/>session map, pending confirmations,<br/>app write audit, external receipts)]:::store
+    end
+
+    subgraph COGNEE[Cognee semantic memory substrate]
+        CAPI[Cognee write APIs<br/>remember, add, cognify,<br/>improve]:::cognee
+        CDATA[(Cognee relational DB<br/>datasets, data, ACLs,<br/>pipeline status, query logs,<br/>session records, node/edge mirror)]:::store
+        FILES[(Raw and converted file storage)]:::store
+        GRAPH[(Graph engine<br/>entities, relationships,<br/>datapoints, triplets)]:::store
+        VECTOR[(Vector engine<br/>chunks, summaries,<br/>datapoints, triplets)]:::store
+        SESSION[(Cognee session cache<br/>QA, trace, feedback,<br/>graph context snapshots)]:::store
+    end
+
+    REST --> INGRESS
+    MCP --> INGRESS
+    APP --> INGRESS
+    OPS --> INGRESS
+
+    INGRESS --> AUTH
+    AUTH --> CONTEXT
+    CONTEXT --> CONTROL
+    CONTEXT --> ROUTER
+
+    ROUTER -- profile or bias update --> PROFILEBIAS
+    PROFILEBIAS --> CONTROL
+    PROFILEBIAS -. optional searchable projection .-> CAPI
+
+    ROUTER -- ordinary memory or source --> WRITEPOLICY
+    WRITEPOLICY -- needs user decision --> CONTROL
+    WRITEPOLICY -- approved typed datapoint or source --> CAPI
+
+    ROUTER -- palate memory or recommendation --> PALATE
+    PALATE --> CONTROL
+    PALATE -- TasteItem, TasteSignal,<br/>TasteDecision datapoints --> CAPI
+
+    CAPI -- permanent memory build --> CDATA
+    CAPI -- source input --> FILES
+    CAPI -- graph extraction<br/>custom DataPoints --> GRAPH
+    CAPI -- embeddings --> VECTOR
+    CAPI -- session_id writes/recall --> SESSION
+    CAPI -- improve --> GRAPH
+    CAPI -- improve --> VECTOR
+    CAPI -- improve/session bridge --> SESSION
+
+    CDATA --> GRAPH
+    CDATA --> VECTOR
+    FILES --> CDATA
+
+    CAPI --> WRESULT[Cognee write results<br/>RememberResult, DataPoint IDs,<br/>dataset and pipeline state]:::cognee
+    WRESULT --> RECEIPT[Brain receipt<br/>surface-specific summary,<br/>warnings, confirmation state]:::brain
+    RECEIPT --> CLIENTS
+      </div>
+
+      <h2>Data Recall / Read Flow</h2>
+      <div class="mermaid">
+flowchart TD
+    classDef client fill:#fef3c7,stroke:#a16207,color:#3f2d05;
+    classDef brain fill:#dcfce7,stroke:#15803d,color:#08331a;
+    classDef policy fill:#e0f2fe,stroke:#0369a9,color:#082f49;
+    classDef store fill:#ede9fe,stroke:#6d28d9,color:#241044;
+    classDef cognee fill:#f3f4f6,stroke:#374151,color:#111827;
+    classDef palate fill:#fce7f3,stroke:#be185d,color:#500724;
+
+    subgraph CLIENTS[Clients and operators]
+        REST[REST callers]:::client
+        MCP[HTTP and stdio MCP tools]:::client
+        APP[Browser app and ChatGPT app]:::client
+        OPS[Scripts and maintenance jobs]:::client
+    end
+
+    subgraph BRAIN[Brain recall policy facade]
+        INGRESS[Ingress adapters<br/>REST, MCP, app, scripts]:::brain
+        AUTH[Auth, scopes, rate limits,<br/>surface-specific permissions]:::policy
+        CONTEXT[Resolve context<br/>user, profile, bias, session_id,<br/>dataset and node-set scope]:::brain
+        ROUTER[Tool and intent router]:::brain
+        READPOLICY[Read policy<br/>scope, status visibility,<br/>grounding, response format]:::policy
+        PALATERANK[Palate ranking policy<br/>option constraints, negative signals,<br/>decision feedback]:::palate
+        MAINTREAD[Admin/review read policy<br/>receipts, pending confirmations,<br/>audit, compatibility state]:::policy
+    end
+
+    subgraph BRAINCTRL[Small Brain control store]
+        CONTROL[(Control DB / files<br/>users, profile context, bias context,<br/>session map, pending confirmations,<br/>app write audit, external receipts)]:::store
+    end
+
+    subgraph COGNEE[Cognee semantic memory substrate]
+        CAPI[Cognee read APIs<br/>recall, search,<br/>session lookup]:::cognee
+        CDATA[(Cognee relational DB<br/>datasets, data, ACLs,<br/>query logs, session records,<br/>node/edge mirror)]:::store
+        GRAPH[(Graph engine<br/>entities, relationships,<br/>datapoints, triplets)]:::store
+        VECTOR[(Vector engine<br/>chunks, summaries,<br/>datapoints, triplets)]:::store
+        SESSION[(Cognee session cache<br/>QA, trace, feedback,<br/>graph context snapshots)]:::store
+    end
+
+    REST --> INGRESS
+    MCP --> INGRESS
+    APP --> INGRESS
+    OPS --> INGRESS
+
+    INGRESS --> AUTH
+    AUTH --> CONTEXT
+    CONTEXT --> CONTROL
+    CONTEXT --> ROUTER
+
+    ROUTER -- profile, bias,<br/>pending confirmation,<br/>receipt or audit lookup --> MAINTREAD
+    MAINTREAD --> CONTROL
+    MAINTREAD --> CONTROLANSWER[Control-store answer<br/>profile, bias, receipt,<br/>review/admin payload]:::brain
+
+    ROUTER -- palate recommendation<br/>or option evaluation --> PALATERANK
+    PALATERANK --> CONTROL
+    PALATERANK -- scoped palate recall/search --> CAPI
+
+    ROUTER -- memory recall,<br/>source QA, semantic search --> READPOLICY
+    READPOLICY --> CONTROL
+    READPOLICY -- scoped recall/search<br/>with user, profile, bias,<br/>session_id, node sets --> CAPI
+
+    CAPI --> SCOPE{Retrieval scope}:::cognee
+    SCOPE -- session --> SESSION
+    SCOPE -- chunks and summaries --> VECTOR
+    SCOPE -- graph completion,<br/>Cypher, temporal --> GRAPH
+    SCOPE -- dataset metadata,<br/>query/result logs --> CDATA
+
+    SESSION --> CRESULT[Cognee recall/search results]:::cognee
+    VECTOR --> CRESULT
+    GRAPH --> CRESULT
+    CDATA --> CRESULT
+
+    CRESULT --> READPOLICY
+    CRESULT --> PALATERANK
+    PALATERANK --> ANSWER[User answer, ranked options,<br/>evidence, or recommendation]:::brain
+    READPOLICY --> ANSWER
+    CONTROLANSWER --> ANSWER
+    ANSWER --> CLIENTS
+      </div>
+
+      <h2>Ownership Split</h2>
+      <ul>
+        <li><strong>Brain owns context and policy:</strong> user/session/profile resolution, bias context, app surface rules, dry-run and confirmation state, safety gates, response shape, app write audit, and user-visible maintenance decisions.</li>
+        <li><strong>Cognee owns semantic memory:</strong> source ingestion, dataset/data records, graph construction, vector indexing, entity/relationship retrieval, session cache, query logs, improvement, and deletion/reset of semantic memory.</li>
+        <li><strong>Palate remains policy-heavy:</strong> Brain keeps taste normalization, enrichment choices, ranking policy, option constraints, and decision feedback logic; Cognee stores/searches typed palate datapoints.</li>
+        <li><strong>Profile and bias stay in Brain first:</strong> They live in the control store because they shape routing and prompting. Brain can also project them to Cognee as typed datapoints when they should be semantically searchable.</li>
+        <li><strong>No broad Brain memory mirror:</strong> Brain should avoid rebuilding <code>memory_cards</code>, <code>entities</code>, <code>relationships</code>, source text storage, and broad recall logs as a second semantic database.</li>
+      </ul>
+
+      <h2>Migration Direction</h2>
+      <ul>
+        <li>Replace raw JSON text projection with typed Cognee datapoints for Brain memory, source chunks, profile context, open loops, status events, and palate records.</li>
+        <li>Keep Brain control tables/files small and explicit: profile context, bias context, session map, pending confirmations, app write audit, and compatibility receipts.</li>
+        <li>Move durable semantic state out of Brain's parallel source, memory-card, entity, relationship, ingestion, and recall-log tables as migration allows.</li>
+      </ul>
+    </main>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, securityLevel: "loose", theme: "default" });
+    </script>
+  </body>
+</html>

@@ -37,7 +37,6 @@ class BrainOAuthProvider:
         self.resource_url = settings.public_mcp_url
         self.allowed_resource_urls = {
             settings.public_mcp_url,
-            settings.public_app_mcp_url,
             settings.public_admin_mcp_url,
         }
         self.scopes = settings.brain_auth_scope_list

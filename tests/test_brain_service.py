@@ -2,326 +2,88 @@ from __future__ import annotations
 
 from typing import Any
 
-from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
-from memory_stack.brain_service import ingest_source, list_open_loops, profile_entity, recall, remember
+from sqlalchemy import func, inspect, select
+
+from memory_stack import brain_schema as schema
+from memory_stack import brain_service
+from memory_stack.brain_models import IngestSourceRequest, RememberRequest
+from memory_stack.brain_service import ingest_source, remember
 from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
-from memory_stack import brain_service
 
 
-def test_family_fact_creates_single_card_entities_and_relationships(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-
-    receipt = remember(RememberRequest(input="Nur and Sara are my twin daughters."), settings)
-
-    assert receipt.classification == "family_fact"
-    assert len(receipt.memory_cards) == 1
-    assert receipt.memory_cards[0].kind == "family_fact"
-    assert receipt.memory_cards[0].statement == "Nur and Sara are Daniele's twin daughters."
-    assert {entity.canonical_name for entity in receipt.entities} == {"Daniele", "Nur", "Sara"}
-    assert {
-        (relationship["predicate"], relationship["confidence"])
-        for relationship in receipt.relationships
-    } == {
-        ("daughter_of", "high"),
-        ("twin_of", "high"),
-    }
-
-    answer = recall(RecallRequest(query="Who are my daughters?"), settings)
-    assert "Nur and Sara are Daniele's twin daughters" in answer.answer
-
-
-def test_profile_preserves_relationship_direction_for_parent_profile(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-
-    remember(RememberRequest(input="Nur and Sara are my twin daughters."), settings)
-
-    profile = profile_entity(settings, name="Daniele")
-    assert "Nur --daughter_of--> Daniele" in profile.answer
-    assert "Sara --daughter_of--> Daniele" in profile.answer
-    assert "daughter_of Nur" not in profile.answer
-    assert "daughter_of Sara" not in profile.answer
-
-    raw_profile = BrainStore(settings).entity_profile("Daniele")
-    daughter_relationships = [
-        relationship
-        for relationship in raw_profile["relationships"]
-        if relationship["predicate"] == "daughter_of"
-    ]
-    assert {
-        (
-            relationship["subject_name"],
-            relationship["predicate"],
-            relationship["object_name"],
-            relationship["direction_relative_to_profile_entity"],
-        )
-        for relationship in daughter_relationships
-    } == {
-        ("Nur", "daughter_of", "Daniele", "incoming"),
-        ("Sara", "daughter_of", "Daniele", "incoming"),
-    }
-
-
-def test_person_interaction_profile_is_entity_centric(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-
-    receipt = remember(
-        RememberRequest(input="Sam from Goldman mentioned that he likes Bill Evans."),
-        settings,
-    )
-
-    assert receipt.classification == "person_interaction"
-    assert {entity.canonical_name for entity in receipt.entities} == {
-        "Sam from Goldman",
-        "Goldman",
-        "Bill Evans",
-    }
-    assert {relationship["predicate"] for relationship in receipt.relationships} == {
-        "associated_with",
-        "likes",
-    }
-
-    profile = profile_entity(settings, name="Sam from Goldman")
-    assert "Sam from Goldman" in profile.answer
-    assert "Sam" in profile.answer
-    assert "Sam from Goldman --associated_with--> Goldman" in profile.answer
-    assert "Sam from Goldman --likes--> Bill Evans" in profile.answer
-
-
-def test_open_question_creates_open_loop(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-
-    receipt = remember(
-        RememberRequest(input="I want to learn more about knowledge graphs."),
-        settings,
-    )
-
-    assert receipt.classification == "open_question"
-    assert receipt.open_loops[0]["status"] == "open"
-    assert receipt.memory_cards[0].statement == "Daniele wants to learn more about knowledge graphs."
-
-    loops = list_open_loops(settings, topic="knowledge graphs")
-    assert len(loops) == 1
-    assert loops[0]["topics"] == ["knowledge_graphs"]
-    assert "knowledge graphs" in loops[0]["statement"]
-
-
-def test_recall_hides_non_current_statuses_by_default(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    store = BrainStore(settings)
-    memory_ids = {
-        status: remember(
-            RememberRequest(input=f"Visibility regression memory {status}."),
-            settings,
-        ).memory_cards[0].id
-        for status in ["current", "deleted", "archived", "superseded"]
-    }
-    for status in ["deleted", "archived", "superseded"]:
-        store.update_memory_status(memory_ids[status], status)
-
-    response = recall(RecallRequest(query="visibility regression"), settings)
-
-    assert {fact["memory_id"] for fact in response.facts} == {memory_ids["current"]}
-
-
-def test_recall_include_superseded_keeps_deleted_and_rejected_hidden(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    store = BrainStore(settings)
-    memory_ids = {
-        status: remember(
-            RememberRequest(input=f"Superseded visibility regression memory {status}."),
-            settings,
-        ).memory_cards[0].id
-        for status in ["current", "superseded", "deleted", "rejected"]
-    }
-    for status in ["superseded", "deleted", "rejected"]:
-        store.update_memory_status(memory_ids[status], status)
-
-    response = recall(
-        RecallRequest(query="superseded visibility regression", include_superseded=True),
-        settings,
-    )
-
-    assert {fact["memory_id"] for fact in response.facts} == {
-        memory_ids["current"],
-        memory_ids["superseded"],
-    }
-
-
-def test_ingest_source_request_accepts_article_url(tmp_path, monkeypatch) -> None:
-    settings = brain_test_settings(tmp_path)
-
-    class FakeResponse:
-        text = """
-        <html>
-          <head><title>Fetched article title</title></head>
-          <body><article><p>AI memory systems need durable source evidence.</p></article></body>
-        </html>
-        """
-
-        def raise_for_status(self) -> None:
-            return None
-
-    def fake_get(url, **kwargs):
-        assert url == "https://example.com/ai-memory"
-        assert kwargs["follow_redirects"] is True
-        return FakeResponse()
-
-    monkeypatch.setattr("memory_stack.ingestion.article_loader.httpx.get", fake_get)
-
-    receipt = ingest_source(
-        IngestSourceRequest(
-            source="https://example.com/ai-memory",
-            source_kind="article",
-            title="AI memory note",
-            why_saved="Useful for memory design.",
-        ),
-        settings,
-    )
-
-    source = BrainStore(settings).get_source(receipt.source.source_id, include_text=True)
-    assert receipt.classification == "article_url"
-    assert receipt.source.created is True
-    assert receipt.memory_cards[0].kind == "source_record"
-    assert source["kind"] == "article"
-    assert source["title"] == "AI memory note"
-    assert source["uri"] == "https://example.com/ai-memory"
-    assert "AI memory systems need durable source evidence." in source["text"]
-    assert source["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
-    assert source["status"] == "processed"
-    assert source["metadata_json"]["fetched"] is True
-    assert source["metadata_json"]["why_saved"] == "Useful for memory design."
-    sync_rows = (
-        BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)
-        + BrainStore(settings).get_cognee_sync(receipt.source.source_id)
-    )
-    assert {
-        (row["object_type"], row["dataset"], row["status"])
-        for row in sync_rows
-    } == {
-        ("memory", "memory", "pending"),
-        ("source", "sources", "pending"),
-    }
-
-
-def test_remember_submits_cognee_sync_after_successful_ingestion(tmp_path, monkeypatch) -> None:
-    settings = brain_test_settings(tmp_path).model_copy(
-        update={"brain_cognee_sync_on_ingest": True}
-    )
-    submitted: list[tuple[Settings, list[tuple[str, str]]]] = []
-
-    def fake_submit_background_cognee_sync(active_settings, targets):
-        submitted.append((active_settings, targets))
-        return None
-
-    monkeypatch.setattr(
-        brain_service,
-        "_submit_background_cognee_sync",
-        fake_submit_background_cognee_sync,
-    )
-
-    receipt = remember(RememberRequest(input="Daniele prefers green tea."), settings)
-
-    assert submitted == [(settings, [("memory", receipt.memory_cards[0].id)])]
-    run = BrainStore(settings).get_ingestion_run(receipt.ingestion_run_id)
-    assert run["status"] == "processed"
-
-
-def test_ingest_source_submits_source_and_memory_cognee_sync_targets(
+def test_family_fact_is_sent_to_cognee_as_raw_text_without_legacy_rows(
     tmp_path,
     monkeypatch,
 ) -> None:
-    settings = brain_test_settings(tmp_path).model_copy(
-        update={"brain_cognee_sync_on_ingest": True}
-    )
-    submitted: list[list[tuple[str, str]]] = []
+    settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
 
-    def fake_submit_background_cognee_sync(active_settings, targets):
-        assert active_settings is settings
-        submitted.append(targets)
-        return None
+    receipt = remember(RememberRequest(input="Nur and Sara are my twin daughters."), settings)
 
-    monkeypatch.setattr(
-        brain_service,
-        "_submit_background_cognee_sync",
-        fake_submit_background_cognee_sync,
-    )
+    assert calls[0]["text"] == "Nur and Sara are my twin daughters."
+    assert receipt.entities == []
+    assert calls[0]["dataset_name"] == "memory"
+    assert_legacy_semantic_counts(settings)
+
+
+def test_ingest_source_request_writes_raw_source_text_to_cognee(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
+
+    source_text = "# AI Memory\nAI memory systems need durable source evidence."
 
     receipt = ingest_source(
         IngestSourceRequest(
-            source="# Brain note\nKnowledge graphs matter for Brain.",
+            source=source_text,
             source_kind="markdown",
         ),
         settings,
     )
+    assert [call["dataset_name"] for call in calls] == [settings.brain_cognee_memory_dataset]
+    assert calls[0]["text"] == source_text
+    assert "brain" in calls[0]["node_set"]
+    assert "brain_source" not in calls[0]["node_set"]
+    assert "brain_memory" not in calls[0]["node_set"]
+    assert_legacy_semantic_counts(settings)
 
-    assert submitted == [
-        [
-            ("source", receipt.source.source_id),
-            ("memory", receipt.memory_cards[0].id),
-        ]
-    ]
 
-
-def test_background_cognee_sync_sweeps_pending_backlog_after_targets(
+def test_ingest_source_uses_cognee_remember_once(
     tmp_path,
     monkeypatch,
 ) -> None:
-    settings = brain_test_settings(tmp_path).model_copy(
-        update={"brain_cognee_sync_on_ingest_sweep_limit": 25}
-    )
-    calls: list[tuple[str, Any]] = []
-
-    def fake_sync_cognee(active_settings, *, object_type="all", object_id=None, **kwargs):
-        assert active_settings is settings
-        calls.append(("target", object_type, object_id, kwargs))
-        return {"processed": 1, "succeeded": 1, "failed": 0}
-
-    def fake_sync_pending_cognee(*, settings: Settings, limit: int):
-        calls.append(("sweep", limit))
-        return {"processed": 3, "succeeded": 3, "failed": 0}
-
-    monkeypatch.setattr(brain_service, "sync_cognee", fake_sync_cognee)
-    monkeypatch.setattr(brain_service, "sync_pending_cognee", fake_sync_pending_cognee)
-
-    result = brain_service._sync_cognee_targets(
-        settings,
-        [("source", "source_1"), ("memory", "mem_1")],
-    )
-
-    assert calls == [
-        ("target", "source", "source_1", {}),
-        ("target", "memory", "mem_1", {}),
-        ("sweep", 25),
-    ]
-    assert [item["processed"] for item in result] == [1, 1, 3]
-
-
-def test_background_cognee_sync_can_disable_backlog_sweep(tmp_path, monkeypatch) -> None:
-    settings = brain_test_settings(tmp_path).model_copy(
-        update={"brain_cognee_sync_on_ingest_sweep_limit": 0}
-    )
-    swept = False
-
-    def fake_sync_cognee(active_settings, *, object_type="all", object_id=None, **kwargs):
-        return {"processed": 1, "succeeded": 1, "failed": 0}
-
-    def fake_sync_pending_cognee(*, settings: Settings, limit: int):
-        nonlocal swept
-        swept = True
-        return {"processed": 1, "succeeded": 1, "failed": 0}
-
-    monkeypatch.setattr(brain_service, "sync_cognee", fake_sync_cognee)
-    monkeypatch.setattr(brain_service, "sync_pending_cognee", fake_sync_pending_cognee)
-
-    result = brain_service._sync_cognee_targets(settings, [("memory", "mem_1")])
-
-    assert swept is False
-    assert len(result) == 1
-
-
-def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
+
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source="# Archive\nKeep as evidence only.",
+            source_kind="markdown",
+        ),
+        settings,
+    )
+    assert [call["dataset_name"] for call in calls] == [settings.brain_cognee_memory_dataset]
+    assert calls[0]["text"] == "# Archive\nKeep as evidence only."
+    assert "brain_source" not in calls[0]["node_set"]
+    assert "brain_memory" not in calls[0]["node_set"]
+    receipt_row = BrainStore(settings).get_external_receipt(receipt.ingestion_run_id)
+    assert receipt_row["cognee_result_json"]["objects"][0]["operation"] == "remember"
+    assert_legacy_semantic_counts(settings)
+
+
+def test_ingest_source_dry_run_does_not_call_cognee_or_write_rows(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
 
     receipt = ingest_source(
         IngestSourceRequest(
@@ -333,14 +95,18 @@ def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
     )
 
     assert receipt.dry_run is True
-    assert receipt.source.created is True
-    assert receipt.source.source_id is None
-    assert BrainStore(settings).search_memory("knowledge graphs") == []
+    assert receipt.cognee_sync_status == "not_applicable"
+    assert calls == []
+    assert BrainStore(settings).list_external_receipts() == []
+    assert_legacy_semantic_counts(settings)
 
 
-def test_ingest_source_background_returns_queued_receipt(tmp_path, monkeypatch) -> None:
+def test_ingest_source_background_returns_queued_receipt_without_control_rows(
+    tmp_path,
+    monkeypatch,
+) -> None:
     settings = brain_test_settings(tmp_path)
-    submitted: list[IngestSourceRequest | RememberRequest] = []
+    submitted: list[IngestSourceRequest] = []
 
     def fake_submit_background_ingest(request, active_settings, *, llm_client=None):
         del llm_client
@@ -365,117 +131,217 @@ def test_ingest_source_background_returns_queued_receipt(tmp_path, monkeypatch) 
 
     assert receipt.classification == "queued"
     assert receipt.cognee_sync_status == "queued"
-    assert receipt.source.source_id is None
     assert submitted
     assert submitted[0].run_in_background is False
-    assert BrainStore(settings).list_ingestion_runs(limit=10) == []
+    assert BrainStore(settings).list_external_receipts() == []
+    assert_legacy_semantic_counts(settings)
 
 
-def test_table_source_creates_source_and_table_note(tmp_path) -> None:
+def test_ingest_source_normalizes_before_background_decision(tmp_path, monkeypatch) -> None:
     settings = brain_test_settings(tmp_path)
-    table = "\n".join(
-        [
-            "| Person | Preference |",
-            "| --- | --- |",
-            "| Sam | Bill Evans |",
-            "| Daniele | Knowledge graphs |",
-        ]
+    submitted: list[IngestSourceRequest] = []
+    seen_remember_requests: list[RememberRequest] = []
+
+    def fake_should_run_in_background(request, remember_request, active_settings):
+        assert active_settings is settings
+        assert request.source == "Document text"
+        seen_remember_requests.append(remember_request)
+        return True
+
+    def fake_submit_background_ingest(request, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is settings
+        submitted.append(request)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_should_run_ingest_in_background",
+        fake_should_run_in_background,
     )
-
-    receipt = ingest_source(
-        IngestSourceRequest(source=table, source_kind="table", title="Preferences"),
-        settings,
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_ingest",
+        fake_submit_background_ingest,
     )
-
-    source = BrainStore(settings).get_source(receipt.source.source_id)
-    memory = BrainStore(settings).get_memory(receipt.memory_cards[0].id)
-    assert receipt.classification == "table"
-    assert source["kind"] == "table"
-    assert source["metadata_json"]["columns"] == ["Person", "Preference"]
-    assert source["metadata_json"]["row_count"] == 2
-    assert memory["kind"] == "table_note"
-    assert memory["metadata_json"]["sample_rows"][0] == {
-        "Person": "Sam",
-        "Preference": "Bill Evans",
-    }
-
-
-def test_transcript_source_preserves_participants(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    transcript = "\n".join(
-        [
-            "Daniele: We should keep Brain DB as source of truth.",
-            "Sam: Cognee should stay rebuildable.",
-            "Daniele: Add source-backed recall next.",
-        ]
-    )
-
-    receipt = ingest_source(
-        IngestSourceRequest(source=transcript, source_kind="transcript", title="Brain sync"),
-        settings,
-    )
-
-    source = BrainStore(settings).get_source(receipt.source.source_id)
-    assert receipt.classification == "transcript"
-    assert source["kind"] == "transcript"
-    assert source["metadata_json"]["participants"] == ["Daniele", "Sam"]
-    assert source["metadata_json"]["turn_count"] == 3
-    assert source["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
-    assert receipt.memory_cards[0].kind == "source_record"
-
-
-def test_markdown_source_record_stores_citation_metadata_without_raw_text(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    source_text = "# Anna Banti et Artemisia Gentileschi\n\nLong article body."
 
     receipt = ingest_source(
         IngestSourceRequest(
-            source=source_text,
+            source="Document text",
             source_kind="markdown",
-            title="Anna Banti et Artemisia Gentileschi",
-            metadata={
-                "author": "Genesio",
-                "journal": "Marges",
-                "year": "2004",
-            },
+            metadata={"doc": "demo"},
+            context={"client_session_id": "session-1"},
         ),
         settings,
     )
 
-    store = BrainStore(settings)
-    source = store.get_source(receipt.source.source_id, include_text=True)
-    memory = store.get_memory(receipt.memory_cards[0].id)
-    assert source["text"] == source_text
-    assert source["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
-    assert source["metadata_json"]["raw_text_chars"] == len(source_text)
-    assert memory["kind"] == "source_record"
-    assert memory["statement"] == "Source stored: Anna Banti et Artemisia Gentileschi"
-    assert memory["metadata_json"]["source_storage"] == "brain_db_pending_cognee"
-    assert memory["metadata_json"]["brain_raw_text_policy"] == "async_cognee_projection"
-    assert memory["metadata_json"]["citation"] == (
-        'Genesio. "Anna Banti et Artemisia Gentileschi". Marges. 2004'
+    assert receipt.classification == "queued"
+    assert submitted
+    assert seen_remember_requests
+    normalized = seen_remember_requests[0]
+    assert normalized.input == "Document text"
+    assert normalized.input_type == "markdown"
+    assert normalized.context["taste_skip"] is True
+    assert normalized.context["source_ingest"] is True
+    assert normalized.context["source_kind"] == "markdown"
+    assert normalized.context["metadata"] == {"doc": "demo"}
+    assert normalized.context["client_session_id"] == "session-1"
+
+
+def test_ingest_source_auto_backgrounds_large_sources(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_ingest_background_auto_chars": 10}
+    )
+    submitted: list[IngestSourceRequest] = []
+
+    def fake_submit_background_ingest(request, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is settings
+        submitted.append(request)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_ingest",
+        fake_submit_background_ingest,
     )
 
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source="# Brain note\nKnowledge graphs matter for Brain.",
+            source_kind="markdown",
+        ),
+        settings,
+    )
 
-def test_memory_store_is_scoped_by_user_id(tmp_path) -> None:
+    assert receipt.classification == "queued"
+    assert receipt.cognee_sync_status == "queued"
+    assert submitted
+    assert submitted[0].run_in_background is False
+    assert BrainStore(settings).list_external_receipts() == []
+
+
+def test_ingest_source_explicit_false_overrides_auto_background(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_ingest_background_auto_chars": 10}
+    )
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
+
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source="# Brain note\nKnowledge graphs matter for Brain.",
+            source_kind="markdown",
+            run_in_background=False,
+        ),
+        settings,
+    )
+
+    assert receipt.classification == "markdown"
+    assert receipt.cognee_sync_status == "synced"
+    assert calls
+    assert [call["dataset_name"] for call in calls] == [settings.brain_cognee_memory_dataset]
+    assert calls[0]["text"] == "# Brain note\nKnowledge graphs matter for Brain."
+
+
+def test_ingest_source_dry_run_overrides_auto_background(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path).model_copy(
+        update={"brain_ingest_background_auto_chars": 10}
+    )
+
+    def fail_submit_background_ingest(*args, **kwargs):
+        raise AssertionError("dry-run ingestion should not be queued")
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_ingest",
+        fail_submit_background_ingest,
+    )
+
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source="# Brain note\nKnowledge graphs matter for Brain.",
+            source_kind="markdown",
+            dry_run=True,
+        ),
+        settings,
+    )
+
+    assert receipt.dry_run is True
+    assert receipt.cognee_sync_status == "not_applicable"
+    assert receipt.classification == "markdown"
+
+
+def test_external_receipts_are_scoped_by_user_id(tmp_path, monkeypatch) -> None:
     db_url = f"sqlite:///{tmp_path / 'brain.db'}"
-    settings_a = Settings(brain_database_url=db_url, brain_user_id="user_a")
-    settings_b = Settings(brain_database_url=db_url, brain_user_id="user_b")
+    settings_a = Settings(
+        brain_database_url=db_url,
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        brain_user_id="user_a",
+        brain_llm_enabled=False,
+        brain_taste_enabled=False,
+    )
+    settings_b = Settings(
+        brain_database_url=db_url,
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        brain_user_id="user_b",
+        brain_llm_enabled=False,
+        brain_taste_enabled=False,
+    )
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
 
     receipt_a = remember(RememberRequest(input="Daniele prefers green tea."), settings_a)
     receipt_b = remember(RememberRequest(input="Daniele prefers green tea."), settings_b)
 
-    memory_id_a = receipt_a.memory_cards[0].id
-    memory_id_b = receipt_b.memory_cards[0].id
-    assert memory_id_a != memory_id_b
-    assert BrainStore(settings_a).get_memory(memory_id_b) is None
-    assert BrainStore(settings_b).get_memory(memory_id_a) is None
+    assert receipt_a.ingestion_run_id != receipt_b.ingestion_run_id
+    assert [
+        receipt["id"] for receipt in BrainStore(settings_a).list_external_receipts()
+    ] == [receipt_a.ingestion_run_id]
+    assert [
+        receipt["id"] for receipt in BrainStore(settings_b).list_external_receipts()
+    ] == [receipt_b.ingestion_run_id]
+    assert_legacy_semantic_counts(settings_a)
+    assert_legacy_semantic_counts(settings_b)
 
-    recall_a = recall(RecallRequest(query="green tea"), settings_a)
-    recall_b = recall(RecallRequest(query="green tea"), settings_b)
-    assert {fact["memory_id"] for fact in recall_a.facts} == {memory_id_a}
-    assert {fact["memory_id"] for fact in recall_b.facts} == {memory_id_b}
 
+def fake_cognee(calls: list[dict[str, Any]]):
+    def remember_text(
+        text: str,
+        *,
+        dataset_name: str,
+        node_set: list[str] | None = None,
+        settings: Settings | None = None,
+    ) -> dict[str, Any]:
+        del settings
+        calls.append(
+            {
+                "text": text,
+                "dataset_name": dataset_name,
+                "node_set": node_set or [],
+            }
+        )
+        return {"items": [{"id": f"00000000-0000-0000-0000-{len(calls):012d}"}]}
+
+    return remember_text
+
+
+def assert_legacy_semantic_counts(settings: Settings) -> None:
+    table_names = set(inspect(BrainStore(settings).engine).get_table_names())
+    assert {
+        "sources",
+        "memory_cards",
+        "memory_entities",
+        "memory_links",
+        "relationships",
+        "open_loops",
+        "cognee_sync",
+    }.isdisjoint(table_names)
 
 def brain_test_settings(tmp_path) -> Settings:
-    return Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    return Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        brain_llm_enabled=False,
+        brain_taste_enabled=False,
+    )

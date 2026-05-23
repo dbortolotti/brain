@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from memory_stack import brain_service
 from memory_stack.cfg import Settings
 from memory_stack.evals.fixtures import GOLDEN_INGESTION_FIXTURES
 from memory_stack.evals.golden_queries import GOLDEN_RECALL_QUERIES
@@ -43,11 +44,16 @@ def test_metric_helpers_are_deterministic() -> None:
     ) == 0.5
 
 
-def test_golden_evals_run_offline_with_fake_llm_and_fake_cognee(tmp_path) -> None:
+def test_golden_evals_run_offline_with_fake_llm_and_fake_cognee(tmp_path, monkeypatch) -> None:
     settings = Settings(
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
         brain_cognee_recall_enabled=True,
+        brain_llm_enabled=False,
+        brain_taste_enabled=False,
     )
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
 
     result = run_golden_evals(
         settings,
@@ -69,3 +75,25 @@ def test_golden_evals_run_offline_with_fake_llm_and_fake_cognee(tmp_path) -> Non
         "llm_cost_per_ingestion",
         "cognee_sync_failure_rate",
     } <= set(result["metrics"])
+    assert calls
+
+
+def fake_cognee(calls: list[dict[str, Any]]):
+    def remember_text(
+        text: str,
+        *,
+        dataset_name: str,
+        node_set: list[str] | None = None,
+        settings: Settings | None = None,
+    ) -> dict[str, Any]:
+        del settings
+        calls.append(
+            {
+                "text": text,
+                "dataset_name": dataset_name,
+                "node_set": node_set or [],
+            }
+        )
+        return {"items": [{"id": f"00000000-0000-0000-0000-{len(calls):012d}"}]}
+
+    return remember_text

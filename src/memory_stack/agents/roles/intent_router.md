@@ -7,7 +7,7 @@ Route an input to the correct Brain workflow without doing the downstream work.
 - Applies to this role only; do not perform adjacent Brain roles unless explicitly listed in this spec.
 
 ## Inputs
-- User message or Slack command.
+- User message or Memory intake command.
 - Nearby routing context when supplied.
 
 ## Output Contract
@@ -28,7 +28,7 @@ Route an input to the correct Brain workflow without doing the downstream work.
 - Route storage-policy questions about problematic inputs, such as large tables or unclear writes, to repair/propose_repair.
 - For debug/eval accounting questions, include the accounting dimensions mentioned by the user in the answer or reason when the schema permits text fields.
 - Treat open_question and research_question as memory-write routes, not recall/answer routes.
-- For duplicate Slack delivery, route as duplicate/deduplicate and do not create a second ingestion path.
+- For duplicate Memory intake delivery, route as duplicate/deduplicate and do not create a second ingestion path.
 
 ## Must Not Do
 - Do not answer recall/profile questions.
@@ -36,7 +36,7 @@ Route an input to the correct Brain workflow without doing the downstream work.
 - Do not perform debug/admin work; route to debug/admin only when appropriate.
 
 ## Safety / Failure Modes
-- Explicit Slack slash commands override LLM classification.
+- Explicit Memory intake slash commands override LLM classification.
 - Preserve guarded debug/admin boundaries.
 
 ## Examples

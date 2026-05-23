@@ -1,24 +1,42 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
-from memory_stack.brain_store import BrainStore, content_hash, normalize_name, normalize_user_id
+from memory_stack.brain_store import BrainStore, normalize_name, normalize_user_id
+from memory_stack.context_records import (
+    context_id,
+    context_record_payload,
+    list_context_records,
+    normalize_statement,
+    remember_context_record,
+    upsert_context_record,
+)
 from memory_stack.cfg import Settings
 
 
 def list_profile_context(settings: Settings, *, user_id: str | None = None) -> list[dict[str, Any]]:
     active_user_id = normalize_user_id(user_id or settings.brain_user_id)
-    path = _path(settings, user_id=active_user_id)
+    store = BrainStore(settings, user_id=active_user_id)
+    _import_legacy_profile_context_file(settings, store=store, user_id=active_user_id)
+    return list_context_records(settings, kind="profile", user_id=active_user_id)
+
+
+def _import_legacy_profile_context_file(
+    settings: Settings,
+    *,
+    store: BrainStore,
+    user_id: str,
+) -> None:
+    path = _path(settings, user_id=user_id)
     if not path.exists():
-        return []
+        return
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, list):
         raise ValueError(f"Profile context file must contain a list: {path}")
-    records: list[dict[str, Any]] = []
+    imported: list[dict[str, Any]] = []
     changed = False
     now = datetime.now(UTC).isoformat()
     for item in payload:
@@ -28,17 +46,17 @@ def list_profile_context(settings: Settings, *, user_id: str | None = None) -> l
                 changed = True
                 continue
             scope = "answer_tailoring"
-            records.append(
-                {
-                    "id": _context_id(statement, scope, user_id=active_user_id),
-                    "user_id": active_user_id,
-                    "statement": statement,
-                    "scope": scope,
-                    "source": "legacy_profile_context_string",
-                    "sync_status": "pending",
-                    "created_at": now,
-                    "updated_at": now,
-                }
+            imported.append(
+                    _context_record_payload(
+                        _upsert_profile_context_record(
+                    store,
+                    record_id=_context_id(statement, scope, user_id=user_id),
+                    statement=statement,
+                    scope=scope,
+                    source="legacy_profile_context_string",
+                    metadata_json={"legacy_profile_context_imported_at": now},
+                )
+                )
             )
             changed = True
             continue
@@ -58,18 +76,36 @@ def list_profile_context(settings: Settings, *, user_id: str | None = None) -> l
             record["scope"] = scope
             changed = True
         if not record.get("id"):
-            record["id"] = _context_id(statement, scope, user_id=active_user_id)
+            record["id"] = _context_id(statement, scope, user_id=user_id)
             changed = True
-        if not record.get("user_id"):
-            record["user_id"] = active_user_id
-            changed = True
-        if "sync_status" not in record:
-            record["sync_status"] = "pending"
-            changed = True
-        records.append(record)
+        imported.append(
+            _context_record_payload(
+                _upsert_profile_context_record(
+                store,
+                record_id=str(record["id"]),
+                statement=statement,
+                scope=scope,
+                source=record.get("source"),
+                metadata_json={
+                    key: value
+                    for key, value in record.items()
+                    if key
+                    not in {
+                        "id",
+                        "user_id",
+                        "statement",
+                        "scope",
+                        "source",
+                        "sync_status",
+                        "created_at",
+                        "updated_at",
+                    }
+                },
+            )
+            )
+        )
     if changed:
-        _write(settings, records, user_id=active_user_id)
-    return records
+        _write(settings, imported, user_id=user_id)
 
 
 def remember_profile_context(
@@ -81,46 +117,25 @@ def remember_profile_context(
     user_id: str | None = None,
 ) -> dict[str, Any]:
     active_user_id = normalize_user_id(user_id or settings.brain_user_id)
-    normalized = _normalize_statement(statement)
+    normalized = normalize_statement(statement)
     if not normalized:
         raise ValueError("statement must not be blank.")
     normalized_scope = str(scope or "answer_tailoring").strip() or "answer_tailoring"
-    context_id = _context_id(normalized, normalized_scope, user_id=active_user_id)
-    records = list_profile_context(settings, user_id=active_user_id)
-    now = datetime.now(UTC).isoformat()
-    for record in records:
-        if record.get("id") == context_id:
-            old_memory_id = record.get("memory_id")
-            record.update(
-                {
-                    "user_id": active_user_id,
-                    "statement": normalized,
-                    "scope": normalized_scope,
-                    "source": source,
-                    "sync_status": "pending",
-                    "updated_at": now,
-                }
-            )
-            if old_memory_id:
-                record["previous_memory_id"] = old_memory_id
-                record.pop("memory_id", None)
-            _write(settings, records, user_id=active_user_id)
-            synced = sync_profile_context_record(settings, record, user_id=active_user_id)
-            return {**synced, "created": False}
-    record = {
-        "id": context_id,
-        "user_id": active_user_id,
-        "statement": normalized,
-        "scope": normalized_scope,
-        "source": source,
-        "sync_status": "pending",
-        "created_at": now,
-        "updated_at": now,
-    }
-    records.append(record)
+    context_id_value = _context_id(normalized, normalized_scope, user_id=active_user_id)
+    store = BrainStore(settings, user_id=active_user_id)
+    _import_legacy_profile_context_file(settings, store=store, user_id=active_user_id)
+    existing = store.get_context_record(context_id_value)
+    record = remember_context_record(
+        settings,
+        kind="profile",
+        statement=normalized,
+        scope=normalized_scope,
+        source=source,
+        user_id=active_user_id,
+    )
+    records = [_context_record_payload(item) for item in store.list_context_records(kind="profile", limit=10_000)]
     _write(settings, records, user_id=active_user_id)
-    synced = sync_profile_context_record(settings, record, user_id=active_user_id)
-    return {**synced, "created": True}
+    return {**record, "created": existing is None or existing.get("status") == "deleted"}
 
 
 def forget_profile_context(
@@ -133,34 +148,23 @@ def forget_profile_context(
     normalized_id = str(context_id).strip()
     if not normalized_id:
         raise ValueError("context_id must not be blank.")
-    records = list_profile_context(settings, user_id=active_user_id)
-    kept = [record for record in records if record.get("id") != normalized_id]
-    if len(kept) == len(records):
+    store = BrainStore(settings, user_id=active_user_id)
+    _import_legacy_profile_context_file(settings, store=store, user_id=active_user_id)
+    if not store.update_context_record_status(normalized_id, "deleted"):
         return {"id": normalized_id, "status": "not_found"}
-    removed = next(record for record in records if record.get("id") == normalized_id)
-    memory_id = removed.get("memory_id")
-    if memory_id:
-        BrainStore(settings, user_id=active_user_id).update_memory_status(str(memory_id), "deleted")
-    _write(settings, kept, user_id=active_user_id)
+    records = [_context_record_payload(item) for item in store.list_context_records(kind="profile", limit=10_000)]
+    _write(settings, records, user_id=active_user_id)
     return {"id": normalized_id, "status": "deleted"}
 
 
 def sync_profile_context(settings: Settings, *, user_id: str | None = None) -> dict[str, Any]:
     active_user_id = normalize_user_id(user_id or settings.brain_user_id)
     records = list_profile_context(settings, user_id=active_user_id)
-    synced: list[dict[str, Any]] = []
-    for record in records:
-        synced.append(sync_profile_context_record(settings, record, user_id=active_user_id))
-    _write(settings, synced, user_id=active_user_id)
     return {
-        "profile_context_count": len(synced),
-        "synced_count": len([record for record in synced if record.get("sync_status") == "synced"]),
-        "owner_entity_id": (
-            synced[0].get("owner_entity_id")
-            if synced
-            else ensure_owner_entity(settings, user_id=active_user_id)["id"]
-        ),
-        "profile_context": synced,
+        "profile_context_count": len(records),
+        "synced_count": len(records),
+        "owner_entity_id": None,
+        "profile_context": records,
     }
 
 
@@ -172,66 +176,47 @@ def sync_profile_context_record(
 ) -> dict[str, Any]:
     active_user_id = normalize_user_id(user_id or settings.brain_user_id)
     store = BrainStore(settings, user_id=active_user_id)
-    owner_entity = ensure_owner_entity(settings, store=store, user_id=active_user_id)
-    previous_memory_id = record.pop("previous_memory_id", None)
-    if previous_memory_id:
-        store.update_memory_status(str(previous_memory_id), "deleted")
-    memory, _created = store.upsert_memory_card(
-        {
-            "kind": "person_fact",
-            "statement": record["statement"],
-            "confidence": "high",
-            "status": "current",
-            "metadata_json": {
-                "profile_context_id": record["id"],
-                "profile_context_user_id": active_user_id,
-                "profile_context_scope": record.get("scope"),
-                "profile_context_source": record.get("source"),
-                "profile_owner_entity_id": owner_entity["id"],
-                "is_profile_context_projection": True,
-            },
-            "content_hash": content_hash(
-                "user",
-                active_user_id,
-                "profile_context",
-                record["id"],
-                record["statement"],
-            ),
-        }
+    saved = _upsert_profile_context_record(
+        store,
+        record_id=str(record["id"]),
+        statement=str(record["statement"]),
+        scope=str(record.get("scope") or "answer_tailoring"),
+        source=record.get("source"),
+        metadata_json={
+            key: value
+            for key, value in record.items()
+            if key not in {"id", "user_id", "statement", "scope", "source"}
+        },
     )
-    store.link_memory_entity(
-        memory_id=memory["id"],
-        entity_id=owner_entity["id"],
-        role="profile_owner",
-        confidence="high",
+    return _context_record_payload(saved)
+
+
+def _upsert_profile_context_record(
+    store: BrainStore,
+    *,
+    record_id: str,
+    statement: str,
+    scope: str,
+    source: str | None,
+    metadata_json: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return upsert_context_record(
+        store,
+        record_id=record_id,
+        kind="profile",
+        statement=statement,
+        scope=scope,
+        source=source,
+        metadata_json={
+            **(metadata_json or {}),
+            "control_store": "brain_context_records",
+            "semantic_projection": "cognee_optional",
+        },
     )
-    projection_hash = content_hash(memory["id"], memory["statement"], memory["status"])
-    store.mark_cognee_pending(
-        object_type="memory",
-        object_id=memory["id"],
-        dataset=settings.brain_cognee_memory_dataset,
-        projection_hash=projection_hash,
-    )
-    updated = {
-        **record,
-        "user_id": active_user_id,
-        "memory_id": memory["id"],
-        "owner_entity_id": owner_entity["id"],
-        "sync_status": "synced",
-        "sync_error": None,
-        "synced_at": datetime.now(UTC).isoformat(),
-    }
-    records = list_profile_context(settings, user_id=active_user_id)
-    replaced = False
-    for index, existing in enumerate(records):
-        if existing.get("id") == updated["id"]:
-            records[index] = updated
-            replaced = True
-            break
-    if not replaced:
-        records.append(updated)
-    _write(settings, records, user_id=active_user_id)
-    return updated
+
+
+def _context_record_payload(record: dict[str, Any]) -> dict[str, Any]:
+    return context_record_payload(record)
 
 
 def ensure_owner_entity(
@@ -270,12 +255,11 @@ def owner_aliases(settings: Settings) -> list[str]:
 
 
 def _normalize_statement(statement: str) -> str:
-    return " ".join(str(statement).strip().split())
+    return normalize_statement(statement)
 
 
 def _context_id(statement: str, scope: str, *, user_id: str) -> str:
-    digest = hashlib.sha256(f"{user_id}\0{scope}\0{statement.lower()}".encode("utf-8")).hexdigest()[:16]
-    return f"profile_context_{digest}"
+    return context_id("profile", statement, scope, user_id=user_id)
 
 
 def _path(settings: Settings, *, user_id: str) -> Path:

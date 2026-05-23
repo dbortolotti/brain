@@ -272,16 +272,11 @@ class Settings(BaseSettings):
     brain_admin_mcp_path: str = Field(
         default_factory=lambda: get("BRAIN_ADMIN_MCP_PATH", "/admin/mcp")
     )
-    brain_app_mcp_path: str = Field(default_factory=lambda: get("BRAIN_APP_MCP_PATH", "/app/mcp"))
     brain_public_base_url: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_BASE_URL"))
     brain_public_mcp_path: str = Field(default_factory=lambda: get("BRAIN_PUBLIC_MCP_PATH"))
     brain_public_admin_mcp_path: str = Field(
         default_factory=lambda: get("BRAIN_PUBLIC_ADMIN_MCP_PATH", "/admin/mcp")
     )
-    brain_public_app_mcp_path: str = Field(
-        default_factory=lambda: get("BRAIN_PUBLIC_APP_MCP_PATH", "/app/mcp")
-    )
-    brain_openai_apps_challenge_token: str | None = None
     brain_backup_dir: str = Field(default_factory=lambda: get("BRAIN_BACKUP_DIR"))
     brain_neo4j_dump_enabled: bool = Field(
         default_factory=lambda: get("BRAIN_NEO4J_DUMP_ENABLED", False)
@@ -308,7 +303,6 @@ class Settings(BaseSettings):
         default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_REMOTE", "gdrive")
     )
     brain_google_drive_local_path: str | None = None
-    brain_auth_enabled: bool = Field(default_factory=lambda: get("BRAIN_AUTH_ENABLED", False))
     brain_auth_token: str | None = None
     brain_auth_password: str | None = None
     brain_auth_password_file: str = Field(
@@ -347,12 +341,6 @@ class Settings(BaseSettings):
     brain_request_log_retention_days: int = Field(
         default_factory=lambda: get("BRAIN_REQUEST_LOG_RETENTION_DAYS", 30)
     )
-    brain_app_write_rate_limit_count: int = Field(
-        default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_COUNT", 30)
-    )
-    brain_app_write_rate_limit_window_seconds: int = Field(
-        default_factory=lambda: get("BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS", 60)
-    )
     brain_routing_log_enabled: bool = Field(
         default_factory=lambda: get("BRAIN_ROUTING_LOG_ENABLED", False)
     )
@@ -375,12 +363,14 @@ class Settings(BaseSettings):
         default_factory=lambda: get("BRAIN_PROFILE_CONTEXT_PATH")
     )
     brain_llm_enabled: bool = Field(default_factory=lambda: get("BRAIN_LLM_ENABLED"))
-    brain_cognee_enabled: bool = Field(default_factory=lambda: get("BRAIN_COGNEE_ENABLED"))
     brain_cognee_sync_on_ingest: bool = Field(
         default_factory=lambda: get("BRAIN_COGNEE_SYNC_ON_INGEST", False)
     )
     brain_cognee_sync_on_ingest_sweep_limit: int = Field(
         default_factory=lambda: get("BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT", 25)
+    )
+    brain_ingest_background_auto_chars: int = Field(
+        default_factory=lambda: get("BRAIN_INGEST_BACKGROUND_AUTO_CHARS", 12_000)
     )
     brain_cognee_recall_enabled: bool = Field(
         default_factory=lambda: get("BRAIN_COGNEE_RECALL_ENABLED")
@@ -395,17 +385,8 @@ class Settings(BaseSettings):
     brain_cognee_palate_dataset: str = Field(
         default_factory=lambda: get("BRAIN_COGNEE_PALATE_DATASET", "palate")
     )
-    brain_cognee_agent_memory_dataset: str = Field(
-        default_factory=lambda: get("BRAIN_COGNEE_AGENT_MEMORY_DATASET", "agent_memory")
-    )
-    brain_agent_memory_session_id: str = Field(
-        default_factory=lambda: get("BRAIN_AGENT_MEMORY_SESSION_ID", "portable_agent_session")
-    )
     brain_cognee_recall_top_k: int = Field(default_factory=lambda: get("BRAIN_COGNEE_RECALL_TOP_K"))
     brain_taste_enabled: bool = Field(default_factory=lambda: get("BRAIN_TASTE_ENABLED"))
-    brain_taste_canonical_store: Literal["sqlite", "cognee"] = Field(
-        default_factory=lambda: get("BRAIN_TASTE_CANONICAL_STORE", "sqlite")
-    )
     brain_taste_llm_model: str = Field(default_factory=lambda: get("BRAIN_TASTE_LLM_MODEL"))
     brain_taste_llm_reasoning_effort: Literal["minimal", "low", "medium", "high"] = Field(
         default_factory=lambda: get("BRAIN_TASTE_LLM_REASONING_EFFORT")
@@ -435,31 +416,6 @@ class Settings(BaseSettings):
     )
     brain_taste_proposal_expiry_hours: int = Field(
         default_factory=lambda: get("BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS")
-    )
-    brain_slack_enabled: bool = Field(default_factory=lambda: get("BRAIN_SLACK_ENABLED", False))
-    brain_slack_agent_enabled: bool = Field(
-        default_factory=lambda: get("BRAIN_SLACK_AGENT_ENABLED", False)
-    )
-    brain_slack_agent_host: str = Field(
-        default_factory=lambda: get("BRAIN_SLACK_AGENT_HOST", "127.0.0.1")
-    )
-    brain_slack_agent_port: int = Field(default_factory=lambda: get("BRAIN_SLACK_AGENT_PORT", 8003))
-    brain_slack_signing_secret: str | None = None
-    brain_slack_bot_token: str | None = None
-    brain_slack_allowed_team_ids: str = Field(
-        default_factory=lambda: get("BRAIN_SLACK_ALLOWED_TEAM_IDS", "")
-    )
-    brain_slack_allowed_channel_ids: str = Field(
-        default_factory=lambda: get("BRAIN_SLACK_ALLOWED_CHANNEL_IDS", "")
-    )
-    brain_slack_allowed_user_ids: str = Field(
-        default_factory=lambda: get("BRAIN_SLACK_ALLOWED_USER_IDS", "")
-    )
-    brain_slack_admin_user_ids: str = Field(
-        default_factory=lambda: get("BRAIN_SLACK_ADMIN_USER_IDS", "")
-    )
-    brain_slack_auto_commit_high_confidence: bool = Field(
-        default_factory=lambda: get("BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE", False)
     )
     brain_log_level: str = Field(default_factory=lambda: get("BRAIN_LOG_LEVEL", "INFO"))
     brain_prod_root: str = Field(
@@ -544,10 +500,8 @@ class Settings(BaseSettings):
 
         self.brain_mcp_path = normalize_path(self.brain_mcp_path)
         self.brain_admin_mcp_path = normalize_path(self.brain_admin_mcp_path)
-        self.brain_app_mcp_path = normalize_path(self.brain_app_mcp_path)
         self.brain_public_mcp_path = normalize_path(self.brain_public_mcp_path)
         self.brain_public_admin_mcp_path = normalize_path(self.brain_public_admin_mcp_path)
-        self.brain_public_app_mcp_path = normalize_path(self.brain_public_app_mcp_path)
         self.brain_health_path = normalize_path(self.brain_health_path)
         self.brain_public_ui_path = normalize_path(self.brain_public_ui_path)
         self.brain_public_ui_api_path = normalize_path(self.brain_public_ui_api_path)
@@ -583,10 +537,6 @@ class Settings(BaseSettings):
     @property
     def public_mcp_url(self) -> str:
         return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_mcp_path}"
-
-    @property
-    def public_app_mcp_url(self) -> str:
-        return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_app_mcp_path}"
 
     @property
     def public_admin_mcp_url(self) -> str:
@@ -637,23 +587,6 @@ class Settings(BaseSettings):
     @property
     def brain_auth_superuser_id_list(self) -> list[str]:
         return split_csv_setting(self.brain_auth_superuser_ids)
-
-    @property
-    def brain_slack_allowed_team_id_list(self) -> list[str]:
-        return split_csv_setting(self.brain_slack_allowed_team_ids)
-
-    @property
-    def brain_slack_allowed_channel_id_list(self) -> list[str]:
-        return split_csv_setting(self.brain_slack_allowed_channel_ids)
-
-    @property
-    def brain_slack_allowed_user_id_list(self) -> list[str]:
-        return split_csv_setting(self.brain_slack_allowed_user_ids)
-
-    @property
-    def brain_slack_admin_user_id_list(self) -> list[str]:
-        return split_csv_setting(self.brain_slack_admin_user_ids)
-
 
 def normalize_path(value: str) -> str:
     stripped = value.strip()
@@ -783,12 +716,9 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_MCP_PORT": str(settings.brain_mcp_port),
         "BRAIN_MCP_PATH": settings.brain_mcp_path,
         "BRAIN_ADMIN_MCP_PATH": settings.brain_admin_mcp_path,
-        "BRAIN_APP_MCP_PATH": settings.brain_app_mcp_path,
         "BRAIN_PUBLIC_BASE_URL": settings.brain_public_base_url,
         "BRAIN_PUBLIC_MCP_PATH": settings.brain_public_mcp_path,
         "BRAIN_PUBLIC_ADMIN_MCP_PATH": settings.brain_public_admin_mcp_path,
-        "BRAIN_PUBLIC_APP_MCP_PATH": settings.brain_public_app_mcp_path,
-        "BRAIN_OPENAI_APPS_CHALLENGE_TOKEN": settings.brain_openai_apps_challenge_token or "",
         "BRAIN_BACKUP_DIR": settings.brain_backup_dir,
         "BRAIN_NEO4J_DUMP_ENABLED": str(settings.brain_neo4j_dump_enabled).lower(),
         "BRAIN_NEO4J_STOP_FOR_DUMP": str(settings.brain_neo4j_stop_for_dump).lower(),
@@ -799,7 +729,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
             settings.brain_google_drive_backup_enabled
         ).lower(),
         "BRAIN_GOOGLE_DRIVE_FOLDER": settings.brain_google_drive_folder,
-        "BRAIN_AUTH_ENABLED": str(settings.brain_auth_enabled).lower(),
         "BRAIN_AUTH_PASSWORD_FILE": settings.brain_auth_password_file,
         "BRAIN_AUTH_USERS_FILE": settings.brain_auth_users_file or "",
         "BRAIN_AUTH_SUPERUSER_IDS": settings.brain_auth_superuser_ids,
@@ -812,10 +741,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_PATH": settings.brain_request_log_path,
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
         "BRAIN_REQUEST_LOG_RETENTION_DAYS": str(settings.brain_request_log_retention_days),
-        "BRAIN_APP_WRITE_RATE_LIMIT_COUNT": str(settings.brain_app_write_rate_limit_count),
-        "BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS": str(
-            settings.brain_app_write_rate_limit_window_seconds
-        ),
         "BRAIN_ROUTING_LOG_ENABLED": str(settings.brain_routing_log_enabled).lower(),
         "BRAIN_ROUTING_LOG_PATH": settings.brain_routing_log_path,
         "BRAIN_ROUTING_LOG_RETENTION_DAYS": str(settings.brain_routing_log_retention_days),
@@ -825,21 +750,18 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_OWNER_NAME": settings.brain_owner_name,
         "BRAIN_PROFILE_CONTEXT_PATH": settings.brain_profile_context_path,
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
-        "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
         "BRAIN_COGNEE_SYNC_ON_INGEST": str(settings.brain_cognee_sync_on_ingest).lower(),
         "BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT": str(
             settings.brain_cognee_sync_on_ingest_sweep_limit
         ),
+        "BRAIN_INGEST_BACKGROUND_AUTO_CHARS": str(settings.brain_ingest_background_auto_chars),
         "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
         "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,
         "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,
         "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,
         "BRAIN_COGNEE_PALATE_DATASET": settings.brain_cognee_palate_dataset,
-        "BRAIN_COGNEE_AGENT_MEMORY_DATASET": settings.brain_cognee_agent_memory_dataset,
-        "BRAIN_AGENT_MEMORY_SESSION_ID": settings.brain_agent_memory_session_id,
         "BRAIN_COGNEE_RECALL_TOP_K": str(settings.brain_cognee_recall_top_k),
         "BRAIN_TASTE_ENABLED": str(settings.brain_taste_enabled).lower(),
-        "BRAIN_TASTE_CANONICAL_STORE": settings.brain_taste_canonical_store,
         "BRAIN_TASTE_LLM_MODEL": settings.brain_taste_llm_model,
         "BRAIN_TASTE_LLM_REASONING_EFFORT": settings.brain_taste_llm_reasoning_effort,
         "BRAIN_TASTE_LLM_ROUTING_ENABLED": str(settings.brain_taste_llm_routing_enabled).lower(),
@@ -856,17 +778,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
             settings.brain_taste_open_loop_confirmation_threshold
         ),
         "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS": str(settings.brain_taste_proposal_expiry_hours),
-        "BRAIN_SLACK_ENABLED": str(settings.brain_slack_enabled).lower(),
-        "BRAIN_SLACK_AGENT_ENABLED": str(settings.brain_slack_agent_enabled).lower(),
-        "BRAIN_SLACK_AGENT_HOST": settings.brain_slack_agent_host,
-        "BRAIN_SLACK_AGENT_PORT": str(settings.brain_slack_agent_port),
-        "BRAIN_SLACK_ALLOWED_TEAM_IDS": settings.brain_slack_allowed_team_ids,
-        "BRAIN_SLACK_ALLOWED_CHANNEL_IDS": settings.brain_slack_allowed_channel_ids,
-        "BRAIN_SLACK_ALLOWED_USER_IDS": settings.brain_slack_allowed_user_ids,
-        "BRAIN_SLACK_ADMIN_USER_IDS": settings.brain_slack_admin_user_ids,
-        "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE": str(
-            settings.brain_slack_auto_commit_high_confidence
-        ).lower(),
         "BRAIN_LOG_LEVEL": settings.brain_log_level,
         "BRAIN_UI_ENABLED": str(settings.brain_ui_enabled).lower(),
         "BRAIN_UI_HOST": settings.brain_ui_host,
@@ -890,8 +801,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_GOOGLE_DRIVE_LOCAL_PATH": settings.brain_google_drive_local_path,
         "BRAIN_TASTE_OMDB_API_KEY": settings.brain_taste_omdb_api_key,
         "BRAIN_TASTE_GOOGLE_PLACES_API_KEY": settings.brain_taste_google_places_api_key,
-        "BRAIN_SLACK_SIGNING_SECRET": settings.brain_slack_signing_secret,
-        "BRAIN_SLACK_BOT_TOKEN": settings.brain_slack_bot_token,
     }
     optional_values.update(provider_api_environment(settings))
     for key, value in optional_values.items():

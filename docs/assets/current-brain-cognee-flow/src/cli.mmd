@@ -1,0 +1,33 @@
+flowchart TB
+  C01["C-01 User runs Brain CLI<br/>src/memory_stack/brain_cli.py"]
+  C02{"C-02 Command group?"}
+  C03["C-03 eval sub-app<br/>memory_stack.evals.cli"]
+  C04["C-04 models auth sub-app"]
+  C05{"C-05 Provider is<br/>openai-codex?"}
+  C06["C-06 Load Settings<br/>optional --env-file"]
+  C07{"C-07 Auth command?"}
+  C08["C-08 login<br/>local callback or manual code"]
+  C09["C-09 list<br/>load stored OAuth profiles"]
+  C10["C-10 status<br/>inspect API-key mode,<br/>OAuth profile, embeddings"]
+  C11["C-11 refresh<br/>refresh OAuth profile"]
+  C12{"C-12 ProviderAuthError?"}
+  C13["C-13 Render Rich output<br/>or exit 1 on error"]
+  CERR["C-14 Bad provider<br/>Typer parameter error"]
+
+  C01 --> C02
+  C02 -- eval --> C03
+  C02 -- models auth --> C04
+  C04 --> C05
+  C05 -- no --> CERR
+  C05 -- yes --> C06
+  C06 --> C07
+  C07 -- login --> C08
+  C07 -- list --> C09
+  C07 -- status --> C10
+  C07 -- refresh --> C11
+  C08 --> C12
+  C09 --> C12
+  C10 --> C12
+  C11 --> C12
+  C12 -- yes --> C13
+  C12 -- no --> C13

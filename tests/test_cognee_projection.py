@@ -2,60 +2,46 @@ from __future__ import annotations
 
 from typing import Any
 
+from sqlalchemy import func, inspect, select
+
+from memory_stack import brain_schema as schema
+from memory_stack import brain_service
 from memory_stack.brain_models import IngestSourceRequest, RememberRequest
-from memory_stack.brain_service import ingest_source, remember
+from memory_stack.brain_service import (
+    ingest_source,
+    remember,
+)
 from memory_stack.brain_store import BrainStore
-from memory_stack.cognee_adapter import run_async
-from memory_stack.cognee.projector import project_memory, project_source
-from memory_stack.cognee import sync_worker
-from memory_stack.cognee.sync_worker import sync_pending_cognee
 from memory_stack.cfg import Settings
+from memory_stack.cognee_adapter import run_async
 
 
-class FakeProjectionAdapter:
-    def __init__(self, *, fail: bool = False) -> None:
-        self.fail = fail
-        self.calls: list[dict[str, Any]] = []
-
-    def remember_text(
-        self,
-        text: str,
-        *,
-        dataset_name: str,
-        node_set: list[str] | None = None,
-        settings: Settings | None = None,
-    ) -> dict[str, str]:
-        del settings
-        if self.fail:
-            raise RuntimeError("cognee unavailable")
-        self.calls.append(
-            {
-                "text": text,
-                "dataset_name": dataset_name,
-                "node_set": node_set or [],
-            }
-        )
-        return {"id": f"fake-{len(self.calls)}"}
-
-
-def test_memory_projection_contains_memory_id(tmp_path) -> None:
+def test_remember_commits_directly_to_cognee_without_projection_rows(
+    tmp_path,
+    monkeypatch,
+) -> None:
     settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
+
     receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
-    adapter = FakeProjectionAdapter()
 
-    projection = project_memory(
-        receipt.memory_cards[0].id,
-        settings=settings,
-        adapter=adapter,
-    )
-
-    assert receipt.memory_cards[0].id in adapter.calls[0]["text"]
-    assert "brain_memory" in adapter.calls[0]["node_set"]
-    assert projection["cognee_reference"] == "fake-1"
+    assert receipt.cognee_sync_status == "synced"
+    assert calls[0]["dataset_name"] == settings.brain_cognee_memory_dataset
+    assert "brain" in calls[0]["node_set"]
+    assert "brain_memory" not in calls[0]["node_set"]
+    assert calls[0]["text"] == "Sam likes Bill Evans."
+    assert_legacy_semantic_counts(settings)
 
 
-def test_source_projection_contains_source_id(tmp_path) -> None:
+def test_ingest_source_commits_source_and_memory_directly_to_cognee(
+    tmp_path,
+    monkeypatch,
+) -> None:
     settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
+
     receipt = ingest_source(
         IngestSourceRequest(
             source="# Source\nKnowledge graphs matter for Brain.",
@@ -64,120 +50,14 @@ def test_source_projection_contains_source_id(tmp_path) -> None:
         ),
         settings,
     )
-    adapter = FakeProjectionAdapter()
 
-    project_source(receipt.source.source_id, settings=settings, adapter=adapter)
-
-    assert receipt.source.source_id in adapter.calls[0]["text"]
-    assert "Knowledge graphs matter for Brain." in adapter.calls[0]["text"]
-    assert "brain_source" in adapter.calls[0]["node_set"]
-
-
-def test_pending_sync_row_becomes_synced_after_fake_success(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
-    adapter = FakeProjectionAdapter()
-
-    result = sync_pending_cognee(settings=settings, adapter=adapter)
-
-    row = BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)[0]
-    assert result["succeeded"] == 1
-    assert row["status"] == "synced"
-    assert row["cognee_reference"] == "fake-1"
-
-
-def test_failed_adapter_marks_sync_failed_and_preserves_brain_db(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
-    adapter = FakeProjectionAdapter(fail=True)
-
-    result = sync_pending_cognee(settings=settings, adapter=adapter)
-
-    store = BrainStore(settings)
-    row = store.get_cognee_sync(receipt.memory_cards[0].id)[0]
-    assert result["failed"] == 1
-    assert row["status"] == "failed"
-    assert "cognee unavailable" in row["error_message"]
-    assert store.get_memory(receipt.memory_cards[0].id)["statement"] == "Sam likes Bill Evans."
-
-
-def test_deleted_memory_sync_row_is_not_projected(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
-    store = BrainStore(settings)
-    store.update_memory_status(receipt.memory_cards[0].id, "deleted")
-    adapter = FakeProjectionAdapter()
-
-    result = sync_pending_cognee(settings=settings, adapter=adapter)
-
-    row = store.get_cognee_sync(receipt.memory_cards[0].id)[0]
-    assert result["processed"] == 1
-    assert result["skipped"] == 1
-    assert result["succeeded"] == 0
-    assert result["results"][0]["status"] == "skipped"
-    assert "Memory is deleted" in result["results"][0]["skip_reason"]
-    assert row["status"] == "deleted"
-    assert "Memory is deleted" in row["error_message"]
-    assert adapter.calls == []
-
-
-def test_deleted_source_sync_row_is_not_projected(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    store = BrainStore(settings)
-    source, _ = store.upsert_source(
-        {
-            "kind": "markdown",
-            "title": "Knowledge graph note",
-            "raw_text": "# Source\nKnowledge graphs matter for Brain.",
-        }
-    )
-    store.mark_cognee_pending(
-        object_type="source",
-        object_id=source["id"],
-        dataset=settings.brain_cognee_sources_dataset,
-        projection_hash="sha256:test",
-    )
-    store.update_source_status(source["id"], "deleted")
-    adapter = FakeProjectionAdapter()
-
-    result = sync_pending_cognee(settings=settings, adapter=adapter)
-
-    row = store.get_cognee_sync(source["id"])[0]
-    assert result["processed"] == 1
-    assert result["skipped"] == 1
-    assert result["succeeded"] == 0
-    assert result["results"][0]["status"] == "skipped"
-    assert "Source is deleted" in result["results"][0]["skip_reason"]
-    assert row["status"] == "deleted"
-    assert "Source is deleted" in row["error_message"]
-    assert adapter.calls == []
-
-
-def test_default_batch_sync_uses_one_async_flow(tmp_path, monkeypatch) -> None:
-    settings = brain_test_settings(tmp_path, brain_cognee_enabled=True)
-    remember(RememberRequest(input="Sam likes Bill Evans."), settings)
-    remember(RememberRequest(input="Alex likes Thelonious Monk."), settings)
-    calls: list[str] = []
-
-    async def fake_ensure_datasources_ready(names, *, settings=None):
-        calls.append(f"ensure:{','.join(names)}")
-        return []
-
-    async def fake_project_memory_async(memory_id, *, settings=None, store=None):
-        calls.append(memory_id)
-        return {
-            "projection_hash": f"sha256:{memory_id}",
-            "cognee_reference": f"fake:{memory_id}",
-        }
-
-    monkeypatch.setattr(sync_worker, "ensure_datasources_ready", fake_ensure_datasources_ready)
-    monkeypatch.setattr(sync_worker, "project_memory_async", fake_project_memory_async)
-
-    result = sync_pending_cognee(settings=settings)
-
-    assert result["succeeded"] == 2
-    assert calls[0] == "ensure:memory"
-    assert len(calls) == 3
+    assert receipt.cognee_sync_status == "synced"
+    assert [call["dataset_name"] for call in calls] == [settings.brain_cognee_memory_dataset]
+    assert calls[0]["text"] == "# Source\nKnowledge graphs matter for Brain."
+    assert "brain_source" not in calls[0]["node_set"]
+    assert "brain_memory" not in calls[0]["node_set"]
+    assert BrainStore(settings).list_external_receipts()[0]["cognee_dataset"] == "memory"
+    assert_legacy_semantic_counts(settings)
 
 
 def test_run_async_reuses_background_loop() -> None:
@@ -197,41 +77,44 @@ def test_run_async_reuses_background_loop() -> None:
     assert loop_ids == [first, first]
 
 
-def test_source_creation_creates_pending_source_record_sync_row(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    receipt = ingest_source(
-        IngestSourceRequest(
-            source="# Source\nKnowledge graphs matter for Brain.",
-            source_kind="markdown",
-            title="Knowledge graph note",
-        ),
-        settings,
-    )
+def fake_cognee(calls: list[dict[str, Any]]):
+    def remember_text(
+        text: str,
+        *,
+        dataset_name: str,
+        node_set: list[str] | None = None,
+        settings: Settings | None = None,
+    ) -> dict[str, Any]:
+        del settings
+        calls.append(
+            {
+                "text": text,
+                "dataset_name": dataset_name,
+                "node_set": node_set or [],
+            }
+        )
+        return {"items": [{"id": f"00000000-0000-0000-0000-{len(calls):012d}"}]}
 
-    store = BrainStore(settings)
-    sync_rows = (
-        store.get_cognee_sync(receipt.memory_cards[0].id)
-        + store.get_cognee_sync(receipt.source.source_id)
-    )
+    return remember_text
+
+
+def assert_legacy_semantic_counts(settings: Settings) -> None:
+    table_names = set(inspect(BrainStore(settings).engine).get_table_names())
     assert {
-        (row["object_type"], row["dataset"], row["status"])
-        for row in sync_rows
-    } == {
-        ("memory", "memory", "pending"),
-        ("source", "sources", "pending"),
-    }
-
-
-def test_memory_update_marks_projection_stale(tmp_path) -> None:
-    settings = brain_test_settings(tmp_path)
-    receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
-    store = BrainStore(settings)
-
-    store.update_memory_status(receipt.memory_cards[0].id, "superseded")
-
-    row = store.get_cognee_sync(receipt.memory_cards[0].id)[0]
-    assert row["status"] == "stale"
-
+        "sources",
+        "memory_cards",
+        "memory_entities",
+        "memory_links",
+        "relationships",
+        "open_loops",
+        "cognee_sync",
+    }.isdisjoint(table_names)
 
 def brain_test_settings(tmp_path, **overrides: Any) -> Settings:
-    return Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}", **overrides)
+    return Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        brain_llm_enabled=False,
+        brain_taste_enabled=False,
+        **overrides,
+    )

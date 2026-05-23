@@ -1,101 +1,57 @@
 docs:
-  - path: README.md
-    audience: "Developers and operators getting oriented in the Brain repo."
-    purpose: "Keep the top-level overview, setup, deployment, and release model accurate."
-    sources:
-      - Makefile
-      - pyproject.toml
-      - .github/workflows/deploy-local-staging.yml
-      - .github/workflows/release.yml
-      - docs/production-secrets.md
-      - docs/API_SETUP_GUIDE.md
-  - path: docs/USER_GUIDE.md
-    audience: "End users and ChatGPT/Slack users of Brain."
-    purpose: "Explain how to use Brain, Palate, the user dashboard, and safe memory review."
-    sources:
-      - src/memory_stack/static/brain_app/index.html
-      - src/memory_stack/static/brain_app/app.js
-      - src/memory_stack/mcp_server.py
-      - USER_MANUAL.md
-  - path: USER_MANUAL.md
-    audience: "Advanced users and agents using Brain MCP tools."
-    purpose: "Explain the practical tool model, Brain/Palate/Cognee split, and agent-memory guidance."
-    sources:
-      - src/memory_stack/mcp_server.py
-      - src/memory_stack/agents/shared/memory_agent_rules.md
-      - src/memory_stack/agents/shared/agent_architecture.md
-      - docs/USER_GUIDE.md
-  - path: docs/API_SETUP_GUIDE.md
-    audience: "Developers configuring HTTP, MCP, OAuth, and ChatGPT app access."
-    purpose: "Keep API setup, endpoint, auth, and production verification guidance accurate."
-    sources:
-      - src/memory_stack/mcp_server.py
-      - src/memory_stack/oauth.py
-      - scripts/verify_mcp_production.py
-      - scripts/verify_cloudflare_mcp.py
-      - deployment/mcp/claude_desktop_config.template.json
-  - path: docs/production-secrets.md
-    audience: "Operators managing staging/prod deploys and release promotion."
-    purpose: "Document secrets, config conflict policy, deployment metadata, and release versioning."
-    sources:
-      - scripts/render_prod_env.py
-      - scripts/deploy-local-production.sh
-      - scripts/verify_mcp_production.py
-      - .github/workflows/deploy-local-staging.yml
-      - .github/workflows/release.yml
-  - path: docs/SLACK_SETUP.md
-    audience: "Operators configuring Slack and users invoking /brain."
-    purpose: "Keep Slack routes, verification, and command behavior aligned with code."
-    sources:
-      - src/memory_stack/slack_agent_server.py
-      - src/memory_stack/slack_agent.py
-      - scripts/verify_slack_agent.py
-      - docs/USER_GUIDE.md
-  - path: docs/BACKUP_SCHEME.md
-    audience: "Operators responsible for Brain backups and restores."
-    purpose: "Keep backup contents, locations, restore notes, and verification behavior accurate."
-    sources:
-      - scripts/backup_stores.py
-      - scripts/nightly_maintenance.py
-      - scripts/verify_mcp_production.py
-      - scripts/deploy-local-production.sh
-      - deployment/launchd/com.brain.maintenance.plist.template
-      - docs/production-secrets.md
-      - cfg/prod.yaml
-      - cfg/staging.yaml
-  - path: docs/chatgpt-app-hardening.md
-    audience: "Operators preparing Brain for ChatGPT App review and release."
-    purpose: "Document the curated app surface, confirmation model, audit controls, and release checks."
-    sources:
-      - src/memory_stack/mcp_server.py
-      - src/memory_stack/static/brain_app/index.html
-      - src/memory_stack/static/brain_app/app.js
-      - scripts/verify_cloudflare_mcp.py
-      - docs/API_SETUP_GUIDE.md
-  - path: docs/openai-submission.md
-    audience: "Operators preparing the Brain ChatGPT App submission."
-    purpose: "Track final OpenAI submission assets, reviewer setup, and production gates."
-    sources:
-      - docs/chatgpt-app-hardening.md
-      - src/memory_stack/mcp_server.py
-      - src/memory_stack/static/brain_app/privacy.html
-      - src/memory_stack/static/brain_app/terms.html
-      - src/memory_stack/static/brain_app/support.html
-      - scripts/verify_cloudflare_mcp.py
-  - path: docs/cognee-model-selection.md
-    audience: "Developers evaluating Cognee ingestion and retrieval model choices."
-    purpose: "Keep model-selection context, benchmark interpretation, and artifact references coherent."
-    sources:
-      - tests/model_eval_tests/README.md
-      - tests/model_eval_tests/run_model_eval.py
-      - tests/test_model_eval_runner.py
-      - docs/role_flow_diagram.md
-  - path: docs/role_flow_diagram.md
-    audience: "Developers and operators reasoning about Brain runtime flow and agent roles."
-    purpose: "Keep runtime flow diagrams and role topology aligned with current code and role specs."
-    sources:
-      - src/memory_stack/brain_service.py
-      - src/memory_stack/slack_memory_agent.py
-      - src/memory_stack/ingestion/memory_compiler.py
-      - src/memory_stack/agents/shared/memory_agent_rules.md
-      - src/memory_stack/agents/shared/agent_architecture.md
+- path: README.md
+  audience: Developers and operators getting oriented in the Brain repo.
+  purpose: Keep the top-level overview, setup, deployment, and release model accurate.
+  sources:
+  - Makefile
+  - pyproject.toml
+  - .github/workflows/deploy-local-staging.yml
+  - .github/workflows/release.yml
+  - docs/production-secrets.md
+  - docs/API_SETUP_GUIDE.md
+- path: docs/USER_GUIDE.md
+  audience: End users and ChatGPT/browser users of Brain.
+  purpose: Explain how to use Brain, Palate, the user dashboard, and safe memory review.
+  sources:
+  - src/memory_stack/mcp_server.py
+  - docs/AGENT_TOOL_GUIDE.md
+- path: docs/AGENT_TOOL_GUIDE.md
+  audience: Advanced users and agents using Brain MCP tools.
+  purpose: Explain the practical tool model, Brain/Palate/Cognee split, and chat-continuity
+    guidance.
+  sources:
+  - src/memory_stack/mcp_server.py
+  - src/memory_stack/agents/shared/memory_agent_rules.md
+  - src/memory_stack/agents/shared/agent_architecture.md
+  - docs/USER_GUIDE.md
+- path: docs/API_SETUP_GUIDE.md
+  audience: Developers configuring HTTP, MCP, OAuth, and ChatGPT app access.
+  purpose: Keep API setup, endpoint, auth, and production verification guidance accurate.
+  sources:
+  - src/memory_stack/mcp_server.py
+  - src/memory_stack/oauth.py
+  - scripts/verify_mcp_production.py
+  - deployment/mcp/claude_desktop_config.template.json
+- path: docs/production-secrets.md
+  audience: Operators managing staging/prod deploys and release promotion.
+  purpose: Document secrets, config conflict policy, deployment metadata, and release
+    versioning.
+  sources:
+  - scripts/render_prod_env.py
+  - scripts/deploy-local-production.sh
+  - scripts/verify_mcp_production.py
+  - .github/workflows/deploy-local-staging.yml
+  - .github/workflows/release.yml
+- path: docs/BACKUP_SCHEME.md
+  audience: Operators responsible for Brain backups and restores.
+  purpose: Keep backup contents, locations, restore notes, and verification behavior
+    accurate.
+  sources:
+  - scripts/backup_stores.py
+  - scripts/nightly_maintenance.py
+  - scripts/verify_mcp_production.py
+  - scripts/deploy-local-production.sh
+  - deployment/launchd/com.brain.maintenance.plist.template
+  - docs/production-secrets.md
+  - cfg/prod.yaml
+  - cfg/staging.yaml

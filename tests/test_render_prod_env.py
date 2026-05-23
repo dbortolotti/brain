@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 
-def run_renderer(tmp_path, env_overrides, *, check=True):
+def run_renderer(tmp_path, env_overrides=None, *, check=True):
     output = tmp_path / "brain.env"
     auth_password_file = tmp_path / "brain-auth-password"
     env = {
@@ -16,7 +16,7 @@ def run_renderer(tmp_path, env_overrides, *, check=True):
         "GRAPH_DATABASE_PASSWORD": "prod-graph-password",
         "BRAIN_AUTH_PASSWORD": "prod-auth-password",
         "GITHUB_SHA": "abc123",
-        **env_overrides,
+        **(env_overrides or {}),
     }
     result = subprocess.run(
         [
@@ -35,7 +35,7 @@ def run_renderer(tmp_path, env_overrides, *, check=True):
     return result, output, auth_password_file
 
 
-def run_renderer_with_args(tmp_path, env_overrides, extra_args, *, check=True):
+def run_renderer_with_args(tmp_path, env_overrides=None, extra_args=None, *, check=True):
     output = tmp_path / "brain.env"
     auth_password_file = tmp_path / "brain-auth-password"
     env = {
@@ -46,7 +46,7 @@ def run_renderer_with_args(tmp_path, env_overrides, extra_args, *, check=True):
         "GRAPH_DATABASE_PASSWORD": "prod-graph-password",
         "BRAIN_AUTH_PASSWORD": "prod-auth-password",
         "GITHUB_SHA": "abc123",
-        **env_overrides,
+        **(env_overrides or {}),
     }
     result = subprocess.run(
         [
@@ -56,7 +56,7 @@ def run_renderer_with_args(tmp_path, env_overrides, extra_args, *, check=True):
             str(output),
             "--auth-password-file",
             str(auth_password_file),
-            *extra_args,
+            *(extra_args or []),
         ],
         check=check,
         capture_output=True,
@@ -77,10 +77,7 @@ def parse_rendered_env(rendered: str) -> dict[str, str]:
 
 
 def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_path) -> None:
-    result, output, auth_password_file = run_renderer(
-        tmp_path,
-        {"BRAIN_SLACK_SIGNING_SECRET": "prod-slack-signing-secret"},
-    )
+    result, output, auth_password_file = run_renderer(tmp_path)
 
     rendered = output.read_text(encoding="utf-8")
     base_rendered = output.with_name("brain.env.last-deployed").read_text(encoding="utf-8")
@@ -119,7 +116,6 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_AUTH_SUPERUSER_IDS=default" in rendered
     assert "BRAIN_ADMIN_MCP_PATH=/admin/mcp" in rendered
     assert "BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp" in rendered
-    assert "BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session" in rendered
     assert "BRAIN_REQUEST_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl" in rendered
     assert "BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192" in rendered
     assert "BRAIN_REQUEST_LOG_RETENTION_DAYS=30" in rendered
@@ -127,7 +123,6 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_ROUTING_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/routing/{date}.jsonl" in rendered
     assert "BRAIN_ROUTING_LOG_RETENTION_DAYS=90" in rendered
     assert "BRAIN_TASTE_IMPORT_SOURCE_PATH" not in rendered
-    assert "BRAIN_SLACK_SIGNING_SECRET=prod-slack-signing-secret" in rendered
     assert base_rendered == rendered
     assert auth_password_file.read_text(encoding="utf-8").strip() == "prod-auth-password"
     assert (
@@ -165,7 +160,6 @@ def test_render_prod_env_can_render_staging_defaults(tmp_path) -> None:
     assert values["BRAIN_UI_PROXY_PORT"] == "18102"
     assert values["BRAIN_UI_FRONTEND_PORT"] == "13100"
     assert values["BRAIN_UI_BACKEND_PORT"] == "18101"
-    assert values["BRAIN_SLACK_AGENT_PORT"] == "18103"
     assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/staging/brain/shared/secrets/brain-auth-users.json"
     assert values["BRAIN_AUTH_SUPERUSER_IDS"] == "default"
     assert values["VECTOR_DB_PORT"] == "16432"
@@ -195,7 +189,6 @@ def test_render_prod_env_can_render_qa_defaults(tmp_path) -> None:
     assert values["BRAIN_UI_PROXY_PORT"] == "18202"
     assert values["BRAIN_UI_FRONTEND_PORT"] == "13200"
     assert values["BRAIN_UI_BACKEND_PORT"] == "18201"
-    assert values["BRAIN_SLACK_AGENT_PORT"] == "18203"
     assert values["BRAIN_AUTH_USERS_FILE"] == "/Volumes/xpg_usb4/qa/brain/shared/secrets/brain-auth-users.json"
     assert values["VECTOR_DB_PORT"] == "17432"
     assert values["DB_PORT"] == "17432"
@@ -219,7 +212,7 @@ def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> No
 
     values = parse_rendered_env(output.read_text(encoding="utf-8"))
     assert values["BRAIN_LLM_ENABLED"] == "true"
-    assert values["BRAIN_COGNEE_SYNC_ON_INGEST"] == "true"
+    assert values["BRAIN_COGNEE_SYNC_ON_INGEST"] == "false"
     assert values["LLM_MODEL"] == "gpt-5.4-mini"
     assert values["LLM_TEMPERATURE"] == "0.0"
     assert values["LLM_MAX_TOKENS"] == "8192"

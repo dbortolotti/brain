@@ -1,0 +1,89 @@
+flowchart TB
+  I01["I-01 Client asks Brain to store text"]
+  I02["I-02 REST API<br/>/memory/remember<br/>/memory/ingest_source"]
+  I03["I-03 HTTP MCP JSON-RPC<br/>tools/call"]
+  I04["I-04 stdio MCP process<br/>FastMCP tools"]
+  I05{"I-05 HTTP auth valid?<br/>bearer, OAuth token,<br/>or web session"}
+  I06{"I-06 stdio launch auth valid?<br/>BRAIN_STDIO_BEARER_TOKEN<br/>and BRAIN_STDIO_USER_ID"}
+  I07["I-07 Scope Settings<br/>to authenticated user_id"]
+  I08["I-08 Validate payload<br/>RememberRequest or<br/>IngestSourceRequest"]
+  I09{"I-09 Document-ingest request?"}
+  I10{"I-10 After normalization:<br/>background execution?<br/>uses RememberRequest.input length"}
+  I10Q["I-10Q Queue background ingest<br/>return queued receipt"]
+  I11["I-11 Normalize first<br/>document text into<br/>RememberRequest"]
+  I12["I-12 remember() service entry"]
+  I13{"I-13 Taste enabled and<br/>taste_skip is false?"}
+  I14["I-14 Taste / palate classifier<br/>explicit palate mode only<br/>uses a stricter classifier"]
+  I16{"I-16 Classification result?"}
+  I17["I-17 TasteService.remember<br/>enrich palate request"]
+  I17A["I-17A Build palate payload<br/>projection, metadata,<br/>attributes, signals"]
+  I17C["I-17C CogneePalateStore.upsert_item<br/>PalateItemDataPoint"]
+  I17D["I-17D LivePalateCogneeAdapter<br/>add_data_points<br/>palate dataset"]
+  I17F["I-17F Build taste result<br/>canonical_store,<br/>canonical_dataset,<br/>brain_projection"]
+  I19["I-19 Create taste proposal<br/>in taste_proposals"]
+  I20{"I-20 Raw write is dry_run?"}
+  I21{"I-21 Confirmation required<br/>in request context?"}
+  I22["I-22 Create pending confirmation<br/>brain_pending_confirmations"]
+  I24["I-24 Create or update session map<br/>brain_session_maps<br/>user, profile, surface"]
+  I25["I-25 Build node sets<br/>brain, user, profile"]
+  I26["I-26 cognee_adapter.remember_text<br/>Cognee remember()<br/>or add()+cognify()"]
+  I27{"I-27 Cognee write succeeded?"}
+  I28["I-28 Write failed external receipt<br/>brain_external_receipts<br/>status=failed"]
+  I29["I-29 Write synced external receipt<br/>brain_external_receipts<br/>status=synced"]
+  I30["I-30 Return IngestionReceipt"]
+  I31["I-31 Document taste candidate scan<br/>split text and classify chunks"]
+  I32{"I-32 Taste candidates found?"}
+  I33["I-33 Create candidate proposals<br/>or selection-required payload"]
+  I34["I-34 Attach taste candidate policy<br/>to ingestion receipt"]
+  IERR["HTTP 401 or 403"]
+  ISTDERR["stdio startup error"]
+  IFAIL["Runtime error returned<br/>with failed receipt id"]
+
+  I01 --> I02
+  I01 --> I03
+  I01 --> I04
+  I02 --> I05
+  I03 --> I05
+  I04 --> I06
+  I05 -- no --> IERR
+  I05 -- yes --> I07
+  I06 -- no --> ISTDERR
+  I06 -- yes --> I07
+  I07 --> I08
+  I08 --> I09
+  I09 -- no, direct text --> I12
+  I09 -- yes, document text --> I11
+  I11 -- then decide --> I10
+  I10 -- yes --> I10Q
+  I10Q --> I30
+  I10 -- no --> I12
+  I12 --> I13
+  I13 -- yes --> I14
+  I14 --> I16
+  I16 -- high confidence<br/>taste write --> I17
+  I17 --> I17A
+  I17A --> I17C
+  I17C --> I17D
+  I17D --> I17F
+  I17F --> I30
+  I16 -- needs confirmation --> I19
+  I19 --> I30
+  I16 -- not taste/palate --> I20
+  I13 -- no --> I20
+  I20 -- yes --> I21
+  I21 -- yes --> I22
+  I21 -- no --> I30
+  I22 --> I30
+  I20 -- no --> I24
+  I24 --> I25
+  I25 --> I26
+  I26 --> I27
+  I27 -- no --> I28
+  I28 --> IFAIL
+  I27 -- yes --> I29
+  I29 --> I31
+  I31 --> I32
+  I32 -- no --> I30
+  I32 -- yes --> I33
+  I33 --> I34
+  I34 --> I30

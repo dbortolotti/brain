@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import migrate_default_user_to_daniele
 import migrate_auth_user_passwords
 import migrate_user_scoped_data
-from memory_stack.brain_service import RecallRequest, RememberRequest, recall, remember
+from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
 from memory_stack.oauth import ensure_auth_password, load_auth_users, verify_password
 from memory_stack.profile_context import list_profile_context, remember_profile_context
@@ -17,7 +17,6 @@ from memory_stack.profile_context import list_profile_context, remember_profile_
 
 def test_auth_users_file_is_required_when_configured(tmp_path: Path) -> None:
     settings = Settings(
-        brain_auth_enabled=True,
         brain_auth_password_file=str(tmp_path / "brain-auth-password"),
         brain_auth_users_file=str(tmp_path / "missing-users.json"),
     )
@@ -136,7 +135,16 @@ def test_migrate_default_user_to_daniele_moves_data_and_creates_root_registry(
         brain_owner_name="Daniele",
         brain_owner_full_name="Daniele Bortolotti",
     )
-    remember(RememberRequest(input="Daniele likes user migrations."), settings)
+    BrainStore(settings).create_external_receipt(
+        surface="test",
+        tool_name="brain_remember",
+        action="remember",
+        status="synced",
+        summary="Default-scoped Cognee receipt should move.",
+        cognee_dataset="memory",
+        cognee_reference="cognee-default",
+        metadata_json={"semantic_store": "cognee"},
+    )
     remember_profile_context(settings, statement="Daniele works with Brain.", scope="work")
 
     monkeypatch.setattr(
@@ -161,8 +169,11 @@ def test_migrate_default_user_to_daniele_moves_data_and_creates_root_registry(
         brain_profile_context_path=str(profile_context_path),
         brain_user_id="default",
     )
-    assert recall(RecallRequest(query="user migrations"), daniele_settings).facts
-    assert recall(RecallRequest(query="user migrations"), default_settings).facts == []
+    assert [
+        receipt["summary"]
+        for receipt in BrainStore(daniele_settings).list_external_receipts()
+    ] == ["Default-scoped Cognee receipt should move."]
+    assert BrainStore(default_settings).list_external_receipts() == []
     assert list_profile_context(daniele_settings)
     assert list_profile_context(default_settings) == []
 
@@ -219,8 +230,31 @@ def test_migrate_user_scoped_data_only_moves_database_rows(
         brain_owner_name="Daniele",
         brain_owner_full_name="Daniele Bortolotti",
     )
-    remember(RememberRequest(input="Default-scoped memory should move."), default_settings)
-    remember(RememberRequest(input="Daniele-scoped memory should stay."), daniele_settings)
+    BrainStore(default_settings).create_external_receipt(
+        surface="test",
+        tool_name="brain_remember",
+        action="remember",
+        status="synced",
+        summary="Default-scoped receipt should move.",
+        cognee_dataset="memory",
+        cognee_reference="cognee-default",
+        metadata_json={"semantic_store": "cognee"},
+    )
+    BrainStore(daniele_settings).create_external_receipt(
+        surface="test",
+        tool_name="brain_remember",
+        action="remember",
+        status="synced",
+        summary="Daniele-scoped receipt should stay.",
+        cognee_dataset="memory",
+        cognee_reference="cognee-daniele",
+        metadata_json={"semantic_store": "cognee"},
+    )
+    BrainStore(default_settings).create_context_record(
+        kind="bias",
+        statement="Default-scoped bias should move.",
+        scope="response_style",
+    )
 
     monkeypatch.setattr(
         sys,
@@ -241,9 +275,16 @@ def test_migrate_user_scoped_data_only_moves_database_rows(
     )
     assert migrate_user_scoped_data.main() == 0
 
-    assert recall(RecallRequest(query="Default-scoped memory"), default_settings).facts == []
-    daniele_facts = recall(RecallRequest(query="scoped memory"), daniele_settings).facts
-    statements = [str(fact["statement"]) for fact in daniele_facts]
-    assert any("Default-scoped memory should move." in statement for statement in statements)
-    assert any("Daniele-scoped memory should stay." in statement for statement in statements)
+    assert BrainStore(default_settings).list_external_receipts() == []
+    assert BrainStore(default_settings).list_context_records(kind="bias") == []
+    daniele_receipts = BrainStore(daniele_settings).list_external_receipts()
+    summaries = {receipt["summary"] for receipt in daniele_receipts}
+    assert summaries == {
+        "Default-scoped receipt should move.",
+        "Daniele-scoped receipt should stay.",
+    }
+    assert [
+        record["statement"]
+        for record in BrainStore(daniele_settings).list_context_records(kind="bias")
+    ] == ["Default-scoped bias should move."]
     assert profile_context_path.read_text(encoding="utf-8") == "[]\n"

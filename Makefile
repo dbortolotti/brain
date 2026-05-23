@@ -1,4 +1,4 @@
-.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm llm-docs model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup agent-memory maintenance cloudflare-verify test lint
+.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm llm-docs model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production prod-check ui-prod-check backup maintenance cloudflare-verify test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_active.json
 MODEL_SMOKE_ARGS ?=
@@ -61,9 +61,6 @@ mcp-config:
 mcp-http:
 	uv run python -m memory_stack.mcp_server
 
-slack-agent:
-	uv run python -m memory_stack.slack_agent_server
-
 ui-proxy:
 	uv run python -m uvicorn memory_stack.ui_proxy:app --host 127.0.0.1 --port 8002
 
@@ -73,23 +70,14 @@ deploy-local-production:
 prod-check:
 	uv run python scripts/verify_mcp_production.py
 
-slack-agent-check:
-	uv run python scripts/verify_slack_agent.py
-
 ui-prod-check:
 	uv run python scripts/verify_cognee_ui_production.py
 
 backup:
 	uv run python scripts/backup_stores.py
 
-agent-memory:
-	uv run python scripts/brain_agent_memory.py --env prod --session-id portable_agent_session
-
 maintenance:
 	uv run python scripts/nightly_maintenance.py --env prod
-
-cloudflare-verify:
-	uv run python scripts/verify_cloudflare_mcp.py
 
 test:
 	uv run pytest

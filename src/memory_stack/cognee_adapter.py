@@ -5,6 +5,7 @@ import inspect
 import threading
 from contextlib import asynccontextmanager
 from typing import Any
+from uuid import UUID
 
 from memory_stack.cfg import Settings, apply_runtime_environment
 from memory_stack.cognee.oauth_compat import prepare_cognee_oauth_runtime
@@ -427,6 +428,33 @@ async def delete_datasource(
     }
 
 
+async def forget_cognee(
+    *,
+    data_id: str | UUID | None = None,
+    dataset: str | UUID | None = None,
+    everything: bool = False,
+    memory_only: bool = False,
+    settings: Settings | None = None,
+) -> Any:
+    if settings is not None:
+        refresh_cognee_runtime(settings)
+    cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
+    if not hasattr(cognee, "forget"):
+        raise RuntimeError("Installed Cognee package does not expose forget().")
+
+    normalized_data_id = UUID(str(data_id)) if data_id is not None else None
+    async with cognee_execution_context(settings):
+        return await maybe_await(
+            cognee.forget(
+                data_id=normalized_data_id,
+                dataset=dataset,
+                everything=everything,
+                memory_only=memory_only,
+            )
+        )
+
+
 async def recall_text(
     *,
     query: str,
@@ -496,7 +524,6 @@ async def improve_cognee(
     *,
     dataset: str,
     node_name: list[str] | None = None,
-    session_ids: list[str] | None = None,
     run_in_background: bool = False,
     settings: Settings | None = None,
 ) -> Any:
@@ -512,11 +539,8 @@ async def improve_cognee(
         "run_in_background": run_in_background,
     }
     normalized_node_name = normalize_optional_string_list(node_name, field_name="node_name")
-    normalized_session_ids = normalize_optional_string_list(session_ids, field_name="session_ids")
     if normalized_node_name is not None:
         kwargs["node_name"] = normalized_node_name
-    if normalized_session_ids is not None:
-        kwargs["session_ids"] = normalized_session_ids
     return await maybe_await(cognee.improve(**kwargs))
 
 

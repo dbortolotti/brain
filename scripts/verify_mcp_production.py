@@ -62,8 +62,7 @@ def main() -> int:
     )
     check_mcp(settings, failures)
     check_app_mcp(settings, failures)
-    if settings.brain_auth_enabled:
-        check_oauth_metadata(settings, failures)
+    check_oauth_metadata(settings, failures)
 
     if not args.skip_backups:
         check_backups(Path(settings.brain_backup_dir), settings, failures)
@@ -361,25 +360,18 @@ def check_mcp_get(
         failures.append(f"{label} failed at {url}: {exc}")
         return
 
-    if settings.brain_auth_enabled:
-        if status != 401:
-            failures.append(f"auth-enabled {label} did not fail closed; status={status}")
-        challenge = headers.get("www-authenticate", "")
-        if "Brain" not in challenge and "brain" not in challenge:
-            failures.append(f"{label} auth challenge does not identify Brain: {challenge}")
-        if expected_metadata_url not in challenge:
-            failures.append(
-                f"{label} auth challenge does not advertise Brain protected-resource metadata: "
-                f"{challenge}"
-            )
-        else:
-            console.print(f"[green][OK][/green] {label} fails closed with Brain auth metadata")
-    elif status >= 400:
-        failures.append(f"{label} returned HTTP {status}: {body[:200]}")
+    if status != 401:
+        failures.append(f"{label} did not fail closed; status={status}")
+    challenge = headers.get("www-authenticate", "")
+    if "Brain" not in challenge and "brain" not in challenge:
+        failures.append(f"{label} auth challenge does not identify Brain: {challenge}")
+    if expected_metadata_url not in challenge:
+        failures.append(
+            f"{label} auth challenge does not advertise Brain protected-resource metadata: "
+            f"{challenge}"
+        )
     else:
-        if "Brain" not in body and "brain" not in body:
-            failures.append(f"{label} response does not identify Brain")
-        console.print(f"[green][OK][/green] {label}: {url}")
+        console.print(f"[green][OK][/green] {label} fails closed with Brain auth metadata")
 
 
 def check_oauth_metadata(settings, failures: list[str]) -> None:
@@ -409,20 +401,6 @@ def check_oauth_metadata(settings, failures: list[str]) -> None:
             failures.append(
                 "admin protected-resource metadata resource does not match public admin MCP URL: "
                 f"{admin_protected}"
-            )
-
-    app_protected = check_http_json(
-        f"{base}/.well-known/oauth-protected-resource{settings.brain_public_app_mcp_path}",
-        "local OAuth app protected-resource metadata",
-        failures,
-    )
-    if app_protected:
-        if app_protected.get("resource_name") != "Brain":
-            failures.append(f"app protected-resource metadata is not Brain: {app_protected}")
-        if app_protected.get("resource") != settings.public_app_mcp_url:
-            failures.append(
-                "app protected-resource metadata resource does not match public app MCP URL: "
-                f"{app_protected}"
             )
 
     issuer = check_http_json(

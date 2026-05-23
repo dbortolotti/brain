@@ -46,7 +46,7 @@ TRANSPORT_RE = re.compile(
 
 ROLE_CATEGORIES = {
     "router": "runtime",
-    "slack_intake": "runtime",
+    "memory_intake": "runtime",
     "memory_compiler": "runtime",
     "intent_router": "runtime",
     "source_classifier": "support",
@@ -79,7 +79,7 @@ ROLE_CATEGORIES = {
 
 MANDATORY_RUNTIME_ROLES = {
     "router",
-    "slack_intake",
+    "memory_intake",
     "memory_compiler",
     "conflict_classifier",
     "recall_synthesizer",
@@ -95,7 +95,7 @@ COARSE_CAPABILITIES: dict[str, dict[str, Any]] = {
         "required_model_roles": ["intent_router"],
         "deterministic_roles": [],
     },
-    "slack_intake": {
+    "memory_intake": {
         "required": True,
         "required_model_roles": [
             "source_classifier",
@@ -310,7 +310,7 @@ ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
         "schema_validity_ci_low_min": 0.995,
         "semantic_score_ci_low_min": 0.98,
     },
-    "slack_intake": {
+    "memory_intake": {
         "operational_success_ci_low_min": 0.95,
         "schema_validity_ci_low_min": 0.995,
         "semantic_score_ci_low_min": 0.92,
@@ -576,7 +576,7 @@ ROLE_ELIGIBILITY_GATES: dict[str, dict[str, float]] = {
 }
 
 ROLE_SUBSCORE_ALIASES = {
-    "slack_intake": {
+    "memory_intake": {
         "decision_correctness": "decision_correctness",
         "repair_option_usefulness": "repair_quality",
     },
@@ -1402,7 +1402,7 @@ def recall_memory_id_present(expected_id: str, actual_ids: set[str]) -> bool:
             "cognee rebuildable projection",
             "brain-cognee-conclusion",
         },
-        "slack strict intake": {"slack-strict-intake"},
+        "memory_intake strict intake": {"memory-strict-intake"},
         "family facts": {"family-facts"},
         "sam preferences": {"sam-preferences"},
     }
@@ -2401,7 +2401,6 @@ def score_source_classification(payload: dict[str, Any], fixture: ModelEvalFixtu
     input_class = normalize(str(payload.get("input_class") or payload.get("classification") or payload.get("decision") or ""))
     source_kind = normalize(str(payload.get("source_kind") or payload.get("kind") or ""))
     should_create_source = payload.get("should_create_source")
-    should_extract_memories = payload.get("should_extract_memories")
 
     scores: list[float] = []
     expected_input_classes = {normalize(str(value)) for value in expected.get("input_class_any", [])}
@@ -2426,12 +2425,6 @@ def score_source_classification(payload: dict[str, Any], fixture: ModelEvalFixtu
             scores.append(1.0 if bool(should_create_source) in {bool(value) for value in expected_values} else 0.0)
         else:
             scores.append(1.0 if bool(should_create_source) == bool(expected["should_create_source"]) else 0.0)
-    if should_extract_memories is not None:
-        expected_values = expected.get("should_extract_memories_any")
-        if isinstance(expected_values, list):
-            scores.append(1.0 if bool(should_extract_memories) in {bool(value) for value in expected_values} else 0.0)
-        else:
-            scores.append(1.0 if bool(should_extract_memories) == bool(expected["should_extract_memories"]) else 0.0)
     return sum(scores) / len(scores)
 
 
@@ -2440,21 +2433,18 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
         "input_class",
         "source_kind",
         "should_create_source",
-        "should_extract_memories",
     }
     if explicit_expected_keys <= set(fixture.expected):
         return {
             "input_class": fixture.expected["input_class"],
             "source_kind": fixture.expected["source_kind"],
             "should_create_source": fixture.expected["should_create_source"],
-            "should_extract_memories": fixture.expected["should_extract_memories"],
             **{
                 key: fixture.expected[key]
                 for key in (
                     "input_class_any",
                     "source_kind_any",
                     "should_create_source_any",
-                    "should_extract_memories_any",
                 )
                 if key in fixture.expected
             },
@@ -2469,10 +2459,8 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "source_kind": None,
             "source_kind_any": ["chat_log", "transcript", "markdown"],
             "should_create_source": True,
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
-    if fixture_id in {"chat_conclusion_brain_architecture_001", "slack_retry_event_001"}:
+    if fixture_id in {"chat_conclusion_brain_architecture_001", "memory_intake_retry_event_001"}:
         return {
             "input_class": None,
             "input_class_any": ["memory", "source"],
@@ -2480,8 +2468,6 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "source_kind_any": [None, "chat_log", "markdown"],
             "should_create_source": False,
             "should_create_source_any": [False, True],
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
     if fixture_id == "cascade_low_confidence_asks_user_001":
         return {
@@ -2489,15 +2475,12 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "input_class_any": ["junk", "memory"],
             "source_kind": None,
             "should_create_source": False,
-            "should_extract_memories": False,
-            "should_extract_memories_any": [False, True],
         }
     if fixture_id == "large_table_500_rows_001":
         return {
             "input_class": "source",
             "source_kind": "table",
             "should_create_source": True,
-            "should_extract_memories": False,
         }
     if fixture_id == "memory_compiler_article_atomic":
         return {
@@ -2507,18 +2490,14 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "source_kind_any": [None, "article", "markdown"],
             "should_create_source": False,
             "should_create_source_any": [False, True],
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
     if fixture_id == "pdf_ocr_noisy_source_001":
         return {
             "input_class": "source",
             "source_kind": "pdf",
             "should_create_source": True,
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
-    if fixture_id == "slack_prompt_injection_001":
+    if fixture_id == "memory_intake_prompt_injection_001":
         return {
             "input_class": None,
             "input_class_any": ["junk", "source"],
@@ -2526,7 +2505,6 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "source_kind_any": [None, "chat_log"],
             "should_create_source": False,
             "should_create_source_any": [False, True],
-            "should_extract_memories": False,
         }
     if fixture_id == "article_url_fetch_failure_001":
         return {
@@ -2534,62 +2512,48 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "source_kind": "article",
             "should_create_source": True,
             "should_create_source_any": [False, True],
-            "should_extract_memories": False,
         }
-    if fixture_id == "slack_no_durable_value_repair_001":
+    if fixture_id == "memory_intake_no_durable_value_repair_001":
         return {
             "input_class": None,
             "input_class_any": ["junk", "memory"],
             "source_kind": None,
             "should_create_source": False,
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
     if "lol ok sure whatever" in lowered:
         return {
             "input_class": "junk",
             "source_kind": None,
             "should_create_source": False,
-            "should_extract_memories": False,
         }
     if text.startswith("|") or ("|" in text and "---" in text) or "csv table" in lowered:
         return {
             "input_class": "source",
             "source_kind": "table",
             "should_create_source": True,
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
     if "from:" in lowered or "subject:" in lowered or "from -" in lowered or "subject -" in lowered:
         return {
             "input_class": "source",
             "source_kind": "email",
             "should_create_source": True,
-            "should_extract_memories": True,
         }
     if "http://" in lowered or "https://" in lowered or "article" in lowered:
-        fetch_failed = any(marker in lowered for marker in ("404", "fetch error", "network error", "url-only"))
         return {
             "input_class": "source",
             "source_kind": "article",
             "should_create_source": True,
-            "should_extract_memories": not fetch_failed,
-            **({} if fetch_failed else {"should_extract_memories_any": [False, True]}),
         }
     if lowered.startswith("#") or "transcript" in lowered or len(text.split()) > 30:
         return {
             "input_class": "source",
             "source_kind": "markdown",
             "should_create_source": True,
-            "should_extract_memories": True,
-            "should_extract_memories_any": [False, True],
         }
     return {
         "input_class": "memory",
         "source_kind": None,
         "should_create_source": False,
-        "should_extract_memories": True,
-        "should_extract_memories_any": [False, True],
     }
 
 

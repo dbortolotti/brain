@@ -163,7 +163,6 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/docker-compose.prod.yml"),
         Path("deployment/launchd/com.brain.mcp.plist.template"),
         Path("deployment/launchd/com.brain.ui.plist.template"),
-        Path("deployment/launchd/com.brain.slack-agent.plist.template"),
         Path("deployment/launchd/com.brain.docker-runtime.plist.template"),
         Path("deployment/launchd/com.brain.databases.plist.template"),
         Path("deployment/launchd/com.brain.maintenance.plist.template"),
@@ -201,7 +200,7 @@ def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
     assert "127.0.0.1:${BRAIN_NEO4J_BOLT_PORT:-17687}:7687" in compose
 
 
-def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
+def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     script = Path("scripts/deploy-local-production.sh").read_text(encoding="utf-8")
 
     assert 'DEPLOY_ENV="${BRAIN_DEPLOY_ENV:-prod}"' in script
@@ -213,7 +212,6 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     for label in [
         "com.brain.$ENV_SUFFIX.mcp",
         "com.brain.$ENV_SUFFIX.ui",
-        "com.brain.$ENV_SUFFIX.slack-agent",
         "com.brain.$ENV_SUFFIX.docker-runtime",
         "com.brain.$ENV_SUFFIX.databases",
         "com.brain.$ENV_SUFFIX.maintenance",
@@ -223,16 +221,12 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
 
     assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"' in script
     assert "deployment" in script
-    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.docker-runtime.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.databases.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.maintenance.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template" in script
     assert "disable_launch_daemon" in script
-    assert "com.brain.$ENV_SUFFIX.agent-memory" in script
     assert "com.brain.$ENV_SUFFIX.backup" in script
-    assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
-    assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "$BRAIN_SLACK_AGENT_PORT"' in script
     assert "BRAIN_DATABASE_URL=$DATABASE_URL" in script
     assert "BRAIN_PROD_ROOT=$PROD_ROOT" in script
     assert "BRAIN_RELEASE_VERSION=$FALLBACK_RELEASE_VERSION" in script
@@ -361,7 +355,6 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'ln -sfn "$LOCAL_VENV_DIR" "$LOCAL_CURRENT_VENV_LINK"' in script
     assert 'enable_launch_daemon "$LABEL" "$PLIST_DST"' in script
     assert 'enable_launch_daemon "$UI_LABEL" "$UI_PLIST_DST"' in script
-    assert 'enable_launch_daemon "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
     assert 'enable_launch_daemon "$DOCKER_RUNTIME_LABEL" "$DOCKER_RUNTIME_PLIST_DST"' in script
     assert 'enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"' in script
     assert 'enable_launch_daemon "$MAINTENANCE_LABEL" "$MAINTENANCE_PLIST_DST"' in script
@@ -370,10 +363,6 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         script.index('enable_launch_daemon "$DOCKER_RUNTIME_LABEL" "$DOCKER_RUNTIME_PLIST_DST"')
         < script.index('enable_launch_daemon "$DATABASES_LABEL" "$DATABASES_PLIST_DST"')
         < script.index('enable_launch_daemon "$LABEL" "$PLIST_DST"')
-    )
-    assert (
-        'disable_launch_daemon "$LEGACY_AGENT_MEMORY_LABEL" "$LEGACY_AGENT_MEMORY_PLIST_DST"'
-        in script
     )
     assert 'disable_launch_daemon "$LEGACY_BACKUP_LABEL" "$LEGACY_BACKUP_PLIST_DST"' in script
     assert "retire_legacy_launch_agents()" in script
@@ -389,9 +378,6 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script
     assert 'ensure_env_var "BRAIN_TASTE_IMPORT_SOURCE_PATH"' not in script
-    assert "${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" in script
-    assert '"$LOCAL_VENV_DIR/bin/python" scripts/verify_slack_agent.py' in script
-    assert 'ensure_env_var "BRAIN_AGENT_MEMORY_SESSION_ID" "portable_agent_session"' in script
     assert (
         'docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml up -d postgres neo4j'
         in script
@@ -501,7 +487,6 @@ def test_launchd_wrappers_wait_for_databases_and_start_containers() -> None:
     assert 'wait_for_tcp "127.0.0.1" "$BRAIN_NEO4J_BOLT_PORT" "Neo4j Bolt"' in service_script
     assert "memory_stack.mcp_server" in service_script
     assert "memory_stack.ui_service" in service_script
-    assert "memory_stack.slack_agent_server" in service_script
     assert "com.brain.prod.docker-runtime" in docker_runtime_plist
     assert "/var/db/brain-prod/scripts/start_docker_runtime.sh" in docker_runtime_plist
     assert "<key>RunAtLoad</key>" in docker_runtime_plist
@@ -550,7 +535,6 @@ def test_newsyslog_rotates_launchd_logs_daily() -> None:
     assert "brain-prod.err.log" in config
     assert "/var/db/brain-prod/logs/launchd" in config
     assert "brain-ui.err.log" in config
-    assert "brain-slack-agent.err.log" in config
     assert "brain-maintenance.err.log" in config
     assert "@T00" in config
     assert " J" in config
@@ -620,14 +604,7 @@ def test_production_verifier_checks_brain_database_under_approved_runtime_roots(
     assert "process cwd under approved runtime root" in verifier
 
 
-def test_cloudflare_routes_slack_to_agent_before_mcp_catchall() -> None:
+def test_cloudflare_routes_ui_before_mcp_catchall() -> None:
     config = Path("deployment/cloudflare/config.example.yml").read_text(encoding="utf-8")
 
-    slack_route = "path: /slack*"
-    slack_service = "service: http://127.0.0.1:18003"
-    mcp_catchall = "service: http://127.0.0.1:18000"
-
-    assert slack_route in config
-    assert slack_service in config
-    assert config.index(slack_route) < config.index(mcp_catchall)
-    assert config.index(slack_service) < config.index(mcp_catchall)
+    assert config.index("path: /ui*") < config.index("service: http://127.0.0.1:18000")

@@ -159,12 +159,12 @@ def main() -> None:
     args = parser.parse_args()
 
     from memory_stack.cfg import Settings, load_settings
-    from memory_stack.taste.store import TasteStore
+    from memory_stack.taste.cognee_store import CogneePalateStore
 
     settings = load_settings()
     if args.brain_db:
         settings = Settings(**settings.model_dump(), brain_database_url=f"sqlite:///{args.brain_db}")
-    store = TasteStore(settings)
+    store = CogneePalateStore(settings)
     cases = load_cases(args.cases)
     if args.sweep:
         print(json.dumps(sweep_weights(store, cases)[: args.top], indent=2))

@@ -8,6 +8,7 @@ from uuid import NAMESPACE_URL, UUID, uuid5
 from pydantic import BaseModel, Field
 
 from memory_stack.brain_store import normalize_name, now_utc, stable_id
+from memory_stack.cognee.datapoints import palate_node_sets
 from memory_stack.cognee_adapter import import_cognee, maybe_await, refresh_cognee_runtime, run_async
 from memory_stack.cfg import Settings
 from memory_stack.taste.store import (
@@ -101,7 +102,16 @@ class LivePalateCogneeAdapter:
         from cognee.infrastructure.engine import DataPoint  # type: ignore
         from cognee.tasks.storage import add_data_points  # type: ignore
 
-        live_points = [_to_live_datapoint(DataPoint, point, self.dataset_name) for point in points]
+        live_points = [
+            _to_live_datapoint(
+                DataPoint,
+                point,
+                self.dataset_name,
+                user_id=self.settings.brain_user_id,
+                profile_name=self.settings.brain_owner_name,
+            )
+            for point in points
+        ]
         await maybe_await(add_data_points(live_points))
 
     async def get_point(self, point_id: str) -> dict[str, Any] | None:
@@ -209,7 +219,6 @@ class CogneePalateStore:
         signal_type: str,
         value: Any,
         *,
-        provenance_memory_id: str | None = None,
         provenance_entity_id: str | None = None,
         source: str | None = None,
         signal_id: str | None = None,
@@ -223,7 +232,6 @@ class CogneePalateStore:
             taste_item_id,
             signal_type,
             json.dumps(value, sort_keys=True, default=str),
-            provenance_memory_id,
             provenance_entity_id,
             source,
         )
@@ -232,7 +240,6 @@ class CogneePalateStore:
             "type": signal_type,
             "value": value,
             "provenance": source,
-            "provenance_memory_id": provenance_memory_id,
             "provenance_entity_id": provenance_entity_id,
             "created_at": now_utc().isoformat(),
         }
@@ -368,8 +375,20 @@ def _uuid_for_external_id(external_id: str) -> UUID:
     return uuid5(NAMESPACE_URL, f"brain-palate:{external_id}")
 
 
-def _to_live_datapoint(datapoint_base: Any, point: PalatePoint, dataset_name: str) -> Any:
-    fields = _live_fields(point, dataset_name)
+def _to_live_datapoint(
+    datapoint_base: Any,
+    point: PalatePoint,
+    dataset_name: str,
+    *,
+    user_id: str = "default",
+    profile_name: str = "default",
+) -> Any:
+    fields = _live_fields(
+        point,
+        dataset_name,
+        user_id=user_id,
+        profile_name=profile_name,
+    )
     class_name = point.__class__.__name__
     live_class = type(
         class_name,
@@ -382,7 +401,13 @@ def _to_live_datapoint(datapoint_base: Any, point: PalatePoint, dataset_name: st
     return live_class(**fields)
 
 
-def _live_fields(point: PalatePoint, dataset_name: str) -> dict[str, Any]:
+def _live_fields(
+    point: PalatePoint,
+    dataset_name: str,
+    *,
+    user_id: str = "default",
+    profile_name: str = "default",
+) -> dict[str, Any]:
     payload = point.model_dump(mode="json")
     external_id = point.id
     point_kind = "decision" if isinstance(point, PalateDecisionDataPoint) else "item"
@@ -394,7 +419,14 @@ def _live_fields(point: PalatePoint, dataset_name: str) -> dict[str, Any]:
     payload["point_kind"] = point_kind
     payload["dataset_name"] = dataset_name
     payload["palate_type"] = payload.get("type")
-    payload["source_node_set"] = ["palate", f"dataset:{dataset_name}", f"palate:{point_kind}"]
+    payload["source_node_set"] = palate_node_sets(
+        user_id=user_id,
+        profile_name=profile_name,
+        point_kind=point_kind,
+        palate_type=payload.get("palate_type"),
+        status=payload.get("status") or "current",
+        dataset_name=dataset_name,
+    )
     payload["attributes_summary"] = " ".join((point.model_dump(mode="json").get("attributes") or {}).keys())
     payload["signals_summary"] = " ".join(signal.get("type", "") for signal in point.model_dump(mode="json").get("signals", []))
     return payload

@@ -451,10 +451,10 @@
       "write_path": "ingest_source",
       "source_kind": "markdown",
       "title": "MCP release notes",
-      "input": "Release notes: add OAuth protected resource metadata, keep Slack routes separate from /mcp, and reject legacy low-level tools.",
+      "input": "Release notes: add OAuth protected resource metadata, keep Memory intake routes separate from /mcp, and reject legacy low-level tools.",
       "expected_terms": [
         "OAuth",
-        "Slack",
+        "Memory intake",
         "legacy low-level tools"
       ],
       "status": "current",
@@ -518,17 +518,17 @@
       ]
     },
     {
-      "id": "open_loop_slack_backup",
+      "id": "open_loop_memory_intake_backup",
       "write_path": "remember",
-      "input": "Follow up on whether Slack memory agent needs a backup notification channel.",
+      "input": "Follow up on whether Memory intake memory agent needs a backup notification channel.",
       "expected_terms": [
-        "Slack",
+        "Memory intake",
         "backup notification"
       ],
       "status": "open_loop_open",
       "tags": [
         "open_loop",
-        "slack"
+        "memory_intake"
       ]
     },
     {
@@ -632,10 +632,10 @@
     {
       "id": "cloudflare_route",
       "write_path": "remember",
-      "input": "Cloudflare routes Slack traffic to the Slack agent before the MCP catchall route.",
+      "input": "Cloudflare routes Memory intake traffic to the Memory intake agent before the MCP catchall route.",
       "expected_terms": [
         "Cloudflare",
-        "Slack",
+        "Memory intake",
         "MCP catchall"
       ],
       "status": "current",
@@ -647,12 +647,12 @@
     {
       "id": "launchd_services",
       "write_path": "remember",
-      "input": "Local production manages separate launchd services for MCP, UI, and Slack agent.",
+      "input": "Local production manages separate launchd services for MCP, UI, and Memory intake agent.",
       "expected_terms": [
         "launchd",
         "MCP",
         "UI",
-        "Slack agent"
+        "Memory intake agent"
       ],
       "status": "current",
       "tags": [
@@ -1102,7 +1102,7 @@
       "limit": 20,
       "expected": {
         "must_include": [
-          "Slack",
+          "Memory intake",
           "MCP catchall"
         ],
         "must_not_include": [],
@@ -1125,7 +1125,7 @@
         "must_include": [
           "MCP",
           "UI",
-          "Slack agent"
+          "Memory intake agent"
         ],
         "must_not_include": [],
         "citations_required": true
@@ -1487,7 +1487,7 @@
       "expected": {
         "must_include": [
           "OAuth",
-          "Slack",
+          "Memory intake",
           "legacy low-level tools"
         ],
         "must_not_include": [],
@@ -1564,9 +1564,9 @@
       ]
     },
     {
-      "id": "recall_d2_open_slack_backup",
+      "id": "recall_d2_open_memory_intake_backup",
       "difficulty": 2,
-      "query": "What Slack backup open loop exists?",
+      "query": "What Memory intake backup open loop exists?",
       "mode": "auto",
       "include_sources": true,
       "include_superseded": false,
@@ -1574,14 +1574,14 @@
       "limit": 20,
       "expected": {
         "must_include": [
-          "Slack",
+          "Memory intake",
           "backup notification"
         ],
         "must_not_include": [],
         "citations_required": true
       },
       "relevant_seed_ids": [
-        "open_loop_slack_backup"
+        "open_loop_memory_intake_backup"
       ]
     },
     {
@@ -1838,7 +1838,7 @@
           "knowledge graphs",
           "whole corpus",
           "gpt-5.5 low",
-          "Slack"
+          "Memory intake"
         ],
         "must_not_include": [
           "basic Python"
@@ -1849,7 +1849,7 @@
         "open_loop_knowledge_graphs",
         "open_loop_chunking",
         "open_loop_gpt55_low",
-        "open_loop_slack_backup",
+        "open_loop_memory_intake_backup",
         "open_loop_python_closed"
       ]
     },
@@ -2005,9 +2005,9 @@
       ]
     },
     {
-      "id": "recall_d3_slack_routes",
+      "id": "recall_d3_memory_intake_routes",
       "difficulty": 3,
-      "query": "How should Slack and MCP routing be handled in production?",
+      "query": "How should Memory intake and MCP routing be handled in production?",
       "mode": "auto",
       "include_sources": true,
       "include_superseded": false,
@@ -2015,7 +2015,7 @@
       "limit": 20,
       "expected": {
         "must_include": [
-          "Slack",
+          "Memory intake",
           "before",
           "MCP catchall"
         ],
@@ -2222,7 +2222,7 @@
           "knowledge graphs",
           "whole corpus",
           "gpt-5.5 low",
-          "Slack"
+          "Memory intake"
         ],
         "must_not_include": [
           "basic Python"
@@ -2233,7 +2233,7 @@
         "open_loop_knowledge_graphs",
         "open_loop_chunking",
         "open_loop_gpt55_low",
-        "open_loop_slack_backup",
+        "open_loop_memory_intake_backup",
         "open_loop_python_closed"
       ]
     },
@@ -2478,7 +2478,7 @@
       "expected": {
         "must_include": [
           "OAuth",
-          "Slack",
+          "Memory intake",
           "legacy low-level tools",
           "raw SQL",
           "not exposed"
@@ -2792,7 +2792,7 @@
           "knowledge graphs",
           "whole corpus",
           "gpt-5.5 low",
-          "Slack",
+          "Memory intake",
           "basic Python",
           "closed"
         ],
@@ -2805,7 +2805,7 @@
         "open_loop_knowledge_graphs",
         "open_loop_chunking",
         "open_loop_gpt55_low",
-        "open_loop_slack_backup",
+        "open_loop_memory_intake_backup",
         "open_loop_python_closed"
       ]
     },
@@ -2884,7 +2884,7 @@
           "LanceDB",
           "live model smoke",
           "Cloudflare",
-          "Slack",
+          "Memory intake",
           "MCP catchall",
           "launchd"
         ],
@@ -2958,7 +2958,7 @@
           "high-level",
           "raw SQL",
           "not exposed",
-          "Slack",
+          "Memory intake",
           "MCP catchall"
         ],
         "must_not_include": [
@@ -3166,7 +3166,7 @@
           "gpt-5.5 low"
         ],
         "must_not_include": [
-          "Slack backup",
+          "Memory intake backup",
           "basic Python"
         ],
         "citations_required": true
@@ -3175,7 +3175,7 @@
         "open_loop_knowledge_graphs",
         "open_loop_chunking",
         "open_loop_gpt55_low",
-        "open_loop_slack_backup",
+        "open_loop_memory_intake_backup",
         "open_loop_python_closed"
       ]
     },
@@ -3261,7 +3261,7 @@
           "live model smoke",
           "knowledge graphs",
           "gpt-5.5 low",
-          "Slack"
+          "Memory intake"
         ],
         "must_not_include": [
           "Cognee is the source of truth",
@@ -3278,7 +3278,7 @@
         "deploy_smoke",
         "open_loop_knowledge_graphs",
         "open_loop_gpt55_low",
-        "open_loop_slack_backup",
+        "open_loop_memory_intake_backup",
         "old_cognee_authority",
         "sam_deleted_music",
         "sam_work_old",

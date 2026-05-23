@@ -9,6 +9,7 @@ from urllib.parse import parse_qs, urlsplit
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
+import pytest
 
 from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
@@ -17,7 +18,36 @@ from memory_stack import mcp_server
 from memory_stack import brain_service
 from memory_stack.oauth import BrainOAuthProvider
 from memory_stack.request_logging import RequestResponseLogMiddleware, redact_text, redact_url
-from memory_stack.session import agent_memory_dataset_for_user, agent_memory_session_id_for_user
+
+
+TEST_SERVICE_TOKEN = "test-service-token"
+
+
+@pytest.fixture(autouse=True)
+def authenticated_service_client(monkeypatch):
+    previous_settings = mcp_server.settings
+    previous_request = TestClient.request
+    if mcp_server.oauth_provider is None and not mcp_server.settings.brain_auth_token:
+        mcp_server.settings = mcp_server.settings.model_copy(
+            update={"brain_auth_token": TEST_SERVICE_TOKEN}
+        )
+
+    def request_with_service_token(self, method, url, *args, **kwargs):
+        headers = dict(kwargs.pop("headers", {}) or {})
+        if mcp_server.oauth_provider is None:
+            if not mcp_server.settings.brain_auth_token:
+                mcp_server.settings = mcp_server.settings.model_copy(
+                    update={"brain_auth_token": TEST_SERVICE_TOKEN}
+                )
+            if not any(key.lower() == "authorization" for key in headers):
+                headers["Authorization"] = f"Bearer {mcp_server.settings.brain_auth_token}"
+        return previous_request(self, method, url, *args, headers=headers, **kwargs)
+
+    monkeypatch.setattr(TestClient, "request", request_with_service_token)
+    try:
+        yield
+    finally:
+        mcp_server.settings = previous_settings
 
 
 def test_remember_summary_names_taste_proposal_without_claiming_storage() -> None:
@@ -25,7 +55,6 @@ def test_remember_summary_names_taste_proposal_without_claiming_storage() -> Non
         {
             "classification": "taste_proposal",
             "dry_run": True,
-            "memory_cards": [],
             "entities": [],
             "conflicts": [],
             "taste": {
@@ -63,84 +92,15 @@ def test_icon_routes() -> None:
     assert favicon_response.content.startswith(b"\x00\x00\x01\x00")
 
 
-def test_openai_apps_challenge_route_is_configured_only() -> None:
-    previous_settings = mcp_server.settings
-    try:
-        mcp_server.settings = Settings(brain_openai_apps_challenge_token=None)
-        client = TestClient(app)
-        missing_response = client.get("/.well-known/openai-apps-challenge")
-        assert missing_response.status_code == 404
-
-        mcp_server.settings = Settings(brain_openai_apps_challenge_token="challenge-token")
-        configured_response = client.get("/.well-known/openai-apps-challenge")
-        assert configured_response.status_code == 200
-        assert configured_response.text == "challenge-token"
-        assert configured_response.headers["cache-control"] == "no-store"
-        assert configured_response.headers["x-robots-tag"] == "noindex"
-    finally:
-        mcp_server.settings = previous_settings
-
-
-def test_brain_app_ui_routes() -> None:
-    client = TestClient(app)
-
-    root_response = client.get("/")
-    app_response = client.get("/app")
-    callback_response = client.get("/app/oauth/callback")
-    css_response = client.get("/app-assets/app.css")
-    js_response = client.get("/app-assets/app.js")
-    privacy_response = client.get("/privacy")
-    terms_response = client.get("/terms")
-    support_response = client.get("/support")
-
-    assert root_response.status_code == 200
-    assert "Brain" in root_response.text
-    assert "/privacy" in root_response.text
-    assert "Memory Contents" in root_response.text
-    assert "Latest Session Data" in root_response.text
-    assert "Custom Preprompt Instructions" in root_response.text
-    assert "Data Controls" in root_response.text
-    assert "User Admin" in root_response.text
-    assert "Endpoint Help" in root_response.text
-    assert app_response.status_code == 200
-    assert callback_response.status_code == 200
-    assert css_response.status_code == 200
-    assert css_response.headers["content-type"].startswith("text/css")
-    assert js_response.status_code == 200
-    assert privacy_response.status_code == 200
-    assert "Brain Privacy" in privacy_response.text
-    assert terms_response.status_code == 200
-    assert "Brain Terms" in terms_response.text
-    assert support_response.status_code == 200
-    assert "Brain Support" in support_response.text
-    for page_response in (root_response, privacy_response, terms_response, support_response):
-        assert "frame-ancestors" in page_response.headers["content-security-policy"]
-        assert "chatgpt.com" in page_response.headers["content-security-policy"]
-        assert page_response.headers["strict-transport-security"].startswith("max-age=")
-        assert page_response.headers["referrer-policy"] == "no-referrer"
-        assert page_response.headers["x-content-type-options"] == "nosniff"
-    assert "mcpCall" in js_response.text
-    assert "loginUser" in js_response.text
-    assert "csrfHeader" in js_response.text
-    assert "showMemoryDetails" in js_response.text
-    assert "refreshPrompt" in js_response.text
-    assert "refreshControls" in js_response.text
-    assert "refreshUsers" in js_response.text
-    assert "refreshEndpointHelp" in js_response.text
-    assert "/admin/cognee-api/{path}" in js_response.text
-    assert "/slack/commands" in js_response.text
-    assert "brain_preprompt" in js_response.text
-
-
 def test_public_http_redirects_to_https_for_cookie_auth(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app, base_url="http://brain.dceb.net", follow_redirects=False)
-        response = client.get("/")
-        forwarded_https_response = client.get("/", headers={"X-Forwarded-Proto": "https"})
+        response = client.get("/healthz")
+        forwarded_https_response = client.get("/healthz", headers={"X-Forwarded-Proto": "https"})
         local_response = client.get("http://127.0.0.1:18100/healthz")
 
     assert response.status_code == 307
-    assert response.headers["location"] == "https://brain.dceb.net/"
+    assert response.headers["location"] == "https://brain.dceb.net/healthz"
     assert forwarded_https_response.status_code == 200
     assert local_response.status_code == 200
 
@@ -184,31 +144,22 @@ def test_datasource_tools_are_listed() -> None:
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
     expected_tools = {
-        "brain_app_open_review_panel",
         "brain_session",
         "brain_profile_context_remember",
         "brain_profile_context_list",
         "brain_profile_context_forget",
-        "brain_app_data_controls",
+        "brain_bias_context_remember",
+        "brain_bias_context_list",
+        "brain_bias_context_forget",
         "brain_profile_context_sync",
         "brain_remember",
         "brain_ingest_source",
         "brain_recall",
         "brain_profile_entity",
-        "brain_list_open_loops",
-        "brain_get_memory",
-        "brain_get_source",
-        "brain_resolve_conflict",
         "brain_forget",
         "brain_review_recent",
         "brain_undo_last",
-        "brain_sync_cognee",
-        "brain_rebuild_cognee",
         "cognee_improve",
-        "brain_agent_memory",
-        "brain_agent_memory_recall",
-        "brain_agent_memory_clear",
-        "brain_merge_entities",
         "brain_palate_describe_item",
         "brain_palate_remember",
         "brain_palate_query",
@@ -249,94 +200,7 @@ def test_datasource_tools_are_listed() -> None:
     }.isdisjoint(tool_names)
 
 
-def test_chatgpt_app_surface_lists_only_safe_tools() -> None:
-    client = TestClient(app)
-    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
-
-    assert response.status_code == 200
-    tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
-    assert tool_names == mcp_server.CHATGPT_APP_TOOLS
-    assert {
-        "brain_forget",
-        "brain_sync_cognee",
-        "brain_rebuild_cognee",
-        "cognee_improve",
-        "brain_agent_memory_clear",
-        "brain_palate_remember",
-    }.isdisjoint(tool_names)
-    remember = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_remember")
-    assert "previews by default" in remember["description"]
-    ingest_source = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_ingest_source")
-    assert "previews by default" in ingest_source["description"]
-    palate_query = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_query")
-    palate_confirm = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_palate_confirm")
-    for tool in response.json()["result"]["tools"]:
-        assert tool["securitySchemes"] == tool["_meta"]["securitySchemes"]
-        assert tool["_meta"]["ui"] == {"visibility": ["model"]}
-        assert "openai/outputTemplate" not in tool["_meta"]
-        assert tool["_meta"]["openai/visibility"] == "public"
-        assert isinstance(tool["_meta"]["openai/toolInvocation/invoking"], str)
-        assert isinstance(tool["_meta"]["openai/toolInvocation/invoked"], str)
-        assert tool["annotations"]["openWorldHint"] is False
-        expected_scopes = (
-            ["brain.memory.read", "brain.memory.write"]
-            if tool["name"] in mcp_server.APP_MUTATING_TOOLS
-            else ["brain.memory.read"]
-        )
-        assert tool["securitySchemes"] == [{"type": "oauth2", "scopes": expected_scopes}]
-    assert remember["annotations"]["readOnlyHint"] is False
-    assert remember["annotations"]["destructiveHint"] is False
-    assert remember["_meta"]["brain/requiresUserConfirmation"] is True
-    assert ingest_source["annotations"]["readOnlyHint"] is False
-    assert ingest_source["_meta"]["brain/requiresUserConfirmation"] is True
-    assert palate_query["annotations"]["readOnlyHint"] is True
-    assert palate_query["_meta"]["brain/requiresUserConfirmation"] is False
-    assert palate_confirm["annotations"]["readOnlyHint"] is False
-    assert palate_confirm["_meta"]["brain/requiresUserConfirmation"] is True
-    recall = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_recall")
-    assert recall["annotations"]["readOnlyHint"] is True
-    assert recall["_meta"]["brain/requiresUserConfirmation"] is False
-    data_controls = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_app_data_controls")
-    assert data_controls["annotations"]["readOnlyHint"] is True
-    undo = next(tool for tool in response.json()["result"]["tools"] if tool["name"] == "brain_undo_last")
-    assert undo["annotations"]["destructiveHint"] is True
-
-
-def test_chatgpt_app_surface_blocks_admin_tool_call() -> None:
-    client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {"name": "brain_rebuild_cognee", "arguments": {"confirm": True}},
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["error"]["code"] == -32000
-    assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
-
-
-def test_chatgpt_app_render_tool_is_not_public() -> None:
-    client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {"name": "brain_app_open_review_panel", "arguments": {}},
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["error"]["code"] == -32000
-    assert "not available on the chatgpt_app MCP surface" in response.json()["error"]["message"]
-
-
-def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
+def test_bias_context_tools_update_session(tmp_path) -> None:
     previous_settings = mcp_server.settings
     mcp_server.settings = Settings(
         brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
@@ -344,285 +208,63 @@ def test_chatgpt_app_destructive_tools_require_confirmation(tmp_path) -> None:
     )
     try:
         client = TestClient(app, base_url="https://testserver")
-        context_response = client.post(
-            "/mcp",
+        remember_response = client.post(
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 1,
                 "method": "tools/call",
                 "params": {
-                    "name": "brain_profile_context_remember",
+                    "name": "brain_bias_context_remember",
                     "arguments": {
-                        "statement": "Daniele prefers confirmation gates.",
-                        "confirmed_by_user": True,
+                        "statement": "Daniele prefers concise answers.",
+                        "scope": "response_style",
                     },
                 },
             },
         )
-        context_id = context_response.json()["result"]["structuredContent"]["id"]
-        unconfirmed_forget = client.post(
-            "/mcp",
+        session_response = client.post(
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 2,
                 "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_forget",
-                    "arguments": {"context_id": context_id},
-                },
+                "params": {"name": "brain_session", "arguments": {}},
             },
         )
-        confirmed_forget = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 3,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_forget",
-                    "arguments": {
-                        "context_id": context_id,
-                        "confirmed_by_user": True,
-                    },
-                },
-            },
-        )
-        unconfirmed_undo = client.post(
-            "/mcp",
+        context_id = remember_response.json()["result"]["structuredContent"]["id"]
+        forget_response = client.post(
+            "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
                 "id": 4,
                 "method": "tools/call",
-                "params": {"name": "brain_undo_last", "arguments": {}},
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert unconfirmed_forget.status_code == 200
-    assert "Explicit user confirmation is required" in unconfirmed_forget.json()["error"]["message"]
-    assert confirmed_forget.status_code == 200
-    assert confirmed_forget.json()["result"]["structuredContent"]["status"] == "deleted"
-    assert unconfirmed_undo.status_code == 200
-    assert "Explicit user confirmation is required" in unconfirmed_undo.json()["error"]["message"]
-
-
-def test_chatgpt_app_profile_context_remember_requires_confirmation(tmp_path) -> None:
-    previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_profile_context_path=str(tmp_path / "profile_context.json"),
-    )
-    try:
-        client = TestClient(app, base_url="https://testserver")
-        unconfirmed_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
                 "params": {
-                    "name": "brain_profile_context_remember",
-                    "arguments": {"statement": "Daniele prefers explicit saves."},
-                },
-            },
-        )
-        confirmed_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_remember",
-                    "arguments": {
-                        "statement": "Daniele prefers explicit saves.",
-                        "confirmed_by_user": True,
-                    },
+                    "name": "brain_bias_context_forget",
+                    "arguments": {"context_id": context_id},
                 },
             },
         )
     finally:
         mcp_server.settings = previous_settings
 
-    assert unconfirmed_response.status_code == 200
-    assert "Explicit user confirmation is required" in unconfirmed_response.json()["error"]["message"]
-    assert confirmed_response.status_code == 200
-    assert confirmed_response.json()["result"]["structuredContent"]["created"] is True
-
-
-def test_chatgpt_app_accepts_context_confirmation_and_audits_write(tmp_path) -> None:
-    previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    assert remember_response.status_code == 200
+    remembered = remember_response.json()["result"]["structuredContent"]
+    assert remembered["created"] is True
+    assert remembered["kind"] == "bias"
+    assert remembered["id"].startswith("bias_context_")
+    session_payload = session_response.json()["result"]["structuredContent"]
+    assert session_payload["bias_context"][0]["id"] == context_id
+    assert session_payload["bias_context"][0]["statement"] == "Daniele prefers concise answers."
+    assert forget_response.json()["result"]["structuredContent"]["status"] == "deleted"
+    store = BrainStore(
+        Settings(
+            brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+            brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        )
     )
-    try:
-        client = TestClient(app, base_url="https://testserver")
-        confirmed_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": "ctx-confirm",
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_remember",
-                    "arguments": {
-                        "statement": "Daniele accepts context confirmation.",
-                        "context": {"confirmed_by_user": True},
-                    },
-                },
-            },
-        )
-        controls_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {"name": "brain_app_data_controls", "arguments": {"limit": 10}},
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert confirmed_response.status_code == 200
-    context_id = confirmed_response.json()["result"]["structuredContent"]["id"]
-    assert controls_response.status_code == 200
-    assert len(controls_response.json()["result"]["content"]) == 1
-    controls = controls_response.json()["result"]["structuredContent"]
-    assert any(item["id"] == context_id for item in controls["profile_context"])
-    assert any(
-        item["tool_name"] == "brain_profile_context_remember"
-        and item["target_id"] == context_id
-        and item["confirmed_by_user"] == 1
-        for item in controls["app_write_audit"]
-    )
-    controls_json = json.dumps(controls)
-    for forbidden in [
-        "user_id",
-        "password",
-        "password_hash",
-        "client_id",
-        "request_id",
-        "remote_addr",
-        "session_id",
-        "created_at",
-        "updated_at",
-        "expires_at",
-        "resolved_agent_memory_dataset",
-    ]:
-        assert forbidden not in controls_json
-
-
-def test_chatgpt_app_remember_requires_confirmation(tmp_path) -> None:
-    previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_profile_context_path=str(tmp_path / "profile_context.json"),
-    )
-    try:
-        client = TestClient(app, base_url="https://testserver")
-        preview_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_remember",
-                    "arguments": {
-                        "input": "Remember that app-surface writes require user confirmation.",
-                        "input_type": "fact",
-                    },
-                },
-            },
-        )
-        confirmed_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_remember",
-                    "arguments": {
-                        "input": "Remember that app-surface writes require user confirmation.",
-                        "input_type": "fact",
-                        "dry_run": False,
-                        "context": {"confirmed_by_user": True},
-                    },
-                },
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert preview_response.status_code == 200
-    preview = preview_response.json()["result"]["structuredContent"]
-    assert preview["dry_run"] is True
-    assert all(card["created"] is False for card in preview["memory_cards"])
-
-    assert confirmed_response.status_code == 200
-    confirmed = confirmed_response.json()["result"]["structuredContent"]
-    assert confirmed["dry_run"] is False
-    assert any(card["created"] is True for card in confirmed["memory_cards"])
-
-
-def test_chatgpt_app_ingest_source_previews_until_confirmed(tmp_path) -> None:
-    previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_profile_context_path=str(tmp_path / "profile_context.json"),
-    )
-    try:
-        client = TestClient(app, base_url="https://testserver")
-        preview_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_ingest_source",
-                    "arguments": {
-                        "source": "Article: app-surface source ingestion previews first.",
-                        "source_kind": "article",
-                        "title": "App source preview",
-                    },
-                },
-            },
-        )
-        confirmed_response = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_ingest_source",
-                    "arguments": {
-                        "source": "Article: app-surface source ingestion saves after confirmation.",
-                        "source_kind": "article",
-                        "title": "App source confirmed",
-                        "dry_run": False,
-                        "confirmed_by_user": True,
-                    },
-                },
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert preview_response.status_code == 200
-    preview = preview_response.json()["result"]["structuredContent"]
-    assert preview["ingestion"]["dry_run"] is True
-    assert preview["source_id"] is None
-
-    assert confirmed_response.status_code == 200
-    confirmed = confirmed_response.json()["result"]["structuredContent"]
-    assert confirmed["ingestion"]["dry_run"] is False
-    assert confirmed["source_id"]
+    assert store.list_context_records(kind="bias") == []
+    assert store.list_context_records(kind="bias", include_deleted=True)[0]["status"] == "deleted"
 
 
 def test_memory_tools_expose_node_set_and_search_options() -> None:
@@ -637,49 +279,43 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain_profile_context_list",
         "brain_profile_context_forget",
         "brain_profile_context_sync",
+        "brain_bias_context_remember",
+        "brain_bias_context_list",
+        "brain_bias_context_forget",
         "brain_remember",
         "brain_recall",
         "brain_profile_entity",
-        "brain_list_open_loops",
-        "brain_get_memory",
-        "brain_get_source",
-        "brain_resolve_conflict",
         "brain_forget",
         "brain_review_recent",
         "brain_undo_last",
-        "brain_sync_cognee",
-        "brain_rebuild_cognee",
         "cognee_improve",
-        "brain_agent_memory",
-        "brain_agent_memory_recall",
-        "brain_agent_memory_clear",
-        "brain_merge_entities",
         "brain_palate_remember",
         "brain_palate_evaluate_options",
     } <= set(tools)
 
     assert tools["brain_session"]["inputSchema"]["properties"] == {}
-    assert tools["brain_session"]["outputSchema"]["required"] == ["session_id"]
+    assert tools["brain_session"]["outputSchema"]["required"] == ["user_id"]
     session_output = tools["brain_session"]["outputSchema"]["properties"]
     assert "profile_context" in session_output
-    assert "agent_memory_workflow" in session_output
-    assert "resolved_agent_memory_dataset" in session_output
+    assert "bias_context" in session_output
     profile_context_properties = tools["brain_profile_context_remember"]["inputSchema"]["properties"]
     assert {"statement", "scope", "source"} <= set(profile_context_properties)
+    bias_context_properties = tools["brain_bias_context_remember"]["inputSchema"]["properties"]
+    assert {"statement", "scope", "source"} <= set(bias_context_properties)
 
     remember_properties = tools["brain_remember"]["inputSchema"]["properties"]
     assert "input" in remember_properties
+    assert "source_policy" not in remember_properties
     assert "dataset_name" not in remember_properties
     assert "node_set" not in remember_properties
-    assert "memory_cards" in tools["brain_remember"]["outputSchema"]["properties"]
+    ingest_properties = tools["brain_ingest_source"]["inputSchema"]["properties"]
+    assert "extract_memories" not in ingest_properties
 
     recall_properties = tools["brain_recall"]["inputSchema"]["properties"]
     assert recall_properties["mode"]["enum"] == [
         "auto",
         "evidence",
         "profile",
-        "open_loops",
-        "sources",
         "memories",
         "debug",
     ]
@@ -692,12 +328,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     )
 
     improve_properties = tools["cognee_improve"]["inputSchema"]["properties"]
-    assert improve_properties["dataset"]["enum"] == ["memory", "sources", "data", "palate", "agent_memory"]
-    assert "session_ids" in improve_properties
-
-    agent_memory_properties = tools["brain_agent_memory"]["inputSchema"]["properties"]
-    assert "session_id" in agent_memory_properties
-    assert tools["brain_agent_memory"]["inputSchema"]["required"] == ["session_id"]
+    assert improve_properties["dataset"]["enum"] == ["memory", "data", "palate"]
 
     taste_properties = tools["brain_palate_remember"]["inputSchema"]["properties"]
     assert {"type", "canonical_name", "description"} <= set(taste_properties)
@@ -705,11 +336,8 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
     forget_properties = tools["brain_forget"]["inputSchema"]["properties"]
     assert forget_properties["object_type"]["enum"] == [
-        "memory",
-        "source",
+        "cognee_remember",
         "entity",
-        "relationship",
-        "open_loop",
     ]
     assert "confirm" in forget_properties
 
@@ -746,8 +374,6 @@ def test_brain_session_returns_configured_identity(tmp_path) -> None:
         brain_owner_full_name="Daniele Bortolotti",
         brain_owner_name="Daniele",
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
-        brain_agent_memory_session_id="portable_agent_session",
-        brain_cognee_agent_memory_dataset="agent_memory_test",
     )
     mcp_server.settings = active_settings
     try:
@@ -766,13 +392,19 @@ def test_brain_session_returns_configured_identity(tmp_path) -> None:
 
     assert response.status_code == 200
     payload = response.json()["result"]["structuredContent"]
-    assert payload["session_id"] == agent_memory_session_id_for_user(active_settings)
+    assert payload["user_id"] == "default"
+    assert "session_id" not in payload
+    assert "cognee_session_id" not in payload
+    assert "cognee_dataset" not in payload
+    assert "session_map_id" not in payload
     assert payload["profile_name"] == "Daniele"
     assert payload["profile_full_name"] == "Daniele Bortolotti"
     assert payload["profile_context"] == []
+    assert payload["bias_context"] == []
+    assert payload["bias_context_remember_tool"] == "brain_bias_context_remember"
+    assert payload["bias_context_list_tool"] == "brain_bias_context_list"
+    assert payload["bias_context_forget_tool"] == "brain_bias_context_forget"
     assert payload["bias_prompt"] == "brain_bias_protocol"
-    assert payload["agent_memory_workflow"] == "brain_agent_memory"
-    assert payload["resolved_agent_memory_dataset"] == agent_memory_dataset_for_user(active_settings)
 
 
 def test_profile_context_tools_update_brain_session(tmp_path) -> None:
@@ -839,11 +471,20 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
     session_payload = session_response.json()["result"]["structuredContent"]
     assert session_payload["profile_context"][0]["statement"] == "Daniele works in a bank as a quant."
     assert session_payload["profile_context"][0]["id"] == context_id
-    assert session_payload["profile_context_records"][0]["memory_id"].startswith("mem_")
-    assert session_payload["profile_context_records"][0]["owner_entity_id"].startswith("ent_")
+    assert session_payload["profile_context_records"][0]["sync_status"] == "control_store"
+    assert "memory_id" not in session_payload["profile_context_records"][0]
+    assert "owner_entity_id" not in session_payload["profile_context_records"][0]
     listed = list_response.json()["result"]["structuredContent"]["profile_context"]
     assert listed[0]["id"] == context_id
     assert forget_response.json()["result"]["structuredContent"]["status"] == "deleted"
+    store = BrainStore(
+        Settings(
+            brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+            brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        )
+    )
+    assert len(store.list_context_records(kind="profile")) == 0
+    assert store.list_context_records(kind="profile", include_deleted=True)[0]["status"] == "deleted"
 
 
 def test_brain_session_migrates_legacy_string_profile_context(tmp_path) -> None:
@@ -938,22 +579,20 @@ def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp
     sync_payload = sync_response.json()["result"]["structuredContent"]
     assert sync_payload["synced_count"] == 1
     assert sync_payload["profile_context_count"] == 1
-    assert sync_payload["profile_context"][0]["memory_id"].startswith("mem_")
+    assert sync_payload["profile_context"][0]["sync_status"] == "control_store"
+    assert "memory_id" not in sync_payload["profile_context"][0]
     assert "Daniele has a PhD in theoretical physics." in profile_response.json()["result"][
         "structuredContent"
     ]["answer"]
-    raw_profile = BrainStore(
+    store = BrainStore(
         Settings(
             brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
             brain_owner_full_name="Daniele Bortolotti",
             brain_owner_name="Daniele",
             brain_profile_context_path=str(tmp_path / "profile_context.json"),
         )
-    ).entity_profile("Daniele")
-    assert raw_profile["entity"]["canonical_name"] == "Daniele Bortolotti"
-    aliases = {alias["alias"] for alias in raw_profile["aliases"]}
-    assert "Daniele" not in aliases
-    assert "me" in aliases
+    )
+    assert store.list_context_records(kind="profile")[0]["statement"] == "Daniele has a PhD in theoretical physics."
 
 
 def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch) -> None:
@@ -982,7 +621,6 @@ def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch)
                     "arguments": {
                         "dataset": "palate",
                         "node_name": ["Wine"],
-                        "session_ids": ["session-1"],
                     },
                 },
             },
@@ -993,163 +631,8 @@ def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch)
     assert response.status_code == 200
     payload = response.json()["result"]["structuredContent"]
     assert payload["resolved_dataset"] == "palate_live"
-    assert payload["session_ids"] == ["session-1"]
     assert calls[0]["dataset"] == "palate_live"
     assert calls[0]["node_name"] == ["Wine"]
-    assert calls[0]["session_ids"] == ["session-1"]
-
-
-def test_brain_agent_memory_uses_single_session_and_dedicated_dataset(tmp_path, monkeypatch) -> None:
-    calls = []
-
-    async def fake_improve_cognee(**kwargs):
-        calls.append(kwargs)
-        return {"run_id": "agent-memory-1"}
-
-    monkeypatch.setattr(mcp_server, "improve_cognee", fake_improve_cognee)
-    previous_settings = mcp_server.settings
-    active_settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_cognee_agent_memory_dataset="agent_memory_test",
-    )
-    mcp_server.settings = active_settings
-    session_id = agent_memory_session_id_for_user(active_settings)
-    resolved_dataset = agent_memory_dataset_for_user(active_settings)
-    try:
-        client = TestClient(app)
-        response = client.post(
-            "/admin/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_agent_memory",
-                    "arguments": {
-                        "session_id": session_id,
-                        "node_name": ["project-x"],
-                    },
-                },
-            },
-        )
-        rejected = client.post(
-            "/admin/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_agent_memory",
-                    "arguments": {
-                        "session_id": "portable_agent_session:u_not_this_user",
-                        "node_name": ["project-x"],
-                    },
-                },
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert response.status_code == 200
-    payload = response.json()["result"]["structuredContent"]
-    assert payload["session_id"] == session_id
-    assert payload["resolved_dataset"] == resolved_dataset
-    assert calls[0]["dataset"] == resolved_dataset
-    assert calls[0]["session_ids"] == [session_id]
-    assert calls[0]["node_name"] == ["project-x"]
-    assert rejected.status_code == 200
-    assert "active user's session_id" in rejected.json()["error"]["message"]
-    assert len(calls) == 1
-
-
-def test_brain_agent_memory_recall_uses_dedicated_dataset(tmp_path, monkeypatch) -> None:
-    calls = []
-
-    async def fake_recall_text(**kwargs):
-        calls.append(kwargs)
-        return [{"text": "remembered agent context"}]
-
-    monkeypatch.setattr(mcp_server, "recall_text", fake_recall_text)
-    previous_settings = mcp_server.settings
-    active_settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_cognee_agent_memory_dataset="agent_memory_test",
-    )
-    mcp_server.settings = active_settings
-    resolved_dataset = agent_memory_dataset_for_user(active_settings)
-    try:
-        client = TestClient(app)
-        response = client.post(
-            "/admin/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_agent_memory_recall",
-                    "arguments": {"query": "what happened last chat?"},
-                },
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert response.status_code == 200
-    payload = response.json()["result"]["structuredContent"]
-    assert payload["resolved_dataset"] == resolved_dataset
-    assert payload["result"] == [{"text": "remembered agent context"}]
-    assert calls[0]["dataset"] == resolved_dataset
-    assert calls[0]["search_type"] == "GRAPH_COMPLETION"
-
-
-def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -> None:
-    calls = []
-
-    async def fake_delete_datasource(datasource, *, settings):
-        calls.append({"datasource": datasource, "settings": settings})
-        return {"name": datasource, "status": "deleted"}
-
-    monkeypatch.setattr(mcp_server, "delete_cognee_datasource", fake_delete_datasource)
-    previous_settings = mcp_server.settings
-    active_settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_cognee_agent_memory_dataset="agent_memory_test",
-    )
-    mcp_server.settings = active_settings
-    resolved_dataset = agent_memory_dataset_for_user(active_settings)
-    try:
-        client = TestClient(app)
-        rejected = client.post(
-            "/admin/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_agent_memory_clear",
-                    "arguments": {},
-                },
-            },
-        )
-        accepted = client.post(
-            "/admin/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_agent_memory_clear",
-                    "arguments": {"confirm": True},
-                },
-            },
-        )
-    finally:
-        mcp_server.settings = previous_settings
-
-    assert rejected.status_code == 200
-    assert "confirm=true" in rejected.json()["error"]["message"]
-    assert accepted.status_code == 200
-    assert calls[0]["datasource"] == resolved_dataset
 
 
 def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
@@ -1168,121 +651,23 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
             "jsonrpc": "2.0",
             "id": 3,
             "method": "resources/read",
-            "params": {"uri": "brain://schema/memory-card"},
+            "params": {"uri": "brain://schema/entity"},
         },
     )
-    app_resources_response = client.post(
-        "/mcp",
-        json={"jsonrpc": "2.0", "id": 4, "method": "resources/list"},
-    )
-    app_component_response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 5,
-            "method": "resources/read",
-            "params": {"uri": mcp_server.APP_COMPONENT_RESOURCE_URI},
-        },
-    )
-    admin_component_response = client.post(
-        "/admin/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 6,
-            "method": "resources/read",
-            "params": {"uri": mcp_server.APP_COMPONENT_RESOURCE_URI},
-        },
-    )
-
     assert list_response.status_code == 200
     assert {
         resource["uri"] for resource in list_response.json()["result"]["resources"]
-    } == {
-        mcp_server.APP_COMPONENT_RESOURCE_URI,
-        "brain://schema/memory-card",
-        "brain://schema/source",
-        "brain://schema/entity",
-    }
+    } == {"brain://schema/entity"}
     assert templates_response.status_code == 200
     template_uris = {
         template["uriTemplate"]
         for template in templates_response.json()["result"]["resourceTemplates"]
     }
-    assert "brain://memory/{memory_id}" in template_uris
-    assert "brain://source/{source_id}" in template_uris
+    assert template_uris == {"brain://entity/{entity_id}", "brain://schema/{schema_name}"}
     assert read_response.status_code == 200
     content = read_response.json()["result"]["contents"][0]
-    assert content["uri"] == "brain://schema/memory-card"
-    assert json.loads(content["text"])["schema"] == "memory-card"
-    assert app_resources_response.status_code == 200
-    app_resource_uris = {
-        resource["uri"] for resource in app_resources_response.json()["result"]["resources"]
-    }
-    assert mcp_server.APP_COMPONENT_RESOURCE_URI not in app_resource_uris
-    assert app_component_response.status_code == 200
-    assert app_component_response.json()["error"]["code"] == -32000
-    assert "Unknown Brain resource" in app_component_response.json()["error"]["message"]
-    assert admin_component_response.status_code == 200
-    component = admin_component_response.json()["result"]["contents"][0]
-    assert component["mimeType"] == mcp_server.APP_COMPONENT_MIME_TYPE
-    assert "window.openai.callTool" in component["text"]
-    assert component["_meta"]["ui"]["csp"]["connectDomains"]
-    assert component["_meta"]["ui"]["csp"]["resourceDomains"]
-    assert component["_meta"]["ui"]["domain"] == mcp_server.settings.brain_public_base_url.rstrip("/")
-    assert component["_meta"]["openai/widgetCSP"]["connect_domains"]
-
-
-def test_agent_memory_protocol_prompt_can_be_inserted_with_session_id() -> None:
-    client = TestClient(app)
-    list_response = client.post(
-        "/admin/mcp",
-        json={"jsonrpc": "2.0", "id": 1, "method": "prompts/list"},
-    )
-    get_response = client.post(
-        "/admin/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 2,
-            "method": "prompts/get",
-            "params": {
-                "name": "brain_agent_memory_protocol",
-                "arguments": {"session_id": "daniele"},
-            },
-        },
-    )
-
-    assert list_response.status_code == 200
-    prompts = list_response.json()["result"]["prompts"]
-    prompt_names = {prompt["name"] for prompt in prompts}
-    assert {"brain_agent_memory_protocol", "brain_bias_protocol"} <= prompt_names
-    agent_prompt = next(prompt for prompt in prompts if prompt["name"] == "brain_agent_memory_protocol")
-    assert agent_prompt["arguments"][0]["name"] == "session_id"
-    assert get_response.status_code == 200
-    text = get_response.json()["result"]["messages"][0]["content"]["text"]
-    assert 'Use session_id="daniele" consistently' in text
-    assert "brain_agent_memory" in text
-    assert "brain_agent_memory_recall" in text
-    assert "Do not use `brain_remember` for chat/session memory" in text
-    assert "Cognee MCP server with `remember`" not in text
-    assert "Don't narrate" in text
-
-
-def test_agent_memory_protocol_prompt_defaults_to_portable_session() -> None:
-    client = TestClient(app)
-    response = client.post(
-        "/admin/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "prompts/get",
-            "params": {"name": "brain_agent_memory_protocol"},
-        },
-    )
-
-    assert response.status_code == 200
-    text = response.json()["result"]["messages"][0]["content"]["text"]
-    expected_session_id = agent_memory_session_id_for_user(mcp_server.settings)
-    assert f'Use session_id="{expected_session_id}" consistently' in text
+    assert content["uri"] == "brain://schema/entity"
+    assert json.loads(content["text"])["schema"] == "entity"
 
 
 def test_bias_protocol_prompt_can_be_inserted_with_profile_name() -> None:
@@ -1326,9 +711,14 @@ def test_bias_protocol_prompt_defaults_to_owner_name() -> None:
     assert f"for {mcp_server.settings.brain_owner_name}" in text
 
 
-def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
+def test_high_level_brain_remember_mcp_tool_returns_cognee_receipt(
+    tmp_path,
+    monkeypatch,
+) -> None:
     previous_settings = mcp_server.settings
     mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    calls = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
     try:
         client = TestClient(app)
         remember_response = client.post(
@@ -1345,42 +735,27 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
                 },
             },
         )
-        recall_response = client.post(
-            "/admin/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_recall",
-                    "arguments": {
-                        "query": "Tell me everything about Sam from Goldman",
-                        "mode": "profile",
-                    },
-                },
-            },
-        )
     finally:
         mcp_server.settings = previous_settings
 
     assert remember_response.status_code == 200
     remember_result = remember_response.json()["result"]
     remember_payload = remember_result["structuredContent"]
-    assert "Stored 1 memories" in remember_result["content"][0]["text"]
-    assert remember_payload["classification"] == "person_interaction"
-    assert remember_payload["memory_cards"][0]["kind"] == "person_interaction"
-
-    assert recall_response.status_code == 200
-    recall_result = recall_response.json()["result"]
-    recall_payload = recall_result["structuredContent"]
-    assert json.loads(recall_result["content"][1]["text"]) == recall_payload
-    assert "likes Bill Evans" in recall_payload["answer"]
-    assert recall_payload["facts"][0]["kind"] == "person_interaction"
+    assert "Stored data once in Cognee" in remember_result["content"][0]["text"]
+    assert remember_payload["classification"] == "direct_memory"
+    assert remember_payload["cognee_sync_status"] == "synced"
+    assert calls[0]["dataset_name"] == "memory"
+    assert calls[0]["text"] == "Sam from Goldman mentioned that he likes Bill Evans."
 
 
-def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
+def test_brain_ingest_source_mcp_tool_returns_cognee_receipt(
+    tmp_path,
+    monkeypatch,
+) -> None:
     previous_settings = mcp_server.settings
     mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    calls = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
     try:
         client = TestClient(app)
         ingest_response = client.post(
@@ -1400,30 +775,45 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
             },
         )
         ingest_payload = ingest_response.json()["result"]["structuredContent"]
-        source_id = ingest_payload["source_id"]
-        source_response = client.post(
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert ingest_response.status_code == 200
+    assert ingest_payload["status"] == "processed"
+    assert ingest_payload["cognee_sync_status"] == "synced"
+    assert [call["dataset_name"] for call in calls] == ["memory"]
+    assert calls[0]["text"] == "# Source\nKnowledge graphs matter for Brain."
+    assert "brain_source" not in calls[0]["node_set"]
+    assert "brain_memory" not in calls[0]["node_set"]
+
+
+def test_brain_ingest_source_mcp_rejects_input_payload(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    try:
+        client = TestClient(app)
+        response = client.post(
             "/admin/mcp",
             json={
                 "jsonrpc": "2.0",
-                "id": 2,
+                "id": 1,
                 "method": "tools/call",
                 "params": {
-                    "name": "brain_get_source",
-                    "arguments": {"source_id": source_id, "include_text": True},
+                    "name": "brain_ingest_source",
+                    "arguments": {
+                        "input": "# Source\nKnowledge graphs matter for Brain.",
+                        "input_type": "markdown",
+                    },
                 },
             },
         )
     finally:
         mcp_server.settings = previous_settings
 
-    assert ingest_response.status_code == 200
-    assert ingest_payload["memory_cards_created"]
-    assert source_response.status_code == 200
-    source_payload = source_response.json()["result"]["structuredContent"]
-    assert source_payload["source"]["id"] == source_id
-    assert source_payload["source"]["kind"] == "markdown"
-    assert source_payload["text"] == "# Source\nKnowledge graphs matter for Brain."
-    assert source_payload["source"]["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
+    assert response.status_code == 200
+    error = response.json()["error"]
+    assert error["code"] == -32000
+    assert "source" in error["message"]
 
 
 def test_brain_ingest_source_mcp_background_returns_queued(tmp_path, monkeypatch) -> None:
@@ -1466,16 +856,63 @@ def test_brain_ingest_source_mcp_background_returns_queued(tmp_path, monkeypatch
     assert response.status_code == 200
     payload = response.json()["result"]["structuredContent"]
     assert payload["status"] == "queued"
-    assert payload["source_id"] is None
-    assert payload["memory_cards_created"] == []
     assert payload["cognee_sync_status"] == "queued"
     assert submitted
     assert submitted[0].run_in_background is False
 
 
-def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
+def test_brain_ingest_source_mcp_auto_backgrounds_large_source(tmp_path, monkeypatch) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_ingest_background_auto_chars=10,
+    )
+    submitted = []
+
+    def fake_submit_background_ingest(request, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is mcp_server.settings
+        submitted.append(request)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_ingest",
+        fake_submit_background_ingest,
+    )
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/admin/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_ingest_source",
+                    "arguments": {
+                        "source": "# Source\nKnowledge graphs matter for Brain.",
+                        "source_kind": "markdown",
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["status"] == "queued"
+    assert payload["cognee_sync_status"] == "queued"
+    assert submitted
+    assert submitted[0].run_in_background is False
+
+
+def test_brain_ingest_source_rest_accepts_source_schema(tmp_path, monkeypatch) -> None:
     previous_settings = mcp_server.settings
     mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    calls = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
     try:
         client = TestClient(app)
         response = client.post(
@@ -1493,8 +930,9 @@ def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload["classification"] == "markdown"
-    assert payload["source"]["created"] is True
-    assert payload["memory_cards"][0]["kind"] == "source_record"
+    assert payload["cognee_sync_status"] == "synced"
+    assert [call["dataset_name"] for call in calls] == ["memory"]
+    assert calls[0]["text"] == "# Source\nKnowledge graphs matter for Brain."
 
 
 def test_list_datasources_http_endpoint(monkeypatch) -> None:
@@ -1575,7 +1013,7 @@ def test_low_level_legacy_mcp_tools_are_rejected() -> None:
         assert response.json()["error"]["message"] == f"Unknown tool: {name}"
 
 
-def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:
+def test_mcp_fails_closed_without_auth(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
         response = client.get("/admin/mcp")
@@ -1585,7 +1023,7 @@ def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:
     assert "oauth-protected-resource/admin/mcp" in response.headers["www-authenticate"]
 
 
-def test_auth_enabled_app_mcp_fails_closed_with_app_resource(tmp_path) -> None:
+def test_app_mcp_fails_closed_without_auth_with_app_resource(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
         response = client.get("/mcp")
@@ -1595,7 +1033,7 @@ def test_auth_enabled_app_mcp_fails_closed_with_app_resource(tmp_path) -> None:
     assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
 
 
-def test_auth_enabled_app_mcp_post_without_json_fails_closed(tmp_path) -> None:
+def test_app_mcp_post_without_json_fails_closed_without_auth(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
         response = client.post("/mcp", content=b"")
@@ -1605,7 +1043,7 @@ def test_auth_enabled_app_mcp_post_without_json_fails_closed(tmp_path) -> None:
     assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
 
 
-def test_auth_enabled_datasources_fail_closed(tmp_path) -> None:
+def test_datasources_fail_closed_without_auth(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
         response = client.get("/list_datasources")
@@ -1695,38 +1133,9 @@ def test_oauth_authorization_code_flow(tmp_path) -> None:
         assert mcp_response.json()["service"] == "Brain"
 
 
-def test_chatgpt_app_requires_write_scope_for_mutating_tools(tmp_path) -> None:
-    with oauth_settings(tmp_path):
-        client = TestClient(app, follow_redirects=False)
-        access_token = issue_test_oauth_token(client, tmp_path, scope="brain.memory.read")
-        read_response = client.post(
-            "/mcp",
-            headers={"Authorization": f"Bearer {access_token}"},
-            json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
-        )
-        write_response = client.post(
-            "/mcp",
-            headers={"Authorization": f"Bearer {access_token}"},
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_remember",
-                    "arguments": {
-                        "statement": "This should be blocked by scope.",
-                        "confirmed_by_user": True,
-                    },
-                },
-            },
-        )
-
-    assert read_response.status_code == 200
-    assert write_response.status_code == 200
-    assert "Insufficient OAuth scope" in write_response.json()["error"]["message"]
-
-
-def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
+def test_oauth_user_id_scopes_mcp_and_http_memory_data(tmp_path, monkeypatch) -> None:
+    calls = []
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
     users_file = tmp_path / "brain-users.json"
     users_file.write_text(
         json.dumps(
@@ -1774,7 +1183,6 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
                     "name": "brain_profile_context_remember",
                     "arguments": {
                         "statement": "Daniele has tenant scoped profile context.",
-                        "confirmed_by_user": True,
                     },
                 },
             },
@@ -1797,17 +1205,17 @@ def test_oauth_user_id_scopes_app_and_http_memory_data(tmp_path) -> None:
         brain_user_id="default",
         brain_profile_context_path=str(tmp_path / "profile_context.json"),
     )
-    assert "user_id" not in session_payload
-    assert "session_id" not in session_payload
-    assert "resolved_agent_memory_dataset" not in session_payload
+    assert session_payload["user_id"] == "user_b"
     assert profile_response.status_code == 200
-    assert "user_id" not in profile_response.json()["result"]["structuredContent"]
+    assert profile_response.json()["result"]["structuredContent"]["user_id"] == "user_b"
     assert http_response.status_code == 200
 
-    assert BrainStore(user_b_settings).search_memory("tenant scoped coffee")
-    assert BrainStore(user_b_settings).search_memory("tenant scoped profile context")
-    assert BrainStore(default_settings).search_memory("tenant scoped coffee") == []
-    assert BrainStore(default_settings).search_memory("tenant scoped profile context") == []
+    user_b_receipts = BrainStore(user_b_settings).list_external_receipts(action="remember")
+    default_receipts = BrainStore(default_settings).list_external_receipts(action="remember")
+    assert user_b_receipts
+    assert default_receipts == []
+    assert BrainStore(user_b_settings).list_context_records(kind="profile")
+    assert BrainStore(default_settings).list_context_records(kind="profile") == []
 
 
 def test_superuser_can_manage_auth_users_without_restart(tmp_path) -> None:
@@ -1959,7 +1367,7 @@ def test_dashboard_cookie_session_scopes_mcp_without_bearer_token(tmp_path) -> N
     assert "httponly" in login_response.headers["set-cookie"].lower()
     assert no_csrf_response.status_code == 403
     assert session_response.status_code == 200
-    assert "user_id" not in session_response.json()["result"]["structuredContent"]
+    assert session_response.json()["result"]["structuredContent"]["user_id"] == "daniele"
     assert internal_response.status_code == 403
     assert session_info.status_code == 200
     assert session_info.json()["user"]["id"] == "daniele"
@@ -2008,57 +1416,6 @@ def test_superuser_cookie_session_can_manage_users(tmp_path) -> None:
     assert create_response.status_code == 201
     assert list_response.status_code == 200
     assert {user["id"] for user in list_response.json()["users"]} == {"root", "daniele"}
-
-
-def test_chatgpt_app_write_rate_limit(tmp_path) -> None:
-    previous_settings = mcp_server.settings
-    mcp_server.settings = Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_profile_context_path=str(tmp_path / "profile_context.json"),
-        brain_app_write_rate_limit_count=1,
-        brain_app_write_rate_limit_window_seconds=60,
-    )
-    mcp_server._rate_limit_buckets.clear()
-    try:
-        client = TestClient(app)
-        first = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_remember",
-                    "arguments": {
-                        "statement": "Daniele rate limit first.",
-                        "confirmed_by_user": True,
-                    },
-                },
-            },
-        )
-        second = client.post(
-            "/mcp",
-            json={
-                "jsonrpc": "2.0",
-                "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "brain_profile_context_remember",
-                    "arguments": {
-                        "statement": "Daniele rate limit second.",
-                        "confirmed_by_user": True,
-                    },
-                },
-            },
-        )
-    finally:
-        mcp_server._rate_limit_buckets.clear()
-        mcp_server.settings = previous_settings
-
-    assert first.status_code == 200
-    assert first.json()["result"]["structuredContent"]["created"] is True
-    assert second.status_code == 200
-    assert "Rate limit exceeded" in second.json()["error"]["message"]
 
 
 def test_oauth_register_rate_limit(tmp_path, monkeypatch) -> None:
@@ -2218,7 +1575,6 @@ class oauth_settings:
             )
             overrides["brain_auth_users_file"] = str(users_file)
         settings = Settings(
-            brain_auth_enabled=True,
             brain_auth_password_file=str(password_file),
             brain_auth_state_path=str(self.tmp_path / "brain-oauth.json"),
             brain_public_base_url="https://brain.dceb.net",
@@ -2237,6 +1593,27 @@ class oauth_settings:
 def pkce_challenge(verifier: str) -> str:
     digest = hashlib.sha256(verifier.encode("ascii")).digest()
     return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+
+
+def fake_cognee(calls):
+    def remember_text(
+        text: str,
+        *,
+        dataset_name: str,
+        node_set: list[str] | None = None,
+        settings: Settings | None = None,
+    ) -> dict[str, str]:
+        del settings
+        calls.append(
+            {
+                "text": text,
+                "dataset_name": dataset_name,
+                "node_set": node_set or [],
+            }
+        )
+        return {"id": f"fake-{len(calls)}"}
+
+    return remember_text
 
 
 def issue_test_oauth_token(
