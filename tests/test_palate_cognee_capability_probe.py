@@ -2,20 +2,39 @@ from __future__ import annotations
 
 import asyncio
 import os
+from typing import Any
 
 import pytest
+from pydantic import BaseModel, Field
 
 from memory_stack.cognee.palate_capability_probe import (
     InMemoryPalateProbeAdapter,
     PRODUCTION_DATASET_NAMES,
     SAFE_DATASET_PREFIX,
+    WineDataPoint,
     build_probe_dataset_name,
     render_markdown_report,
     run_palate_cognee_capability_probe,
     validate_probe_dataset_name,
+    _to_live_datapoint,
 )
 from memory_stack.cfg import Settings
 from memory_stack.taste import restaurants
+
+
+class FakeCogneeDataPoint(BaseModel):
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+def test_probe_live_datapoint_overrides_metadata_with_annotation() -> None:
+    point = WineDataPoint(id="wine_probe", canonical_name="Probe Rioja")
+
+    live_point = _to_live_datapoint(FakeCogneeDataPoint, point, "palate_probe_unit")
+
+    assert live_point.metadata == {
+        "index_fields": ["canonical_name", "notes", "attributes_summary", "signals_summary"]
+    }
+    assert live_point.external_id == "wine_probe"
 
 
 def test_probe_report_contract_and_ranking_policy() -> None:

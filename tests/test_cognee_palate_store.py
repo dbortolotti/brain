@@ -2,14 +2,40 @@ from __future__ import annotations
 
 from typing import Any
 
+from pydantic import BaseModel, Field
 from sqlalchemy import inspect
 
 from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
-from memory_stack.taste.cognee_store import CogneePalateStore, InMemoryPalateCogneeAdapter
+from memory_stack.taste.cognee_store import (
+    CogneePalateStore,
+    InMemoryPalateCogneeAdapter,
+    PalateItemDataPoint,
+    _to_live_datapoint,
+)
 from memory_stack.taste.models import TasteQueryRequest, TasteRefreshRequest, TasteRememberRequest
 from memory_stack.taste.ranking import rank_candidates, retrieve_candidates
 from memory_stack.taste.service import TasteService
+
+
+class FakeCogneeDataPoint(BaseModel):
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+def test_live_palate_datapoint_overrides_metadata_with_annotation() -> None:
+    point = PalateItemDataPoint(
+        id="item_1",
+        type="wine",
+        canonical_name="Annotated Rioja",
+        normalized_name="annotated rioja",
+    )
+
+    live_point = _to_live_datapoint(FakeCogneeDataPoint, point, "palate_test")
+
+    assert live_point.metadata == {
+        "index_fields": ["canonical_name", "notes", "attributes_summary", "signals_summary"]
+    }
+    assert live_point.external_id == "item_1"
 
 
 def test_cognee_palate_store_keeps_structured_items_and_decision_feedback(tmp_path) -> None:

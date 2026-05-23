@@ -800,13 +800,16 @@ def _uuid_for_external_id(external_id: str) -> UUID:
 
 def _to_live_datapoint(datapoint_base: Any, point: ProbePoint, dataset_name: str) -> Any:
     fields = _live_fields(point, dataset_name)
+    annotations = {key: type(value) if value is not None else Any for key, value in fields.items()}
+    annotations["metadata"] = getattr(datapoint_base, "__annotations__", {}).get("metadata", dict[str, Any])
     class_name = point.__class__.__name__
     live_class = type(
         class_name,
         (datapoint_base,),
         {
-            "__annotations__": {key: type(value) if value is not None else Any for key, value in fields.items()},
-            "metadata": {"index_fields": ["canonical_name", "notes"]},
+            "__module__": __name__,
+            "__annotations__": annotations,
+            "metadata": {"index_fields": ["canonical_name", "notes", "attributes_summary", "signals_summary"]},
         },
     )
     return live_class(**fields)
