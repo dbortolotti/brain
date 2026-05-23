@@ -397,6 +397,9 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert 'POSTGRES_CONTAINER_UID="${BRAIN_POSTGRES_CONTAINER_UID:-999}"' in script
     assert 'NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_UID:-7474}"' in script
     assert "resolve_docker_runtime_user" in script
+    assert "resolve_neo4j_data_owner" in script
+    assert 'NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_USER%%:*}"' in script
+    assert 'NEO4J_CONTAINER_GID="${BRAIN_NEO4J_CONTAINER_USER##*:}"' in script
     assert (
         'BRAIN_NEO4J_CONTAINER_USER="$(id -u "$BRAIN_DOCKER_HOST_USER"):$(id -g "$BRAIN_DOCKER_HOST_USER")"'
         in script

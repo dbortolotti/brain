@@ -262,12 +262,24 @@ EOF
 
 resolve_docker_runtime_user() {
   if [[ -n "$BRAIN_NEO4J_CONTAINER_USER" ]]; then
+    resolve_neo4j_data_owner
     return
   fi
   if [[ -n "$BRAIN_DOCKER_HOST_USER" ]] && id -u "$BRAIN_DOCKER_HOST_USER" >/dev/null 2>&1; then
     BRAIN_NEO4J_CONTAINER_USER="$(id -u "$BRAIN_DOCKER_HOST_USER"):$(id -g "$BRAIN_DOCKER_HOST_USER")"
   else
     BRAIN_NEO4J_CONTAINER_USER="$NEO4J_CONTAINER_UID:$NEO4J_CONTAINER_GID"
+  fi
+  resolve_neo4j_data_owner
+}
+
+resolve_neo4j_data_owner() {
+  if [[ "$BRAIN_NEO4J_CONTAINER_USER" == *:* ]]; then
+    NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_USER%%:*}"
+    NEO4J_CONTAINER_GID="${BRAIN_NEO4J_CONTAINER_USER##*:}"
+  elif [[ "$BRAIN_NEO4J_CONTAINER_USER" =~ ^[0-9]+$ ]]; then
+    NEO4J_CONTAINER_UID="$BRAIN_NEO4J_CONTAINER_USER"
+    NEO4J_CONTAINER_GID="$BRAIN_NEO4J_CONTAINER_USER"
   fi
 }
 
