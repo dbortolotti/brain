@@ -608,6 +608,10 @@ def test_production_verifier_checks_brain_database_under_approved_runtime_roots(
 
     assert 'local_support_root = Path(f"/var/db/brain-{settings.brain_release_env}")' in verifier
     assert "local_or_shared_paths = {" in verifier
+    assert "local Brain dashboard" not in verifier
+    assert "local Brain UI health" in verifier
+    assert "settings.brain_ui_proxy_port" in verifier
+    assert 'ui_health_payload.get("service") != "Brain UI"' in verifier
     assert '"BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url)' in verifier
     assert "SYSTEM_ROOT_DIRECTORY" in verifier
     assert "DATA_ROOT_DIRECTORY" in verifier

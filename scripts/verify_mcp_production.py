@@ -55,11 +55,15 @@ def main() -> int:
         expect_json_service=True,
     )
     check_health_release(health_payload, settings, failures)
-    check_http(
-        f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}/",
-        "local Brain dashboard",
-        failures,
-    )
+    if settings.brain_ui_enabled:
+        ui_health_payload = check_http_json(
+            f"http://{settings.brain_ui_host}:{settings.brain_ui_proxy_port}/healthz",
+            "local Brain UI health",
+            failures,
+        )
+        if ui_health_payload and ui_health_payload.get("service") != "Brain UI":
+            failures.append(f"local Brain UI health service is not Brain UI: {ui_health_payload}")
+        check_health_release(ui_health_payload, settings, failures)
     check_mcp(settings, failures)
     check_app_mcp(settings, failures)
     check_oauth_metadata(settings, failures)
