@@ -189,6 +189,10 @@ def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
     assert "${BRAIN_POSTGRES_CONTAINER:-brain-prod-postgres}" in compose
     assert "pgvector/pgvector:pg16" in compose
     assert "127.0.0.1:${DB_PORT:-15432}:5432" in compose
+    assert (
+        "${BRAIN_DOCKER_ROOT:-/Volumes/xpg_usb4/prod/brain/shared/docker}/postgres/data:"
+        "/var/lib/postgresql/data"
+    ) in compose
     assert "./postgres/initdb:/docker-entrypoint-initdb.d:ro" in compose
     assert "CREATE EXTENSION IF NOT EXISTS vector" in Path(
         "deployment/postgres/initdb/001-vector.sql"
@@ -198,6 +202,10 @@ def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
     assert 'user: "${BRAIN_NEO4J_CONTAINER_USER:-7474:7474}"' in compose
     assert "127.0.0.1:${BRAIN_NEO4J_HTTP_PORT:-17474}:7474" in compose
     assert "127.0.0.1:${BRAIN_NEO4J_BOLT_PORT:-17687}:7687" in compose
+    assert (
+        "${BRAIN_DOCKER_ROOT:-/Volumes/xpg_usb4/prod/brain/shared/docker}/neo4j/data:/data"
+        in compose
+    )
 
 
 def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
@@ -263,6 +271,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert "apply_runtime_permissions bootstrap" in script
     assert "apply_runtime_permissions final" in script
     assert 'LOCAL_SUPPORT_DIR="/var/db/brain-$ENV_SUFFIX"' in script
+    assert 'DOCKER_DIR="${BRAIN_DOCKER_ROOT:-$LOCAL_SUPPORT_DIR/docker}"' in script
     assert 'LOCAL_SYSTEM_DIR="$LOCAL_SUPPORT_DIR/system"' in script
     assert 'LOCAL_DATA_DIR="$LOCAL_SUPPORT_DIR/data"' in script
     assert 'LOCAL_UI_CACHE_DIR="$LOCAL_SUPPORT_DIR/ui-cache"' in script
@@ -383,6 +392,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
         in script
     )
     assert 'cd "$LOCAL_DEPLOYMENT_DIR"' in script
+    assert 'BRAIN_DOCKER_ROOT="$DOCKER_DIR"' in script
     assert "BRAIN_DOCKER_HOST_USER=" in script
     assert 'POSTGRES_CONTAINER_UID="${BRAIN_POSTGRES_CONTAINER_UID:-999}"' in script
     assert 'NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_UID:-7474}"' in script
@@ -415,6 +425,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert 'set_env_var "DB_PROVIDER" "postgres"' in script
     assert 'set_env_var "DB_PORT" "$DB_PORT"' in script
     assert 'set_env_var "BRAIN_DOCKER_PROJECT" "$BRAIN_DOCKER_PROJECT"' in script
+    assert 'set_env_var "BRAIN_DOCKER_ROOT" "$DOCKER_DIR"' in script
     assert 'set_env_var "BRAIN_DOCKER_HOST_USER" "$BRAIN_DOCKER_HOST_USER"' in script
     assert 'set_env_var "BRAIN_POSTGRES_CONTAINER" "$BRAIN_POSTGRES_CONTAINER"' in script
     assert 'set_env_var "BRAIN_NEO4J_CONTAINER" "$BRAIN_NEO4J_CONTAINER"' in script
@@ -503,6 +514,8 @@ def test_launchd_wrappers_wait_for_databases_and_start_containers() -> None:
     assert 'DOCKER_BIN="$(command -v "$candidate")"' in database_script
     assert '"$DOCKER_BIN" info' in database_script
     assert "export BRAIN_DOCKER_PROJECT" in database_script
+    assert 'BRAIN_DOCKER_ROOT="${BRAIN_DOCKER_ROOT:-$LOCAL_SUPPORT_DIR/docker}"' in database_script
+    assert "export BRAIN_DOCKER_ROOT" in database_script
     assert 'log "using Docker binary: $DOCKER_BIN"' in database_script
     assert "$LOCAL_SUPPORT_DIR/deployment/docker-compose.prod.yml" in database_script
     assert "/opt/homebrew/bin/docker-compose" in database_script

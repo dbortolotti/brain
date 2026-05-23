@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: "${DB_USERNAME:-cognee}"
       POSTGRES_PASSWORD: "${DB_PASSWORD:-cognee}"
     volumes:
-      - "${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}/shared/docker/postgres/data:/var/lib/postgresql/data"
+      - "${BRAIN_DOCKER_ROOT:-/Volumes/xpg_usb4/prod/brain/shared/docker}/postgres/data:/var/lib/postgresql/data"
       - "./postgres/initdb:/docker-entrypoint-initdb.d:ro"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-cognee} -d ${DB_NAME:-cognee_db}"]
@@ -37,4 +37,4 @@ services:
       NEO4J_server_memory_heap_max__size: "2G"
       NEO4J_server_memory_pagecache_size: "1G"
     volumes:
-      - "${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}/shared/docker/neo4j/data:/data"
+      - "${BRAIN_DOCKER_ROOT:-/Volumes/xpg_usb4/prod/brain/shared/docker}/neo4j/data:/data"
