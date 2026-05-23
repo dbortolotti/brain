@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import func, inspect, select
+from sqlalchemy import inspect
 
-from memory_stack import brain_schema as schema
 from memory_stack import brain_service
 from memory_stack.brain_models import IngestSourceRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, remember
@@ -38,7 +37,7 @@ def test_ingest_source_request_writes_raw_source_text_to_cognee(
 
     source_text = "# AI Memory\nAI memory systems need durable source evidence."
 
-    receipt = ingest_source(
+    ingest_source(
         IngestSourceRequest(
             source=source_text,
             source_kind="markdown",

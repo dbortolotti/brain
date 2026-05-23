@@ -1159,7 +1159,6 @@ def taste_result_to_ingestion_receipt(
             dry_run=bool(taste_result.get("dry_run")),
             taste=taste_result,
         )
-    projection = taste_result.get("brain_projection") or {}
     records = taste_result.get("taste_records") or []
     entity_receipts: list[EntityReceipt] = []
     for record in records:

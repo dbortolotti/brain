@@ -5,7 +5,6 @@ from typing import Any
 
 from sqlalchemy import inspect
 
-from memory_stack import brain_schema as schema
 from memory_stack import brain_service
 from memory_stack.brain_models import RememberRequest
 from memory_stack.brain_service import (

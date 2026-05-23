@@ -349,11 +349,11 @@ def check_mcp_get(
     request = urllib.request.Request(url, method="GET")
     try:
         with urllib.request.urlopen(request, timeout=5) as response:
-            body = response.read().decode("utf-8", errors="replace")
+            response.read()
             status = response.status
             headers = {key.lower(): value for key, value in response.headers.items()}
     except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")
+        exc.read()
         status = exc.code
         headers = {key.lower(): value for key, value in exc.headers.items()}
     except Exception as exc:
