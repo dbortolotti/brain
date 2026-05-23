@@ -400,10 +400,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert "resolve_neo4j_data_owner" in script
     assert 'NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_USER%%:*}"' in script
     assert 'NEO4J_CONTAINER_GID="${BRAIN_NEO4J_CONTAINER_USER##*:}"' in script
-    assert (
-        'BRAIN_NEO4J_CONTAINER_USER="$(id -u "$BRAIN_DOCKER_HOST_USER"):$(id -g "$BRAIN_DOCKER_HOST_USER")"'
-        in script
-    )
+    assert 'BRAIN_NEO4J_CONTAINER_USER="0:0"' in script
     assert 'BRAIN_NEO4J_CONTAINER_USER="$BRAIN_NEO4J_CONTAINER_USER"' in script
     assert "prepare_container_bind_mounts" in script
     assert (

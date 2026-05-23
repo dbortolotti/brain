@@ -149,7 +149,7 @@ Environment:
   BRAIN_DEPLOY_ENV             prod, staging, or qa (default: prod)
   BRAIN_SERVICE_USER           macOS service user (default: $DEFAULT_SERVICE_USER)
   BRAIN_DOCKER_HOST_USER       macOS user running Docker Desktop (default: $BRAIN_DOCKER_HOST_USER)
-  BRAIN_NEO4J_CONTAINER_USER   uid:gid for Neo4j Docker process (default: Docker host user)
+  BRAIN_NEO4J_CONTAINER_USER   uid:gid for Neo4j Docker process (default: 0:0)
   BRAIN_DEPLOY_PYTHON          Python version uv should install/use (default: $BRAIN_DEPLOY_PYTHON)
   BRAIN_REFRESH_RELEASE        refresh an existing release directory (default: $BRAIN_REFRESH_RELEASE)
 
@@ -265,11 +265,7 @@ resolve_docker_runtime_user() {
     resolve_neo4j_data_owner
     return
   fi
-  if [[ -n "$BRAIN_DOCKER_HOST_USER" ]] && id -u "$BRAIN_DOCKER_HOST_USER" >/dev/null 2>&1; then
-    BRAIN_NEO4J_CONTAINER_USER="$(id -u "$BRAIN_DOCKER_HOST_USER"):$(id -g "$BRAIN_DOCKER_HOST_USER")"
-  else
-    BRAIN_NEO4J_CONTAINER_USER="$NEO4J_CONTAINER_UID:$NEO4J_CONTAINER_GID"
-  fi
+  BRAIN_NEO4J_CONTAINER_USER="0:0"
   resolve_neo4j_data_owner
 }
 
