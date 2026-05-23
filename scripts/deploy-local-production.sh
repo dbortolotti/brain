@@ -315,7 +315,7 @@ container_bind_mount_permissions_need_repair() {
 
 stop_data_containers_for_permission_repair() {
   (
-    cd "$RELEASE_DIR"
+    cd "$LOCAL_DEPLOYMENT_DIR"
     GRAPH_DATABASE_PASSWORD="${GRAPH_DATABASE_PASSWORD:-change-me}" \
       DB_NAME="${DB_NAME:-cognee_db}" \
       DB_USERNAME="${DB_USERNAME:-cognee}" \
@@ -328,7 +328,7 @@ stop_data_containers_for_permission_repair() {
       BRAIN_NEO4J_CONTAINER_USER="$BRAIN_NEO4J_CONTAINER_USER" \
       BRAIN_NEO4J_HTTP_PORT="$BRAIN_NEO4J_HTTP_PORT" \
       BRAIN_NEO4J_BOLT_PORT="$BRAIN_NEO4J_BOLT_PORT" \
-      docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml stop postgres neo4j >/dev/null 2>&1 || true
+      docker compose -p "$BRAIN_DOCKER_PROJECT" -f docker-compose.prod.yml stop postgres neo4j >/dev/null 2>&1 || true
   )
 }
 
@@ -1185,7 +1185,7 @@ prepare_container_bind_mounts
 
 log "starting $DEPLOY_ENV Postgres/pgvector and Neo4j containers"
 (
-  cd "$RELEASE_DIR"
+  cd "$LOCAL_DEPLOYMENT_DIR"
   GRAPH_DATABASE_PASSWORD="$GRAPH_DATABASE_PASSWORD" \
     DB_NAME="${DB_NAME:-cognee_db}" \
     DB_USERNAME="${DB_USERNAME:-cognee}" \
@@ -1198,7 +1198,7 @@ log "starting $DEPLOY_ENV Postgres/pgvector and Neo4j containers"
     BRAIN_NEO4J_CONTAINER_USER="$BRAIN_NEO4J_CONTAINER_USER" \
     BRAIN_NEO4J_HTTP_PORT="$BRAIN_NEO4J_HTTP_PORT" \
     BRAIN_NEO4J_BOLT_PORT="$BRAIN_NEO4J_BOLT_PORT" \
-    docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml up -d postgres neo4j
+    docker compose -p "$BRAIN_DOCKER_PROJECT" -f docker-compose.prod.yml up -d postgres neo4j
 )
 wait_for_tcp "127.0.0.1" "${DB_PORT:-$DEFAULT_DB_PORT}" "$DEPLOY_ENV Postgres"
 wait_for_tcp "127.0.0.1" "$BRAIN_NEO4J_BOLT_PORT" "$DEPLOY_ENV Neo4j Bolt"

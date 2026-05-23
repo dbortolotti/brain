@@ -379,9 +379,10 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script
     assert 'ensure_env_var "BRAIN_TASTE_IMPORT_SOURCE_PATH"' not in script
     assert (
-        'docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml up -d postgres neo4j'
+        'docker compose -p "$BRAIN_DOCKER_PROJECT" -f docker-compose.prod.yml up -d postgres neo4j'
         in script
     )
+    assert 'cd "$LOCAL_DEPLOYMENT_DIR"' in script
     assert "BRAIN_DOCKER_HOST_USER=" in script
     assert 'POSTGRES_CONTAINER_UID="${BRAIN_POSTGRES_CONTAINER_UID:-999}"' in script
     assert 'NEO4J_CONTAINER_UID="${BRAIN_NEO4J_CONTAINER_UID:-7474}"' in script
@@ -393,7 +394,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert 'BRAIN_NEO4J_CONTAINER_USER="$BRAIN_NEO4J_CONTAINER_USER"' in script
     assert "prepare_container_bind_mounts" in script
     assert (
-        'docker compose -p "$BRAIN_DOCKER_PROJECT" -f deployment/docker-compose.prod.yml stop postgres neo4j'
+        'docker compose -p "$BRAIN_DOCKER_PROJECT" -f docker-compose.prod.yml stop postgres neo4j'
         in script
     )
     assert (
