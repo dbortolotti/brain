@@ -1,4 +1,4 @@
-.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm llm-docs model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production prod-check ui-prod-check backup maintenance cloudflare-verify test lint
+.PHONY: setup up down check docs-generate docs-check docs-hash docs-llm llm-docs model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production deploy-cloud-production prod-check ui-prod-check public-check backup maintenance test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_active.json
 MODEL_SMOKE_ARGS ?=
@@ -67,11 +67,20 @@ ui-proxy:
 deploy-local-production:
 	./scripts/deploy-local-production.sh
 
+deploy-cloud-production:
+	./scripts/deploy-cloud-production.sh
+
 prod-check:
 	uv run python scripts/verify_mcp_production.py
 
 ui-prod-check:
 	uv run python scripts/verify_cognee_ui_production.py
+
+public-check:
+	curl -fsS https://brain.dceb.net/healthz
+	curl -fsS https://brain.dceb.net/privacy >/dev/null
+	curl -fsS https://brain.dceb.net/terms >/dev/null
+	curl -fsS https://brain.dceb.net/support >/dev/null
 
 backup:
 	uv run python scripts/backup_stores.py

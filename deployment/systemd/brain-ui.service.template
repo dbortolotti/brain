@@ -1,0 +1,41 @@
+[Unit]
+Description=Brain Cognee UI proxy service
+After=network-online.target docker.service brain-mcp.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=brain
+Group=brain
+WorkingDirectory=/opt/brain/current
+EnvironmentFile=/etc/brain/brain.env
+Environment=ENV_FILE=/etc/brain/brain.env
+Environment=HOME=/var/lib/brain
+Environment=XDG_CACHE_HOME=/var/lib/brain/cache
+Environment=UV_CACHE_DIR=/var/lib/brain/uv-cache
+Environment=UV_PYTHON_INSTALL_DIR=/var/lib/brain/python
+Environment=UV_PROJECT_ENVIRONMENT=/var/lib/brain/current-venv
+Environment=UV_LINK_MODE=copy
+Environment=BRAIN_CONFIG_DIR=/var/lib/brain/cfg
+Environment=BRAIN_PROVIDER_AUTH_PROFILES_PATH=/etc/brain/provider-auth-profiles.json
+Environment=BRAIN_PROVIDER_AUTH_STATE_DIR=/etc/brain/provider-auth-state
+Environment=BRAIN_AUTH_PASSWORD_FILE=/etc/brain/brain-auth-password
+Environment=BRAIN_AUTH_USERS_FILE=/etc/brain/brain-auth-users.json
+Environment=BRAIN_AUTH_STATE_PATH=/etc/brain/brain-oauth.json
+Environment=SYSTEM_ROOT_DIRECTORY=/var/lib/brain/system
+Environment=DATA_ROOT_DIRECTORY=/var/lib/brain/data
+Environment=BRAIN_REQUEST_LOG_PATH=/var/log/brain/requests/{date}.jsonl
+Environment=BRAIN_ROUTING_LOG_PATH=/var/log/brain/routing/{date}.jsonl
+Environment=BRAIN_UI_CACHE_DIR=/var/lib/brain/ui-cache
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/brain/current/scripts/run-cognee-ui-production.sh
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/etc/brain /var/lib/brain /var/log/brain
+
+[Install]
+WantedBy=multi-user.target

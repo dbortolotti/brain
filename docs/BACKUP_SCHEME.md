@@ -27,7 +27,7 @@ Brain DB remains the authoritative memory store. Cognee, pgvector/LanceDB, and N
 Local defaults come from `.env.example`; deployed defaults are rendered by the production deployment scripts and checked-in environment configs.
 
 ```env
-BRAIN_BACKUP_DIR=/Volumes/xpg_usb4/prod/brain/shared/backups
+BRAIN_BACKUP_DIR=/var/lib/brain/backups
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true
 BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
 BRAIN_GOOGLE_DRIVE_LOCAL_PATH=
@@ -61,30 +61,30 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Local prod, staging, and QA deploys install a daily system LaunchDaemon from `deployment/launchd/com.brain.maintenance.plist.template`. The rendered production label is `com.brain.prod.maintenance` and runs as `oric_prod`; staging renders as `com.brain.staging.maintenance` and runs as `oric_staging`; QA renders as `com.brain.qa.maintenance` and runs as `oric`. The maintenance job runs `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`.
+Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`. Local staging and QA deploys still install daily system LaunchDaemons from `deployment/launchd/com.brain.maintenance.plist.template`.
 
 Run the backup script directly with the configured environment:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py
+ENV_FILE=/etc/brain/brain.env uv run python scripts/backup_stores.py
 ```
 
 Override the backup root for a one-off run:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --backup-dir /Volumes/xpg_usb4/prod/brain/shared/backups/manual
+ENV_FILE=/etc/brain/brain.env uv run python scripts/backup_stores.py --backup-dir /var/lib/brain/backups/manual
 ```
 
 Override the shared data root:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --data-dir /Volumes/xpg_usb4/prod/brain/shared/data
+ENV_FILE=/etc/brain/brain.env uv run python scripts/backup_stores.py --data-dir /var/lib/brain/data
 ```
 
 Skip Google Drive replication for a local test:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/backup_stores.py --skip-google-drive
+ENV_FILE=/etc/brain/brain.env uv run python scripts/backup_stores.py --skip-google-drive
 ```
 
 If `--skip-google-drive` is used while Google Drive backup is enabled, the manifest records that replication as skipped instead of verified.
@@ -96,10 +96,10 @@ Every backup writes `manifest.json` with this shape:
 ```json
 {
   "timestamp": "20260510_120000",
-  "backup_dir": "/Volumes/xpg_usb4/prod/brain/shared/backups/20260510_120000",
-  "data_root": "/Volumes/xpg_usb4/prod/brain/shared/data",
-  "data_roots": ["/Volumes/xpg_usb4/prod/brain/shared/data", "/Volumes/xpg_usb4/prod/brain/shared/data/data"],
-  "sqlite_roots": ["/Volumes/xpg_usb4/prod/brain/shared/data", "/Volumes/xpg_usb4/prod/brain/shared/data/data", "/Volumes/xpg_usb4/prod/brain/shared/data/system"],
+  "backup_dir": "/var/lib/brain/backups/20260510_120000",
+  "data_root": "/var/lib/brain/data",
+  "data_roots": ["/var/lib/brain/data"],
+  "sqlite_roots": ["/var/lib/brain/data", "/var/lib/brain/system"],
   "sqlite": [],
   "lancedb": [],
   "pgvector": [],
@@ -134,8 +134,8 @@ Manifest entries look like:
 
 ```json
 {
-  "source": "/Volumes/xpg_usb4/prod/brain/shared/data/system/databases/cognee_db",
-  "backup": "/Volumes/xpg_usb4/prod/brain/shared/backups/20260510_120000/sqlite/system__databases__cognee_db",
+  "source": "/var/lib/brain/system/databases/cognee_db",
+  "backup": "/var/lib/brain/backups/20260510_120000/sqlite/system__databases__cognee_db",
   "integrity_check": "ok"
 }
 ```
@@ -309,13 +309,13 @@ It fails when:
 Run:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
+ENV_FILE=/etc/brain/brain.env make prod-check
 ```
 
 Use this only when intentionally skipping backup validation:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_mcp_production.py --skip-backups
+ENV_FILE=/etc/brain/brain.env uv run python scripts/verify_mcp_production.py --skip-backups
 ```
 
 ## Restore Outline
@@ -323,17 +323,17 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scr
 Stop Brain services before restoring:
 
 ```bash
-sudo launchctl bootout system /Library/LaunchDaemons/com.brain.prod.mcp.plist
-sudo launchctl bootout system /Library/LaunchDaemons/com.brain.prod.slack-agent.plist
-sudo launchctl bootout system /Library/LaunchDaemons/com.brain.prod.ui.plist
+sudo systemctl stop brain-ui.service
+sudo systemctl stop brain-mcp.service
 ```
 
 Restore secrets:
 
 ```bash
-mkdir -p /Volumes/xpg_usb4/prod/brain/shared/secrets
-tar -xzf BACKUP_DIR/secrets/secrets.tar.gz -C /Volumes/xpg_usb4/prod/brain/shared/secrets
-chmod 600 /Volumes/xpg_usb4/prod/brain/shared/secrets/*
+sudo mkdir -p /etc/brain
+sudo tar -xzf BACKUP_DIR/secrets/secrets.tar.gz -C /etc/brain
+sudo chown -R brain:brain /etc/brain
+sudo chmod 600 /etc/brain/*
 ```
 
 Restore SQLite databases by copying the selected files from `sqlite/` back to their manifest `source` paths.
@@ -354,7 +354,7 @@ neo4j-admin database load neo4j --from-path=BACKUP_DIR/neo4j --overwrite-destina
 After restoring, restart services and run:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
+ENV_FILE=/etc/brain/brain.env make prod-check
 ```
 
 ## Operating Rules
@@ -367,4 +367,4 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: dfb1dc00d4698c5fc006343b41fd9017a31b726f263615c148acad256f6745e5 -->
+<!-- brain-doc-source-hash: 98e6806aadf204587b85f1a950a1788cc9637422102414b53c1bf231e33a1881 -->

@@ -6,11 +6,58 @@ The QA, staging, production, and release workflows run on the self-hosted `brain
 - `qa`: pushes and merges to `main` deploy through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`.
   QA runs as `oric`, uses read-only repository permissions, and records a `qa-<12-char-sha>` build version. `workflow_dispatch` on QA supports `force_config_override`; it has no version input.
 - `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or prerelease tag such as `vX.Y.Z-rc.1`, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag at the staged SHA.
-- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
+- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux service user `brain`.
 
-The QA, staging, production, and release workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa`, `staging`, or `prod`.
+The QA and staging workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`.
 
-The rendered config and deploy steps run with passwordless `sudo` on the local self-hosted runner. Prod is owned and run by `oric_prod`; staging is owned and run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh` creates the hidden staging and prod service users on a new Mac. Deploys install system LaunchDaemons in `/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot and wait for `/Volumes/xpg_usb4/{qa|staging|prod}/brain/current` before launching. Each LaunchDaemon uses `SessionCreate` with its service user and starts from `/var/db/brain-{prod|staging|qa}`. LaunchDaemons execute the per-release Python environment from `/var/db/brain-{prod|staging|qa}/current-venv` and read a local runtime copy of `brain.env` from `/var/db/brain-{prod|staging|qa}/secrets`; they also load config from `/var/db/brain-{prod|staging|qa}/cfg` via `BRAIN_CONFIG_DIR`. Deploys install `memory-stack` into that venv non-editably so launchd does not have to import project code or config through an external-volume `.pth` file. Release, data, backup, and log paths are world-readable and writable only by the runtime user; `shared/secrets` remains owner-only. Normal deploys update ownership incrementally; set `BRAIN_FULL_CHOWN=1` for a first migration or repair when the entire prod/staging/QA tree needs to be reclaimed by the service user. Local non-GitHub QA and staging deploys refresh an existing release directory for the same commit SHA from the working tree so migration iterations can exercise uncommitted changes; GitHub Actions and prod deploys keep release directories immutable unless `BRAIN_REFRESH_RELEASE=1` is explicitly supplied.
+The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That script packages the checkout, uploads it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server.
+
+The rendered config and QA/staging deploy steps run with passwordless `sudo` on the local self-hosted runner. Staging is owned and run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh` creates the hidden staging service user on a new Mac. QA and staging deploys install system LaunchDaemons in `/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot and wait for `/Volumes/xpg_usb4/{qa|staging}/brain/current` before launching. Each LaunchDaemon uses `SessionCreate` with its service user and starts from `/var/db/brain-{staging|qa}`.
+
+Cloud production uses standard Linux paths and systemd:
+
+```text
+/opt/brain/current -> /opt/brain/releases/<commit-sha>
+/opt/brain/shared/release.json
+/etc/brain/brain.env
+/etc/brain/brain-auth-password
+/etc/brain/brain-auth-users.json
+/var/lib/brain/data
+/var/lib/brain/backups
+/var/lib/brain/venvs/<commit-sha>
+/var/lib/brain/current-venv -> /var/lib/brain/venvs/<commit-sha>
+/var/lib/brain/docker
+/var/log/brain
+/etc/caddy/conf.d/brain.caddy
+/etc/systemd/system/brain-mcp.service
+/etc/systemd/system/brain-ui.service
+/etc/systemd/system/brain-maintenance.service
+/etc/systemd/system/brain-maintenance.timer
+```
+
+The Linux installer creates the `brain` service user when missing, installs required Debian packages and `uv` when missing, starts Postgres/pgvector and Neo4j with Docker Compose, runs Alembic migrations, installs systemd units, installs Caddy routing for `brain.dceb.net`, and restarts `brain-mcp.service` and `brain-ui.service`.
+
+Production public HTTPS uses direct DNS and Caddy, not Cloudflare Tunnel:
+
+```text
+brain.dceb.net.  A  159.195.79.79
+```
+
+Keep the Cloudflare record DNS-only while Caddy manages the origin certificate
+directly. The production hostname is intentionally absent from
+`deployment/cloudflare/config.example.yml`; that tunnel template remains only
+for QA/staging local routes.
+
+Direct operator deploys use:
+
+```bash
+scripts/deploy-cloud-production.sh \
+  --rendered-env /path/to/brain.env \
+  --rendered-auth-password /path/to/brain-auth-password
+```
+
+The deploy will refuse to start Neo4j if `GRAPH_DATABASE_PASSWORD` is empty,
+`change-me`, or `replace-me`.
 
 The staging and release workflow-dispatch `version` inputs are required. QA has no version input and derives its build version from the pushed commit SHA. `force_config_override` is available only on workflow-dispatch runs for QA, staging, and release. It defaults to `false`. Push-based QA deploys do not use it.
 
@@ -19,8 +66,10 @@ The staging and release workflow-dispatch `version` inputs are required. QA has 
 Every deploy writes runtime release metadata into:
 
 ```text
-/Volumes/xpg_usb4/{qa|staging|prod}/brain/current/release.json
-/Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/release.json
+/Volumes/xpg_usb4/{qa|staging}/brain/current/release.json
+/Volumes/xpg_usb4/{qa|staging}/brain/shared/release.json
+/opt/brain/current/release.json
+/opt/brain/shared/release.json
 ```
 
 The release metadata records the app name, environment, version, SHA, release directory, `deployed_at`, and source. The source is `github-actions` for workflow runs and `local` for local runs.
@@ -55,8 +104,8 @@ The renderer compares three files:
 
 ```text
 proposed: newly rendered GitHub Secrets/Vars config
-live:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env
-base:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env.last-deployed
+live:     /Volumes/xpg_usb4/{qa|staging}/brain/shared/secrets/brain.env or /etc/brain/brain.env
+base:     /Volumes/xpg_usb4/{qa|staging}/brain/shared/secrets/brain.env.last-deployed or the rendered production baseline
 ```
 
 For each non-metadata key:
@@ -357,4 +406,4 @@ Before moving secrets into GitHub, keep a local gitignored backup under `local-s
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 4d92016285d25108e401779210e9e08a8533b628a95f4ec95da0749f130c8864 -->
+<!-- brain-doc-source-hash: 610c33f2161345d64889639b10abf941786d2cd64e10c4f59657b494b1793e2b -->

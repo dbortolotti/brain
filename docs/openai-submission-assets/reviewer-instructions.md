@@ -15,7 +15,7 @@ Use the non-admin reviewer account:
 
 - User id: `brain_verifier`
 - Password: paste from
-  `/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password`
+  `/etc/brain/brain-auth-verifier-password`
 
 The reviewer account is intentionally non-admin. It can read and write only its
 own Brain data. It cannot access system administration, raw Cognee operations,
@@ -59,4 +59,4 @@ hard deletes, backup controls, or other users' data.
 - Staging workflow: `https://github.com/dbortolotti/brain/actions/runs/26003993400`
 - Release workflow: `https://github.com/dbortolotti/brain/actions/runs/26004028449`
 - Production local verifier: passed.
-- Production public Cloudflare/MCP verifier: passed.
+- Production public direct-DNS/MCP verifier: passed.

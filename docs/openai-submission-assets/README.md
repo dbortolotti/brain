@@ -35,7 +35,7 @@ Use the public MP4 recording for the submission demo:
 Use the dedicated non-admin verifier account:
 
 - User id: `brain_verifier`
-- Password file: `/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password`
+- Password file: `/etc/brain/brain-auth-verifier-password`
 
 Do not commit the password value. Paste it only into the OpenAI submission
 portal reviewer-credentials field.
@@ -55,13 +55,10 @@ portal reviewer-credentials field.
 ## Verification Commands
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
+ENV_FILE=/etc/brain/brain.env \
   uv run python scripts/verify_mcp_production.py
 
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
-BRAIN_VERIFIER_USER_ID=brain_verifier \
-BRAIN_VERIFIER_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password \
-  uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared
+make public-check
 ```
 
 Run both checks after the production promotion used for submission and record

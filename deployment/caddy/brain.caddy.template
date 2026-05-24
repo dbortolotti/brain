@@ -1,0 +1,43 @@
+brain.159.195.79.79.nip.io, brain.dceb.net {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/brain-access.log
+		format json
+	}
+
+	@brain_ui {
+		path /cognee*
+		path /cognee-api*
+		path /cognee-login*
+		path /cognee-logout*
+		path /admin/cognee*
+		path /admin/cognee-api*
+		path /ui*
+		path /ui-api*
+		path /ui-login*
+		path /ui-logout*
+		path /_next*
+		path /images*
+		path /api*
+		path /dashboard*
+		path /datasets*
+		path /knowledge-graph*
+		path /activity*
+		path /api-keys*
+		path /connections*
+		path /connect-agent*
+		path /onboarding*
+		path /local-login*
+	}
+
+	reverse_proxy @brain_ui 127.0.0.1:18002
+	reverse_proxy 127.0.0.1:18000
+}

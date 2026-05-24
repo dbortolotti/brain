@@ -84,7 +84,7 @@ Use the dedicated non-admin reviewer account `brain_verifier`. The password is
 stored outside the repository at:
 
 ```text
-/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password
+/etc/brain/brain-auth-verifier-password
 ```
 
 Paste the password into the OpenAI submission portal only; do not commit it to

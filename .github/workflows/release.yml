@@ -167,6 +167,12 @@ jobs:
         run: |
           render_dir="$RUNNER_TEMP/brain-prod-config"
           mkdir -p "$render_dir"
+          for name in brain.env brain.env.last-deployed brain-auth-password brain-auth-password.last-deployed; do
+            ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=10 \
+              brain@159.195.79.79 \
+              "sudo -n test -f /etc/brain/$name && sudo -n cat /etc/brain/$name" \
+              >"$render_dir/$name" 2>/dev/null || rm -f "$render_dir/$name"
+          done
           args=()
           args+=(--output "$render_dir/brain.env")
           args+=(--base-output "$render_dir/brain.env.last-deployed")
@@ -181,13 +187,12 @@ jobs:
 
       - name: Promote staging revision to production
         run: |
-          sudo -n \
-            BRAIN_DEPLOY_ENV=prod \
+          BRAIN_DEPLOY_ENV=prod \
             BRAIN_RELEASE_ENV=prod \
             BRAIN_RELEASE_SHA="${{ steps.staging.outputs.sha }}" \
             BRAIN_RELEASE_VERSION="${{ steps.staging.outputs.tag }}" \
             GITHUB_SHA="${{ steps.staging.outputs.sha }}" \
-            /Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh \
+            "$PWD/scripts/deploy-cloud-production.sh" \
             --source-root "$PWD" \
             --rendered-env "${{ steps.render-config.outputs.env_file }}" \
             --rendered-auth-password "${{ steps.render-config.outputs.auth_password_file }}"

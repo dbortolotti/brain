@@ -252,14 +252,45 @@ Slack is no longer a supported Brain surface. The legacy adapter code remains do
 
 ## Deployment and Release Model
 
-Brain deploys on the self-hosted `brain-prod` runner in three deployed tiers, plus local dev:
+Brain deploys in three tiers, plus local dev:
 
 - `dev`: local developer runs.
 - `qa`: every push to `main` deploys through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain` as `oric`, with read-only repository permissions and the `qa-<12-char-sha>` build version. QA has no version input and derives its build version from the pushed commit SHA.
 - `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain` as `oric_staging`. The workflow requires a `vX.Y.Z` or prerelease tag, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag.
-- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to `/Volumes/xpg_usb4/prod/brain`.
+- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux user `brain`.
 
-The workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa`, `staging`, or `prod`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Prod runs as `oric_prod`; staging runs as `oric_staging`; QA runs as `oric`. System LaunchDaemons are installed under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching. The deployed LaunchDaemons use `SessionCreate`, start from `/var/db/brain-{prod|staging|qa}`, execute the per-release Python environment from `/var/db/brain-{prod|staging|qa}/current-venv`, read a local runtime copy of `brain.env` from `/var/db/brain-{prod|staging|qa}/secrets`, and load config from `/var/db/brain-{prod|staging|qa}/cfg` via `BRAIN_CONFIG_DIR`. Deploys install `memory-stack` into that venv non-editably so launchd does not have to import project code or config through an external-volume `.pth` file. `scripts/setup-macos-service-users.sh` creates the hidden staging and prod service users on a new Mac. Deploys normalize `/Volumes/xpg_usb4/{qa|staging|prod}/brain` ownership to the matching runtime user with world-readable release, data, and log paths and owner-only `shared/secrets`. Normal deploys update ownership incrementally; set `BRAIN_FULL_CHOWN=1` for a first migration or repair when the entire prod/staging/QA tree needs to be reclaimed by the service user. Local non-GitHub QA and staging deploys refresh an existing release directory for the same commit SHA from the working tree so migration iterations can exercise uncommitted changes; GitHub Actions and prod deploys keep release directories immutable unless `BRAIN_REFRESH_RELEASE=1` is explicitly supplied.
+The cloud production layout is:
+
+```text
+/opt/brain/current -> /opt/brain/releases/<commit-sha>
+/etc/brain/brain.env
+/var/lib/brain/{data,backups,cache,venvs,docker}
+/var/log/brain
+/etc/systemd/system/brain-{mcp,ui,maintenance}.{service,timer}
+/etc/caddy/conf.d/brain.caddy
+```
+
+From this checkout, a direct cloud deploy can be run with:
+
+```bash
+make deploy-cloud-production
+```
+
+Direct deploys need real production secrets either already present in
+`/etc/brain/brain.env` on the server or passed with
+`scripts/deploy-cloud-production.sh --rendered-env PATH --rendered-auth-password PATH`.
+
+The QA and staging workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Staging runs as `oric_staging`; QA runs as `oric`. System LaunchDaemons are installed under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching.
+
+The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That uploader packages the checkout, copies it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server. The Linux installer creates or repairs the `brain` user, installs missing runtime packages, starts Docker Compose data services, runs migrations, installs systemd units, installs the Caddy reverse-proxy config, and restarts Brain.
+
+Production public HTTPS is direct DNS, not Cloudflare Tunnel:
+
+```text
+brain.dceb.net.  A  159.195.79.79
+```
+
+Keep the Cloudflare record DNS-only while Caddy manages the origin certificate directly. QA and staging may continue to use the local Cloudflare Tunnel config.
 
 The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline. It is available only on workflow-dispatch runs for QA, staging, and release; push-based QA deploys do not use it.
 
@@ -270,19 +301,21 @@ Workflow model:
 - `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
-The Makefile also exposes `make deploy-local-production` as a manual production deploy helper:
+The Makefile exposes the deploy helpers:
 
 ```bash
 make deploy-local-production
+make deploy-cloud-production
 ```
 
-Equivalent command:
+Equivalent commands:
 
 ```bash
 ./scripts/deploy-local-production.sh
+./scripts/deploy-cloud-production.sh
 ```
 
-Before the first daemon deploy on a Mac, create the service users:
+Before the first QA/staging daemon deploy on a Mac, create the service users:
 
 ```bash
 ./scripts/setup-macos-service-users.sh
@@ -386,10 +419,10 @@ Useful production checks:
 make prod-check
 make ui-prod-check
 make slack-agent-check
-make cloudflare-verify
+make public-check
 ```
 
-`cloudflare-verify` checks DNS/TLS, public curated and admin MCP URLs, dashboard, privacy, terms, support, browser security headers, OAuth metadata, ChatGPT App tool descriptors, and the authenticated public app MCP surface when auth is enabled. It also confirms the public app surface remains text-only.
+`public-check` checks the direct-DNS public HTTPS health and required support pages through Caddy.
 
 Operational maintenance targets:
 
@@ -723,4 +756,4 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: 0265d4100a3edf8bd5b0ab3a7a931f6cfc9ffa332debdbb0c09176a3e76a9942 -->
+<!-- brain-doc-source-hash: 577ef4be496bcf047ed05a456d68facadf4949bd4c4e13928d6e93107d1382a4 -->

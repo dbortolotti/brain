@@ -547,16 +547,16 @@ curl -s http://127.0.0.1:8000/memory/undo_last -H "Content-Type: application/jso
 Verify a production MCP deployment:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
+ENV_FILE=/etc/brain/brain.env make prod-check
 ```
 
-Verify public Cloudflare routing:
+Verify public direct-DNS routing:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make cloudflare-verify
+make public-check
 ```
 
-The production verifier checks runtime paths, health, release metadata, MCP route behavior, the local Brain dashboard, the public app MCP surface, OAuth metadata when auth is enabled, and backup manifests unless `--skip-backups` is used. The Cloudflare verifier checks DNS/TLS, public curated, admin, and app MCP URLs, dashboard, privacy, terms, and support pages, OAuth protected-resource metadata, and the authenticated public app MCP surface when auth is enabled. It also checks browser security headers, ChatGPT App tool descriptor metadata, and that the public app surface remains text-only. For authenticated verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
+The production verifier checks runtime paths, health, release metadata, MCP route behavior, the local Brain dashboard, the public app MCP surface, OAuth metadata when auth is enabled, and backup manifests unless `--skip-backups` is used. The public check verifies DNS/TLS reaches `brain.dceb.net` directly through Caddy and that required public pages are available. For authenticated verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 ## Troubleshooting
 

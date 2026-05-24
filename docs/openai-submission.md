@@ -32,8 +32,8 @@ Workflow reference:
 Run these checks after promoting the staged release:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make prod-check
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared
+ENV_FILE=/etc/brain/brain.env make prod-check
+make public-check
 ```
 
 Do not bypass confirmation or normal backup checks in production promotion paths.
@@ -56,12 +56,12 @@ For authenticated app verification against hashed user registries, configure a d
 
 ```bash
 export BRAIN_VERIFIER_USER_ID=brain_verifier
-export BRAIN_VERIFIER_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password
+export BRAIN_VERIFIER_PASSWORD_FILE=/etc/brain/brain-auth-verifier-password
 
 # or
 
 export BRAIN_AUTH_VERIFIER_USER_ID=brain_verifier
-export BRAIN_AUTH_VERIFIER_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-verifier-password
+export BRAIN_AUTH_VERIFIER_PASSWORD_FILE=/etc/brain/brain-auth-verifier-password
 ```
 
 Public dashboard, legal, and app-asset responses include Content Security Policy, HSTS, Referrer Policy, Permissions Policy, and `X-Content-Type-Options`. The CSP includes `frame-ancestors` entries for ChatGPT/OpenAI hosts so the app component can be framed by ChatGPT while excluding arbitrary embedding.
@@ -168,7 +168,7 @@ Explain these points in the submission:
 - Public privacy, terms, and support URLs on the production host.
 - Screenshots are not required for the current text-only submission. Browser dashboard screenshots may be kept as supporting assets.
 - Latest successful `prod-check` output.
-- Latest successful `verify_cloudflare_mcp.py --skip-cloudflared` output.
+- Latest successful `make public-check` output.
 - Submission-ready copy, reviewer instructions, and screenshots for the submission package.
 - ChatGPT App tool descriptor confirmation, including that the app component resource (`ui://brain/review.v2.html`) remains text-only and that the public and admin OAuth protected-resource metadata resolve to the configured URLs.
 
@@ -177,9 +177,9 @@ Explain these points in the submission:
 - `uv run ruff check src tests scripts`
 - `uv run pytest`
 - `make docs-check`
-- `uv run python scripts/migrate_auth_user_passwords.py --env-file /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env --check`
+- `uv run python scripts/migrate_auth_user_passwords.py --env-file /etc/brain/brain.env --check`
 - Confirm `https://brain.dceb.net/privacy`, `/terms`, and `/support` load over HTTPS with security headers.
-- Confirm the public app MCP verification passes with `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` loaded in the production environment.
+- Confirm the public app MCP verification passes against `https://brain.dceb.net/mcp` with the production environment loaded.
 - When auth is enabled, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE` before running the authenticated verifier.
 - Confirm the verifier reports the curated text-only ChatGPT App tool surface, DNS and TLS for the hostname, OAuth protected-resource and authorization metadata for the public app and admin surfaces, the public and admin MCP surfaces, the public dashboard, privacy, terms, and support pages, browser security headers, and, when auth is enabled, the authenticated public app MCP surface remains text-only.
 - Confirm the deployed release metadata matches the tagged release.
@@ -203,8 +203,8 @@ For a production release:
    - The workflow triggers on `workflow_dispatch`.
    - Manual dispatch accepts `version` and `force_config_override` inputs.
 3. Watch production deployment and verification finish successfully.
-4. Run `uv run python scripts/verify_cloudflare_mcp.py --skip-cloudflared` with the production environment loaded.
-   - This verification checks DNS and TLS for the hostname; the public and admin MCP surfaces; the public dashboard, privacy, terms, and support pages; browser security headers; OAuth protected-resource and authorization metadata for the public app and admin surfaces; and the ChatGPT App tool descriptors. When auth is enabled, it also checks the authenticated public app MCP surface and confirms it remains text-only.
+4. Run `make public-check` and the public app MCP verification against `https://brain.dceb.net/mcp` with the production environment loaded.
+   - This verification checks direct DNS and TLS for the hostname; the public dashboard, privacy, terms, and support pages; and the public app MCP surface. When auth is enabled, also check the authenticated public app MCP surface and confirm it remains text-only.
 5. Keep confirmation and normal backup checks enabled in the promotion path.
 
 <!-- brain-doc-source-hash: 6906023f1f625f972c4b0b53f7792b22c9907273aa14d9ef6fad1ff93c58bf40 -->

@@ -1,0 +1,25 @@
+[Unit]
+Description=Brain nightly maintenance
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+User=brain
+Group=brain
+WorkingDirectory=/opt/brain/current
+EnvironmentFile=/etc/brain/brain.env
+Environment=ENV_FILE=/etc/brain/brain.env
+Environment=HOME=/var/lib/brain
+Environment=XDG_CACHE_HOME=/var/lib/brain/cache
+Environment=UV_CACHE_DIR=/var/lib/brain/uv-cache
+Environment=UV_PYTHON_INSTALL_DIR=/var/lib/brain/python
+Environment=UV_PROJECT_ENVIRONMENT=/var/lib/brain/current-venv
+Environment=UV_LINK_MODE=copy
+Environment=BRAIN_CONFIG_DIR=/var/lib/brain/cfg
+Environment=SYSTEM_ROOT_DIRECTORY=/var/lib/brain/system
+Environment=DATA_ROOT_DIRECTORY=/var/lib/brain/data
+ExecStart=/var/lib/brain/current-venv/bin/python scripts/nightly_maintenance.py --env prod
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/etc/brain /var/lib/brain /var/log/brain
