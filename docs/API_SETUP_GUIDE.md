@@ -7,8 +7,6 @@ Brain exposes two API surfaces:
 - HTTP and JSON-RPC MCP over the FastAPI server.
 - MCP stdio for local desktop clients that launch Brain as a subprocess.
 
-Slack is not a supported Brain surface in the Cognee-first cutover. The legacy adapter remains disabled by default and should not be used for new integrations.
-
 ## Install
 
 Create a local env file and install dependencies:
@@ -111,7 +109,6 @@ GET  /.well-known/oauth-protected-resource
 GET  /.well-known/oauth-protected-resource/{resource_path:path}
 GET  /.well-known/oauth-authorization-server
 GET  /.well-known/openid-configuration
-GET  /.well-known/openai-apps-challenge
 POST /register
 GET|POST /authorize
 POST /token
@@ -121,6 +118,18 @@ POST /logout
 GET  /auth/session
 GET  /api/session
 PUT  /account/password
+```
+
+Admin user-management and personal access token endpoints:
+
+```text
+GET    /admin/users
+POST   /admin/users
+PUT    /admin/users/{user_id}
+DELETE /admin/users/{user_id}
+GET    /admin/tokens
+POST   /admin/tokens
+DELETE /admin/tokens/{token_id}
 ```
 
 The public UI and dashboard are served by the same Brain HTTP process at the configured public base URL. The public UI paths are controlled by `BRAIN_PUBLIC_UI_PATH` and `BRAIN_PUBLIC_UI_API_PATH`.
@@ -133,9 +142,6 @@ GET /docs/oauth2-redirect
 GET /redoc
 GET /openapi.json
 GET /healthz
-GET /privacy
-GET /terms
-GET /support
 GET /apple-touch-icon.png
 GET /favicon.ico
 GET /icon.png
@@ -144,6 +150,7 @@ GET /icon.png
 Cognee/UI proxy routes are also served by the same Brain HTTP process:
 
 ```text
+GET      /
 GET|POST /cognee-login
 POST     /cognee-logout
 GET|POST /ui-login
@@ -185,7 +192,7 @@ POST   /delete_datasource
 DELETE /delete_datasource/{datasource}
 ```
 
-Raw SQL and arbitrary Cognee primitives are not exposed as public MCP tools. Brain does expose curated Cognee/admin operations such as forget, review_recent, undo_last, profile context sync, and configured improve.
+Brain exposes curated Cognee/admin operations such as forget, review_recent, undo_last, profile context sync, and `cognee_improve` on the internal surface. Internal Palate persistence tools, `brain_app_open_review_panel`, and `brain_palate_refresh_enrichment` stay on `/admin/mcp`.
 
 ## ChatGPT App Surface
 
@@ -219,10 +226,6 @@ brain_palate_correct_proposal
 
 Read-only app tools require `brain.memory.read`; write tools require `brain.memory.write` as well and are rate-limited by `BRAIN_APP_WRITE_RATE_LIMIT_COUNT` and `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`. The app surface treats `brain_undo_last` and `brain_profile_context_forget` as destructive tools. The app surface includes selected Palate read/interaction tools; internal Palate persistence tools stay on `/admin/mcp`.
 
-Public app support pages are available at `/privacy`, `/terms`, and `/support`.
-
-Production verification also checks ChatGPT App tool descriptor metadata and that the public app surface remains text-only.
-
 ## Authentication
 
 Local development usually runs with:
@@ -235,6 +238,7 @@ When auth is enabled, HTTP and MCP client requests require a bearer token accept
 
 - Static token: `BRAIN_AUTH_TOKEN`
 - Brain OAuth access token from the built-in authorization flow
+- Brain personal access token, created by a superuser for a specific `user_id`
 
 Static token example:
 
@@ -251,6 +255,8 @@ curl http://127.0.0.1:8000/healthz -H "Authorization: Bearer $BRAIN_AUTH_TOKEN"
 
 Protected unauthenticated requests return `401` with a `WWW-Authenticate` challenge that advertises Brain's protected-resource metadata.
 
+For headless same-machine agents, use personal access tokens instead of browser OAuth. A superuser creates a token once, stores the returned secret in the agent's local secret store, and the agent calls Brain with `Authorization: Bearer ...`. Brain stores only a token hash and maps each request back to the token's `user_id`.
+
 OAuth metadata routes:
 
 ```text
@@ -258,12 +264,13 @@ GET /.well-known/oauth-protected-resource
 GET /.well-known/oauth-protected-resource/{resource_path:path}
 GET /.well-known/oauth-authorization-server
 GET /.well-known/openid-configuration
-GET /.well-known/openai-apps-challenge
 POST /register
 GET|POST /authorize
 POST /token
 POST /revoke
 ```
+
+When `BRAIN_AUTH_REQUIRE_PKCE=true`, authorization requests require a code challenge.
 
 The browser dashboard uses cookie-based auth instead of pasted bearer tokens:
 
@@ -283,13 +290,16 @@ Production auth is configured through `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_ST
 
 For multiple users, set `BRAIN_AUTH_USERS_FILE` to a JSON list or object of records with `id`/`user_id`, an Argon2id `password_hash`, optional `password_scheme`, optional `password_updated_at`, optional `display_name`, optional `email`, and optional `superuser` fields. Legacy records with a plaintext `password` are accepted only for migration; after successful login, or after running `scripts/migrate_auth_user_passwords.py`, Brain rewrites the registry without plaintext password fields. OAuth authorization stores the selected `user_id` in issued tokens; HTTP and MCP memory operations then scope Brain DB rows, profile context files, Palate data, recall logs, and app audit records to that user. Auth-enabled deployments fail closed if the configured users file is missing or empty.
 
-Superusers can manage users from the Brain dashboard's User Admin tab. The dashboard calls the admin HTTP endpoints below with the user's web session and CSRF token; MCP/API clients may still use an OAuth bearer token:
+Superusers can manage users and personal access tokens from the Brain dashboard's User Admin tab. The dashboard calls the admin HTTP endpoints below with the user's web session and CSRF token; MCP/API clients may still use an OAuth bearer token:
 
 ```text
 GET    /admin/users
 POST   /admin/users
 PUT    /admin/users/{user_id}
 DELETE /admin/users/{user_id}
+GET    /admin/tokens
+POST   /admin/tokens
+DELETE /admin/tokens/{token_id}
 ```
 
 These endpoints require full Brain auth plus a superuser user record. They never return passwords and refresh the in-process OAuth user registry after edits. Created or changed passwords are stored as Argon2id hashes.
@@ -556,7 +566,7 @@ Verify public direct-DNS routing:
 make public-check
 ```
 
-The production verifier checks runtime paths, health, release metadata, MCP route behavior, the local Brain dashboard, the public app MCP surface, OAuth metadata when auth is enabled, and backup manifests unless `--skip-backups` is used. The public check verifies DNS/TLS reaches `brain.dceb.net` directly through Caddy and that required public pages are available. For authenticated verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
+The production verifier checks release metadata, runtime paths, local health, local Brain UI health when enabled, MCP route behavior, the local Brain dashboard, the public app MCP surface, OAuth metadata when auth is enabled, and backup manifests unless `--skip-backups` is used. The public check verifies DNS/TLS reaches `brain.dceb.net` directly through Caddy and that required public pages are available. For authenticated verification against hashed user registries, set `BRAIN_VERIFIER_USER_ID` and `BRAIN_VERIFIER_PASSWORD_FILE` or `BRAIN_AUTH_VERIFIER_USER_ID` and `BRAIN_AUTH_VERIFIER_PASSWORD_FILE`.
 
 ## Troubleshooting
 
@@ -582,4 +592,5 @@ Cognee is required for durable memory/source writes. Restore Cognee before retry
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 96eb39c2bbe079d76e65289d1827f6ab4e5142866e6f7e4351a9b3ec516a9bb6 -->
+<!-- brain-doc-source-hash: ff39a39aa9d9066c5841a90b0b0370d48cb5a62e54bdf87f1eb1c17a0b2a8ebc -->
+<!-- brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3 -->

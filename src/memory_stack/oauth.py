@@ -242,6 +242,96 @@ class BrainOAuthProvider:
             "resource": token_resource,
         }
 
+    def create_personal_access_token(
+        self,
+        *,
+        user_id: str,
+        name: str,
+        scopes: list[str] | None = None,
+        expires_in_seconds: int | None = None,
+    ) -> dict[str, Any]:
+        normalized_user_id = normalize_user_id(user_id)
+        users = load_auth_users(self.settings, default_password=self.password)
+        if normalized_user_id not in users:
+            raise ValueError(f"Unknown user_id: {normalized_user_id}")
+        if expires_in_seconds is not None and expires_in_seconds <= 0:
+            raise ValueError("expires_in_seconds must be positive when provided.")
+        token_scopes = scopes or self.scopes
+        validate_scopes(token_scopes, self.scopes)
+        now = int(time.time())
+        token = f"brain_pat_{secrets.token_urlsafe(32)}"
+        token_id = f"pat_{secrets.token_urlsafe(12)}"
+        record = {
+            "id": token_id,
+            "name": name or token_id,
+            "user_id": normalized_user_id,
+            "scopes": token_scopes,
+            "token_hash": token_hash(token),
+            "created_at": datetime.now(UTC).isoformat(),
+            "expires_at": now + expires_in_seconds if expires_in_seconds else None,
+            "last_used_at": None,
+            "revoked_at": None,
+        }
+        with self._lock:
+            state = self._load_state()
+            state["personal_access_tokens"][token_id] = record
+            self._save_state(state)
+        return {
+            "token": token,
+            "personal_access_token": public_personal_access_token(token_id, record),
+        }
+
+    def list_personal_access_tokens(self, user_id: str | None = None) -> list[dict[str, Any]]:
+        normalized_user_id = normalize_user_id(user_id or "") if user_id else None
+        with self._lock:
+            records = dict(self._load_state()["personal_access_tokens"])
+        tokens = [
+            public_personal_access_token(token_id, record)
+            for token_id, record in records.items()
+            if not normalized_user_id or normalize_user_id(record.get("user_id")) == normalized_user_id
+        ]
+        return sorted(tokens, key=lambda item: (item["user_id"], item["name"], item["id"]))
+
+    def revoke_personal_access_token(self, token_id: str) -> dict[str, Any] | None:
+        with self._lock:
+            state = self._load_state()
+            record = state["personal_access_tokens"].get(token_id)
+            if record is None:
+                return None
+            record["revoked_at"] = datetime.now(UTC).isoformat()
+            state["personal_access_tokens"][token_id] = record
+            self._save_state(state)
+        return public_personal_access_token(token_id, record)
+
+    def personal_access_token_record(
+        self,
+        token: str,
+        required_scopes: list[str] | None = None,
+    ) -> dict[str, Any] | None:
+        if not token or not token.startswith("brain_pat_"):
+            return None
+        hashed = token_hash(token)
+        with self._lock:
+            state = self._load_state()
+            for token_id, stored in state["personal_access_tokens"].items():
+                if not hmac.compare_digest(str(stored.get("token_hash") or ""), hashed):
+                    continue
+                if stored.get("revoked_at") or is_expired(stored):
+                    return None
+                token_scopes = stored.get("scopes") or []
+                if any(scope not in token_scopes for scope in required_scopes or []):
+                    return None
+                stored["last_used_at"] = datetime.now(UTC).isoformat()
+                state["personal_access_tokens"][token_id] = stored
+                self._save_state(state)
+                return {
+                    "client_id": token_id,
+                    "user_id": stored.get("user_id") or self.default_user_id,
+                    "scopes": token_scopes,
+                    "resource": self.resource_url,
+                }
+        return None
+
     def _client(self, client_id: str) -> dict[str, Any]:
         with self._lock:
             client = self._load_state()["clients"].get(client_id)
@@ -453,6 +543,10 @@ def verify_password(password: str, record: dict[str, Any]) -> bool:
     return bool(legacy_password) and hmac.compare_digest(password, legacy_password)
 
 
+def token_hash(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
 def needs_password_migration(record: dict[str, Any]) -> bool:
     password_hash = str(record.get("password_hash") or "")
     if record.get("password"):
@@ -551,6 +645,21 @@ def public_auth_user(record: dict[str, Any]) -> dict[str, Any]:
         "password_scheme": str(record.get("password_scheme") or ("legacy" if record.get("password") else "")),
         "password_migration_required": needs_password_migration(record),
         "must_change_password": parse_bool(record.get("must_change_password")),
+    }
+
+
+def public_personal_access_token(token_id: str, record: dict[str, Any]) -> dict[str, Any]:
+    expires_at = record.get("expires_at")
+    return {
+        "id": str(record.get("id") or token_id),
+        "name": str(record.get("name") or token_id),
+        "user_id": normalize_user_id(record.get("user_id")),
+        "scopes": [str(scope) for scope in record.get("scopes") or []],
+        "created_at": record.get("created_at"),
+        "expires_at": expires_at,
+        "last_used_at": record.get("last_used_at"),
+        "revoked_at": record.get("revoked_at"),
+        "expired": is_expired(record),
     }
 
 
@@ -767,6 +876,7 @@ def empty_state() -> dict[str, dict[str, Any]]:
         "authorization_codes": {},
         "access_tokens": {},
         "refresh_tokens": {},
+        "personal_access_tokens": {},
     }
 
 

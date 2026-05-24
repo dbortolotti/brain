@@ -6,11 +6,12 @@ Most users should interact with Brain through Slack, through an LLM client that 
 
 Palate is Brain's taste layer. Use it for wine, restaurants, media, music, cigars, experiences, and other taste-related preferences.
 
-If your client exposes external chat-continuity workflow, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
+If your client exposes an external chat-continuity workflow, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
 
 Practical model:
 
 - Brain owns memory policy, durable facts, cleanup, and ranking policy.
+- Bias context owns response-style preferences on surfaces that expose it.
 - Cognee owns semantic recall and rebuildable projections.
 - Palate owns taste normalization, enrichment, recommendation ranking, and feedback on taste choices.
 - Agent memory is a dedicated user-scoped Cognee dataset for chat-session continuity; it is not the canonical store for everything.
@@ -24,7 +25,7 @@ Use Brain and Palate for these day-to-day jobs:
 - Recall stored context: `what do we know about...`
 - Review or correct memory: `show recent writes`, `undo the last one`, or `actually, replace the old fact with...`
 - Save or rank taste-related preferences with Palate.
-- Preserve chat handovers with `brain_session` and your client's dedicated chat-continuity workflow when it is available. If your client exposes external chat-continuity workflow, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
+- Preserve chat handovers with `brain_session` and your client's dedicated chat-continuity workflow when it is available. If your client exposes an external chat-continuity workflow, use that workflow for portable chat continuity and keep it separate from ordinary durable memory writes.
 
 Slack is the strictest interface. It may ask for confirmation or clarification when a memory is ambiguous, sensitive, low-confidence, or potentially conflicts with an existing memory.
 
@@ -120,21 +121,19 @@ table
 ```
 
 Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
-For chat-session continuity and handovers, prefer the dedicated external chat-continuity workflow workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
+For chat-session continuity and handovers, prefer the dedicated external chat-continuity workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
 
 ## Using the User Dashboard
 
-The browser dashboard is for reviewing, managing, and auditing your memory. It opens with a sign-in overlay that says `Sign In` and `Sign in to review and manage your memory.`, and the session line says `Connect to review memory.`
-
-The dashboard is available at `/` and `/user`. The app dashboard is also available at `/app`. The sidebar links to User, Admin, and Cognee views.
+The browser dashboard is for reviewing, managing, and auditing your memory. The dashboard is available at `/` and `/user`. The app dashboard is also available at `/app`. The sidebar links to User, Admin, and Cognee views.
 
 Main tabs:
 
 - Review: Recent Cards, Open Loops, and Memory Contents. Select a memory card to inspect its contents and evidence.
 - Recall: search Brain with a query and an optional limit.
-- Remember: preview a memory before saving it. The input type menu includes auto, fact, note, thought, open question, and chat conclusion.
+- Remember: preview a memory before saving it.
 - Profile / Profile Context: add standing answer-tailoring context. The default scope is `answer_tailoring`.
-- Prompt: inspect Personal Info In Session, Custom Preprompt Instructions, Latest Session Data, Bias Protocol, and Agent Memory Protocol.
+- Prompt: inspect prompt and session-context details.
 - Data Controls: view App Write Audit, Export Preview, Profile Data, and Recent Memory Data.
 - Account: change your password.
 - Users: available to superusers for user administration.
@@ -178,6 +177,8 @@ Useful auth and session endpoints:
 - `/account/password`
 - `/api/session`
 - `/auth/session`
+- `/admin/tokens`
+- `/admin/tokens/{token_id}`
 
 Useful memory endpoints:
 
@@ -240,7 +241,7 @@ Context: this came from the May architecture review.
 Preserve chat/session context for handover:
 
 ```text
-Use brain_session to get my user-scoped session id. If my client exposes an chat-continuity workflow, use it to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
+Use brain_session to get my user-scoped session id. If my client exposes a chat-continuity workflow, use it to preserve this chat handover. Do not use brain_remember unless there is a separate durable user fact or decision.
 ```
 
 Recall context:
@@ -272,6 +273,8 @@ Load profile context before answering:
 ```text
 Load my preferences from Brain before answering.
 ```
+
+Use `brain_profile_context_remember` for stable answer-tailoring context. Use `brain_bias_context_remember` on surfaces that expose it when you need response-style preferences.
 
 Internal or admin surfaces also expose tools such as `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_profile_context_sync`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_review_recent`, `brain_undo_last`, `brain_forget`, `brain_bias_context_remember`, `brain_bias_context_list`, `brain_bias_context_forget`, `cognee_improve`, `brain_palate_describe_item`, `brain_palate_remember`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_log_decision`, `brain_palate_confirm`, `brain_palate_cancel`, `brain_palate_correct_proposal`, and `brain_palate_refresh_enrichment`.
 
@@ -378,7 +381,7 @@ table
 ```
 
 Brain may then classify the final stored card as a more specific memory kind, such as `preference`, `person_fact`, `project_state`, or `source_summary`.
-For chat-session continuity and handovers, prefer the dedicated external chat-continuity workflow workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
+For chat-session continuity and handovers, prefer the dedicated external chat-continuity workflow over `conversation_summary` or `chat_conclusion` when your client exposes that workflow.
 
 ## How Memories Are Stored
 
@@ -586,7 +589,7 @@ For safe review:
 For destructive operations, be careful:
 
 - `brain_forget` and delete-style actions are not the same as a normal correction
-- `brain_undo_last` targets Cognee objects recorded in the latest undoable receipt
+- `brain_undo_last` reverts the latest undoable ingestion run, and some surfaces accept an optional `ingestion_run_id`
 - deletion workflows should be used deliberately and only when you understand the effect on stored memory and audit evidence
 
 ## Quick Examples
@@ -636,4 +639,5 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 9866c590cde5c1f858954347eac081d96ebfda8cb0209d1128b7cb2881c5a602 -->
+<!-- brain-doc-source-hash: 3c8ea43d0b3858c04bd645af2d9455522d2fc8c82bce96db151fb5f757e30cb9 -->
+<!-- brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3 -->

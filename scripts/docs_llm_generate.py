@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import re
 import subprocess
@@ -23,7 +24,9 @@ from docs_check import doc_source_hash  # noqa: E402
 FACTS_PATH = REPO_ROOT / "docs" / "generated" / "facts.json"
 MANIFEST_PATH = REPO_ROOT / "docs" / "sources" / "llm_docs.yaml"
 
-MARKER_RE = re.compile(r"<!-- brain-doc-source-hash: [0-9a-f]{64} -->\s*$")
+MARKER_RE = re.compile(r"<!-- brain-doc-source-hash: [0-9a-f]{64} -->\s*")
+SOURCE_COMMIT_RE = re.compile(r"<!-- brain-doc-source-commit: ([0-9a-f]{40}|unknown) -->\s*$")
+MAX_DIFF_CHARS = 30_000
 
 
 def main() -> int:
@@ -32,6 +35,11 @@ def main() -> int:
         "--hash-only",
         action="store_true",
         help="Only refresh embedded doc hashes after manual review.",
+    )
+    parser.add_argument(
+        "--full-regenerate",
+        action="store_true",
+        help="Regenerate full documents from source excerpts instead of using source diffs.",
     )
     parser.add_argument(
         "--doc",
@@ -59,12 +67,12 @@ def main() -> int:
         path = REPO_ROOT / doc["path"]
         current = path.read_text(encoding="utf-8")
         if args.hash_only:
-            updated = set_hash(current, doc_source_hash(doc, facts_text))
+            updated = set_source_markers(current, doc_source_hash(doc, facts_text))
         else:
             print(f"generating {doc['path']}...", flush=True)
-            updated = generate_doc(client, doc, current, facts)
+            updated = generate_doc(client, doc, current, facts, full_regenerate=args.full_regenerate)
             validate_generated_doc(doc, current, updated)
-            updated = set_hash(updated, doc_source_hash(doc, facts_text))
+            updated = set_source_markers(updated, doc_source_hash(doc, facts_text))
         path.write_text(updated, encoding="utf-8")
         print(f"updated {doc['path']}", flush=True)
     return 0
@@ -92,7 +100,20 @@ def generate_doc(
     doc: dict[str, Any],
     current: str,
     facts: dict[str, Any],
+    *,
+    full_regenerate: bool,
 ) -> str:
+    if not full_regenerate:
+        baseline_commit = source_commit(current)
+        if baseline_commit and baseline_commit_exists(baseline_commit):
+            updated = generate_doc_from_diffs(client, doc, current, facts, baseline_commit)
+            if updated is not None:
+                return updated
+        print(
+            f"falling back to full regeneration for {doc['path']} "
+            "because no usable source commit marker was found",
+            flush=True,
+        )
     schema = {
         "type": "object",
         "properties": {
@@ -127,6 +148,67 @@ def generate_doc(
         prompt,
         schema,
         schema_name="brain_docs_markdown",
+        model=doc.get("model"),
+        reasoning_effort=doc.get("reasoning_effort", "medium"),
+        max_output_tokens=doc.get("max_output_tokens", 12_000),
+    )
+    markdown = str(result["markdown"]).strip() + "\n"
+    return markdown
+
+
+def generate_doc_from_diffs(
+    client: ConfiguredLLMClient,
+    doc: dict[str, Any],
+    current: str,
+    facts: dict[str, Any],
+    baseline_commit: str,
+) -> str | None:
+    source_diff = source_diffs(doc, baseline_commit)
+    facts_diff = facts_summary_diff(baseline_commit, facts)
+    if not source_diff.strip() and not facts_diff.strip():
+        return strip_hash(current)
+    schema = {
+        "type": "object",
+        "properties": {
+            "changed": {
+                "type": "boolean",
+                "description": "Whether the document needed content edits for the supplied diffs.",
+            },
+            "markdown": {
+                "type": "string",
+                "description": "Complete Markdown document. If changed is false, return the current Markdown unchanged.",
+            },
+        },
+        "required": ["changed", "markdown"],
+        "additionalProperties": False,
+    }
+    prompt = "\n\n".join(
+        [
+            "You are maintaining Brain documentation with a diff-based workflow.",
+            "Read the full current Markdown, then inspect only the supplied source and facts diffs.",
+            "Update the document only where the diffs introduce behavior, endpoints, config, commands, or operational details that are missing, stale, or incorrectly described.",
+            "If the current Markdown already represents the diffs correctly, set changed=false and return the current Markdown unchanged.",
+            "Do not reformat, summarize, reorder, or rephrase unrelated sections.",
+            "Do not invent endpoints, UI controls, workflows, secrets, or operational behavior.",
+            "Preserve warnings about secrets, auth, deletion, backups, and production promotion.",
+            f"Target document: {doc['path']}",
+            f"Audience: {doc.get('audience', 'Brain users and operators')}",
+            f"Purpose: {doc.get('purpose', 'Keep Brain documentation accurate and readable.')}",
+            f"Baseline source commit: {baseline_commit}",
+            "Current Markdown:",
+            strip_hash(current),
+            "Current deterministic facts JSON summary:",
+            json.dumps(facts_summary(facts), indent=2, sort_keys=True),
+            "Facts summary diff from baseline to current:",
+            facts_diff or "<no facts summary diff>",
+            "Managed source diffs from baseline to current:",
+            source_diff or "<no managed source diff>",
+        ]
+    )
+    result = client.complete_json(
+        prompt,
+        schema,
+        schema_name="brain_docs_diff_markdown",
         model=doc.get("model"),
         reasoning_effort=doc.get("reasoning_effort", "medium"),
         max_output_tokens=doc.get("max_output_tokens", 12_000),
@@ -182,13 +264,95 @@ def source_excerpts(doc: dict[str, Any]) -> str:
     return "\n\n".join(chunks)
 
 
-def set_hash(text: str, value: str) -> str:
+def source_diffs(doc: dict[str, Any], baseline_commit: str) -> str:
+    sources = [source for source in doc.get("sources", []) if source]
+    if not sources:
+        return ""
+    result = subprocess.run(
+        ["git", "diff", "--unified=80", "--no-ext-diff", baseline_commit, "--", *sources],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return truncate_diff(result.stdout)
+
+
+def facts_summary_diff(baseline_commit: str, current_facts: dict[str, Any]) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{baseline_commit}:docs/generated/facts.json"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if result.returncode != 0:
+        return ""
+    try:
+        baseline_facts = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return ""
+    baseline = json.dumps(facts_summary(baseline_facts), indent=2, sort_keys=True).splitlines()
+    current = json.dumps(facts_summary(current_facts), indent=2, sort_keys=True).splitlines()
+    diff = "\n".join(
+        difflib.unified_diff(
+            baseline,
+            current,
+            fromfile=f"{baseline_commit}:facts_summary",
+            tofile="current:facts_summary",
+            lineterm="",
+        )
+    )
+    return truncate_diff(diff)
+
+
+def truncate_diff(value: str) -> str:
+    if len(value) <= MAX_DIFF_CHARS:
+        return value
+    return value[:MAX_DIFF_CHARS] + "\n\n[diff truncated]"
+
+
+def set_source_markers(text: str, value: str) -> str:
     body = strip_hash(text).rstrip()
-    return f"{body}\n\n<!-- brain-doc-source-hash: {value} -->\n"
+    return (
+        f"{body}\n\n"
+        f"<!-- brain-doc-source-hash: {value} -->\n"
+        f"<!-- brain-doc-source-commit: {current_git_commit()} -->\n"
+    )
 
 
 def strip_hash(text: str) -> str:
-    return MARKER_RE.sub("", text).rstrip() + "\n"
+    return SOURCE_COMMIT_RE.sub("", MARKER_RE.sub("", text)).rstrip() + "\n"
+
+
+def source_commit(text: str) -> str | None:
+    match = SOURCE_COMMIT_RE.search(text)
+    if not match or match.group(1) == "unknown":
+        return None
+    return match.group(1)
+
+
+def current_git_commit() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        encoding="utf-8",
+    )
+    return result.stdout.strip() if result.returncode == 0 else "unknown"
+
+
+def baseline_commit_exists(commit: str) -> bool:
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return result.returncode == 0
 
 
 if __name__ == "__main__":

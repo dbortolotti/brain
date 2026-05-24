@@ -54,29 +54,43 @@ The default local URL is `http://127.0.0.1:8000`. The health check is served at 
 Selected user-facing HTTP endpoints include:
 
 - `GET /healthz`
-- `GET /`, `GET /app`, and `GET /user` for the Brain user dashboard
-- `GET /admin` for the root/admin dashboard view
-- `GET /app-assets/{asset_name}` and `GET /app/oauth/callback`
-- `GET /auth/session` and `GET /api/session` for the web session endpoint
-- `POST /login` and `POST /logout`
-- `PUT /account/password`
-- `GET|POST /authorize`
-- `POST /register`
-- `POST /token`
-- `POST /revoke`
 - `GET /.well-known/oauth-authorization-server`
 - `GET /.well-known/openid-configuration`
 - `GET /.well-known/oauth-protected-resource`
 - `GET /.well-known/oauth-protected-resource/{resource_path:path}`
 - `GET /.well-known/openai-apps-challenge` when `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN` is configured for OpenAI domain verification
-- `GET /admin/users`, `POST /admin/users`, `PUT /admin/users/{user_id}`, and `DELETE /admin/users/{user_id}`
-- `GET|POST /mcp` for the curated user/app MCP surface
-- `GET|POST /admin/mcp` for the full admin MCP surface
-- `GET|POST /app/mcp` for the legacy ChatGPT App MCP alias
-- `GET /docs`, `GET /docs/oauth2-redirect`, `GET /redoc`, and `GET /openapi.json`
-- `GET /favicon.ico`, `GET /icon.png`, and `GET /apple-touch-icon.png`
-- `GET /privacy`, `GET /terms`, and `GET /support`
-- `GET /datasources`, `POST /datasources`, and `DELETE /datasources/{datasource}`
+- `POST /register`
+- `GET|POST /authorize`
+- `POST /token`
+- `POST /revoke`
+- `POST /login`
+- `POST /logout`
+- `GET /auth/session`
+- `GET /api/session`
+- `PUT /account/password`
+- `GET /admin/tokens`
+- `POST /admin/tokens`
+- `DELETE /admin/tokens/{token_id}`
+- `GET /admin/users`
+- `POST /admin/users`
+- `PUT /admin/users/{user_id}`
+- `DELETE /admin/users/{user_id}`
+- `GET|POST /mcp`
+- `GET|POST /admin/mcp`
+- `GET|POST /app/mcp`
+- `GET /docs`
+- `GET /docs/oauth2-redirect`
+- `GET /redoc`
+- `GET /openapi.json`
+- `GET /favicon.ico`
+- `GET /icon.png`
+- `GET /apple-touch-icon.png`
+- `GET /privacy`
+- `GET /terms`
+- `GET /support`
+- `GET /datasources`
+- `POST /datasources`
+- `DELETE /datasources/{datasource}`
 - `POST /create_datasource`
 - `GET /list_datasources`
 - `POST /delete_datasource`
@@ -85,15 +99,9 @@ Selected user-facing HTTP endpoints include:
 - `POST /memory/ingest_source`
 - `POST /memory/recall`
 - `POST /memory/profile_entity`
-- `GET /memory/open_loops`
-- `GET /memory/{memory_id}`
 - `POST /memory/forget`
-- `POST /memory/resolve_conflict`
 - `POST /memory/review_recent`
 - `POST /memory/undo_last`
-- `POST /memory/sync_cognee`
-- `POST /memory/rebuild_cognee`
-- `POST /memory/merge_entities`
 
 The high-level MCP tools are grouped by surface:
 
@@ -131,8 +139,6 @@ Internal admin surface:
 - `brain_profile_entity`
 - `brain_list_open_loops`
 - `brain_get_memory`
-- `brain_get_source`
-- `brain_resolve_conflict`
 - `brain_forget`
 - `brain_review_recent`
 - `brain_undo_last`
@@ -144,13 +150,10 @@ Internal admin surface:
 - `brain_bias_context_forget`
 - `brain_profile_context_sync`
 - `brain_app_data_controls`
-- `brain_sync_cognee` (hard-deprecated; durable semantic writes go directly to Cognee)
-- `brain_rebuild_cognee` (hard-deprecated; use Cognee-native forget/cognify maintenance)
 - `cognee_improve`
 - external chat-continuity workflow
 - external chat-continuity recall
 - external chat-continuity cleanup
-- `brain_merge_entities` (hard-deprecated; Brain no longer owns semantic entity merges)
 - `brain_palate_describe_item`
 - `brain_palate_remember`
 - `brain_palate_query`
@@ -161,7 +164,7 @@ Internal admin surface:
 - `brain_palate_correct_proposal`
 - `brain_palate_refresh_enrichment`
 
-Raw SQL and arbitrary Cognee primitives are intentionally not exposed as public MCP tools. Brain exposes curated Cognee/admin operations such as sync, rebuild, and configured improve.
+Raw SQL and arbitrary Cognee primitives are intentionally not exposed as public MCP tools. Brain exposes curated Cognee/admin operations such as forget, review_recent, undo_last, profile context sync, and configured improve.
 
 ## Running The Cognee UI Proxy
 
@@ -225,9 +228,11 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 - `brain_palate_cancel`
 - `brain_palate_correct_proposal`
 
-Admin, raw projection, hard-delete, profile-context-sync, bias-context, chat-continuity-clear, and Palate write tools remain on the internal `/admin/mcp` surface only. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. On `/mcp`, read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
+Admin, write-only, profile-context-sync, bias-context, chat-continuity-cleanup, and Palate persistence tools remain on the internal `/admin/mcp` surface only. The internal `/admin/mcp` surface also exposes `brain_app_open_review_panel`; the public app surface does not. On `/mcp`, read tools advertise `brain.memory.read`; write tools advertise `brain.memory.read brain.memory.write`, are rate-limited, and destructive app-surface calls such as `brain_undo_last` and `brain_profile_context_forget` require confirmation.
 
 Browser dashboard auth is separate from MCP client auth. `/login` verifies a user-registry password, creates an opaque server-side session, and sets a cookie. Mutating dashboard requests must include the per-session CSRF token returned by `/auth/session`. MCP clients still use OAuth bearer tokens.
+
+Protected unauthenticated requests return `401` with a `WWW-Authenticate` challenge that advertises Brain's protected-resource metadata.
 
 User-registry passwords are stored as Argon2id hashes. Legacy plaintext user records are accepted for migration only; a successful login migrates that user, and operators can migrate and check the full registry with:
 
@@ -237,6 +242,8 @@ uv run python scripts/migrate_auth_user_passwords.py --env-file /path/to/brain.e
 ```
 
 The Cognee UI proxy also uses Brain user/password login. Regular users enter through `/cognee`; superusers can use `/admin/cognee` for system-level Cognee inspection. The older `/ui` and `/ui-api` routes, plus `/cognee-api`, `/cognee-login`, `/cognee-logout`, `/ui-login`, and `/ui-logout`, are compatibility aliases.
+
+Deployment also configures `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. A superuser can create, edit, and delete user records from the dashboard User Admin tab. Superusers can also create and revoke per-user personal access tokens for headless agents; Brain stores only token hashes in the OAuth state file, and the raw `brain_pat_...` value is shown only at creation time.
 
 Public app support pages:
 
@@ -255,7 +262,7 @@ Slack is no longer a supported Brain surface. The legacy adapter code remains do
 Brain deploys in three tiers, plus local dev:
 
 - `dev`: local developer runs.
-- `qa`: every push to `main` deploys through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain` as `oric`, with read-only repository permissions and the `qa-<12-char-sha>` build version. QA has no version input and derives its build version from the pushed commit SHA.
+- `qa`: every push to `main` deploys through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain` as `oric`, with read-only repository permissions and the `qa-<12-char-sha>` build version. QA has no version input and derives its build version from the pushed commit SHA. Manual `workflow_dispatch` QA runs support only `force_config_override` for intentional re-baselines.
 - `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain` as `oric_staging`. The workflow requires a `vX.Y.Z` or prerelease tag, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux user `brain`.
 
@@ -263,11 +270,21 @@ The cloud production layout is:
 
 ```text
 /opt/brain/current -> /opt/brain/releases/<commit-sha>
+/opt/brain/shared/release.json
 /etc/brain/brain.env
-/var/lib/brain/{data,backups,cache,venvs,docker}
+/etc/brain/brain-auth-password
+/etc/brain/brain-auth-users.json
+/var/lib/brain/data
+/var/lib/brain/backups
+/var/lib/brain/venvs/<commit-sha>
+/var/lib/brain/current-venv -> /var/lib/brain/venvs/<commit-sha>
+/var/lib/brain/docker
 /var/log/brain
-/etc/systemd/system/brain-{mcp,ui,maintenance}.{service,timer}
 /etc/caddy/conf.d/brain.caddy
+/etc/systemd/system/brain-mcp.service
+/etc/systemd/system/brain-ui.service
+/etc/systemd/system/brain-maintenance.service
+/etc/systemd/system/brain-maintenance.timer
 ```
 
 From this checkout, a direct cloud deploy can be run with:
@@ -276,13 +293,13 @@ From this checkout, a direct cloud deploy can be run with:
 make deploy-cloud-production
 ```
 
-Direct deploys need real production secrets either already present in
-`/etc/brain/brain.env` on the server or passed with
-`scripts/deploy-cloud-production.sh --rendered-env PATH --rendered-auth-password PATH`.
+Direct deploys need real production secrets either already present in `/etc/brain/brain.env` on the server or passed with `scripts/deploy-cloud-production.sh --rendered-env PATH --rendered-auth-password PATH`.
 
 The QA and staging workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Staging runs as `oric_staging`; QA runs as `oric`. System LaunchDaemons are installed under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching.
 
-The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That uploader packages the checkout, copies it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server. The Linux installer creates or repairs the `brain` user, installs missing runtime packages, starts Docker Compose data services, runs migrations, installs systemd units, installs the Caddy reverse-proxy config, and restarts Brain.
+The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That uploader packages the checkout, copies it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server. The Linux installer creates or repairs the `brain` user, installs missing runtime packages and `uv`, starts Postgres/pgvector and Neo4j with Docker Compose, runs migrations, installs systemd units, installs the Caddy reverse-proxy config, and restarts Brain.
+
+The deploy will refuse to start Neo4j if `GRAPH_DATABASE_PASSWORD` is empty.
 
 Production public HTTPS is direct DNS, not Cloudflare Tunnel:
 
@@ -330,9 +347,10 @@ GitHub Secrets and GitHub Variables are the source of truth; direct emergency ed
 Every deploy writes runtime release metadata into:
 
 ```text
-/Volumes/xpg_usb4/{qa|staging|prod}/brain/current/release.json
-/Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/release.json
-/Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/current-version
+/Volumes/xpg_usb4/{qa|staging}/brain/current/release.json
+/Volumes/xpg_usb4/{qa|staging}/brain/shared/release.json
+/opt/brain/current/release.json
+/opt/brain/shared/release.json
 ```
 
 The release metadata records the app name, environment, version, SHA, release directory, deployed_at, and source. The source is `github-actions` for workflow runs and `local` for local runs.
@@ -365,8 +383,8 @@ The renderer compares three files:
 
 ```text
 proposed: newly rendered GitHub Secrets/Vars config
-live:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env
-base:     /Volumes/xpg_usb4/{qa|staging|prod}/brain/shared/secrets/brain.env.last-deployed
+live:     /Volumes/xpg_usb4/{qa|staging}/brain/shared/secrets/brain.env or /etc/brain/brain.env
+base:     /Volumes/xpg_usb4/{qa|staging}/brain/shared/secrets/brain.env.last-deployed or the rendered production baseline
 ```
 
 For each non-metadata key:
@@ -380,18 +398,7 @@ else:
   fail deploy
 ```
 
-The renderer ignores metadata keys when it compares configs. The metadata set includes:
-
-```text
-BRAIN_CONFIG_RENDER_SHA
-BRAIN_CONFIG_RENDERED_AT
-BRAIN_CONFIG_RENDER_SOURCE
-BRAIN_RELEASE_ENV
-BRAIN_RELEASE_SHA
-BRAIN_RELEASE_VERSION
-```
-
-After a successful render, both `brain.env` and `brain.env.last-deployed` are updated to the proposed config.
+The renderer ignores metadata keys when it compares configs. After a successful render, both `brain.env` and `brain.env.last-deployed` are updated to the proposed config.
 
 `force_config_override=true` bypasses the three-way conflict check and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline. Otherwise, resolve a conflict by propagating the live change back to GitHub Secrets/Variables or by intentionally reconciling the environment back to the last deployed baseline before redeploying.
 
@@ -432,7 +439,6 @@ make palate-probe
 make backup
 make reset
 make reset-hard
-make maintenance
 make maintenance
 ```
 
@@ -506,7 +512,6 @@ Deployment, routing, and auth-related settings worth calling out:
 
 - `ALLOW_EMBEDDING_DIMENSION_CHANGE`
 - `BRAIN_ADMIN_MCP_PATH`
-- ``
 - `BRAIN_APP_MCP_PATH`
 - `BRAIN_APP_WRITE_RATE_LIMIT_COUNT`
 - `BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS`
@@ -521,16 +526,15 @@ Deployment, routing, and auth-related settings worth calling out:
 - `BRAIN_AUTH_TOKEN`
 - `BRAIN_AUTH_USERS_FILE`
 - `BRAIN_BACKUP_DIR`
-- ``
 - `BRAIN_COGNEE_DATA_DATASET`
 - `BRAIN_COGNEE_ENABLED`
 - `BRAIN_COGNEE_MEMORY_DATASET`
 - `BRAIN_COGNEE_PALATE_DATASET`
 - `BRAIN_COGNEE_RECALL_ENABLED`
 - `BRAIN_COGNEE_RECALL_TOP_K`
+- `BRAIN_COGNEE_SOURCES_DATASET`
 - `BRAIN_COGNEE_SYNC_ON_INGEST`
 - `BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT`
-- `BRAIN_COGNEE_SOURCES_DATASET`
 - `BRAIN_DATABASE_URL`
 - `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED`
 - `BRAIN_GOOGLE_DRIVE_FOLDER`
@@ -539,8 +543,8 @@ Deployment, routing, and auth-related settings worth calling out:
 - `BRAIN_HEALTH_PATH`
 - `BRAIN_INGEST_BACKGROUND_AUTO_CHARS`
 - `BRAIN_LAUNCHD_LABEL`
-- `BRAIN_LOG_LEVEL`
 - `BRAIN_LLM_ENABLED`
+- `BRAIN_LOG_LEVEL`
 - `BRAIN_MCP_HOST`
 - `BRAIN_MCP_PATH`
 - `BRAIN_MCP_PORT`
@@ -582,14 +586,18 @@ Deployment, routing, and auth-related settings worth calling out:
 - `BRAIN_SLACK_ALLOWED_USER_IDS`
 - `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`
 - `BRAIN_SLACK_ENABLED`
+- `BRAIN_SLACK_SIGNING_SECRET`
+- `BRAIN_SLACK_BOT_TOKEN`
 - `BRAIN_TASTE_AUTO_ENRICH_ENABLED`
 - `BRAIN_TASTE_AUTO_WRITE_THRESHOLD`
 - `BRAIN_TASTE_CANONICAL_STORE`
 - `BRAIN_TASTE_CONFIRMATION_THRESHOLD`
 - `BRAIN_TASTE_ENABLED`
+- `BRAIN_TASTE_GOOGLE_PLACES_API_KEY`
 - `BRAIN_TASTE_LLM_MODEL`
 - `BRAIN_TASTE_LLM_REASONING_EFFORT`
 - `BRAIN_TASTE_LLM_ROUTING_ENABLED`
+- `BRAIN_TASTE_OMDB_API_KEY`
 - `BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD`
 - `BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD`
 - `BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS`
@@ -676,9 +684,7 @@ Cognee projection settings:
 - `BRAIN_COGNEE_MEMORY_DATASET=memory`
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
-- `=chat_continuity`
 - `BRAIN_COGNEE_PALATE_DATASET=palate`
-- `=portable_agent_session`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
 - `GRAPH_DATABASE_PROVIDER=ladybug`
 - `VECTOR_DB_PROVIDER=pgvector`
@@ -686,7 +692,7 @@ Cognee projection settings:
 - `DB_PROVIDER=postgres`
 - `ENABLE_BACKEND_ACCESS_CONTROL=false`
 
-`` and `` are base names. At runtime, authenticated users receive a derived session id and Cognee chat-continuity dataset scoped to their Brain user id, so one user cannot recall or improve another user's chat-session memory.
+At runtime, authenticated users receive a derived session id and Cognee chat-continuity dataset scoped to their Brain user id, so one user cannot recall or improve another user's chat-session memory.
 
 Brain defaults Cognee's rebuildable projection to Postgres and pgvector for vector storage and Postgres for Cognee metadata. The configured Postgres role must be able to create the `vector` extension; with Cognee's pgvector dataset handler it also needs permission to create per-dataset databases.
 
@@ -756,4 +762,5 @@ OPENAI_CODEX_AUTH_PROFILE=default
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
 
-<!-- brain-doc-source-hash: 577ef4be496bcf047ed05a456d68facadf4949bd4c4e13928d6e93107d1382a4 -->
+<!-- brain-doc-source-hash: 80eecfc45832c69d7b402115ef6ee0d8f789f2e717a2fbcb1945d32b389a0727 -->
+<!-- brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3 -->

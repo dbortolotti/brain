@@ -1218,6 +1218,80 @@ def test_oauth_user_id_scopes_mcp_and_http_memory_data(tmp_path, monkeypatch) ->
     assert BrainStore(default_settings).list_context_records(kind="profile") == []
 
 
+def test_personal_access_token_scopes_headless_agent_to_user(tmp_path) -> None:
+    users_file = tmp_path / "brain-users.json"
+    users_file.write_text(
+        json.dumps(
+            [
+                {"id": "admin", "password": "admin-pass", "superuser": True},
+                {"id": "agent_user", "password": "agent-pass", "display_name": "Agent User"},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    with oauth_settings(
+        tmp_path,
+        brain_auth_users_file=str(users_file),
+        brain_user_id="admin",
+    ):
+        client = TestClient(app, follow_redirects=False)
+        admin_token = issue_test_oauth_token(
+            client,
+            tmp_path,
+            scope="brain.memory.read brain.memory.write",
+            user_id="admin",
+            password="admin-pass",
+        )
+        admin_headers = {"Authorization": f"Bearer {admin_token}"}
+        create_response = client.post(
+            "/admin/tokens",
+            headers=admin_headers,
+            json={
+                "user_id": "agent_user",
+                "name": "local-agent",
+                "scopes": ["brain.memory.read", "brain.memory.write"],
+            },
+        )
+        token_payload = create_response.json()
+        pat = token_payload["token"]
+        token_id = token_payload["personal_access_token"]["id"]
+        agent_headers = {"Authorization": f"Bearer {pat}"}
+        session_response = client.post(
+            "/mcp",
+            headers=agent_headers,
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+        list_response = client.get("/admin/tokens?user_id=agent_user", headers=admin_headers)
+        revoke_response = client.delete(f"/admin/tokens/{token_id}", headers=admin_headers)
+        revoked_session_response = client.post(
+            "/mcp",
+            headers=agent_headers,
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+
+    assert create_response.status_code == 201
+    assert pat.startswith("brain_pat_")
+    assert pat not in (tmp_path / "brain-oauth.json").read_text(encoding="utf-8")
+    assert session_response.status_code == 200
+    assert session_response.json()["result"]["structuredContent"]["user_id"] == "agent_user"
+    listed = list_response.json()["personal_access_tokens"]
+    assert [token["id"] for token in listed] == [token_id]
+    assert listed[0]["last_used_at"]
+    assert revoke_response.status_code == 200
+    assert revoke_response.json()["revoked"]["revoked_at"]
+    assert revoked_session_response.status_code == 401
+
+
 def test_superuser_can_manage_auth_users_without_restart(tmp_path) -> None:
     users_file = tmp_path / "brain-users.json"
     users_file.write_text(

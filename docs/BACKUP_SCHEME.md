@@ -1,6 +1,6 @@
 # Backup Scheme
 
-Brain backups are timestamped backup directories with a manifest. The backup job is implemented by `scripts/backup_stores.py`.
+Brain backups are timestamped backup directories with a manifest. The backup job is implemented by `scripts/backup_stores.py`, and scheduled runs are wrapped by `scripts/nightly_maintenance.py`.
 
 Production verification checks the latest backup manifest as part of:
 
@@ -24,7 +24,7 @@ Brain DB remains the authoritative memory store. Cognee, pgvector/LanceDB, and N
 
 ## Default Locations
 
-Local defaults come from `.env.example`; deployed defaults are rendered by the production deployment scripts and checked-in environment configs.
+The backup job uses the configured `BRAIN_BACKUP_DIR`. Cloud Linux production uses `/var/lib/brain/backups`. The checked-in prod and staging configs use `/Volumes/xpg_usb4/{prod|staging}/brain/shared/backups`.
 
 ```env
 BRAIN_BACKUP_DIR=/var/lib/brain/backups
@@ -37,6 +37,8 @@ BRAIN_NEO4J_STOP_FOR_DUMP=false
 ```
 
 Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend. The deployed auth registry file is configured as `BRAIN_AUTH_USERS_FILE` in prod, staging, and QA, but it is not part of the default backup inputs unless the script is explicitly extended to capture it.
+
+The backup script deduplicates the configured data root, runtime data root, and runtime system root before scanning them.
 
 Each backup run creates:
 
@@ -61,7 +63,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`. Local staging and QA deploys still install daily system LaunchDaemons from `deployment/launchd/com.brain.maintenance.plist.template`.
+Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`.
 
 Run the backup script directly with the configured environment:
 
@@ -182,9 +184,9 @@ If the dump is produced but not verified as non-empty, the script raises an erro
 When the vector backend is LanceDB, the script archives:
 
 - The configured `VECTOR_DB_URL`.
-- Any path under the shared data root whose name contains `lancedb`.
+- Any path under the backup data root whose name contains `lancedb`.
 
-If `VECTOR_DB_URL` is not absolute, the script resolves it relative to the shared data root before checking for the path.
+If `VECTOR_DB_URL` is not absolute, the script resolves it relative to the backup data root before checking for the path.
 
 Each candidate is stored as:
 
@@ -210,7 +212,9 @@ The archive is written to:
 secrets/secrets.tar.gz
 ```
 
-If no secret files are found, the manifest receives a blocker. The deployed auth registry file (`BRAIN_AUTH_USERS_FILE`, rendered by production deploys under the environment's `shared/secrets/brain-auth-users.json`) is not assumed to be captured by this backup unless you have explicitly extended the backup inputs.
+If no secret files are found, the manifest receives a blocker. The deployed auth registry file (`BRAIN_AUTH_USERS_FILE`) is not assumed to be captured by this backup unless you have explicitly extended the backup inputs.
+
+If your deployment depends on `BRAIN_AUTH_USERS_FILE`, restore it from your deployment source of truth or from an explicitly extended backup. It is not part of the default secrets archive.
 
 Production secret rendering and conflict rules are documented in [Production Secrets](production-secrets.md).
 
@@ -292,7 +296,7 @@ Production verification requires Google Drive verification when `BRAIN_GOOGLE_DR
 
 ## Production Verification
 
-`scripts/verify_mcp_production.py` checks the latest manifest under `BRAIN_BACKUP_DIR` unless `--skip-backups` is passed. It also checks that the configured runtime paths are absolute and under `shared/data`.
+`scripts/verify_mcp_production.py` checks the latest manifest under `BRAIN_BACKUP_DIR` unless `--skip-backups` is passed. It also checks that the configured runtime paths are absolute and live under either the local support root or `shared/data`, depending on the path.
 
 It fails when:
 
@@ -336,6 +340,8 @@ sudo chown -R brain:brain /etc/brain
 sudo chmod 600 /etc/brain/*
 ```
 
+If your deployment depends on `BRAIN_AUTH_USERS_FILE`, restore it from your deployment source of truth or from an explicitly extended backup. The default secrets archive does not include it.
+
 Restore SQLite databases by copying the selected files from `sqlite/` back to their manifest `source` paths.
 
 Restore raw data from the matching archive in `raw_data/` for each archived data root.
@@ -367,4 +373,5 @@ ENV_FILE=/etc/brain/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 98e6806aadf204587b85f1a950a1788cc9637422102414b53c1bf231e33a1881 -->
+<!-- brain-doc-source-hash: 04c728703504c43371edf3fbbef9e6fb2bec968e11d5931daf1f294f040d6586 -->
+<!-- brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3 -->

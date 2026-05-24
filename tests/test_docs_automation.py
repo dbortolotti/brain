@@ -6,6 +6,10 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path("scripts").resolve()))
+import docs_check  # noqa: E402
+import docs_llm_generate  # noqa: E402
+
 
 def test_docs_automation_files_are_wired() -> None:
     makefile = Path("Makefile").read_text(encoding="utf-8")
@@ -47,3 +51,38 @@ def test_docs_check_passes() -> None:
     )
 
     assert result.returncode == 0, result.stderr
+
+
+def test_doc_source_markers_do_not_change_source_hash(tmp_path, monkeypatch) -> None:
+    source = tmp_path / "source.md"
+    source.write_text(
+        "# Source\n\nBody\n\n"
+        "<!-- brain-doc-source-hash: "
+        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef -->\n"
+        "<!-- brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3 -->\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(docs_check, "REPO_ROOT", tmp_path)
+
+    with_markers = docs_check.doc_source_hash({"sources": ["source.md"]}, "{}")
+    source.write_text("# Source\n\nBody\n", encoding="utf-8")
+    without_markers = docs_check.doc_source_hash({"sources": ["source.md"]}, "{}")
+
+    assert with_markers == without_markers
+
+
+def test_doc_hash_update_adds_source_commit_marker(monkeypatch) -> None:
+    monkeypatch.setattr(
+        docs_llm_generate,
+        "current_git_commit",
+        lambda: "ab7f9f07ebbb46922db0079c8daab2903fc84ed3",
+    )
+
+    updated = docs_llm_generate.set_source_markers(
+        "# Doc\n\nBody\n",
+        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    )
+
+    assert "brain-doc-source-hash" in updated
+    assert "brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3" in updated
+    assert docs_llm_generate.strip_hash(updated) == "# Doc\n\nBody\n"

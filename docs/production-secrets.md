@@ -3,12 +3,11 @@
 The QA, staging, production, and release workflows run on the self-hosted `brain-prod` runner. The deployment model has three deployed environments, plus local dev:
 
 - `dev`: local developer runs.
-- `qa`: pushes and merges to `main` deploy through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`.
-  QA runs as `oric`, uses read-only repository permissions, and records a `qa-<12-char-sha>` build version. `workflow_dispatch` on QA supports `force_config_override`; it has no version input.
-- `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or prerelease tag such as `vX.Y.Z-rc.1`, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag at the staged SHA.
+- `qa`: pushes and merges to `main` deploy through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`. QA runs as `oric`, uses read-only repository permissions, and records a `qa-<12-char-sha>` build version. `workflow_dispatch` on QA supports `force_config_override`; it has no version input.
+- `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or prerelease tag such as `vX.Y.Z-rc.1`, refreshes generated docs, writes `docs/generated/release.json` with the staged environment, version, and timestamp, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag at the staged SHA.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux service user `brain`.
 
-The QA and staging workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`.
+The QA and staging workflows render each environment's `shared/secrets/brain.env` and `shared/secrets/brain-auth-password` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`.
 
 The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That script packages the checkout, uploads it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server.
 
@@ -43,10 +42,7 @@ Production public HTTPS uses direct DNS and Caddy, not Cloudflare Tunnel:
 brain.dceb.net.  A  159.195.79.79
 ```
 
-Keep the Cloudflare record DNS-only while Caddy manages the origin certificate
-directly. The production hostname is intentionally absent from
-`deployment/cloudflare/config.example.yml`; that tunnel template remains only
-for QA/staging local routes.
+Keep the Cloudflare record DNS-only while Caddy manages the origin certificate directly. The production hostname is intentionally absent from `deployment/cloudflare/config.example.yml`; that tunnel template remains only for QA/staging local routes.
 
 Direct operator deploys use:
 
@@ -56,8 +52,9 @@ scripts/deploy-cloud-production.sh \
   --rendered-auth-password /path/to/brain-auth-password
 ```
 
-The deploy will refuse to start Neo4j if `GRAPH_DATABASE_PASSWORD` is empty,
-`change-me`, or `replace-me`.
+The renderer requires `GRAPH_DATABASE_PASSWORD` to be non-empty.
+
+The deploy workflows also pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`.
 
 The staging and release workflow-dispatch `version` inputs are required. QA has no version input and derives its build version from the pushed commit SHA. `force_config_override` is available only on workflow-dispatch runs for QA, staging, and release. It defaults to `false`. Push-based QA deploys do not use it.
 
@@ -127,7 +124,7 @@ The renderer ignores metadata keys when it compares configs. After a successful 
 
 ## Deployment Metadata and Auth Registry
 
-Deployment also configures `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. A superuser can create, edit, and delete user records from the dashboard User Admin tab.
+Deployment also configures `BRAIN_AUTH_USERS_FILE` under `shared/secrets/brain-auth-users.json` and `BRAIN_AUTH_SUPERUSER_IDS` in the deployed config. A superuser can create, edit, and delete user records from the dashboard User Admin tab. Superusers can also create and revoke per-user personal access tokens for headless agents; Brain stores only token hashes in the OAuth state file, and the raw `brain_pat_...` value is shown only at creation time.
 
 The deployed auth and dashboard surfaces include these route families:
 
@@ -141,6 +138,8 @@ The deployed auth and dashboard surfaces include these route families:
 /account/password     change own password
 /admin/users          list and create auth users
 /admin/users/{user_id} update or delete auth users
+/admin/tokens         list and create personal access tokens
+/admin/tokens/{token_id} revoke a personal access token
 /authorize            OAuth authorization endpoint
 /token                OAuth token endpoint
 /revoke               OAuth token revocation endpoint
@@ -187,7 +186,7 @@ The deployed auth and dashboard surfaces include these route families:
 /{path:path}          MCP route fallback
 ```
 
-The key auth routes are `GET` and `POST` as appropriate: `/authorize` accepts `GET` and `POST`, `/login`, `/logout`, `/register`, `/revoke`, and `/token` are `POST`-only, `/account/password` is `PUT`, `/admin/users` is `GET` and `POST`, `/admin/users/{user_id}` is `PUT` and `DELETE`, and `/auth/session` and `/api/session` are `GET`.
+The key auth routes are `GET` and `POST` as appropriate: `/authorize` accepts `GET` and `POST`, `/login`, `/logout`, `/register`, `/revoke`, and `/token` are `POST`-only, `/account/password` is `PUT`, `/admin/users` and `/admin/tokens` are `GET` and `POST`, `/admin/users/{user_id}` is `PUT` and `DELETE`, `/admin/tokens/{token_id}` is `DELETE`, and `/auth/session` and `/api/session` are `GET`.
 
 The workflows set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_APP_MCP_PATH=/app/mcp`, `BRAIN_PUBLIC_MCP_PATH=/mcp`, `BRAIN_PUBLIC_ADMIN_MCP_PATH=/admin/mcp`, `BRAIN_PUBLIC_APP_MCP_PATH=/mcp`, `BRAIN_PUBLIC_UI_PATH=/cognee`, and `BRAIN_PUBLIC_UI_API_PATH=/cognee-api`.
 
@@ -286,6 +285,7 @@ BRAIN_HEALTH_PATH
 BRAIN_LAUNCHD_LABEL
 BRAIN_MCP_HOST
 BRAIN_MCP_PORT
+BRAIN_MCP_PATH
 BRAIN_APP_MCP_PATH
 BRAIN_ADMIN_MCP_PATH
 BRAIN_PUBLIC_MCP_PATH
@@ -396,7 +396,7 @@ BRAIN_APP_WRITE_RATE_LIMIT_COUNT
 BRAIN_APP_WRITE_RATE_LIMIT_WINDOW_SECONDS
 ```
 
-The renderer also reads additional environment variables in staging and prod, including the `BRAIN_COGNEE_*` family, `BRAIN_COGNEE_SYNC_ON_INGEST`, `BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT`, `BRAIN_INGEST_BACKGROUND_AUTO_CHARS`, `CONFIG_ENV`, `BRAIN_DATABASE_URL`, `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`, `BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_AUTH_SUPERUSER_IDS`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown above.
+The renderer also reads additional environment variables in staging and prod, including the `BRAIN_COGNEE_*` family, `BRAIN_COGNEE_SYNC_ON_INGEST`, `BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT`, `BRAIN_INGEST_BACKGROUND_AUTO_CHARS`, `CONFIG_ENV`, `BRAIN_DATABASE_URL`, `BRAIN_GOOGLE_DRIVE_REMOTE`, `BRAIN_HEALTH_PATH`, `BRAIN_LLM_ENABLED`, `BRAIN_MCP_PATH`, `BRAIN_NEO4J_*` service and container labels, `BRAIN_OPENAI_APPS_CHALLENGE_TOKEN`, `BRAIN_AUTH_TOKEN`, `BRAIN_AUTH_SUPERUSER_IDS`, `BRAIN_SLACK_ENABLED`, `BRAIN_SLACK_AGENT_HOST`, `BRAIN_SLACK_AGENT_PORT`, `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE`, `BRAIN_TASTE_*` controls including `BRAIN_TASTE_CANONICAL_STORE`, and the `BRAIN_UI_*` runtime settings shown above.
 
 ## Local Backup
 
@@ -406,4 +406,5 @@ Before moving secrets into GitHub, keep a local gitignored backup under `local-s
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 610c33f2161345d64889639b10abf941786d2cd64e10c4f59657b494b1793e2b -->
+<!-- brain-doc-source-hash: 8aad7a90c6bc0e798c7b6ced028ec42aa8365eda1f96868ea0c33d778386dcc7 -->
+<!-- brain-doc-source-commit: ab7f9f07ebbb46922db0079c8daab2903fc84ed3 -->

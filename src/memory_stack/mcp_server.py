@@ -63,6 +63,7 @@ from memory_stack.oauth import (
     load_auth_users,
     migrate_verified_password,
     parse_bearer,
+    parse_scope,
     public_auth_user,
     set_user_password,
     verify_password,
@@ -219,6 +220,13 @@ class AuthUserUpdateRequest(BaseModel):
     display_name: str | None = None
     email: str | None = None
     superuser: bool | None = None
+
+
+class PersonalAccessTokenCreateRequest(BaseModel):
+    user_id: str
+    name: str
+    scopes: list[str] | str | None = None
+    expires_in_seconds: int | None = None
 
 
 class LoginRequest(BaseModel):
@@ -1339,6 +1347,56 @@ async def delete_auth_user_endpoint(
     return {"deleted": public_auth_user(deleted)}
 
 
+@app.get("/admin/tokens")
+async def list_personal_access_tokens_endpoint(
+    request: Request,
+    user_id: str | None = None,
+    authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
+) -> dict[str, Any]:
+    require_superuser_auth(authorization, request=request, session_cookie=brain_web_session)
+    if not oauth_provider:
+        raise HTTPException(status_code=404, detail="Auth provider is not configured.")
+    return {"personal_access_tokens": oauth_provider.list_personal_access_tokens(user_id)}
+
+
+@app.post("/admin/tokens", status_code=201)
+async def create_personal_access_token_endpoint(
+    payload: PersonalAccessTokenCreateRequest,
+    request: Request,
+    authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
+) -> dict[str, Any]:
+    require_superuser_auth(authorization, request=request, session_cookie=brain_web_session, require_csrf=True)
+    if not oauth_provider:
+        raise HTTPException(status_code=404, detail="Auth provider is not configured.")
+    try:
+        return oauth_provider.create_personal_access_token(
+            user_id=payload.user_id,
+            name=payload.name,
+            scopes=parse_scope(payload.scopes, settings.brain_auth_scope_list),
+            expires_in_seconds=payload.expires_in_seconds,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.delete("/admin/tokens/{token_id}")
+async def revoke_personal_access_token_endpoint(
+    token_id: str,
+    request: Request,
+    authorization: str | None = Header(default=None),
+    brain_web_session: str | None = Cookie(default=None),
+) -> dict[str, Any]:
+    require_superuser_auth(authorization, request=request, session_cookie=brain_web_session, require_csrf=True)
+    if not oauth_provider:
+        raise HTTPException(status_code=404, detail="Auth provider is not configured.")
+    revoked = oauth_provider.revoke_personal_access_token(token_id)
+    if revoked is None:
+        raise HTTPException(status_code=404, detail="Personal access token not found.")
+    return {"revoked": revoked}
+
+
 @app.get("/datasources")
 @app.get("/list_datasources")
 async def list_datasources_endpoint(
@@ -1580,6 +1638,8 @@ def mcp_auth_context(
     token = parse_bearer(header_value)
     if oauth_provider and token:
         record = oauth_provider.access_token_record(token, required)
+        if record is None:
+            record = oauth_provider.personal_access_token_record(token, required)
         if record is not None:
             user_id = record.get("user_id")
             if not user_id:

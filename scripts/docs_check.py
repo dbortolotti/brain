@@ -17,6 +17,7 @@ FACTS_PATH = REPO_ROOT / "docs" / "generated" / "facts.json"
 FACTS_HASH_PATH = REPO_ROOT / "docs" / "generated" / "facts.sha256"
 MANIFEST_PATH = REPO_ROOT / "docs" / "sources" / "llm_docs.yaml"
 HASH_RE = re.compile(r"<!-- brain-doc-source-hash: ([0-9a-f]{64}) -->")
+SOURCE_COMMIT_RE = re.compile(r"<!-- brain-doc-source-commit: ([0-9a-f]{40}|unknown) -->\s*")
 
 
 def main() -> int:
@@ -99,10 +100,14 @@ def doc_source_hash(doc: dict[str, Any], facts_text: str) -> str:
         digest.update(source.encode("utf-8"))
         if path.exists():
             source_text = path.read_text(encoding="utf-8", errors="replace")
-            digest.update(HASH_RE.sub("", source_text).encode("utf-8"))
+            digest.update(strip_doc_markers(source_text).encode("utf-8"))
         else:
             digest.update(b"<missing>")
     return digest.hexdigest()
+
+
+def strip_doc_markers(text: str) -> str:
+    return SOURCE_COMMIT_RE.sub("", HASH_RE.sub("", text)).rstrip() + "\n"
 
 
 def sha256(text: str) -> str:
