@@ -165,6 +165,7 @@ def test_datasource_tools_are_listed() -> None:
         "brain_palate_query",
         "brain_palate_evaluate_options",
         "brain_palate_log_decision",
+        "brain_palate_forget",
         "brain_palate_confirm",
         "brain_palate_cancel",
         "brain_palate_correct_proposal",
@@ -333,6 +334,8 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     taste_properties = tools["brain_palate_remember"]["inputSchema"]["properties"]
     assert {"type", "canonical_name", "description"} <= set(taste_properties)
     assert "taste_records" in tools["brain_palate_remember"]["outputSchema"]["properties"]
+    palate_forget_properties = tools["brain_palate_forget"]["inputSchema"]["properties"]
+    assert {"taste_item_id", "canonical_name", "confirm"} <= set(palate_forget_properties)
 
     forget_properties = tools["brain_forget"]["inputSchema"]["properties"]
     assert forget_properties["object_type"]["enum"] == [

@@ -15,6 +15,7 @@ from memory_stack.cfg import Settings
 from memory_stack.llm.fake import FakeLLMClient
 from memory_stack.taste.models import (
     TasteDescribeRequest,
+    TasteForgetRequest,
     TasteQueryRequest,
     TasteRefreshRequest,
     TasteRememberRequest,
@@ -896,6 +897,42 @@ def restaurant_enrichment_payload(notes: str) -> dict[str, Any]:
             },
         },
     }
+
+
+def test_forget_palate_item_by_item_id_name_and_brain_entity_id(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    service = make_taste_service(settings)
+    record = service.remember(
+        TasteRememberRequest(
+            type="wine",
+            canonical_name="Gaja Barbaresco 2016",
+            description="Gaja Barbaresco 2016",
+            fetch_external_ratings=False,
+        )
+    )["taste_records"][0]
+
+    by_entity = service.forget(TasteForgetRequest(taste_item_id=record["brain_entity_id"]))
+
+    assert by_entity["forgotten"] is True
+    assert by_entity["status"] == "deleted"
+    assert by_entity["taste_item_id"] == record["id"]
+    assert by_entity["matched_by"] == "brain_entity_id"
+    assert service.canonical_store.get_item(record["id"]) is None
+
+    second = service.remember(
+        TasteRememberRequest(
+            type="wine",
+            canonical_name="Gaja Barbaresco 2016",
+            description="Gaja Barbaresco 2016",
+            fetch_external_ratings=False,
+        )
+    )["taste_records"][0]
+
+    by_name = service.forget(TasteForgetRequest(canonical_name="Gaja Barbaresco 2016"))
+
+    assert by_name["forgotten"] is True
+    assert by_name["taste_item_id"] == second["id"]
+    assert by_name["matched_by"] == "canonical_name"
 
 
 def table_count(settings: Settings, table: Any) -> int:

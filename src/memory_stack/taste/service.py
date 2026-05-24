@@ -10,6 +10,7 @@ from memory_stack.llm.client import LLMClient, build_llm_client
 from memory_stack.taste.enrichment import TasteEnrichmentService, metadata_has_content
 from memory_stack.taste.models import (
     TasteDescribeRequest,
+    TasteForgetRequest,
     TasteLogDecisionRequest,
     TasteQueryRequest,
     TasteRefreshRequest,
@@ -284,6 +285,39 @@ class TasteService:
             "canonical_store": "cognee",
             "chosen_taste_item_id": request.chosen_taste_item_id,
             "updated_existing_decision": updated,
+        }
+
+    def forget(self, request: TasteForgetRequest) -> dict[str, Any]:
+        resolved = self._resolve_forget_target(request)
+        if resolved is None:
+            return {
+                "forgotten": False,
+                "status": "not_found",
+                "taste_item_id": request.taste_item_id,
+                "canonical_name": request.canonical_name,
+                "canonical_store": "cognee",
+            }
+        if resolved.get("requires_confirmation") and not request.confirm:
+            return {
+                "forgotten": False,
+                "status": "requires_confirmation",
+                "taste_item_id": resolved["item"]["id"],
+                "canonical_name": resolved["item"]["canonical_name"],
+                "canonical_store": "cognee",
+                "match": resolved["match"],
+            }
+
+        item = resolved["item"]
+        item["status"] = "deleted"
+        self.canonical_store.upsert_item(item)
+        return {
+            "forgotten": True,
+            "status": "deleted",
+            "taste_item_id": item["id"],
+            "brain_entity_id": item.get("brain_entity_id"),
+            "canonical_name": item["canonical_name"],
+            "canonical_store": "cognee",
+            "matched_by": resolved["matched_by"],
         }
 
     def create_proposal_from_text(
@@ -616,6 +650,47 @@ class TasteService:
         if best.get("needs_confirmation"):
             return {"record": None, "match": None, "needs_confirmation": [best]}
         return {"record": record, "match": best, "needs_confirmation": []}
+
+    def _resolve_forget_target(self, request: TasteForgetRequest) -> dict[str, Any] | None:
+        taste_item_id = (request.taste_item_id or "").strip()
+        canonical_name = (request.canonical_name or "").strip()
+        if not taste_item_id and not canonical_name:
+            raise ValueError("taste_item_id or canonical_name is required.")
+
+        if taste_item_id:
+            item = self.canonical_store.get_item(taste_item_id, include_deleted=True)
+            if item is not None:
+                return {"item": item, "matched_by": "taste_item_id", "requires_confirmation": False}
+
+        entities = self.canonical_store.list_entities()
+        if taste_item_id:
+            for item in entities:
+                if taste_item_id in {str(item.get("id")), str(item.get("brain_entity_id"))}:
+                    return {
+                        "item": item,
+                        "matched_by": "brain_entity_id" if taste_item_id == item.get("brain_entity_id") else "taste_item_id",
+                        "requires_confirmation": False,
+                    }
+
+        if canonical_name:
+            normalized_target = normalize_name(canonical_name)
+            for item in entities:
+                if normalize_name(str(item.get("canonical_name") or "")) == normalized_target:
+                    return {"item": item, "matched_by": "canonical_name", "requires_confirmation": False}
+
+            matches = self.canonical_store.match_entities_by_names([canonical_name])
+            match = next(iter(matches.get("matches") or []), None)
+            if match is not None:
+                item = self.canonical_store.get_item(str(match["matched_id"]))
+                if item is not None:
+                    return {
+                        "item": item,
+                        "matched_by": "canonical_name_fuzzy",
+                        "requires_confirmation": bool(match.get("needs_confirmation")),
+                        "match": match,
+                    }
+
+        return None
 
     def _pending_proposal(self, proposal_id: str) -> dict[str, Any]:
         proposal = self.store.get_proposal(proposal_id)

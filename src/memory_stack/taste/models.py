@@ -60,5 +60,11 @@ class TasteLogDecisionRequest(BaseModel):
     context: dict[str, Any] = Field(default_factory=dict)
 
 
+class TasteForgetRequest(BaseModel):
+    taste_item_id: str | None = None
+    canonical_name: str | None = None
+    confirm: bool = False
+
+
 class TasteRefreshRequest(BaseModel):
     taste_item_id: str

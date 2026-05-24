@@ -79,6 +79,7 @@ from memory_stack.request_logging import RequestResponseLogMiddleware
 from memory_stack.session import brain_session_payload
 from memory_stack.taste.models import (
     TasteDescribeRequest,
+    TasteForgetRequest,
     TasteLogDecisionRequest,
     TasteQueryRequest,
     TasteRefreshRequest,
@@ -645,6 +646,30 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
             },
         },
         {
+            "name": "brain_palate_forget",
+            "description": (
+                "Forget one canonical Brain Palate item by palate item ID, Brain palate "
+                "entity ID, or canonical name. This soft-deletes the Cognee-backed "
+                "palate item so it no longer appears in current Palate results."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "taste_item_id": {
+                        "type": "string",
+                        "description": "Palate item ID such as taste_... or Brain palate entity ID such as taste_entity_...",
+                    },
+                    "canonical_name": {"type": "string"},
+                    "confirm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required only for fuzzy name matches.",
+                    },
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
             "name": "brain_palate_confirm",
             "description": "Confirm a pending palate proposal by proposal_id.",
             "inputSchema": {
@@ -927,6 +952,7 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
     "brain_palate_query": PALATE_QUERY_OUTPUT_SCHEMA,
     "brain_palate_evaluate_options": PALATE_QUERY_OUTPUT_SCHEMA,
     "brain_palate_log_decision": object_schema({"logged": {"type": "boolean"}, "decision": ANY_OBJECT_SCHEMA}),
+    "brain_palate_forget": object_schema({"forgotten": {"type": "boolean"}, "status": {"type": "string"}, "taste_item_id": {"type": ["string", "null"]}, "canonical_name": {"type": ["string", "null"]}}, required=["status"]),
     "brain_palate_confirm": object_schema({"confirmed": {"type": "boolean"}, "proposal_id": {"type": "string"}}),
     "brain_palate_cancel": object_schema({"cancelled": {"type": "boolean"}, "proposal_id": {"type": "string"}}),
     "brain_palate_correct_proposal": ANY_OBJECT_SCHEMA,
@@ -2327,6 +2353,17 @@ async def call_tool_dispatch(
         return json_tool_response(
             payload,
             summary="Palate decision logged." if payload.get("logged") else "Palate decision not logged.",
+        )
+
+    if name == "brain_palate_forget":
+        payload = TasteService(settings).forget(TasteForgetRequest.model_validate(arguments))
+        return json_tool_response(
+            payload,
+            summary=(
+                f"Palate item forgotten: {payload.get('canonical_name')}."
+                if payload.get("forgotten")
+                else f"Palate forget result: {payload.get('status')}."
+            ),
         )
 
     if name == "brain_palate_confirm":

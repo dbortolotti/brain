@@ -33,6 +33,7 @@ from memory_stack.profile_context import (
 from memory_stack.session import brain_session_payload
 from memory_stack.taste.models import (
     TasteDescribeRequest,
+    TasteForgetRequest,
     TasteLogDecisionRequest,
     TasteQueryRequest,
     TasteRefreshRequest,
@@ -427,6 +428,21 @@ def build_server():
                 decision_id=decision_id,
                 query=query,
                 context=context or {},
+            )
+        )
+
+    @mcp.tool(name="brain_palate_forget", structured_output=True)
+    async def taste_forget(
+        taste_item_id: str | None = None,
+        canonical_name: str | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        """Forget a stored Brain Palate item by palate ID, entity ID, or canonical name."""
+        return TasteService(settings).forget(
+            TasteForgetRequest(
+                taste_item_id=taste_item_id,
+                canonical_name=canonical_name,
+                confirm=confirm,
             )
         )
 
