@@ -40,7 +40,9 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     )
     assert "sudo -n" in workflow
     assert "BRAIN_DEPLOY_ENV=prod" in workflow
-    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
+    assert '"$PWD/scripts/deploy-cloud-production.sh"' in workflow
+    assert "brain@159.195.79.79" in workflow
+    assert "/etc/brain/$name" in workflow
     assert '--source-root "$PWD"' in workflow
     assert "--rendered-env" in workflow
     assert "--rendered-auth-password" in workflow
@@ -134,7 +136,9 @@ def test_release_action_promotes_staging_sha_to_prod_and_tags() -> None:
     assert "BRAIN_RELEASE_VERSION" in workflow
     assert "scripts/render_prod_env.py --env prod" in workflow
     assert "BRAIN_DEPLOY_ENV=prod" in workflow
-    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
+    assert '"$PWD/scripts/deploy-cloud-production.sh"' in workflow
+    assert "brain@159.195.79.79" in workflow
+    assert "/etc/brain/$name" in workflow
     assert "git tag -a" not in workflow
     assert "git push origin" not in workflow
     assert "Verify promoted release tag" in workflow
@@ -169,6 +173,13 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/launchd/com.brain.log-rotation.plist.template"),
         Path("deployment/mcp/claude_desktop_config.template.json"),
         Path("deployment/newsyslog/brain.conf"),
+        Path("deployment/caddy/brain.caddy.template"),
+        Path("deployment/systemd/brain-mcp.service.template"),
+        Path("deployment/systemd/brain-ui.service.template"),
+        Path("deployment/systemd/brain-maintenance.service.template"),
+        Path("deployment/systemd/brain-maintenance.timer.template"),
+        Path("scripts/deploy-cloud-production.sh"),
+        Path("scripts/install-cloud-linux-production.sh"),
         Path("scripts/run_launchd_service.sh"),
         Path("scripts/start_docker_runtime.sh"),
         Path("scripts/start_launchd_databases.sh"),
@@ -622,7 +633,16 @@ def test_production_verifier_checks_brain_database_under_approved_runtime_roots(
     assert "process cwd under approved runtime root" in verifier
 
 
-def test_cloudflare_routes_ui_before_mcp_catchall() -> None:
+def test_cloudflare_routes_staging_ui_before_mcp_catchall() -> None:
     config = Path("deployment/cloudflare/config.example.yml").read_text(encoding="utf-8")
 
-    assert config.index("path: /ui*") < config.index("service: http://127.0.0.1:18000")
+    assert "hostname: brain.dceb.net" not in config
+    assert config.index("path: /ui*") < config.index("service: http://127.0.0.1:18100")
+
+
+def test_caddy_routes_prod_ui_before_mcp_catchall() -> None:
+    config = Path("deployment/caddy/brain.caddy.template").read_text(encoding="utf-8")
+
+    assert "brain.dceb.net" in config
+    assert config.index("@brain_ui") < config.index("reverse_proxy 127.0.0.1:18000")
+    assert "reverse_proxy @brain_ui 127.0.0.1:18002" in config
