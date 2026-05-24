@@ -192,6 +192,13 @@ def test_deployment_templates_live_under_deployment() -> None:
     assert not Path("mcp").exists()
 
 
+def test_cloud_production_migrations_source_rendered_env() -> None:
+    script = Path("scripts/install-cloud-linux-production.sh").read_text(encoding="utf-8")
+
+    assert "source '$ENV_FILE' && set +a && '$VENV_DIR/bin/alembic' upgrade head" in script
+    assert "source '$ENV_FILE' && set +a && '$VENV_DIR/bin/python' scripts/live_model_smoke.py" in script
+
+
 def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
     compose = Path("deployment/docker-compose.prod.yml").read_text(encoding="utf-8")
 

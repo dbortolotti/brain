@@ -490,10 +490,10 @@ start_databases() {
 
 run_migrations_and_smoke() {
   log "running Brain database migrations"
-  run_as_brain bash -lc "cd '$RELEASE_DIR' && '$VENV_DIR/bin/alembic' upgrade head"
+  run_as_brain bash -lc "cd '$RELEASE_DIR' && set -a && source '$ENV_FILE' && set +a && '$VENV_DIR/bin/alembic' upgrade head"
   if [[ "$BRAIN_MODEL_SMOKE_SCOPE" != "none" ]]; then
     log "running live model smoke scope=$BRAIN_MODEL_SMOKE_SCOPE"
-    run_as_brain bash -lc "cd '$RELEASE_DIR' && '$VENV_DIR/bin/python' scripts/live_model_smoke.py --scope '$BRAIN_MODEL_SMOKE_SCOPE'"
+    run_as_brain bash -lc "cd '$RELEASE_DIR' && set -a && source '$ENV_FILE' && set +a && '$VENV_DIR/bin/python' scripts/live_model_smoke.py --scope '$BRAIN_MODEL_SMOKE_SCOPE'"
   fi
 }
 
