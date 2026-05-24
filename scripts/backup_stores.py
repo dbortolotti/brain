@@ -33,10 +33,10 @@ def main() -> int:
 
     settings = load_settings()
     backup_root = Path(args.backup_dir or settings.brain_backup_dir)
-    data_root = Path(args.data_dir or settings.shared_data_path)
     runtime_data_root = Path(settings.data_root_directory)
     runtime_system_root = Path(settings.system_root_directory)
-    data_roots = unique_paths([data_root, runtime_data_root])
+    data_root = Path(args.data_dir) if args.data_dir else runtime_data_root
+    data_roots = unique_paths([data_root])
     sqlite_roots = unique_paths([*data_roots, runtime_system_root])
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir = backup_root / timestamp

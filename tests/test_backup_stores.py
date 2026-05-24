@@ -16,6 +16,37 @@ from memory_stack.cfg import Settings
 from memory_stack.taste.service import TasteService
 
 
+def test_backup_main_uses_runtime_data_root_by_default(tmp_path, monkeypatch) -> None:
+    runtime_data = tmp_path / "runtime-data"
+    runtime_system = tmp_path / "runtime-system"
+    backup_dir = tmp_path / "backups"
+    calls: list[Path] = []
+
+    settings = SimpleNamespace(
+        brain_backup_dir=str(backup_dir),
+        shared_data_path=tmp_path / "missing-shared-data",
+        data_root_directory=str(runtime_data),
+        system_root_directory=str(runtime_system),
+        vector_db_provider="pgvector",
+        brain_google_drive_backup_enabled=False,
+    )
+
+    monkeypatch.setattr(backup_stores, "load_settings", lambda: settings)
+    monkeypatch.setattr(backup_stores, "backup_sqlite", lambda root, run_dir, manifest: None)
+    monkeypatch.setattr(backup_stores, "backup_raw_data", lambda root, run_dir, manifest: calls.append(root))
+    monkeypatch.setattr(backup_stores, "backup_pgvector", lambda settings, run_dir, manifest: None)
+    monkeypatch.setattr(backup_stores, "backup_secrets", lambda settings, run_dir, manifest: None)
+    monkeypatch.setattr(backup_stores, "backup_neo4j", lambda settings, data_root, run_dir, manifest: None)
+    monkeypatch.setattr(sys, "argv", ["backup_stores.py"])
+
+    assert backup_stores.main() == 0
+    assert calls == [runtime_data]
+    manifest_path = next(backup_dir.glob("*/manifest.json"))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["data_root"] == str(runtime_data)
+    assert manifest["data_roots"] == [str(runtime_data)]
+
+
 def test_backup_sqlite_includes_cognee_db_without_extension(tmp_path) -> None:
     data_root = tmp_path / "shared" / "data"
     db_path = data_root / "system" / "databases" / "cognee_db"
