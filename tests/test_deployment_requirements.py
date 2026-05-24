@@ -653,3 +653,6 @@ def test_caddy_routes_prod_ui_before_mcp_catchall() -> None:
     assert "brain.dceb.net" in config
     assert config.index("@brain_ui") < config.index("reverse_proxy 127.0.0.1:18000")
     assert "reverse_proxy @brain_ui 127.0.0.1:18002" in config
+    assert "path /privacy*" in config
+    assert "path /terms*" in config
+    assert "path /support*" in config
