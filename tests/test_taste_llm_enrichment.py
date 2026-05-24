@@ -25,8 +25,8 @@ def test_taste_describe_uses_llm_enrichment_when_attributes_are_missing(tmp_path
     llm_client = FakeLLMClient(
         {
             "attributes": {
-                "oak": {"value": 0.8, "interval_95": {"lower": 0.7, "upper": 0.9}},
-                "body": {"value": 0.7, "interval_95": {"lower": 0.5, "upper": 0.85}},
+                "oak": {"value": 0.8, "interval_iqr": {"lower": 0.7, "upper": 0.9}},
+                "body": {"value": 0.7, "interval_iqr": {"lower": 0.5, "upper": 0.85}},
             },
             "notes": "Full-bodied oaky Cabernet.",
             "metadata": {},
@@ -51,7 +51,7 @@ def test_taste_describe_uses_llm_enrichment_when_attributes_are_missing(tmp_path
     enriched = result["enriched"]
     assert result["server_llm_used"]["enrichment"] is True
     assert enriched["attributes"] == {"oak": 0.8, "body": 0.7}
-    assert enriched["attribute_intervals_95"]["oak"] == {"lower": 0.7, "upper": 0.9}
+    assert enriched["attribute_intervals_iqr"]["oak"] == {"lower": 0.7, "upper": 0.9}
     assert enriched["notes"] == "Full-bodied oaky Cabernet."
     assert enriched["enrichment_metadata"]["normalized_fields_source"] == "llm"
     assert llm_client.calls[0]["schema"]["properties"]["attributes"]["required"] == (
@@ -65,7 +65,7 @@ def test_client_attributes_skip_llm_enrichment(tmp_path) -> None:
     llm_client = FakeLLMClient(
         {
             "attributes": {
-                "oak": {"value": 0.1, "interval_95": {"lower": 0.0, "upper": 0.2}},
+                "oak": {"value": 0.1, "interval_iqr": {"lower": 0.0, "upper": 0.2}},
             },
             "notes": "Should not be used.",
             "metadata": {},
@@ -95,7 +95,7 @@ def test_llm_music_metadata_is_normalized_and_stored(tmp_path) -> None:
             "attributes": {
                 "intellectual": {
                     "value": 0.8,
-                    "interval_95": {"lower": 0.6, "upper": 0.9},
+                    "interval_iqr": {"lower": 0.6, "upper": 0.9},
                 },
             },
             "notes": "Modal jazz record.",
@@ -134,8 +134,7 @@ def test_restaurant_llm_enrichment_uses_web_search_schema(tmp_path) -> None:
             "attributes": {
                 "quiet": {
                     "value": 0.6,
-                    "interval_95": {"lower": 0.3, "upper": 0.8},
-                    "interval_1sigma": {"lower": 0.5, "upper": 0.7},
+                    "interval_iqr": {"lower": 0.3, "upper": 0.8},
                 },
             },
             "notes": "Wine-focused restaurant.",
@@ -143,7 +142,7 @@ def test_restaurant_llm_enrichment_uses_web_search_schema(tmp_path) -> None:
                 "cuisine": {
                     "cocktail_bar_drinks": {
                         "value": 0.8,
-                        "interval_95": {"lower": 0.6, "upper": 0.9},
+                        "interval_iqr": {"lower": 0.6, "upper": 0.9},
                     }
                 },
                 "michelin": {
@@ -184,8 +183,7 @@ def test_restaurant_llm_enrichment_uses_web_search_schema(tmp_path) -> None:
     assert call["kwargs"]["schema_name"] == "brain_restaurant_web_enrichment"
     assert call["schema"]["properties"]["attributes"]["properties"]["quiet"]["required"] == [
         "value",
-        "interval_95",
-        "interval_1sigma",
+        "interval_iqr",
     ]
     assert result["enriched"]["attributes"] == {"quiet": 0.6}
     assert "cocktail_bar_drinks" in result["enriched"]["normalized_metadata"]["cuisine"]

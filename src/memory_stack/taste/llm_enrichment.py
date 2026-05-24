@@ -21,11 +21,11 @@ def normalize_enrichment_with_llm(
     instructions = [
         "Normalize noisy descriptive text into Brain Taste's fixed attribute schema for the given entity type.",
         "Never invent new attribute keys.",
-        "Each attribute must include value and interval_95.",
+        "Each attribute must include value and interval_iqr.",
         "Each value must be in [0, 1]. Use 0 when not evidenced.",
-        "Each interval_95 is the 95% interval for the true attribute value.",
-        "Each interval_95 must include the value and stay within [0, 1].",
-        "Use a narrow interval when evidence is explicit and a wide interval when weak or absent.",
+        "Each interval_iqr is the interquartile range for the true attribute value, using p25 lower and p75 upper bounds.",
+        "Each interval_iqr must include the value and stay within [0, 1].",
+        "Use a narrow IQR when evidence is explicit and a wide IQR when weak or absent.",
         "For movie or series items, extract only explicitly evidenced media metadata.",
         "For music items, extract only explicitly evidenced music metadata.",
         "For restaurant items, extract explicitly evidenced cuisine as scored metadata cuisine.",
@@ -108,13 +108,11 @@ def normalize_restaurant_enrichment_with_llm(
                 "Use official guide.michelin.com pages for Michelin status.",
                 "Use Google Maps, Google Business Profile, or Google Places data for Google rating and rating_count.",
                 "Never invent new attribute keys.",
-                "Each attribute must include value, interval_95, and interval_1sigma.",
+                "Each attribute must include value and interval_iqr.",
                 "Each value must be in [0, 1]. Use 0 when not evidenced.",
-                "Each interval is the corresponding uncertainty interval for the true attribute value.",
-                "Each interval must include the value and stay within [0, 1].",
-                "The 95% interval must be at least as wide as the 1-sigma interval.",
-                "Compute the 1-sigma interval directly from evidence and uncertainty; do not derive it from the 95% interval by normal approximation.",
-                "Use narrow intervals when web evidence is explicit and wide intervals when weak or absent.",
+                "Each interval_iqr is the interquartile range for the true attribute value, using p25 lower and p75 upper bounds.",
+                "Each interval_iqr must include the value and stay within [0, 1].",
+                "Use a narrow IQR when web evidence is explicit and a wide IQR when weak or absent.",
                 "Extract explicitly evidenced cuisine as scored metadata cuisine.",
                 "Use canonical cuisine values exactly as provided by the schema.",
                 "For restaurant cuisine, use 0 when not evidenced and use other only when no listed cuisine category fits at 40% confidence.",
@@ -184,10 +182,10 @@ def attribute_value_schema() -> dict[str, Any]:
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["value", "interval_95"],
+        "required": ["value", "interval_iqr"],
         "properties": {
             "value": {"type": "number", "minimum": 0, "maximum": 1},
-            "interval_95": confidence_interval_schema(),
+            "interval_iqr": confidence_interval_schema(),
         },
     }
 
@@ -196,11 +194,10 @@ def sigma_attribute_value_schema() -> dict[str, Any]:
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["value", "interval_95", "interval_1sigma"],
+        "required": ["value", "interval_iqr"],
         "properties": {
             "value": {"type": "number", "minimum": 0, "maximum": 1},
-            "interval_95": confidence_interval_schema(),
-            "interval_1sigma": confidence_interval_schema(),
+            "interval_iqr": confidence_interval_schema(),
         },
     }
 

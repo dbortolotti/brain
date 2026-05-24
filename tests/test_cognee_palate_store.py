@@ -50,7 +50,7 @@ def test_cognee_palate_store_keeps_structured_items_and_decision_feedback(tmp_pa
             "canonical_name": "Alpha Rioja",
             "brain_entity_id": "ent_alpha",
             "attributes": {"oak": 0.9},
-            "attribute_intervals_95": {"oak": {"lower": 0.8, "upper": 0.95}},
+            "attribute_intervals_iqr": {"oak": {"lower": 0.8, "upper": 0.95}},
             "signals": [{"type": "wanted_to_try", "value": True}],
         }
     )
@@ -89,7 +89,7 @@ def test_cognee_palate_store_keeps_structured_items_and_decision_feedback(tmp_pa
     ranked = rank_candidates(retrieval["candidates"], {"attributes": ["oak"], "context": {}, "filters": {}})
 
     assert created is True
-    assert store.get_item(alpha["id"])["attribute_intervals_95"]["oak"]["upper"] == 0.95
+    assert store.get_item(alpha["id"])["attribute_intervals_iqr"]["oak"]["upper"] == 0.95
     assert feedback[alpha["id"]]["chosen"] == 1
     assert feedback[beta["id"]]["rejected"] == 1
     assert ranked[0]["entity"]["id"] == alpha["id"]

@@ -825,7 +825,7 @@ def test_refresh_enrichment_reports_material_changes(tmp_path) -> None:
             "entity_type": kwargs["entity_type"],
             "normalized_metadata": {"genres": ["japanese"]},
             "attributes": {"quiet": 0.8},
-            "attribute_intervals_95": {"quiet": {"lower": 0.7, "upper": 0.9}},
+            "attribute_intervals_iqr": {"quiet": {"lower": 0.7, "upper": 0.9}},
             "enrichment_metadata": {"checked_at": "2026-05-11T10:00:00+00:00"},
             "sources": [],
             "warnings": [],
@@ -842,16 +842,16 @@ def test_refresh_enrichment_reports_material_changes(tmp_path) -> None:
     assert set(refreshed["changed_fields"]) == {
         "metadata",
         "attributes",
-        "attribute_intervals_95",
+        "attribute_intervals_iqr",
     }
 
 
 def wine_enrichment_payload(notes: str) -> dict[str, Any]:
     return {
         "attributes": {
-            "classic": {"value": 0.9, "interval_95": {"lower": 0.75, "upper": 0.98}},
-            "body": {"value": 0.7, "interval_95": {"lower": 0.5, "upper": 0.85}},
-            "tannin": {"value": 0.7, "interval_95": {"lower": 0.5, "upper": 0.85}},
+            "classic": {"value": 0.9, "interval_iqr": {"lower": 0.75, "upper": 0.98}},
+            "body": {"value": 0.7, "interval_iqr": {"lower": 0.5, "upper": 0.85}},
+            "tannin": {"value": 0.7, "interval_iqr": {"lower": 0.5, "upper": 0.85}},
         },
         "notes": notes,
         "metadata": {},
@@ -861,7 +861,7 @@ def wine_enrichment_payload(notes: str) -> dict[str, Any]:
 def experience_enrichment_payload(notes: str) -> dict[str, Any]:
     return {
         "attributes": {
-            "novelty": {"value": 0.6, "interval_95": {"lower": 0.3, "upper": 0.8}},
+            "novelty": {"value": 0.6, "interval_iqr": {"lower": 0.3, "upper": 0.8}},
         },
         "notes": notes,
         "metadata": {},
@@ -873,8 +873,7 @@ def restaurant_enrichment_payload(notes: str) -> dict[str, Any]:
         "attributes": {
             "casual": {
                 "value": 0.8,
-                "interval_95": {"lower": 0.6, "upper": 0.9},
-                "interval_1sigma": {"lower": 0.7, "upper": 0.85},
+                "interval_iqr": {"lower": 0.6, "upper": 0.9},
             },
         },
         "notes": notes,

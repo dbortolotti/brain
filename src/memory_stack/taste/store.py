@@ -283,12 +283,12 @@ def attribute_value(value: Any) -> Any:
     return value
 
 
-def normalize_interval_95(value: Any, interval: dict[str, Any] | None) -> dict[str, float]:
+def normalize_interval_iqr(value: Any, interval: dict[str, Any] | None) -> dict[str, float]:
     point = clamp01(value)
     if not isinstance(interval, dict):
         return {"lower": point, "upper": point}
-    lower = clamp01(interval.get("lower", interval.get("lower_95", point)))
-    upper = clamp01(interval.get("upper", interval.get("upper_95", point)))
+    lower = clamp01(interval.get("lower", interval.get("p25", interval.get("q1", point))))
+    upper = clamp01(interval.get("upper", interval.get("p75", interval.get("q3", point))))
     if lower > upper:
         lower, upper = upper, lower
     return {"lower": min(lower, point), "upper": max(upper, point)}

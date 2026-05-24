@@ -72,7 +72,7 @@ class TasteService:
             entity_type=request.entity_type,
             canonical_name=request.canonical_name,
             attributes=request.attributes,
-            attribute_intervals_95=request.attribute_intervals_95,
+            attribute_intervals_iqr=request.attribute_intervals_iqr,
             metadata=request.metadata,
             notes=request.notes,
             fetch_external_ratings=request.fetch_external_ratings,
@@ -102,7 +102,7 @@ class TasteService:
             entity_type=request.type,
             canonical_name=request.canonical_name,
             attributes=request.attributes,
-            attribute_intervals_95=request.attribute_intervals_95,
+            attribute_intervals_iqr=request.attribute_intervals_iqr,
             metadata=request.metadata,
             notes=request.notes,
             fetch_external_ratings=request.fetch_external_ratings,
@@ -174,7 +174,7 @@ class TasteService:
             "enrichment_metadata_json": enriched["enrichment_metadata"],
             "enrichment_status": enriched["enrichment_status"],
             "attributes": enriched["attributes"],
-            "attribute_intervals_95": enriched["attribute_intervals_95"],
+            "attribute_intervals_iqr": enriched["attribute_intervals_iqr"],
             "signals": self._signals_for_request(request, projected),
         }
         taste_item, created = self.canonical_store.upsert_item(item_payload)
@@ -192,7 +192,7 @@ class TasteService:
                     "canonical_name": taste_item["canonical_name"],
                     "brain_entity_id": taste_item["brain_entity_id"],
                     "attributes": taste_item["attributes"],
-                    "attribute_intervals_95": taste_item["attribute_intervals_95"],
+                    "attribute_intervals_iqr": taste_item["attribute_intervals_iqr"],
                     "metadata": taste_item["metadata"],
                     "enrichment_metadata": taste_item["enrichment_metadata"],
                     "signals": taste_item["signals"],
@@ -301,7 +301,7 @@ class TasteService:
                 entity_type=request.type,
                 canonical_name=request.canonical_name,
                 attributes=request.attributes,
-                attribute_intervals_95=request.attribute_intervals_95,
+                attribute_intervals_iqr=request.attribute_intervals_iqr,
                 metadata=request.metadata,
                 notes=request.notes,
                 fetch_external_ratings=request.fetch_external_ratings,
@@ -371,7 +371,7 @@ class TasteService:
                     "type": request.type,
                     "canonical_name": request.canonical_name,
                     "attributes": enriched.get("attributes") or {},
-                    "attribute_intervals_95": enriched.get("attribute_intervals_95") or {},
+                    "attribute_intervals_iqr": enriched.get("attribute_intervals_iqr") or {},
                     "metadata": enriched.get("normalized_metadata") or {},
                     "enrichment_metadata_summary": enriched.get("enrichment_metadata") or {},
                 }
@@ -437,7 +437,7 @@ class TasteService:
             entity_type=request.type,
             canonical_name=request.canonical_name,
             attributes=request.attributes,
-            attribute_intervals_95=request.attribute_intervals_95,
+            attribute_intervals_iqr=request.attribute_intervals_iqr,
             metadata=request.metadata,
             notes=request.notes,
             fetch_external_ratings=request.fetch_external_ratings,
@@ -470,8 +470,8 @@ class TasteService:
         next_metadata = enriched["normalized_metadata"]
         next_attributes = enriched["attributes"] or item.get("attributes") or {}
         next_intervals = (
-            enriched["attribute_intervals_95"]
-            or item.get("attribute_intervals_95")
+            enriched["attribute_intervals_iqr"]
+            or item.get("attribute_intervals_iqr")
             or {}
         )
         changed_fields = changed_enrichment_fields(
@@ -492,7 +492,7 @@ class TasteService:
                 "enrichment_metadata_json": enriched["enrichment_metadata"],
                 "enrichment_status": enriched["enrichment_status"],
                 "attributes": next_attributes,
-                "attribute_intervals_95": next_intervals,
+                "attribute_intervals_iqr": next_intervals,
             }
         )
         material_memory_id = None
@@ -638,7 +638,7 @@ class TasteService:
             "canonical_name": enriched["canonical_name"],
             "description": enriched.get("notes") or enriched["canonical_name"],
             "attributes": enriched["attributes"],
-            "attribute_intervals_95": enriched["attribute_intervals_95"],
+            "attribute_intervals_iqr": enriched["attribute_intervals_iqr"],
             "metadata": enriched["normalized_metadata"],
             "fetch_external_ratings": False,
         }
@@ -896,7 +896,7 @@ def detailed_ranking_explanation(
                 "matched_attributes": result["facts"].get("matched_attributes", []),
                 "negative_signals": result["facts"].get("negative_signals", []),
                 "signal_facts": result["facts"].get("signal_facts", []),
-                "attribute_intervals_95": result["entity"].get("attribute_intervals_95") or {},
+                "attribute_intervals_iqr": result["entity"].get("attribute_intervals_iqr") or {},
                 "evidence_ids": [],
             }
             for result in ranked
@@ -926,8 +926,8 @@ def changed_enrichment_fields(
         changed.append("metadata")
     if normalize_jsonable(item.get("attributes") or {}) != normalize_jsonable(next_attributes):
         changed.append("attributes")
-    if normalize_jsonable(item.get("attribute_intervals_95") or {}) != normalize_jsonable(next_intervals):
-        changed.append("attribute_intervals_95")
+    if normalize_jsonable(item.get("attribute_intervals_iqr") or {}) != normalize_jsonable(next_intervals):
+        changed.append("attribute_intervals_iqr")
     if item.get("enrichment_status") != next_status:
         changed.append("enrichment_status")
     return changed

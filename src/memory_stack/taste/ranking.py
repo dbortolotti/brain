@@ -321,7 +321,7 @@ def build_grounding(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "type": result["entity"]["type"],
             "score": result["score"],
             "matched_attributes": result["facts"]["matched_attributes"],
-            "attribute_intervals_95": result["entity"].get("attribute_intervals_95") or {},
+            "attribute_intervals_iqr": result["entity"].get("attribute_intervals_iqr") or {},
             "attribute_details": result["entity"].get("attribute_details") or {},
             "signal_facts": result["facts"]["signal_facts"],
             "negative_signals": result["facts"]["negative_signals"],
@@ -479,7 +479,7 @@ def interval_adjusted_attribute_value(
     value: float,
     weights: RankingWeights,
 ) -> float:
-    interval = (entity.get("attribute_intervals_95") or {}).get(key) or {
+    interval = (entity.get("attribute_intervals_iqr") or {}).get(key) or {
         "lower": value,
         "upper": value,
     }
@@ -503,7 +503,7 @@ def interval_adjusted_detail_value(
     value: float,
     weights: RankingWeights,
 ) -> float:
-    interval = detail.get("interval_95") if isinstance(detail, dict) else None
+    interval = detail.get("interval_iqr") if isinstance(detail, dict) else None
     if not isinstance(interval, dict):
         interval = {"lower": value, "upper": value}
     lower = float(interval.get("lower", value))
@@ -519,12 +519,12 @@ def format_detail_fact(
     *,
     prefix: str = "",
 ) -> str:
-    interval = detail.get("interval_95") if isinstance(detail, dict) else None
+    interval = detail.get("interval_iqr") if isinstance(detail, dict) else None
     if not isinstance(interval, dict):
         interval = {"lower": value, "upper": value}
     lower = float(interval.get("lower", value))
     upper = float(interval.get("upper", value))
-    return f"{prefix}{key}: {value:.2f} (95% interval {lower:.2f}-{upper:.2f})"
+    return f"{prefix}{key}: {value:.2f} (IQR {lower:.2f}-{upper:.2f})"
 
 
 def format_attribute_fact(
@@ -534,13 +534,13 @@ def format_attribute_fact(
     *,
     prefix: str = "",
 ) -> str:
-    interval = (entity.get("attribute_intervals_95") or {}).get(key) or {
+    interval = (entity.get("attribute_intervals_iqr") or {}).get(key) or {
         "lower": value,
         "upper": value,
     }
     lower = float(interval.get("lower", value))
     upper = float(interval.get("upper", value))
-    return f"{prefix}{key}: {value:.2f} (95% interval {lower:.2f}-{upper:.2f})"
+    return f"{prefix}{key}: {value:.2f} (IQR {lower:.2f}-{upper:.2f})"
 
 
 def rating_preference(rating: float) -> float:

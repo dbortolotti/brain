@@ -10,7 +10,7 @@ class TasteDescribeRequest(BaseModel):
     entity_type: str
     canonical_name: str | None = None
     attributes: dict[str, Any] | None = None
-    attribute_intervals_95: dict[str, dict[str, float]] | None = None
+    attribute_intervals_iqr: dict[str, dict[str, float]] | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
     notes: str | None = None
     fetch_external_ratings: bool = True
@@ -23,7 +23,7 @@ class TasteRememberRequest(BaseModel):
     canonical_name: str
     description: str
     attributes: dict[str, Any] | None = None
-    attribute_intervals_95: dict[str, dict[str, float]] | None = None
+    attribute_intervals_iqr: dict[str, dict[str, float]] | None = None
     rating: float | None = None
     tried: bool | None = None
     watched: bool | None = None

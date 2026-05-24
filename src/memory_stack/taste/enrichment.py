@@ -27,7 +27,7 @@ from memory_stack.taste.media import (
 from memory_stack.taste.omdb import fetch_omdb_metadata
 from memory_stack.taste.restaurants import fetch_restaurant_enrichment
 from memory_stack.taste.schema import ENTITY_TYPES, attribute_keys_for_type, invalid_attribute_keys
-from memory_stack.taste.store import attribute_value, clamp01, normalize_interval_95
+from memory_stack.taste.store import attribute_value, clamp01, normalize_interval_iqr
 
 
 class TasteEnrichmentService:
@@ -42,7 +42,7 @@ class TasteEnrichmentService:
         entity_type: str,
         canonical_name: str | None = None,
         attributes: dict[str, Any] | None = None,
-        attribute_intervals_95: dict[str, dict[str, float]] | None = None,
+        attribute_intervals_iqr: dict[str, dict[str, float]] | None = None,
         metadata: dict[str, Any] | None = None,
         notes: str | None = None,
         fetch_external_ratings: bool = True,
@@ -60,7 +60,7 @@ class TasteEnrichmentService:
         client_attributes = normalize_client_attributes(
             entity_type,
             attributes,
-            attribute_intervals_95,
+            attribute_intervals_iqr,
         )
         llm_payload: dict[str, Any] | None = None
         llm_warnings: list[str] = []
@@ -103,7 +103,7 @@ class TasteEnrichmentService:
             normalized_attributes = normalize_client_attributes(
                 entity_type,
                 effective_attributes,
-                attribute_intervals_95,
+                attribute_intervals_iqr,
             )
         metadata_payload, metadata_warnings, sources, source_payloads = prepare_metadata(
             settings=self.settings,
@@ -149,7 +149,10 @@ class TasteEnrichmentService:
             for key, value in normalized_attributes.items()
         }
         intervals = {
-            key: normalize_interval_95(attribute_value(value), value.get("interval_95"))
+            key: normalize_interval_iqr(
+                attribute_value(value),
+                value.get("interval_iqr"),
+            )
             for key, value in normalized_attributes.items()
             if isinstance(value, dict)
         }
@@ -161,7 +164,7 @@ class TasteEnrichmentService:
             "entity_type": entity_type,
             "normalized_metadata": metadata_payload,
             "attributes": attribute_values,
-            "attribute_intervals_95": intervals,
+            "attribute_intervals_iqr": intervals,
             "enrichment_metadata": {
                 "normalized_fields_source": normalized_fields_source,
                 "warnings": warnings,
@@ -182,12 +185,12 @@ class TasteEnrichmentService:
 def normalize_client_attributes(
     entity_type: str,
     attributes: dict[str, Any] | None,
-    attribute_intervals_95: dict[str, dict[str, float]] | None,
+    attribute_intervals_iqr: dict[str, dict[str, float]] | None,
 ) -> dict[str, dict[str, Any]]:
     if not isinstance(attributes, dict):
         return {}
     allowed = set(attribute_keys_for_type(entity_type))
-    intervals = attribute_intervals_95 if isinstance(attribute_intervals_95, dict) else {}
+    intervals = attribute_intervals_iqr if isinstance(attribute_intervals_iqr, dict) else {}
     normalized = {}
     for key, value in attributes.items():
         if key not in allowed:
@@ -198,10 +201,10 @@ def normalize_client_attributes(
             continue
         interval = intervals.get(key) if isinstance(intervals.get(key), dict) else None
         if isinstance(value, dict) and interval is None:
-            interval = value.get("interval_95") or value
+            interval = value.get("interval_iqr") or value
         normalized[key] = {
             "value": point,
-            "interval_95": normalize_interval_95(point, interval),
+            "interval_iqr": normalize_interval_iqr(point, interval),
         }
     return normalized
 

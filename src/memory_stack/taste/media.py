@@ -688,7 +688,7 @@ def normalize_restaurant_cuisine(value: Any) -> dict[str, dict[str, Any]]:
     for cuisine in normalize_restaurant_genres(value):
         result[cuisine] = {
             "value": 1.0,
-            "interval_95": {"lower": 1.0, "upper": 1.0},
+            "interval_iqr": {"lower": 1.0, "upper": 1.0},
         }
 
     return prune_other_cuisine(result)
@@ -697,14 +697,12 @@ def normalize_restaurant_cuisine(value: Any) -> dict[str, dict[str, Any]]:
 def normalize_cuisine_detail(value: Any) -> dict[str, Any]:
     point = cuisine_point_value(value)
     if isinstance(value, dict):
-        interval = value.get("interval_95")
-        if interval is None and ("lower_95" in value or "upper_95" in value):
-            interval = {"lower": value.get("lower_95"), "upper": value.get("upper_95")}
+        interval = value.get("interval_iqr")
     else:
         interval = None
     return {
         "value": point,
-        "interval_95": normalize_cuisine_interval(point, interval),
+        "interval_iqr": normalize_cuisine_interval(point, interval),
     }
 
 

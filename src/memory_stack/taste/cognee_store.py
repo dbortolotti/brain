@@ -35,7 +35,7 @@ class PalateItemDataPoint(BaseModel):
     enrichment_metadata: dict[str, Any] = Field(default_factory=dict)
     enrichment_status: str = "not_attempted"
     attributes: dict[str, float] = Field(default_factory=dict)
-    attribute_intervals_95: dict[str, dict[str, float]] = Field(default_factory=dict)
+    attribute_intervals_iqr: dict[str, dict[str, float]] = Field(default_factory=dict)
     signals: list[dict[str, Any]] = Field(default_factory=list)
     status: str = "current"
     version: int = 1
@@ -345,7 +345,7 @@ def item_to_datapoint(item: dict[str, Any]) -> PalateItemDataPoint:
         enrichment_metadata=item.get("enrichment_metadata_json") or item.get("enrichment_metadata") or {},
         enrichment_status=item.get("enrichment_status") or "not_attempted",
         attributes={key: float(value) for key, value in (item.get("attributes") or {}).items()},
-        attribute_intervals_95=item.get("attribute_intervals_95") or {},
+        attribute_intervals_iqr=item.get("attribute_intervals_iqr") or {},
         signals=item.get("signals") or [],
         status=item.get("status") or "current",
         version=int(item.get("version") or 1),
@@ -359,11 +359,11 @@ def hydrate_item(point: dict[str, Any]) -> dict[str, Any]:
     item["enrichment_metadata"] = item.get("enrichment_metadata") or item.get("enrichment_metadata_json") or {}
     item["enrichment_metadata_json"] = item["enrichment_metadata"]
     item["attributes"] = item.get("attributes") or {}
-    item["attribute_intervals_95"] = item.get("attribute_intervals_95") or {}
+    item["attribute_intervals_iqr"] = item.get("attribute_intervals_iqr") or {}
     item["attribute_details"] = {
         key: {
             "value": value,
-            "interval_95": item["attribute_intervals_95"].get(key, {"lower": value, "upper": value}),
+            "interval_iqr": item["attribute_intervals_iqr"].get(key, {"lower": value, "upper": value}),
         }
         for key, value in item["attributes"].items()
     }
@@ -414,7 +414,7 @@ def _live_fields(
     payload = point.model_dump(mode="json")
     external_id = point.id
     point_kind = "decision" if isinstance(point, PalateDecisionDataPoint) else "item"
-    for key in ("metadata", "enrichment_metadata", "attributes", "attribute_intervals_95", "signals", "context", "options", "ranked"):
+    for key in ("metadata", "enrichment_metadata", "attributes", "attribute_intervals_iqr", "signals", "context", "options", "ranked"):
         if key in payload:
             payload[f"{key}_json"] = json.dumps(payload.pop(key), sort_keys=True, default=str)
     payload["id"] = _uuid_for_external_id(external_id)
@@ -454,7 +454,7 @@ def _normalize_live_node(node: Any, *, fallback_id: str) -> dict[str, Any] | Non
         ("metadata", {}),
         ("enrichment_metadata", {}),
         ("attributes", {}),
-        ("attribute_intervals_95", {}),
+        ("attribute_intervals_iqr", {}),
         ("signals", []),
         ("context", {}),
         ("options", []),
