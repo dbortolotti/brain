@@ -67,6 +67,9 @@ class PalateCogneeAdapter(Protocol):
     async def list_points(self, point_kind: str | None = None) -> list[dict[str, Any]]:
         ...
 
+    async def prune_deleted_items(self) -> int:
+        ...
+
 
 @dataclass
 class InMemoryPalateCogneeAdapter:
@@ -88,6 +91,16 @@ class InMemoryPalateCogneeAdapter:
         if point_kind == "decision":
             return [point for point in points if "chosen_taste_item_id" in point]
         return points
+
+    async def prune_deleted_items(self) -> int:
+        deleted_ids = [
+            point_id
+            for point_id, point in self.points.items()
+            if point.get("type") in PALATE_ITEM_TYPES and point.get("status") == "deleted"
+        ]
+        for point_id in deleted_ids:
+            del self.points[point_id]
+        return len(deleted_ids)
 
 
 class LivePalateCogneeAdapter:
@@ -153,6 +166,32 @@ class LivePalateCogneeAdapter:
             if point is not None:
                 points.append(point)
         return points
+
+    async def prune_deleted_items(self) -> int:
+        refresh_cognee_runtime(self.settings)
+        from cognee.infrastructure.databases.graph import get_graph_engine  # type: ignore
+
+        graph = await maybe_await(get_graph_engine())
+        rows = await maybe_await(
+            graph.query(
+                """
+                MATCH (n)
+                WHERE n.dataset_name = $dataset
+                  AND n.point_kind = 'item'
+                  AND n.status = 'deleted'
+                WITH collect(n) AS nodes, count(n) AS deleted
+                FOREACH (node IN nodes | DETACH DELETE node)
+                RETURN deleted
+                """,
+                {"dataset": self.dataset_name},
+            )
+        )
+        if not rows:
+            return 0
+        row = rows[0] if isinstance(rows, list) else {}
+        if isinstance(row, dict):
+            return int(row.get("deleted") or 0)
+        return 0
 
 
 class CogneePalateStore:
@@ -326,6 +365,9 @@ class CogneePalateStore:
         if not confirm:
             raise ValueError("hard_delete_item requires confirm=True.")
         return self.soft_delete_item(taste_item_id)
+
+    def prune_deleted_items(self) -> int:
+        return int(run_async(self.adapter.prune_deleted_items()))
 
 
 def item_to_datapoint(item: dict[str, Any]) -> PalateItemDataPoint:

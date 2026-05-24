@@ -113,6 +113,8 @@ def test_cognee_palate_store_soft_delete_removes_current_item(tmp_path) -> None:
     assert store.get_item(item["id"]) is None
     assert store.get_item(item["id"], include_deleted=True)["status"] == "deleted"
     assert store.list_entities() == []
+    assert store.prune_deleted_items() == 1
+    assert store.get_item(item["id"], include_deleted=True) is None
 
 
 def test_taste_service_uses_cognee_as_canonical_store_without_sqlite_items(tmp_path) -> None:

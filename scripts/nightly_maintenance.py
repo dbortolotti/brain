@@ -33,7 +33,19 @@ def main() -> int:
     if args.skip_google_drive:
         backup_cmd.append("--skip-google-drive")
 
+    prune_cmd = [sys.executable, str(script_dir / "prune_deleted_palate_items.py")]
+
     print(f"[maintenance] started at {timestamp()}", flush=True)
+    print("[maintenance] pruning deleted palate items", flush=True)
+    prune_result = subprocess.run(prune_cmd, env=env, check=False)
+    if prune_result.returncode != 0:
+        print(
+            f"[maintenance] palate prune failed with exit code {prune_result.returncode}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return prune_result.returncode
+
     print("[maintenance] running backup", flush=True)
     backup_result = subprocess.run(backup_cmd, env=env, check=False)
     if backup_result.returncode != 0:
