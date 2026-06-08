@@ -7,11 +7,6 @@ on:
         description: "Staged release version, for example v2.1.0-rc.1"
         required: true
         type: string
-      force_config_override:
-        description: "Bypass staging config conflict checks and establish a new baseline"
-        required: false
-        default: false
-        type: boolean
 
 concurrency:
   group: brain-staging
@@ -21,8 +16,8 @@ jobs:
   deploy:
     runs-on:
       - self-hosted
-      - macOS
-      - ARM64
+      - linux
+      - X64
       - brain-prod
     permissions:
       contents: write
@@ -89,110 +84,6 @@ jobs:
           make docs-check
           uv run ruff check src tests scripts
           uv run pytest
-
-      - name: Render staging config from GitHub Secrets
-        id: render-config
-        env:
-          BRAIN_DEPLOY_ENV: staging
-          BRAIN_RELEASE_ENV: staging
-          BRAIN_RELEASE_SHA: ${{ steps.docs.outputs.sha }}
-          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
-          GITHUB_SHA: ${{ steps.docs.outputs.sha }}
-          PROFILE: ${{ vars.PROFILE }}
-          BRAIN_LLM_ENABLED: ${{ vars.BRAIN_LLM_ENABLED }}
-          LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
-          LLM_MODEL: ${{ vars.LLM_MODEL }}
-          LLM_TEMPERATURE: ${{ vars.LLM_TEMPERATURE }}
-          LLM_MAX_TOKENS: ${{ vars.LLM_MAX_TOKENS }}
-          OPENAI_AUTH_MODE: ${{ vars.OPENAI_AUTH_MODE }}
-          OPENAI_CODEX_AUTH_PROFILE: ${{ vars.OPENAI_CODEX_AUTH_PROFILE }}
-          OPENAI_CODEX_BASE_URL: ${{ vars.OPENAI_CODEX_BASE_URL }}
-          BRAIN_PROVIDER_AUTH_PROFILES_PATH: ${{ vars.BRAIN_PROVIDER_AUTH_PROFILES_PATH }}
-          BRAIN_PROVIDER_AUTH_STATE_DIR: ${{ vars.BRAIN_PROVIDER_AUTH_STATE_DIR }}
-          EMBEDDING_PROVIDER: ${{ vars.EMBEDDING_PROVIDER }}
-          EMBEDDING_MODEL: ${{ vars.EMBEDDING_MODEL }}
-          EMBEDDING_DIMENSIONS: ${{ vars.EMBEDDING_DIMENSIONS }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-          AWS_PROFILE: ${{ vars.AWS_PROFILE }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
-          GOOGLE_FREE_TIER: ${{ vars.GOOGLE_FREE_TIER }}
-          GRAPH_DATABASE_PASSWORD: ${{ secrets.GRAPH_DATABASE_PASSWORD }}
-          BRAIN_AUTH_TOKEN: ${{ secrets.BRAIN_AUTH_TOKEN }}
-          BRAIN_AUTH_PASSWORD: ${{ secrets.BRAIN_AUTH_PASSWORD }}
-          BRAIN_PUBLIC_BASE_URL: https://brain-staging.dceb.net
-          BRAIN_MCP_PATH: /mcp
-          BRAIN_ADMIN_MCP_PATH: /admin/mcp
-          BRAIN_APP_MCP_PATH: /app/mcp
-          BRAIN_PUBLIC_MCP_PATH: /mcp
-          BRAIN_PUBLIC_ADMIN_MCP_PATH: /admin/mcp
-          BRAIN_PUBLIC_APP_MCP_PATH: /mcp
-          BRAIN_OPENAI_APPS_CHALLENGE_TOKEN: ${{ vars.BRAIN_OPENAI_APPS_CHALLENGE_TOKEN }}
-          BRAIN_PUBLIC_UI_PATH: /cognee
-          BRAIN_PUBLIC_UI_API_PATH: /cognee-api
-          BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"
-          BRAIN_GOOGLE_DRIVE_FOLDER: ${{ vars.BRAIN_GOOGLE_DRIVE_FOLDER }}
-          BRAIN_GOOGLE_DRIVE_LOCAL_PATH: ${{ vars.BRAIN_GOOGLE_DRIVE_LOCAL_PATH }}
-          BRAIN_NEO4J_DUMP_ENABLED: "true"
-          BRAIN_NEO4J_STOP_FOR_DUMP: "true"
-          BRAIN_REQUEST_LOG_ENABLED: ${{ vars.BRAIN_REQUEST_LOG_ENABLED }}
-          BRAIN_REQUEST_LOG_MAX_BODY_BYTES: ${{ vars.BRAIN_REQUEST_LOG_MAX_BODY_BYTES }}
-          BRAIN_TASTE_ENABLED: ${{ vars.BRAIN_TASTE_ENABLED }}
-          BRAIN_TASTE_LLM_ROUTING_ENABLED: ${{ vars.BRAIN_TASTE_LLM_ROUTING_ENABLED }}
-          BRAIN_TASTE_AUTO_ENRICH_ENABLED: ${{ vars.BRAIN_TASTE_AUTO_ENRICH_ENABLED }}
-          BRAIN_TASTE_OMDB_API_KEY: ${{ secrets.BRAIN_TASTE_OMDB_API_KEY }}
-          BRAIN_TASTE_WEB_ENRICHMENT_ENABLED: ${{ vars.BRAIN_TASTE_WEB_ENRICHMENT_ENABLED }}
-          BRAIN_TASTE_GOOGLE_PLACES_API_KEY: ${{ secrets.BRAIN_TASTE_GOOGLE_PLACES_API_KEY }}
-          BRAIN_TASTE_AUTO_WRITE_THRESHOLD: ${{ vars.BRAIN_TASTE_AUTO_WRITE_THRESHOLD }}
-          BRAIN_TASTE_CONFIRMATION_THRESHOLD: ${{ vars.BRAIN_TASTE_CONFIRMATION_THRESHOLD }}
-          BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD: ${{ vars.BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD }}
-          BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD: ${{ vars.BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD }}
-          BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS: ${{ vars.BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS }}
-          BRAIN_UI_ENABLED: ${{ vars.BRAIN_UI_ENABLED }}
-          BRAIN_SLACK_AGENT_ENABLED: ${{ vars.BRAIN_SLACK_AGENT_ENABLED }}
-          BRAIN_SLACK_SIGNING_SECRET: ${{ secrets.BRAIN_SLACK_SIGNING_SECRET }}
-          BRAIN_SLACK_BOT_TOKEN: ${{ secrets.BRAIN_SLACK_BOT_TOKEN }}
-          BRAIN_SLACK_ALLOWED_TEAM_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_TEAM_IDS }}
-          BRAIN_SLACK_ALLOWED_CHANNEL_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_CHANNEL_IDS }}
-          BRAIN_SLACK_ALLOWED_USER_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_USER_IDS }}
-          BRAIN_SLACK_ADMIN_USER_IDS: ${{ vars.BRAIN_SLACK_ADMIN_USER_IDS }}
-        run: |
-          render_dir="$RUNNER_TEMP/brain-staging-config"
-          mkdir -p "$render_dir"
-          args=()
-          args+=(--output "$render_dir/brain.env")
-          args+=(--base-output "$render_dir/brain.env.last-deployed")
-          args+=(--auth-password-file "$render_dir/brain-auth-password")
-          args+=(--auth-password-base-file "$render_dir/brain-auth-password.last-deployed")
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force_config_override }}" == "true" ]]; then
-            args+=(--force-config-override)
-          fi
-          uv run python scripts/render_prod_env.py --env staging "${args[@]}"
-          echo "env_file=$render_dir/brain.env" >>"$GITHUB_OUTPUT"
-          echo "auth_password_file=$render_dir/brain-auth-password" >>"$GITHUB_OUTPUT"
-
-      - name: Deploy to local staging LaunchDaemons
-        run: |
-          sudo -n \
-            BRAIN_DEPLOY_ENV=staging \
-            BRAIN_RELEASE_ENV=staging \
-            BRAIN_RELEASE_SHA="${{ steps.docs.outputs.sha }}" \
-            BRAIN_RELEASE_VERSION="${{ steps.version.outputs.version }}" \
-            GITHUB_SHA="${{ steps.docs.outputs.sha }}" \
-            /Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh \
-            --source-root "$PWD" \
-            --rendered-env "${{ steps.render-config.outputs.env_file }}" \
-            --rendered-auth-password "${{ steps.render-config.outputs.auth_password_file }}"
 
       - name: Tag staged release
         run: |
