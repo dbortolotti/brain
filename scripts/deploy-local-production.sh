@@ -419,6 +419,12 @@ apply_runtime_permissions() {
     if [[ "$phase" == "final" && -d "$DATA_DIR/brain" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$DATA_DIR/brain"
     fi
+    if [[ "$phase" == "final" && -d "$DATA_DIR/system" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$DATA_DIR/system"
+    fi
+    if [[ "$phase" == "final" && -d "$DATA_DIR/data" ]]; then
+      run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$DATA_DIR/data"
+    fi
     if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
       run_privileged chown -R "$BRAIN_SERVICE_USER:staff" "$RELEASE_DIR"
     fi
@@ -441,6 +447,12 @@ apply_runtime_permissions() {
   fi
   if [[ "$phase" == "final" && -d "$DATA_DIR/brain" ]]; then
     run_privileged chmod -R u+rwX,go+rX "$DATA_DIR/brain"
+  fi
+  if [[ "$phase" == "final" && -d "$DATA_DIR/system" ]]; then
+    run_privileged chmod -R u+rwX,go+rX "$DATA_DIR/system"
+  fi
+  if [[ "$phase" == "final" && -d "$DATA_DIR/data" ]]; then
+    run_privileged chmod -R u+rwX,go+rX "$DATA_DIR/data"
   fi
   if [[ "$phase" == "final" && -d "$RELEASE_DIR" ]]; then
     run_privileged find "$RELEASE_DIR" -type d -exec chmod 755 {} +
