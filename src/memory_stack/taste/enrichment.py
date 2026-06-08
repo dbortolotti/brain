@@ -229,9 +229,8 @@ def prepare_metadata(
                 settings=settings,
                 allow_broader_web_search=allow_broader_web_search,
             )
-            normalized = merge_restaurant_metadata(normalized, lookup["metadata"])
             return (
-                normalized,
+                lookup["metadata"],
                 lookup["warnings"],
                 lookup["sources"],
                 lookup["source_payloads"],

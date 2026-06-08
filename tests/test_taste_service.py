@@ -119,6 +119,52 @@ def test_restaurant_strict_source_google_places_enrichment(tmp_path, monkeypatch
     assert enriched["enrichment_metadata"]["normalized_fields_source"] == "strict_source"
 
 
+def test_google_places_rating_wins_over_llm_partial_google_metadata(tmp_path, monkeypatch) -> None:
+    """Google Places API rating must not be suppressed when the LLM already set a partial google
+    struct (e.g. source_url filled but rating/rating_count null).  Regression for the bug where
+    merge_restaurant_metadata treated a non-empty source_url as sufficient to mark the google
+    dict non-empty, blocking the real API values from being applied."""
+    settings = brain_test_settings(tmp_path, brain_taste_google_places_api_key="places-key")
+
+    llm_google_section = {
+        "rating": None,
+        "rating_count": None,
+        "source_url": "https://maps.google.com/search?q=Noble+Rot",
+        "source": "google",
+        "checked_at": None,
+    }
+    llm_response = {
+        "attributes": {key: {"value": 0.0, "interval_iqr": {"lower": 0.0, "upper": 0.0}} for key in ["casual", "classic", "comfort", "indulgent", "lively", "novelty", "outdoor_space", "premium", "quiet", "smoking", "view"]},
+        "notes": "Noble Rot is a wine bar and restaurant.",
+        "metadata": {
+            "cuisine": {key: {"value": 0.0, "interval_iqr": {"lower": 0.0, "upper": 0.0}} for key in __import__("memory_stack.taste.media", fromlist=["RESTAURANT_GENRES"]).RESTAURANT_GENRES},
+            "michelin": {"status": "unknown", "stars": None, "green_star": False, "source_url": None, "source": None, "checked_at": None},
+            "google": llm_google_section,
+        },
+    }
+
+    def fake_json_url(url: str, *, timeout: float) -> dict[str, Any]:
+        return {
+            "status": "OK",
+            "candidates": [{"name": "Noble Rot", "rating": 4.8, "user_ratings_total": 999, "type": ["restaurant"]}],
+        }
+
+    def fake_text_url(url: str, *, timeout: float) -> str:
+        return "<html>No Michelin match</html>"
+
+    monkeypatch.setattr(restaurants, "fetch_json_url", fake_json_url)
+    monkeypatch.setattr(restaurants, "fetch_text_url", fake_text_url)
+
+    llm = FakeLLMClient([llm_response])
+    result = make_taste_service(settings, llm_client=llm).describe_item(
+        TasteDescribeRequest(item_text="Noble Rot", entity_type="restaurant", canonical_name="Noble Rot")
+    )
+
+    google = result["enriched"]["normalized_metadata"]["google"]
+    assert google["rating"] == 4.8, f"expected 4.8, got {google['rating']}"
+    assert google["rating_count"] == 999, f"expected 999, got {google['rating_count']}"
+
+
 def test_broader_web_search_requires_explicit_approval(tmp_path, monkeypatch) -> None:
     settings = brain_test_settings(tmp_path)
 
@@ -980,9 +1026,10 @@ def brain_test_settings(tmp_path, **overrides: Any) -> Settings:
     )
 
 
-def make_taste_service(settings: Settings) -> TasteService:
+def make_taste_service(settings: Settings, llm_client: Any = None) -> TasteService:
     return TasteService(
         settings,
+        llm_client=llm_client,
         canonical_store=CogneePalateStore(
             settings,
             adapter=InMemoryPalateCogneeAdapter(settings.brain_cognee_palate_dataset),
