@@ -40,10 +40,10 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     )
     assert "sudo -n" in workflow
     assert "BRAIN_DEPLOY_ENV=prod" in workflow
-    assert '"$PWD/scripts/deploy-cloud-production.sh"' in workflow
-    assert "brain@159.195.79.79" in workflow
+    assert '"$PWD/scripts/install-cloud-linux-production.sh"' in workflow
+    assert "brain@159.195.79.79" not in workflow
     assert "/etc/brain/$name" in workflow
-    assert '--source-root "$PWD"' in workflow
+    assert "--source-tar" in workflow
     assert "--rendered-env" in workflow
     assert "--rendered-auth-password" in workflow
     assert not Path(".github/workflows/deploy-local-production.yml").exists()
@@ -91,33 +91,15 @@ def test_github_staging_action_deploys_tagged_main_to_staging() -> None:
     assert "uv sync --all-extras" in workflow
     assert "uv run ruff check src tests scripts" in workflow
     assert "uv run pytest" in workflow
-    assert "Render staging config from GitHub Secrets" in workflow
     assert "Resolve staging version" in workflow
     assert "Stamp docs with staged version" in workflow
     assert "make docs-generate" in workflow
     assert "docs/generated/release.json" in workflow
     assert 'git commit -m "Stamp docs for $VERSION"' in workflow
     assert "git push origin HEAD:main" in workflow
-    assert "BRAIN_RELEASE_VERSION" in workflow
     assert "Tag staged release" in workflow
-    assert "BRAIN_DEPLOY_ENV: staging" in workflow
-    assert "BRAIN_PUBLIC_BASE_URL: https://brain-staging.dceb.net" in workflow
-    assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
-    assert "scripts/render_prod_env.py --env staging" in workflow
-    assert "sudo -n" in workflow
-    assert "BRAIN_DEPLOY_ENV=staging" in workflow
-    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
-    assert '--source-root "$PWD"' in workflow
-    assert "--rendered-env" in workflow
-    assert "--rendered-auth-password" in workflow
     assert workflow.index("Stamp docs with staged version") < workflow.index(
         "Validate repository"
-    )
-    assert workflow.index("Validate repository") < workflow.index(
-        "Render staging config from GitHub Secrets"
-    )
-    assert workflow.index("Render staging config from GitHub Secrets") < workflow.index(
-        "Deploy to local staging LaunchDaemons"
     )
 
 
@@ -127,18 +109,15 @@ def test_release_action_promotes_staging_sha_to_prod_and_tags() -> None:
     assert "workflow_dispatch:" in workflow
     assert "version:" in workflow
     assert "contents: read" in workflow
-    assert "/Volumes/xpg_usb4/staging/brain/current" in workflow
-    assert "/Volumes/xpg_usb4/staging/brain/shared/release.json" in workflow
-    assert 'readlink "$STAGING_CURRENT"' in workflow
-    assert "requested version $TAG is not the staged version" in workflow
-    assert "tag $TAG does not exist; deploy it to staging first" in workflow
+    assert "tag $TAG does not exist; stage it first (deploy-local-staging)" in workflow
     assert 'git checkout "$STAGING_SHA"' in workflow
     assert "BRAIN_RELEASE_VERSION" in workflow
     assert "scripts/render_prod_env.py --env prod" in workflow
     assert "BRAIN_DEPLOY_ENV=prod" in workflow
-    assert '"$PWD/scripts/deploy-cloud-production.sh"' in workflow
-    assert "brain@159.195.79.79" in workflow
+    assert '"$PWD/scripts/install-cloud-linux-production.sh"' in workflow
+    assert "brain@159.195.79.79" not in workflow
     assert "/etc/brain/$name" in workflow
+    assert "--source-tar" in workflow
     assert "git tag -a" not in workflow
     assert "git push origin" not in workflow
     assert "Verify promoted release tag" in workflow
