@@ -118,6 +118,10 @@ def _collect_raw_text_chunks(value: Any, chunks: list[str]) -> None:
     if isinstance(value, str):
         chunks.append(value)
         return
+    object_text = getattr(value, "text", None)
+    if isinstance(object_text, str):
+        chunks.append(object_text)
+        return
     if isinstance(value, list | tuple):
         for item in value:
             _collect_raw_text_chunks(item, chunks)
