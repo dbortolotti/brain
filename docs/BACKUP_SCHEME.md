@@ -38,7 +38,7 @@ BRAIN_NEO4J_STOP_FOR_DUMP=false
 
 Production renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. Staging renders `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=false`, `BRAIN_NEO4J_DUMP_ENABLED=true`, and `BRAIN_NEO4J_STOP_FOR_DUMP=true`. The checked-in prod and staging configs currently use `VECTOR_DB_PROVIDER=pgvector`, so `pgvector/` is the expected vector-store archive directory in both environments; `lancedb/` is used when LanceDB is the configured vector backend. The deployed auth registry file is configured as `BRAIN_AUTH_USERS_FILE` in prod, staging, and QA, but it is not part of the default backup inputs unless the script is explicitly extended to capture it.
 
-The backup script deduplicates the configured data root, runtime data root, and runtime system root before scanning them.
+The backup script uses the runtime data root by default, or `--data-dir` when provided, and deduplicates that data root with the runtime system root before scanning them.
 
 Each backup run creates:
 
@@ -77,7 +77,7 @@ Override the backup root for a one-off run:
 ENV_FILE=/etc/brain/brain.env uv run python scripts/backup_stores.py --backup-dir /var/lib/brain/backups/manual
 ```
 
-Override the shared data root:
+Override the data root:
 
 ```bash
 ENV_FILE=/etc/brain/brain.env uv run python scripts/backup_stores.py --data-dir /var/lib/brain/data
@@ -373,5 +373,5 @@ ENV_FILE=/etc/brain/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: ef9647b766f01c3d30cc8fd46e66af1f40ea99353c3add017d6b640f54d0ff86 -->
-<!-- brain-doc-source-commit: 83f931a1be7028168fe2fac6fd4a913c48bbfc62 -->
+<!-- brain-doc-source-hash: f025219d6116f428995d10fedc2f46905056efd4ef9c8bb6a6a2689619c0a6dd -->
+<!-- brain-doc-source-commit: b51702375fd693b8d18b34676ffa372731da0877 -->
