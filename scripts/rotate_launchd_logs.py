@@ -21,7 +21,18 @@ def main() -> int:
     args = parser.parse_args()
 
     now = datetime.now(UTC)
-    archive_date = args.date or (now.date() - timedelta(days=1)).isoformat()
+    if args.date:
+        archive_date_value = datetime.strptime(args.date, "%Y-%m-%d").date()
+        retention_now = datetime(
+            archive_date_value.year,
+            archive_date_value.month,
+            archive_date_value.day,
+            tzinfo=UTC,
+        ) + timedelta(days=1)
+    else:
+        archive_date_value = now.date() - timedelta(days=1)
+        retention_now = now
+    archive_date = archive_date_value.isoformat()
     log_dir = Path(args.log_dir).expanduser()
     archive_root = Path(args.archive_dir).expanduser()
     archive_day = archive_root / archive_date
@@ -37,7 +48,7 @@ def main() -> int:
         copy_truncate_gzip(source, destination)
         rotated.append(str(destination))
 
-    cleanup_archives(archive_root, retention_days=args.retention_days, now=now)
+    cleanup_archives(archive_root, retention_days=args.retention_days, now=retention_now)
     print(f"rotated {len(rotated)} launchd logs into {archive_day}")
     return 0
 
