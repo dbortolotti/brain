@@ -85,7 +85,7 @@ BACKEND_PID=$!
 log "starting Cognee frontend on 127.0.0.1:$BRAIN_UI_FRONTEND_PORT"
 (
   cd "$FRONTEND_DIR"
-  npm run dev
+  npm run dev -- --hostname 127.0.0.1 --port "$BRAIN_UI_FRONTEND_PORT"
 ) &
 FRONTEND_PID=$!
 
