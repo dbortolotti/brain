@@ -18,6 +18,7 @@ def main() -> int:
     parser.add_argument("--backup-dir", default=None)
     parser.add_argument("--data-dir", default=None)
     parser.add_argument("--skip-google-drive", action="store_true")
+    parser.add_argument("--skip-cognify", action="store_true")
     args = parser.parse_args()
 
     script_dir = Path(__file__).resolve().parent
@@ -34,6 +35,7 @@ def main() -> int:
         backup_cmd.append("--skip-google-drive")
 
     prune_cmd = [sys.executable, str(script_dir / "prune_deleted_palate_items.py")]
+    cognify_cmd = [sys.executable, str(script_dir / "cognify_datasets.py")]
 
     print(f"[maintenance] started at {timestamp()}", flush=True)
     print("[maintenance] pruning deleted palate items", flush=True)
@@ -46,6 +48,21 @@ def main() -> int:
         )
         return prune_result.returncode
 
+    cognify_returncode = 0
+    if args.skip_cognify:
+        print("[maintenance] skipping cognify", flush=True)
+    else:
+        print("[maintenance] cognifying datasets", flush=True)
+        cognify_result = subprocess.run(cognify_cmd, env=env, check=False)
+        cognify_returncode = cognify_result.returncode
+        if cognify_returncode != 0:
+            # A cognify failure must never block the backup; report it after.
+            print(
+                f"[maintenance] cognify failed with exit code {cognify_returncode}",
+                file=sys.stderr,
+                flush=True,
+            )
+
     print("[maintenance] running backup", flush=True)
     backup_result = subprocess.run(backup_cmd, env=env, check=False)
     if backup_result.returncode != 0:
@@ -57,7 +74,7 @@ def main() -> int:
         return backup_result.returncode
 
     print(f"[maintenance] completed at {timestamp()}", flush=True)
-    return 0
+    return cognify_returncode
 
 
 def timestamp() -> str:

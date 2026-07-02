@@ -63,7 +63,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`.
+Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/prune_deleted_palate_items.py`, `scripts/cognify_datasets.py`, and then `scripts/backup_stores.py`.
 
 Run the backup script directly with the configured environment:
 
@@ -373,5 +373,5 @@ ENV_FILE=/etc/brain/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: f025219d6116f428995d10fedc2f46905056efd4ef9c8bb6a6a2689619c0a6dd -->
-<!-- brain-doc-source-commit: b51702375fd693b8d18b34676ffa372731da0877 -->
+<!-- brain-doc-source-hash: d4719baa1f98245e482bff090c80c33c0bafe42bafa61a6a3c9e35cf0bbef145 -->
+<!-- brain-doc-source-commit: 63242d5b89bce92e3991c166ab535f1be9e2ad00 -->

@@ -36,11 +36,14 @@ def test_nightly_maintenance_runs_backup(monkeypatch) -> None:
     )
 
     assert module.main() == 0
-    assert len(calls) == 2
+    assert len(calls) == 3
     prune_command, prune_env = calls[0]
-    command, env = calls[1]
+    cognify_command, cognify_env = calls[1]
+    command, env = calls[2]
     assert prune_command[1].endswith("prune_deleted_palate_items.py")
     assert prune_env["ENV_FILE"] == "/tmp/brain.env"
+    assert cognify_command[1].endswith("cognify_datasets.py")
+    assert cognify_env["ENV_FILE"] == "/tmp/brain.env"
     assert command[1].endswith("backup_stores.py")
     assert command[-1] == "--skip-google-drive"
     assert env["ENV_FILE"] == "/tmp/brain.env"
@@ -68,12 +71,47 @@ def test_nightly_maintenance_returns_backup_failure(monkeypatch) -> None:
 
     def fake_run(command, *, env, check):
         calls.append((command, env))
-        return SimpleNamespace(returncode=0 if command[1].endswith("prune_deleted_palate_items.py") else 42)
+        return SimpleNamespace(returncode=42 if command[1].endswith("backup_stores.py") else 0)
 
     monkeypatch.setattr(module.subprocess, "run", fake_run)
     monkeypatch.setattr(module.sys, "argv", ["nightly_maintenance.py"])
 
     assert module.main() == 42
+    assert len(calls) == 3
+    assert calls[0][0][1].endswith("prune_deleted_palate_items.py")
+    assert calls[1][0][1].endswith("cognify_datasets.py")
+    assert calls[2][0][1].endswith("backup_stores.py")
+
+
+def test_nightly_maintenance_cognify_failure_does_not_block_backup(monkeypatch) -> None:
+    module = load_nightly_maintenance()
+    calls: list[tuple[list[str], dict[str, str]]] = []
+
+    def fake_run(command, *, env, check):
+        calls.append((command, env))
+        return SimpleNamespace(returncode=7 if command[1].endswith("cognify_datasets.py") else 0)
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+    monkeypatch.setattr(module.sys, "argv", ["nightly_maintenance.py"])
+
+    assert module.main() == 7
+    assert len(calls) == 3
+    assert calls[1][0][1].endswith("cognify_datasets.py")
+    assert calls[2][0][1].endswith("backup_stores.py")
+
+
+def test_nightly_maintenance_skip_cognify(monkeypatch) -> None:
+    module = load_nightly_maintenance()
+    calls: list[tuple[list[str], dict[str, str]]] = []
+
+    def fake_run(command, *, env, check):
+        calls.append((command, env))
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+    monkeypatch.setattr(module.sys, "argv", ["nightly_maintenance.py", "--skip-cognify"])
+
+    assert module.main() == 0
     assert len(calls) == 2
     assert calls[0][0][1].endswith("prune_deleted_palate_items.py")
     assert calls[1][0][1].endswith("backup_stores.py")
