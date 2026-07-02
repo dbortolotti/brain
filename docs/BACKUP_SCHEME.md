@@ -63,7 +63,7 @@ Some directories are omitted when the corresponding source does not exist or is 
 
 ## Running A Backup
 
-Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/backup_stores.py`.
+Cloud production installs `brain-maintenance.timer` and `brain-maintenance.service` under systemd. The job runs as the `brain` Linux user and calls `scripts/nightly_maintenance.py`, which runs `scripts/prune_deleted_palate_items.py`, `scripts/cognify_datasets.py`, and then `scripts/backup_stores.py`.
 
 Run the backup script directly with the configured environment:
 
