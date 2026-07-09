@@ -16,7 +16,12 @@ import httpx
 from memory_stack.cfg import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
 from memory_stack.local_embeddings import fastembed_vector
-from memory_stack.provider_auth import ProviderAuthError, resolve_openai_text_bearer
+from memory_stack.provider_auth import (
+    ProviderAuthError,
+    openai_embeddings_base_url,
+    openai_responses_base_url,
+    resolve_openai_text_bearer,
+)
 
 
 MAX_OUTPUT_TOKENS = 2000
@@ -264,7 +269,7 @@ class LiveProviderClient:
     ) -> str:
         bearer = resolve_openai_text_bearer(self.settings)
         base_url = (
-            self.settings.openai_codex_base_url
+            openai_responses_base_url(self.settings)
             if self.settings.openai_auth_mode == "oauth"
             else "https://api.openai.com/v1"
         )
@@ -445,8 +450,13 @@ class LiveProviderClient:
 
     def _embedding_vector(self, candidate: ModelCandidate, *, text: str) -> list[float]:
         if candidate.provider == "openai":
+            base_url = (
+                openai_embeddings_base_url(self.settings)
+                if self.settings.openai_auth_mode == "oauth"
+                else "https://api.openai.com/v1"
+            )
             response = self.client.post(
-                "https://api.openai.com/v1/embeddings",
+                f"{base_url}/embeddings",
                 headers={
                     "Authorization": f"Bearer {resolve_openai_text_bearer(self.settings)}"
                     if self.settings.openai_auth_mode == "oauth"

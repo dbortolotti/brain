@@ -40,6 +40,7 @@ def test_cognee_oauth_environment_exports_llm_key_without_openai_api_key(
 ) -> None:
     monkeypatch.delenv("LLM_API_KEY", raising=False)
     monkeypatch.delenv("LLM_ENDPOINT", raising=False)
+    monkeypatch.delenv("EMBEDDING_ENDPOINT", raising=False)
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "oauth-token")
     settings = auth_settings(tmp_path)
@@ -52,8 +53,28 @@ def test_cognee_oauth_environment_exports_llm_key_without_openai_api_key(
     assert values["EMBEDDING_MODEL"] == "openai/text-embedding-3-large"
     assert values["EMBEDDING_DIMENSIONS"] == "3072"
     assert values["EMBEDDING_API_KEY"] == "oauth-token"
+    assert values["EMBEDDING_ENDPOINT"] == "https://api.openai.com/v1"
     assert "OPENAI_API_KEY" not in values
     assert "OPENAI_API_KEY" not in os.environ
+
+
+def test_cognee_oauth_environment_points_embeddings_at_token_sink(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "sink-token")
+    settings = auth_settings(
+        tmp_path,
+        openai_codex_base_url="http://127.0.0.1:11434/v1",
+        openai_token_sink_client_token_file="/etc/hermes/token-sink/client_token",
+    )
+
+    values = oauth_compat.configure_cognee_oauth_environment(settings)
+
+    assert values["LLM_API_KEY"] == "sink-token"
+    assert values["LLM_ENDPOINT"] == "http://127.0.0.1:11434/v1"
+    assert values["EMBEDDING_API_KEY"] == "sink-token"
+    assert values["EMBEDDING_ENDPOINT"] == "http://127.0.0.1:11434/v1"
 
 
 def test_cognee_oauth_adapter_calls_codex_responses_endpoint(tmp_path, monkeypatch) -> None:
@@ -410,14 +431,15 @@ def test_install_cognee_oauth_adapter_patches_cognee_factory(tmp_path, monkeypat
 
 
 def auth_settings(tmp_path, **kwargs: Any) -> Settings:
-    return Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
-        brain_provider_auth_state_dir=str(tmp_path / "state"),
-        openai_auth_mode="oauth",
-        openai_codex_base_url="https://chatgpt.com/backend-api/codex",
-        **kwargs,
-    )
+    values = {
+        "brain_database_url": f"sqlite:///{tmp_path / 'brain.db'}",
+        "brain_provider_auth_profiles_path": str(tmp_path / "profiles.json"),
+        "brain_provider_auth_state_dir": str(tmp_path / "state"),
+        "openai_auth_mode": "oauth",
+        "openai_codex_base_url": "https://chatgpt.com/backend-api/codex",
+    }
+    values.update(kwargs)
+    return Settings(**values)
 
 
 def json_dumps(value: Any) -> str:

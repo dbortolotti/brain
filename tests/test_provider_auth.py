@@ -22,6 +22,7 @@ from memory_stack.provider_auth import (
     get_codex_cli_access_token,
     get_openai_codex_profile,
     list_openai_codex_profiles,
+    openai_embeddings_base_url,
     parse_authorization_response,
     refresh_openai_codex_profile,
     resolve_openai_text_bearer,
@@ -305,6 +306,23 @@ def test_api_key_mode_is_explicit(tmp_path: Path) -> None:
     assert resolve_openai_text_bearer(settings) == "sk-test"
 
 
+def test_oauth_mode_uses_token_sink_client_file(tmp_path: Path, monkeypatch) -> None:
+    empty_codex_home = tmp_path / "empty-codex"
+    empty_codex_home.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
+    token_file = tmp_path / "client_token"
+    token_file.write_text("sink-client-token\n", encoding="utf-8")
+    settings = auth_settings(
+        tmp_path,
+        openai_auth_mode="oauth",
+        openai_codex_base_url="http://127.0.0.1:11434/v1",
+        openai_token_sink_client_token_file=str(token_file),
+    )
+
+    assert resolve_openai_text_bearer(settings) == "sink-client-token"
+    assert openai_embeddings_base_url(settings) == "http://127.0.0.1:11434/v1"
+
+
 def test_cli_status_reports_oauth_and_embedding_status(tmp_path: Path) -> None:
     env_file = tmp_path / ".env"
     env_file.write_text(
@@ -336,6 +354,34 @@ def test_cli_status_reports_oauth_and_embedding_status(tmp_path: Path) -> None:
     assert result.exit_code == 0
     assert "openai text: OAuth profile default" in result.output
     assert "openai embedding: OAuth profile default" in result.output
+
+
+def test_cli_status_reports_token_sink_client(tmp_path: Path) -> None:
+    token_file = tmp_path / "client_token"
+    token_file.write_text("sink-client-token\n", encoding="utf-8")
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "\n".join(
+            [
+                f"BRAIN_PROVIDER_AUTH_PROFILES_PATH={tmp_path / 'profiles.json'}",
+                f"BRAIN_PROVIDER_AUTH_STATE_DIR={tmp_path / 'state'}",
+                "OPENAI_AUTH_MODE=oauth",
+                "OPENAI_CODEX_BASE_URL=http://127.0.0.1:11434/v1",
+                f"OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE={token_file}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["models", "auth", "status", "--provider", "openai-codex", "--env-file", str(env_file)],
+    )
+
+    assert result.exit_code == 0
+    assert "openai text: token sink client configured" in result.output
+    assert "openai embedding: token sink client configured" in result.output
+    assert "sink-client-token" not in result.output
 
 
 def test_cli_list_reports_profiles(tmp_path: Path) -> None:

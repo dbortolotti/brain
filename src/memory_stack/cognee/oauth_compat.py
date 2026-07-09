@@ -11,7 +11,11 @@ import httpx
 from pydantic import BaseModel
 
 from memory_stack.cfg import Settings
-from memory_stack.provider_auth import resolve_openai_text_bearer
+from memory_stack.provider_auth import (
+    openai_embeddings_base_url,
+    openai_responses_base_url,
+    resolve_openai_text_bearer,
+)
 
 
 JSON_OBJECT_RE = r"\{.*\}"
@@ -34,7 +38,7 @@ def configure_cognee_oauth_environment(settings: Settings) -> dict[str, str]:
         "LLM_PROVIDER": "openai",
         "LLM_MODEL": settings.llm_model,
         "LLM_API_KEY": bearer,
-        "LLM_ENDPOINT": settings.openai_codex_base_url.rstrip("/"),
+        "LLM_ENDPOINT": openai_responses_base_url(settings),
     }
     if settings.embedding_provider == "openai":
         values.update(
@@ -43,6 +47,7 @@ def configure_cognee_oauth_environment(settings: Settings) -> dict[str, str]:
                 "EMBEDDING_MODEL": f"openai/{settings.embedding_model}",
                 "EMBEDDING_DIMENSIONS": str(settings.embedding_dimensions),
                 "EMBEDDING_API_KEY": bearer,
+                "EMBEDDING_ENDPOINT": openai_embeddings_base_url(settings),
             }
         )
     os.environ.update(values)
@@ -80,7 +85,7 @@ class CogneeOAuthLLMAdapter:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.model = settings.llm_model
-        self.endpoint = settings.openai_codex_base_url.rstrip("/")
+        self.endpoint = openai_responses_base_url(settings)
         self.max_completion_tokens = settings.llm_max_tokens
 
     async def acreate_structured_output(

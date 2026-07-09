@@ -99,6 +99,30 @@ def test_openai_oauth_is_default_and_does_not_export_text_api_key(
     assert "OPENAI_API_KEY" not in env
 
 
+def test_openai_oauth_exports_token_sink_client_file_without_api_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        llm_provider="openai",
+        llm_model=DEFAULT_LLM_MODEL,
+        openai_auth_mode="oauth",
+        openai_codex_base_url="http://127.0.0.1:11434/v1",
+        openai_token_sink_client_token_file="/etc/hermes/token-sink/client_token",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
+        graph_database_provider="ladybug",
+    )
+    env = runtime_env(settings)
+
+    assert env["OPENAI_AUTH_MODE"] == "oauth"
+    assert env["OPENAI_CODEX_BASE_URL"] == "http://127.0.0.1:11434/v1"
+    assert env["OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE"] == "/etc/hermes/token-sink/client_token"
+    assert "OPENAI_API_KEY" not in env
+
+
 def test_openai_profile_exports_fixed_models(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

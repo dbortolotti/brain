@@ -49,6 +49,10 @@ CFG_AUTHORITATIVE_KEYS = {
     "LLM_MODEL",
     "LLM_TEMPERATURE",
     "LLM_MAX_TOKENS",
+    "OPENAI_AUTH_MODE",
+    "OPENAI_CODEX_AUTH_PROFILE",
+    "OPENAI_CODEX_BASE_URL",
+    "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE",
     "EMBEDDING_PROVIDER",
     "EMBEDDING_MODEL",
     "EMBEDDING_DIMENSIONS",
@@ -96,6 +100,7 @@ ORDERED_KEYS = [
     "OPENAI_AUTH_MODE",
     "OPENAI_CODEX_AUTH_PROFILE",
     "OPENAI_CODEX_BASE_URL",
+    "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE",
     "BRAIN_PROVIDER_AUTH_PROFILES_PATH",
     "BRAIN_PROVIDER_AUTH_STATE_DIR",
     "EMBEDDING_PROVIDER",
@@ -246,6 +251,13 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     rendered = render_values(args.env)
+    auth_errors = openai_auth_config_errors(rendered)
+    if auth_errors:
+        print("invalid OpenAI auth config:", file=sys.stderr)
+        for error in auth_errors:
+            print(f"- {error}", file=sys.stderr)
+        return 2
+
     missing = missing_required_values(rendered)
     if missing:
         print(
@@ -329,7 +341,26 @@ def render_values(env_name: str) -> dict[str, str]:
             values[key] = format_config_value(defaults[key])
         else:
             values[key] = ""
+    normalize_deployed_openai_auth(values)
     return values
+
+
+def normalize_deployed_openai_auth(values: dict[str, str]) -> None:
+    if values.get("OPENAI_AUTH_MODE") != "oauth":
+        return
+    # Deployed Brain OpenAI runtime must use OAuth or the local token-sink client.
+    # Avoid exporting GitHub API-key aliases that downstream libraries might discover.
+    values["OPENAI_API_KEY"] = ""
+    if values.get("LLM_PROVIDER") == "openai":
+        values["LLM_API_KEY"] = ""
+    if values.get("EMBEDDING_PROVIDER") == "openai":
+        values["EMBEDDING_API_KEY"] = ""
+
+
+def openai_auth_config_errors(values: dict[str, str]) -> list[str]:
+    if values.get("OPENAI_AUTH_MODE") == "oauth":
+        return []
+    return ["OPENAI_AUTH_MODE must be oauth for deployed Brain environments."]
 
 
 def format_config_value(value: object) -> str:

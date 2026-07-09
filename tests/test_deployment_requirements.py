@@ -22,7 +22,7 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     assert "BRAIN_MODEL_SMOKE_SCOPE" not in workflow
     assert "vars.OPENAI_AUTH_MODE" in workflow
     assert "vars.OPENAI_CODEX_AUTH_PROFILE" in workflow
-    assert "secrets.OPENAI_API_KEY" in workflow
+    assert "secrets.OPENAI_API_KEY" not in workflow
     assert "secrets.OPENROUTER_API_KEY" in workflow
     assert "secrets.BRAIN_AUTH_PASSWORD" in workflow
     assert "secrets.BRAIN_TASTE_OMDB_API_KEY" in workflow
@@ -197,6 +197,21 @@ def test_cloud_production_migrations_source_rendered_env() -> None:
 
     assert "source '$ENV_FILE' && set +a && '$VENV_DIR/bin/alembic' upgrade head" in script
     assert "source '$ENV_FILE' && set +a && '$VENV_DIR/bin/python' scripts/live_model_smoke.py" in script
+
+
+def test_cloud_production_uses_shared_openai_token_sink() -> None:
+    script = Path("scripts/install-cloud-linux-production.sh").read_text(encoding="utf-8")
+    prod_cfg = Path("cfg/prod.yaml").read_text(encoding="utf-8")
+
+    assert "usermod -aG hermes-agents \"$SERVICE_USER\"" in script
+    assert "set_env_var OPENAI_AUTH_MODE oauth" in script
+    assert "set_env_var OPENAI_CODEX_BASE_URL http://127.0.0.1:11434/v1" in script
+    assert (
+        "set_env_var OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE /etc/hermes/token-sink/client_token"
+        in script
+    )
+    assert "OPENAI_CODEX_BASE_URL: http://127.0.0.1:11434/v1" in prod_cfg
+    assert "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE: /etc/hermes/token-sink/client_token" in prod_cfg
 
 
 def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:

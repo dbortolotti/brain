@@ -213,14 +213,23 @@ The workflows set `BRAIN_MCP_PATH=/mcp`, `BRAIN_ADMIN_MCP_PATH=/admin/mcp`, `BRA
 Configure these in GitHub repository secrets for QA, staging, and production deploys:
 
 ```text
-OPENAI_API_KEY
 GRAPH_DATABASE_PASSWORD
 BRAIN_AUTH_PASSWORD
 ```
 
 The deploy workflows also pass `BRAIN_AUTH_TOKEN` into `render_prod_env.py`.
 
-`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer and cannot be empty. The renderer rejects empty or placeholder values for `OPENAI_API_KEY` (``, `replace-me`, `sk-...`, `...`) and `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
+`GRAPH_DATABASE_PASSWORD` is treated as required by the renderer and cannot be empty. The renderer rejects empty or placeholder values for `BRAIN_AUTH_PASSWORD` (``, `replace-me`, `...`).
+
+Production OpenAI auth is OAuth through the shared Hal token sink. The Linux production installer sets:
+
+```text
+OPENAI_AUTH_MODE=oauth
+OPENAI_CODEX_BASE_URL=http://127.0.0.1:11434/v1
+OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token
+```
+
+Do not configure production Brain to use `OPENAI_AUTH_MODE=api_key`.
 
 ## Optional Taste Integration Secrets
 
@@ -276,6 +285,7 @@ EMBEDDING_DIMENSIONS
 OPENAI_AUTH_MODE
 OPENAI_CODEX_AUTH_PROFILE
 OPENAI_CODEX_BASE_URL
+OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE
 BRAIN_DATABASE_URL
 AWS_REGION
 AWS_DEFAULT_REGION
@@ -406,5 +416,5 @@ Before moving secrets into GitHub, keep a local gitignored backup under `local-s
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: eae874ddf6428780cd3edef51e7bfe4cd8fd479dc3d67d009dfa835bb4def188 -->
-<!-- brain-doc-source-commit: b51702375fd693b8d18b34676ffa372731da0877 -->
+<!-- brain-doc-source-hash: 0846f325fc03abfcd8c2a234555cf0f755c2d2d440188ef5ef73be556b443a58 -->
+<!-- brain-doc-source-commit: e17fe2b79b53356cc6ffe843e81a419dbc0cd16e -->

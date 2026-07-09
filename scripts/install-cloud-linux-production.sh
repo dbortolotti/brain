@@ -279,6 +279,9 @@ ensure_user_and_dirs() {
   if getent group docker >/dev/null 2>&1; then
     usermod -aG docker "$SERVICE_USER"
   fi
+  if getent group hermes-agents >/dev/null 2>&1; then
+    usermod -aG hermes-agents "$SERVICE_USER"
+  fi
   mkdir -p \
     "$PROD_ROOT/releases" "$SHARED_DIR" "$SECRETS_DIR" "$LOG_DIR/requests" "$LOG_DIR/routing" \
     "$DATA_DIR/brain" "$BACKUP_DIR" "$CACHE_DIR" "$UI_CACHE_DIR" "$SYSTEM_DIR" \
@@ -304,9 +307,10 @@ prepare_env() {
   ensure_env_var BRAIN_LLM_ENABLED true
   ensure_env_var LLM_PROVIDER openai
   ensure_env_var LLM_MODEL gpt-5.4-mini
-  ensure_env_var OPENAI_AUTH_MODE oauth
-  ensure_env_var OPENAI_CODEX_AUTH_PROFILE default
-  ensure_env_var OPENAI_CODEX_BASE_URL https://chatgpt.com/backend-api/codex
+  set_env_var OPENAI_AUTH_MODE oauth
+  set_env_var OPENAI_CODEX_AUTH_PROFILE default
+  set_env_var OPENAI_CODEX_BASE_URL http://127.0.0.1:11434/v1
+  set_env_var OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE /etc/hermes/token-sink/client_token
   ensure_env_var EMBEDDING_PROVIDER openai
   ensure_env_var EMBEDDING_MODEL text-embedding-3-large
   ensure_env_var EMBEDDING_DIMENSIONS 3072

@@ -738,10 +738,9 @@ Environment examples differ by local setup:
 - `cfg/staging.yaml` is the staging override deployed by the manual tagged staging workflow.
 - `cfg/prod.yaml` is the production override promoted by the release workflow. Promotable releases are versioned in staging first; production verifies and keeps that staged `BRAIN_RELEASE_VERSION` instead of creating a new one at promotion time.
 
-Provider API keys can be stored once and reused across every model for that provider:
+Provider API keys for non-runtime providers and explicit eval/smoke experiments can be stored once and reused across every model for that provider:
 
 ```env
-OPENAI_API_KEY=sk-...
 GEMINI_API_KEY=AIza...
 GOOGLE_API_KEY=AIza...
 ANTHROPIC_API_KEY=sk-ant-...
@@ -760,7 +759,15 @@ OPENAI_AUTH_MODE=oauth
 OPENAI_CODEX_AUTH_PROFILE=default
 ```
 
-Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls. When `OPENAI_AUTH_MODE=oauth` and `EMBEDDING_PROVIDER=openai`, Brain's Cognee OAuth compatibility layer also passes the refreshed OAuth bearer as the OpenAI embedding credential. Use API-key mode when you want embeddings to use `OPENAI_API_KEY` explicitly. Non-runtime providers are available only for explicit eval and smoke experiments.
+Production on srv1 uses the shared Hal token sink:
 
-<!-- brain-doc-source-hash: a3cf55a542c8fd6edf4c24e481c12d8169c02fbfd751d5e7c3f6ffb4a22dbd63 -->
-<!-- brain-doc-source-commit: b51702375fd693b8d18b34676ffa372731da0877 -->
+```env
+OPENAI_AUTH_MODE=oauth
+OPENAI_CODEX_BASE_URL=http://127.0.0.1:11434/v1
+OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token
+```
+
+When the token-sink client file is configured, Brain sends the local client token to the loopback proxy; the sink swaps it for the refreshed OpenAI OAuth bearer. Embeddings use the same proxy. API-key mode is only for explicit local eval/smoke experiments.
+
+<!-- brain-doc-source-hash: c21a9101c6b57b681ecd740257694c54da7d75f2c9eb5f94a9822d06f8d517cc -->
+<!-- brain-doc-source-commit: e17fe2b79b53356cc6ffe843e81a419dbc0cd16e -->

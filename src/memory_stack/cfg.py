@@ -203,6 +203,9 @@ class Settings(BaseSettings):
     )
     openai_codex_auth_profile: str = Field(default_factory=lambda: get("OPENAI_CODEX_AUTH_PROFILE"))
     openai_codex_base_url: str = Field(default_factory=lambda: get("OPENAI_CODEX_BASE_URL"))
+    openai_token_sink_client_token_file: str = Field(
+        default_factory=lambda: get("OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE", "")
+    )
     brain_provider_auth_profiles_path: str = Field(
         default_factory=lambda: get("BRAIN_PROVIDER_AUTH_PROFILES_PATH")
     )
@@ -680,6 +683,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "OPENAI_AUTH_MODE": settings.openai_auth_mode,
         "OPENAI_CODEX_AUTH_PROFILE": settings.openai_codex_auth_profile,
         "OPENAI_CODEX_BASE_URL": settings.openai_codex_base_url,
+        "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE": settings.openai_token_sink_client_token_file,
         "BRAIN_PROVIDER_AUTH_PROFILES_PATH": settings.brain_provider_auth_profiles_path,
         "BRAIN_PROVIDER_AUTH_STATE_DIR": settings.brain_provider_auth_state_dir,
         "EMBEDDING_PROVIDER": settings.embedding_provider,

@@ -228,7 +228,38 @@ def resolve_openai_text_bearer(settings: Settings) -> str:
         if not key:
             raise ProviderAuthError("OPENAI_AUTH_MODE=api_key but OPENAI_API_KEY is missing.")
         return key
+    sink_token = get_token_sink_client_token(settings)
+    if sink_token:
+        return sink_token
     return resolve_openai_codex_access_token(settings)
+
+
+def openai_responses_base_url(settings: Settings) -> str:
+    return settings.openai_codex_base_url.rstrip("/")
+
+
+def openai_embeddings_base_url(settings: Settings) -> str:
+    if openai_uses_token_sink(settings):
+        return openai_responses_base_url(settings)
+    return "https://api.openai.com/v1"
+
+
+def openai_uses_token_sink(settings: Settings) -> bool:
+    return bool(string_value(getattr(settings, "openai_token_sink_client_token_file", None)))
+
+
+def get_token_sink_client_token(settings: Settings) -> str | None:
+    path_value = string_value(getattr(settings, "openai_token_sink_client_token_file", None))
+    if not path_value:
+        return None
+    path = Path(path_value).expanduser()
+    try:
+        token = path.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ProviderAuthError(f"OpenAI token sink client token is unreadable: {path}") from exc
+    if not token:
+        raise ProviderAuthError(f"OpenAI token sink client token is empty: {path}")
+    return token
 
 
 def resolve_openai_codex_access_token(settings: Settings) -> str:

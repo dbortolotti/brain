@@ -5,6 +5,8 @@ import threading
 import time
 from pathlib import Path
 from typing import Any
+
+import httpx
 import pytest
 
 from memory_stack.cfg import Settings
@@ -1891,6 +1893,56 @@ def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path, monk
     assert http_client.last_json["store"] is False
     assert http_client.last_json["stream"] is True
     assert "max_output_tokens" not in http_client.last_json
+
+
+def test_live_provider_client_uses_token_sink_for_openai_oauth(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    empty_codex_home = tmp_path / "empty-codex"
+    empty_codex_home.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
+    token_file = tmp_path / "client_token"
+    token_file.write_text("sink-client-token\n", encoding="utf-8")
+    settings = Settings(
+        openai_auth_mode="oauth",
+        openai_codex_base_url="http://127.0.0.1:11434/v1",
+        openai_token_sink_client_token_file=str(token_file),
+    )
+    seen: list[tuple[str, str]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append((str(request.url), request.headers["authorization"]))
+        if request.url.path == "/v1/responses":
+            return httpx.Response(
+                200,
+                text='data: {"type":"response.completed","response":{"output_text":"{\\"ok\\": true}"}}\n\n',
+            )
+        if request.url.path == "/v1/embeddings":
+            return httpx.Response(200, json={"data": [{"embedding": [0.1, 0.2]}]})
+        return httpx.Response(404, json={"error": {"message": "not found"}})
+
+    client = LiveProviderClient(
+        settings,
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    llm_result = client.complete_json(
+        ModelCandidate(provider="openai", model="gpt-5.5", kind="llm"),
+        prompt="test",
+        schema={"type": "object"},
+    )
+    embedding_result = client.embed(
+        ModelCandidate(provider="openai", model="text-embedding-3-large", kind="embedding"),
+        text="brain eval test",
+    )
+
+    assert llm_result.status == "ok"
+    assert embedding_result.status == "ok"
+    assert seen == [
+        ("http://127.0.0.1:11434/v1/responses", "Bearer sink-client-token"),
+        ("http://127.0.0.1:11434/v1/embeddings", "Bearer sink-client-token"),
+    ]
 
 
 def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -> None:

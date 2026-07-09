@@ -87,6 +87,8 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_RELEASE_VERSION=prod-abc123" in rendered
     assert "OPENAI_AUTH_MODE=oauth" in rendered
     assert "OPENAI_CODEX_AUTH_PROFILE=default" in rendered
+    assert "OPENAI_CODEX_BASE_URL=http://127.0.0.1:11434/v1" in rendered
+    assert "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token" in rendered
     assert "LLM_PROVIDER=openai" in rendered
     assert "LLM_MODEL=gpt-5.4-mini" in rendered
     assert "EMBEDDING_PROVIDER=openai" in rendered
@@ -98,7 +100,7 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "VECTOR_DB_HOST=127.0.0.1" in rendered
     assert "DB_PROVIDER=postgres" in rendered
     assert "DB_PORT=15432" in rendered
-    assert "OPENAI_API_KEY=sk-prod-openai" in rendered
+    assert "OPENAI_API_KEY" not in rendered
     assert "OPENROUTER_API_KEY=sk-prod-openrouter" in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
     assert "BRAIN_TASTE_ENABLED=true" in rendered
@@ -237,18 +239,19 @@ def test_render_prod_env_allows_blank_openai_key_in_oauth_mode(tmp_path) -> None
     assert "OPENAI_API_KEY" not in rendered
 
 
-def test_render_prod_env_requires_openai_key_in_api_key_mode(tmp_path) -> None:
-    result, _, _ = run_renderer(
+def test_render_prod_env_ignores_api_key_mode_env_override(tmp_path) -> None:
+    result, output, _ = run_renderer(
         tmp_path,
         {
             "OPENAI_AUTH_MODE": "api_key",
             "OPENAI_API_KEY": "",
         },
-        check=False,
     )
 
-    assert result.returncode == 2
-    assert "OPENAI_API_KEY" in result.stderr
+    rendered = output.read_text(encoding="utf-8")
+    assert result.returncode == 0
+    assert "OPENAI_AUTH_MODE=oauth" in rendered
+    assert "OPENAI_API_KEY" not in rendered
 
 
 def test_render_prod_env_overwrites_when_prod_matches_last_deployed(tmp_path) -> None:
@@ -272,7 +275,7 @@ def test_render_prod_env_overwrites_when_prod_matches_last_deployed(tmp_path) ->
     run_renderer(tmp_path, {"OPENAI_API_KEY": "sk-new-openai"})
 
     rendered = output.read_text(encoding="utf-8")
-    assert "OPENAI_API_KEY=sk-new-openai" in rendered
+    assert "OPENAI_API_KEY" not in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
     assert output.with_name("brain.env.last-deployed").read_text(encoding="utf-8") == rendered
     assert auth_password_file.read_text(encoding="utf-8").strip() == "prod-auth-password"
@@ -364,7 +367,7 @@ def test_render_prod_env_force_config_override_rebaselines_prod(tmp_path) -> Non
 
     rendered = output.read_text(encoding="utf-8")
     assert result.returncode == 0
-    assert "OPENAI_API_KEY=sk-github-openai" in rendered
+    assert "OPENAI_API_KEY" not in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
     assert output.with_name("brain.env.last-deployed").read_text(encoding="utf-8") == rendered
     assert (
