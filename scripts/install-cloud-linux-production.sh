@@ -148,6 +148,26 @@ path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 PY
 }
 
+remove_env_var() {
+  local key="$1"
+  python3 - "$ENV_FILE" "$key" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+key = sys.argv[2]
+if not path.exists():
+    raise SystemExit
+lines = []
+for raw in path.read_text(encoding="utf-8").splitlines():
+    stripped = raw.strip()
+    if stripped.startswith(f"{key}=") or stripped.startswith(f"export {key}="):
+        continue
+    lines.append(raw)
+path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+PY
+}
+
 ensure_env_var() {
   local key="$1"
   local value="$2"
@@ -311,6 +331,9 @@ prepare_env() {
   set_env_var OPENAI_CODEX_AUTH_PROFILE default
   set_env_var OPENAI_CODEX_BASE_URL http://127.0.0.1:11434/v1
   set_env_var OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE /etc/hermes/token-sink/client_token
+  remove_env_var OPENAI_API_KEY
+  remove_env_var LLM_API_KEY
+  remove_env_var EMBEDDING_API_KEY
   ensure_env_var EMBEDDING_PROVIDER openai
   ensure_env_var EMBEDDING_MODEL text-embedding-3-large
   ensure_env_var EMBEDDING_DIMENSIONS 3072

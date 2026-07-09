@@ -210,6 +210,9 @@ def test_cloud_production_uses_shared_openai_token_sink() -> None:
         "set_env_var OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE /etc/hermes/token-sink/client_token"
         in script
     )
+    assert "remove_env_var OPENAI_API_KEY" in script
+    assert "remove_env_var LLM_API_KEY" in script
+    assert "remove_env_var EMBEDDING_API_KEY" in script
     assert "OPENAI_CODEX_BASE_URL: http://127.0.0.1:11434/v1" in prod_cfg
     assert "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE: /etc/hermes/token-sink/client_token" in prod_cfg
 
