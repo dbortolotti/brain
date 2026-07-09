@@ -266,7 +266,17 @@ Brain deploys in three tiers, plus local dev:
 - `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain` as `oric_staging`. The workflow requires a `vX.Y.Z` or prerelease tag, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag.
 - `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux user `brain`.
 
-The cloud production layout is:
+Production release is a GitHub Actions operation, not an operator SSH session on
+srv1. The normal path is: manually run `Deploy Local Staging` with a version tag,
+then manually run `.github/workflows/release.yml` with that same staged version.
+The release workflow runs on the self-hosted `brain-prod` runner, checks out the
+staged commit, validates it, renders production config from GitHub Secrets and
+Variables, reads the current production baseline from srv1, packages the staged
+checkout, uploads that package to `brain@159.195.79.79`, and invokes the Linux
+installer with sudo. srv1 does not need a persistent Brain repo checkout or a
+GitHub deploy key for normal production release.
+
+The cloud production layout on srv1 is:
 
 ```text
 /opt/brain/current -> /opt/brain/releases/<commit-sha>
@@ -287,17 +297,23 @@ The cloud production layout is:
 /etc/systemd/system/brain-maintenance.timer
 ```
 
-From this checkout, a direct cloud deploy can be run with:
-
-```bash
-make deploy-cloud-production
-```
-
-Direct deploys need real production secrets either already present in `/etc/brain/brain.env` on the server or passed with `scripts/deploy-cloud-production.sh --rendered-env PATH --rendered-auth-password PATH`.
+`make deploy-cloud-production` and `scripts/deploy-cloud-production.sh` are
+emergency/debug helpers for the same packaging and Linux installer path used by
+the release workflow. They are not the routine production release path. A direct
+deploy still needs the rendered production env and auth-password files produced
+by `scripts/render_prod_env.py`, or an already-correct `/etc/brain/brain.env` on
+srv1.
 
 The QA and staging workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Staging runs as `oric_staging`; QA runs as `oric`. System LaunchDaemons are installed under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching.
 
-The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That uploader packages the checkout, copies it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server. The Linux installer creates or repairs the `brain` user, installs missing runtime packages and `uv`, starts Postgres/pgvector and Neo4j with Docker Compose, runs migrations, installs systemd units, installs the Caddy reverse-proxy config, and restarts Brain.
+The release workflow renders production config the same way, then runs
+`scripts/deploy-cloud-production.sh`. That uploader packages the workflow
+checkout, copies it to `brain@159.195.79.79`, and runs
+`scripts/install-cloud-linux-production.sh` with sudo on the server. The Linux
+installer creates or repairs the `brain` user, adds it to `hermes-agents` when
+that group exists, installs missing runtime packages and `uv`, starts
+Postgres/pgvector and Neo4j with Docker Compose, runs migrations, installs
+systemd units, installs the Caddy reverse-proxy config, and restarts Brain.
 
 The deploy will refuse to start Neo4j if `GRAPH_DATABASE_PASSWORD` is empty.
 
@@ -318,7 +334,7 @@ Workflow model:
 - `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
-The Makefile exposes the deploy helpers:
+The Makefile exposes deploy helpers for operator recovery and local lane work:
 
 ```bash
 make deploy-local-production
@@ -331,6 +347,8 @@ Equivalent commands:
 ./scripts/deploy-local-production.sh
 ./scripts/deploy-cloud-production.sh
 ```
+
+Use the `Release` GitHub Actions workflow for normal production promotion.
 
 Before the first QA/staging daemon deploy on a Mac, create the service users:
 
@@ -769,5 +787,11 @@ OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token
 
 When the token-sink client file is configured, Brain sends the local client token to the loopback proxy; the sink swaps it for the refreshed OpenAI OAuth bearer. Embeddings use the same proxy. API-key mode is only for explicit local eval/smoke experiments.
 
-<!-- brain-doc-source-hash: c21a9101c6b57b681ecd740257694c54da7d75f2c9eb5f94a9822d06f8d517cc -->
-<!-- brain-doc-source-commit: e17fe2b79b53356cc6ffe843e81a419dbc0cd16e -->
+Production Brain must not use OpenAI API-key mode. `cfg/prod.yaml`,
+`scripts/render_prod_env.py`, and the Linux installer all force OAuth plus the
+shared token sink path for production. The renderer omits OpenAI API-key env
+aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
+`LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
+
+<!-- brain-doc-source-hash: 8186b6a4330d6a23dc48ee29fe8965baf2f1b43faeafd381aa6cde8ee880519f -->
+<!-- brain-doc-source-commit: 4cc8488620ce2a4854dd1253a6e20606a024e4fc -->

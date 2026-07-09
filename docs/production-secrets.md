@@ -9,7 +9,16 @@ The QA, staging, production, and release workflows run on the self-hosted `brain
 
 The QA and staging workflows render each environment's `shared/secrets/brain.env` and `shared/secrets/brain-auth-password` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`.
 
-The release workflow renders production config the same way, then runs `scripts/deploy-cloud-production.sh`. That script packages the checkout, uploads it to `brain@159.195.79.79`, and runs `scripts/install-cloud-linux-production.sh` with sudo on the server.
+Production release is a GitHub Actions operation, not an operator SSH session on
+srv1. The normal path is to manually run the `Deploy Local Staging` workflow with
+a version tag, then manually run the `Release` workflow with that same staged
+version. The release workflow renders production config the same way, checks out
+the staged commit, validates it, reads the current production config baseline
+from srv1, then runs `scripts/deploy-cloud-production.sh`. That script packages
+the workflow checkout, uploads it to `brain@159.195.79.79`, and runs
+`scripts/install-cloud-linux-production.sh` with sudo on the server. srv1 does
+not need a persistent Brain repo checkout or a GitHub deploy key for normal
+production release.
 
 The rendered config and QA/staging deploy steps run with passwordless `sudo` on the local self-hosted runner. Staging is owned and run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh` creates the hidden staging service user on a new Mac. QA and staging deploys install system LaunchDaemons in `/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot and wait for `/Volumes/xpg_usb4/{qa|staging}/brain/current` before launching. Each LaunchDaemon uses `SessionCreate` with its service user and starts from `/var/db/brain-{staging|qa}`.
 
@@ -44,7 +53,11 @@ brain.dceb.net.  A  159.195.79.79
 
 Keep the Cloudflare record DNS-only while Caddy manages the origin certificate directly. The production hostname is intentionally absent from `deployment/cloudflare/config.example.yml`; that tunnel template remains only for QA/staging local routes.
 
-Direct operator deploys use:
+Direct operator deploys are emergency/debug helpers for the same packaging and
+Linux installer path used by the release workflow. They are not the routine
+production release path. A direct deploy still needs the rendered production env
+and auth-password files produced by `scripts/render_prod_env.py`, or an
+already-correct `/etc/brain/brain.env` on srv1:
 
 ```bash
 scripts/deploy-cloud-production.sh \
@@ -230,6 +243,12 @@ OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token
 ```
 
 Do not configure production Brain to use `OPENAI_AUTH_MODE=api_key`.
+Do not configure `OPENAI_API_KEY`, `LLM_API_KEY`, or `EMBEDDING_API_KEY` for
+production OpenAI runtime. In OAuth mode the renderer omits those aliases, and
+the Linux installer removes legacy entries from `/etc/brain/brain.env`. The
+production service user must be able to read
+`/etc/hermes/token-sink/client_token`; the installer adds `brain` to
+`hermes-agents` when that group exists.
 
 ## Optional Taste Integration Secrets
 
@@ -417,4 +436,4 @@ gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
 <!-- brain-doc-source-hash: 0846f325fc03abfcd8c2a234555cf0f755c2d2d440188ef5ef73be556b443a58 -->
-<!-- brain-doc-source-commit: e17fe2b79b53356cc6ffe843e81a419dbc0cd16e -->
+<!-- brain-doc-source-commit: 4cc8488620ce2a4854dd1253a6e20606a024e4fc -->
