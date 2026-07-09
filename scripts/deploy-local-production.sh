@@ -1221,7 +1221,7 @@ MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
 if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
   log "running pre-promotion live model smoke scope=$MODEL_SMOKE_SCOPE"
   smoke_args=(--scope "$MODEL_SMOKE_SCOPE")
-  if is_true "${BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"; then
+  if [[ "$DEPLOY_ENV" == "staging" ]] || is_true "${BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"; then
     smoke_args+=(--skip-missing-keys)
   fi
   if [[ -n "${BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS:-}" ]]; then

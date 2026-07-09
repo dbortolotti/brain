@@ -106,7 +106,6 @@ def test_github_staging_action_deploys_tagged_main_to_staging() -> None:
     assert "scripts/render_prod_env.py --env staging" in workflow
     assert "sudo -n" in workflow
     assert "BRAIN_DEPLOY_ENV=staging" in workflow
-    assert "BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS=true" in workflow
     assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
     assert '--source-root "$PWD"' in workflow
     assert "--rendered-env" in workflow
@@ -471,6 +470,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert '"$LOCAL_VENV_DIR/bin/python" scripts/live_model_smoke.py' in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script
+    assert '[[ "$DEPLOY_ENV" == "staging" ]] || is_true "${BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"' in script
     assert "--exclude '.env'" in script
     assert 'rm -f "$RELEASE_DIR/.env"' in script
     assert 'DEFAULT_REFRESH_RELEASE="false"' in script

@@ -793,5 +793,5 @@ shared token sink path for production. The renderer omits OpenAI API-key env
 aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
-<!-- brain-doc-source-hash: db4e68a4857c04fe4295e3baa89ca72ce8aa03b94d669a71ea8aaf0b50763dc0 -->
-<!-- brain-doc-source-commit: 16017c67b4220b00a152858a29667dbeaaa4c373 -->
+<!-- brain-doc-source-hash: 8186b6a4330d6a23dc48ee29fe8965baf2f1b43faeafd381aa6cde8ee880519f -->
+<!-- brain-doc-source-commit: 698187a22eedb822d84471a1e38a54e2528d59ed -->
