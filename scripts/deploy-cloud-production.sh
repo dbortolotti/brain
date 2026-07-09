@@ -58,11 +58,14 @@ log() {
 }
 
 log "packaging $SHORT_SHA from $REPO_ROOT"
-tar -czf "$LOCAL_TAR" \
+COPYFILE_DISABLE=1 tar --no-xattrs -czf "$LOCAL_TAR" \
   --exclude '.git' \
   --exclude '.env' \
   --exclude '.data' \
   --exclude '.venv' \
+  --exclude '.DS_Store' \
+  --exclude '._*' \
+  --exclude '__MACOSX' \
   --exclude '__pycache__' \
   --exclude '.pytest_cache' \
   --exclude '.ruff_cache' \

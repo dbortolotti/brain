@@ -199,6 +199,15 @@ def test_cloud_production_migrations_source_rendered_env() -> None:
     assert "source '$ENV_FILE' && set +a && '$VENV_DIR/bin/python' scripts/live_model_smoke.py" in script
 
 
+def test_cloud_production_package_omits_macos_metadata_files() -> None:
+    script = Path("scripts/deploy-cloud-production.sh").read_text(encoding="utf-8")
+
+    assert "COPYFILE_DISABLE=1 tar --no-xattrs" in script
+    assert "--exclude '._*'" in script
+    assert "--exclude '.DS_Store'" in script
+    assert "--exclude '__MACOSX'" in script
+
+
 def test_cloud_production_uses_shared_openai_token_sink() -> None:
     script = Path("scripts/install-cloud-linux-production.sh").read_text(encoding="utf-8")
     prod_cfg = Path("cfg/prod.yaml").read_text(encoding="utf-8")
