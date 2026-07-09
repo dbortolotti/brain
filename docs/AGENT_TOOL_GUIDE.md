@@ -750,4 +750,4 @@ Review and clean up when memory quality drifts.
 ```
 
 <!-- brain-doc-source-hash: b497b0c3020424a742c96ba0ac0fdb3f9a87edb8110b5c2ff08fea978bdb7017 -->
-<!-- brain-doc-source-commit: 4cc8488620ce2a4854dd1253a6e20606a024e4fc -->
+<!-- brain-doc-source-commit: 16017c67b4220b00a152858a29667dbeaaa4c373 -->

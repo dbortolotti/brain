@@ -106,6 +106,7 @@ def test_github_staging_action_deploys_tagged_main_to_staging() -> None:
     assert "scripts/render_prod_env.py --env staging" in workflow
     assert "sudo -n" in workflow
     assert "BRAIN_DEPLOY_ENV=staging" in workflow
+    assert "BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS=true" in workflow
     assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
     assert '--source-root "$PWD"' in workflow
     assert "--rendered-env" in workflow

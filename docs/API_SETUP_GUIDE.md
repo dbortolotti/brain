@@ -593,4 +593,4 @@ Cognee is required for durable memory/source writes. Restore Cognee before retry
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
 <!-- brain-doc-source-hash: 266f6673ceb1d8ead8c797be1a46e805cc9fb2998345fc65af76235c224c8ff3 -->
-<!-- brain-doc-source-commit: 4cc8488620ce2a4854dd1253a6e20606a024e4fc -->
+<!-- brain-doc-source-commit: 16017c67b4220b00a152858a29667dbeaaa4c373 -->
