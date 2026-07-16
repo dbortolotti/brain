@@ -374,4 +374,4 @@ ENV_FILE=/etc/brain/brain.env make prod-check
 - Resolve manifest blockers before considering a backup usable.
 
 <!-- brain-doc-source-hash: ac9d7873a5b7d532e2f0d6dbf3a4f186bacbf55fd5d8831c02f43cbd8589a636 -->
-<!-- brain-doc-source-commit: 8b0560a62f5ea5b2b85d23dc847ed8b0c67d78e0 -->
+<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->

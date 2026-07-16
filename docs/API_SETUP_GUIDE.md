@@ -316,6 +316,8 @@ curl -s http://127.0.0.1:8000/mcp -H "Content-Type: application/json" -d '{
 }'
 ```
 
+JSON-RPC notifications omit the `id` key. Brain executes them without returning a JSON-RPC response, so a notification-only HTTP POST returns an empty `202` response. Mixed batches omit notification entries from the response, while an explicit `"id": null` remains a request and receives a response.
+
 Call `brain_session` first when an agent needs the active user's portable session id:
 
 ```bash
@@ -592,5 +594,5 @@ Cognee is required for durable memory/source writes. Restore Cognee before retry
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 266f6673ceb1d8ead8c797be1a46e805cc9fb2998345fc65af76235c224c8ff3 -->
-<!-- brain-doc-source-commit: 8b0560a62f5ea5b2b85d23dc847ed8b0c67d78e0 -->
+<!-- brain-doc-source-hash: 01c111294a461f203b249dad4141ff249ca61c77107d93fd149625c4ca9d0974 -->
+<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->

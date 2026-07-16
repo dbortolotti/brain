@@ -749,5 +749,5 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: b497b0c3020424a742c96ba0ac0fdb3f9a87edb8110b5c2ff08fea978bdb7017 -->
-<!-- brain-doc-source-commit: 8b0560a62f5ea5b2b85d23dc847ed8b0c67d78e0 -->
+<!-- brain-doc-source-hash: 645b04db6d5e06003f0b0114d4627b236cd99c49012c5da1c9f736c715a23390 -->
+<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->
