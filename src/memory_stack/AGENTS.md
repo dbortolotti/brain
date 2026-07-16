@@ -14,6 +14,7 @@
 - `brain_store.py` and migrations own canonical control records, receipts, confirmations, user scope, profile context, and audit state.
 - `cfg.py` owns settings loading and path normalization; new settings must stay aligned with `cfg/`, scripts, docs, and workflows.
 - Auth, OAuth, session, and request logging code must avoid leaking tokens, cookies, passwords, raw provider payloads, or request bodies beyond configured safe limits.
+- JSON-RPC notifications are requests without an `id` key: execute them without a response, omit them from batch responses, and return an empty HTTP `202` when a POST produces no JSON-RPC response; an explicit null `id` remains a request id.
 
 ## Work Guidance
 

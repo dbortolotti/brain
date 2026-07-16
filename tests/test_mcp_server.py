@@ -137,6 +137,95 @@ def test_mcp_initialize_negotiates_requested_protocol_version() -> None:
     assert response.json()["result"]["protocolVersion"] == "2025-11-25"
 
 
+def test_mcp_initialized_notification_returns_empty_202() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/admin/mcp",
+        json={"jsonrpc": "2.0", "method": "notifications/initialized"},
+    )
+
+    assert response.status_code == 202
+    assert response.content == b""
+
+
+def test_mcp_unknown_notification_suppresses_error_response() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/admin/mcp",
+        json={"jsonrpc": "2.0", "method": "unknown/notification"},
+    )
+
+    assert response.status_code == 202
+    assert response.content == b""
+
+
+def test_mcp_notification_dispatches_method_without_response(monkeypatch) -> None:
+    calls = []
+
+    async def fake_call_tool(params, *, surface, request_context):
+        calls.append((params, surface, request_context))
+        return {"content": []}
+
+    monkeypatch.setattr(mcp_server, "call_tool", fake_call_tool)
+    client = TestClient(app)
+    response = client.post(
+        "/admin/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "method": "tools/call",
+            "params": {"name": "brain_session", "arguments": {}},
+        },
+    )
+
+    assert response.status_code == 202
+    assert response.content == b""
+    assert len(calls) == 1
+    assert calls[0][0]["name"] == "brain_session"
+    assert calls[0][2].json_rpc_id is None
+
+
+def test_mcp_explicit_null_id_is_not_a_notification() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/admin/mcp",
+        json={"jsonrpc": "2.0", "id": None, "method": "notifications/initialized"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"jsonrpc": "2.0", "id": None, "result": {}}
+
+
+def test_mcp_mixed_batch_omits_notification_responses() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/admin/mcp",
+        json=[
+            {"jsonrpc": "2.0", "method": "notifications/initialized"},
+            {"jsonrpc": "2.0", "id": 7, "method": "tools/list"},
+        ],
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 1
+    assert payload[0]["id"] == 7
+    assert payload[0]["result"]["tools"]
+
+
+def test_mcp_notification_only_batch_returns_empty_202() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/admin/mcp",
+        json=[
+            {"jsonrpc": "2.0", "method": "notifications/initialized"},
+            {"jsonrpc": "2.0", "method": "notifications/progress"},
+        ],
+    )
+
+    assert response.status_code == 202
+    assert response.content == b""
+
+
 def test_datasource_tools_are_listed() -> None:
     client = TestClient(app)
     response = client.post("/admin/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})

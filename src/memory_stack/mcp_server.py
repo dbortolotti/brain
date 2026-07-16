@@ -1629,6 +1629,8 @@ async def mcp_route(
         surface=surface,
         request_context=request_context,
     )
+    if response_payload is None:
+        return Response(status_code=202)
     return JSONResponse(response_payload)
 
 
@@ -1989,7 +1991,9 @@ async def handle_json_rpc(
     request_context: McpRequestContext | None = None,
 ) -> Any:
     if isinstance(payload, list):
-        return [
+        if not payload:
+            return []
+        responses = [
             await handle_json_rpc(
                 item,
                 surface=surface,
@@ -1997,9 +2001,16 @@ async def handle_json_rpc(
             )
             for item in payload
         ]
+        filtered = [response for response in responses if response is not None]
+        return filtered or None
 
     request_id = payload.get("id") if isinstance(payload, dict) else None
     method = payload.get("method") if isinstance(payload, dict) else None
+    is_notification = (
+        isinstance(payload, dict)
+        and isinstance(method, str)
+        and "id" not in payload
+    )
     params = payload.get("params", {}) if isinstance(payload, dict) else {}
 
     try:
@@ -2041,13 +2052,16 @@ async def handle_json_rpc(
                 ),
             )
         elif method and method.startswith("notifications/"):
-            return {"jsonrpc": "2.0", "id": request_id, "result": {}}
+            result = {}
         else:
-            return json_rpc_error(request_id, -32601, f"Unknown method: {method}")
+            response = json_rpc_error(request_id, -32601, f"Unknown method: {method}")
+            return None if is_notification else response
     except Exception as exc:
-        return json_rpc_error(request_id, -32000, str(exc))
+        response = json_rpc_error(request_id, -32000, str(exc))
+        return None if is_notification else response
 
-    return {"jsonrpc": "2.0", "id": request_id, "result": result}
+    response = {"jsonrpc": "2.0", "id": request_id, "result": result}
+    return None if is_notification else response
 
 
 async def call_tool(
