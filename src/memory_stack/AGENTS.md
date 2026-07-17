@@ -18,6 +18,10 @@
   it from the receipt metadata after successful processing.
 - `cfg.py` owns settings loading and path normalization; new settings must stay aligned with `cfg/`, scripts, docs, and workflows.
 - Auth, OAuth, session, and request logging code must avoid leaking tokens, cookies, passwords, raw provider payloads, or request bodies beyond configured safe limits.
+- Codex OAuth authorization must stay aligned with the registered Codex client:
+  use `localhost` callback ports `1455` then `1457`, current Codex scopes and
+  originator, and the same selected redirect URI for authorization and token
+  exchange. Keep provider-auth profiles isolated by deployment lane.
 - JSON-RPC notifications are requests without an `id` key: execute them without a response, omit them from batch responses, and return an empty HTTP `202` when a POST produces no JSON-RPC response; an explicit null `id` remains a request id.
 
 ## Work Guidance

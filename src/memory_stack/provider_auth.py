@@ -23,10 +23,15 @@ from memory_stack.cfg import Settings
 
 OPENAI_CODEX_PROVIDER = "openai-codex"
 OPENAI_CODEX_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
-OPENAI_CODEX_SCOPE = "openid profile email offline_access"
+OPENAI_CODEX_SCOPE = (
+    "openid profile email offline_access "
+    "api.connectors.read api.connectors.invoke"
+)
+OPENAI_CODEX_ORIGINATOR = "codex_cli_rs"
 OPENAI_CODEX_AUTHORIZE_URL = "https://auth.openai.com/oauth/authorize"
 OPENAI_CODEX_TOKEN_URL = "https://auth.openai.com/oauth/token"
-OPENAI_CODEX_REDIRECT_URI = "http://127.0.0.1:1455/auth/callback"
+OPENAI_CODEX_REDIRECT_PORTS = (1455, 1457)
+OPENAI_CODEX_REDIRECT_URI = "http://localhost:1455/auth/callback"
 TOKEN_SAFETY_WINDOW_MS = 5 * 60 * 1000
 
 
@@ -92,17 +97,22 @@ def generate_pkce_pair() -> PKCEPair:
     return PKCEPair(verifier=verifier, challenge=challenge)
 
 
-def build_openai_codex_authorize_url(*, state: str, challenge: str) -> str:
+def build_openai_codex_authorize_url(
+    *,
+    state: str,
+    challenge: str,
+    redirect_uri: str = OPENAI_CODEX_REDIRECT_URI,
+) -> str:
     params = {
         "response_type": "code",
         "client_id": OPENAI_CODEX_CLIENT_ID,
-        "redirect_uri": OPENAI_CODEX_REDIRECT_URI,
+        "redirect_uri": redirect_uri,
         "scope": OPENAI_CODEX_SCOPE,
         "code_challenge": challenge,
         "code_challenge_method": "S256",
         "id_token_add_organizations": "true",
         "codex_cli_simplified_flow": "true",
-        "originator": "brain",
+        "originator": OPENAI_CODEX_ORIGINATOR,
         "state": state,
     }
     return f"{OPENAI_CODEX_AUTHORIZE_URL}?{urllib.parse.urlencode(params)}"
@@ -333,30 +343,48 @@ def login_openai_codex(
 ) -> OpenAICodexCredential:
     pkce = generate_pkce_pair()
     state = secrets.token_urlsafe(32)
-    auth_url = build_openai_codex_authorize_url(state=state, challenge=pkce.challenge)
     code: str | None = None
+    redirect_uri = OPENAI_CODEX_REDIRECT_URI
 
     if not manual:
-        code = try_local_browser_callback(auth_url, expected_state=state, timeout_seconds=timeout_seconds)
+        code, redirect_uri = try_local_browser_callback(
+            expected_state=state,
+            challenge=pkce.challenge,
+            timeout_seconds=timeout_seconds,
+        )
 
     if not code:
+        auth_url = build_openai_codex_authorize_url(
+            state=state,
+            challenge=pkce.challenge,
+            redirect_uri=redirect_uri,
+        )
         print(f"Open this URL to sign in:\n{auth_url}\n")
         pasted = input("Paste the authorization code or full redirect URL: ")
         code = parse_authorization_response(pasted, expected_state=state)
 
-    credential = exchange_authorization_code(code, pkce.verifier)
+    credential = exchange_authorization_code(
+        code,
+        pkce.verifier,
+        redirect_uri=redirect_uri,
+    )
     upsert_openai_codex_profile(settings, credential)
     return credential
 
 
-def exchange_authorization_code(code: str, verifier: str) -> OpenAICodexCredential:
+def exchange_authorization_code(
+    code: str,
+    verifier: str,
+    *,
+    redirect_uri: str = OPENAI_CODEX_REDIRECT_URI,
+) -> OpenAICodexCredential:
     response = httpx.post(
         OPENAI_CODEX_TOKEN_URL,
         data={
             "grant_type": "authorization_code",
             "client_id": OPENAI_CODEX_CLIENT_ID,
             "code": code,
-            "redirect_uri": OPENAI_CODEX_REDIRECT_URI,
+            "redirect_uri": redirect_uri,
             "code_verifier": verifier,
         },
         timeout=60,
@@ -402,19 +430,20 @@ def credential_from_token_response(response: httpx.Response) -> OpenAICodexCrede
 
 
 def try_local_browser_callback(
-    auth_url: str,
     *,
     expected_state: str,
+    challenge: str,
     timeout_seconds: int,
-) -> str | None:
+) -> tuple[str | None, str]:
     event = threading.Event()
     result: dict[str, str] = {}
+    selected_port = OPENAI_CODEX_REDIRECT_PORTS[0]
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def do_GET(self) -> None:  # noqa: N802
             try:
                 result["code"] = parse_authorization_response(
-                    f"http://127.0.0.1:1455{self.path}",
+                    f"http://localhost:{selected_port}{self.path}",
                     expected_state=expected_state,
                 )
                 self.send_response(200)
@@ -431,19 +460,32 @@ def try_local_browser_callback(
         def log_message(self, *_args: Any) -> None:
             return
 
-    try:
-        server = http.server.ThreadingHTTPServer(("127.0.0.1", 1455), Handler)
-    except OSError:
-        return None
+    server: http.server.ThreadingHTTPServer | None = None
+    for port in OPENAI_CODEX_REDIRECT_PORTS:
+        try:
+            server = http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler)
+        except OSError:
+            continue
+        selected_port = port
+        break
+
+    if server is None:
+        return None, OPENAI_CODEX_REDIRECT_URI
 
     thread = threading.Thread(target=server.handle_request, daemon=True)
     thread.start()
+    redirect_uri = f"http://localhost:{selected_port}/auth/callback"
+    auth_url = build_openai_codex_authorize_url(
+        state=expected_state,
+        challenge=challenge,
+        redirect_uri=redirect_uri,
+    )
     webbrowser.open(auth_url)
     event.wait(timeout_seconds)
     server.server_close()
     if result.get("error"):
         raise ProviderAuthError(result["error"])
-    return result.get("code")
+    return result.get("code"), redirect_uri
 
 
 @contextmanager
