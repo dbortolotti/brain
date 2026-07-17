@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict, deque
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 import hashlib
 import hmac
@@ -27,9 +28,11 @@ from memory_stack.bias_context import (
 from memory_stack.brain_service import (
     forget as brain_forget,
     ingest_source as brain_ingest_source,
+    ingestion_status as brain_ingestion_status,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
+    resume_queued_remembers,
     review_recent as brain_review_recent,
     undo_last as brain_undo_last,
 )
@@ -115,7 +118,23 @@ OAUTH_RATE_LIMITS = {
 }
 _rate_limit_buckets: dict[str, deque[float]] = defaultdict(deque)
 
-app = FastAPI(title="Brain MCP", version="0.1.0")
+
+@asynccontextmanager
+async def brain_lifespan(_app: FastAPI):
+    user_ids = {settings.brain_user_id}
+    if oauth_provider is not None:
+        user_ids.update(oauth_provider.users)
+    for user_id in sorted(user_ids):
+        active_settings = (
+            settings
+            if user_id == settings.brain_user_id
+            else settings.model_copy(update={"brain_user_id": user_id})
+        )
+        resume_queued_remembers(active_settings)
+    yield
+
+
+app = FastAPI(title="Brain MCP", version="0.1.0", lifespan=brain_lifespan)
 if settings.brain_request_log_enabled:
     app.add_middleware(RequestResponseLogMiddleware, settings=settings)
 
@@ -268,9 +287,38 @@ def memory_tool_definitions(surface: str = MCP_SURFACE_INTERNAL) -> list[dict[st
                     "input_type": {"type": "string", "enum": INPUT_TYPES, "default": "auto"},
                     "observed_at": {"type": "string", "format": "date-time"},
                     "dry_run": {"type": "boolean", "default": False},
+                    "run_in_background": {
+                        "type": "boolean",
+                        "default": True,
+                        "description": (
+                            "Queue the durable write and return its receipt immediately. "
+                            "Set false only when the caller must wait for Cognee ingestion."
+                        ),
+                    },
+                    "idempotency_key": {
+                        "type": "string",
+                        "description": (
+                            "Optional caller-stable retry key. Brain otherwise derives "
+                            "one from the complete remember request."
+                        ),
+                    },
                     "context": {"type": "object", "additionalProperties": True},
                 },
                 "required": ["input"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_ingestion_status",
+            "description": (
+                "Check one Brain remember receipt without exposing its queued input."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "ingestion_run_id": {"type": "string"},
+                },
+                "required": ["ingestion_run_id"],
                 "additionalProperties": False,
             },
         },
@@ -895,6 +943,16 @@ STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
             "dry_run": {"type": "boolean"},
         },
     ),
+    "brain_ingestion_status": object_schema(
+        {
+            "ingestion_run_id": {"type": "string"},
+            "status": {"type": "string"},
+            "classification": {"type": ["string", "null"]},
+            "cognee_sync_status": {"type": "string"},
+            "summary": {"type": ["string", "null"]},
+        },
+        required=["ingestion_run_id", "status", "cognee_sync_status"],
+    ),
     "brain_profile_context_remember": object_schema(
         {"id": {"type": "string"}, "statement": {"type": "string"}, "scope": {"type": "string"}},
         required=["id", "statement"],
@@ -1474,6 +1532,20 @@ async def brain_remember_endpoint(
     return authenticated_model_response(
         authorization,
         lambda active_settings: brain_remember(payload, active_settings),
+    )
+
+
+@app.get("/memory/ingestion_status/{ingestion_run_id}")
+async def brain_ingestion_status_endpoint(
+    ingestion_run_id: str,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    return authenticated_dict_response(
+        authorization,
+        lambda active_settings: brain_ingestion_status(
+            active_settings,
+            ingestion_run_id=ingestion_run_id,
+        ),
     )
 
 
@@ -2106,11 +2178,28 @@ async def call_tool_dispatch(
                 "input_type": arguments.get("input_type", "auto"),
                 "observed_at": arguments.get("observed_at"),
                 "dry_run": bool(arguments.get("dry_run", False)),
+                "run_in_background": bool(
+                    arguments.get("run_in_background", True)
+                ),
+                "idempotency_key": arguments.get("idempotency_key"),
                 "context": arguments.get("context") or {},
             }
         )
         payload = brain_remember(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=remember_summary(payload))
+
+    if name == "brain_ingestion_status":
+        payload = brain_ingestion_status(
+            settings,
+            ingestion_run_id=str(arguments["ingestion_run_id"]),
+        )
+        return json_tool_response(
+            payload,
+            summary=(
+                f"Brain ingestion {payload['ingestion_run_id']} is "
+                f"{payload['status']}."
+            ),
+        )
 
     if name == "brain_profile_context_remember":
         request = BrainProfileContextRememberRequest.model_validate(arguments)
@@ -2465,6 +2554,16 @@ def ingest_source_tool_summary(payload: dict[str, Any]) -> str:
 
 
 def remember_summary(payload: dict[str, Any]) -> str:
+    if payload.get("cognee_sync_status") in {"queued", "running"}:
+        return (
+            f"Queued Brain remember receipt {payload.get('ingestion_run_id')} "
+            "for durable background ingestion."
+        )
+    if payload.get("cognee_sync_status") == "failed":
+        return (
+            f"Brain remember receipt {payload.get('ingestion_run_id')} failed; "
+            "retrying the same request will reuse its idempotency key."
+        )
     if payload.get("classification") == "taste_proposal":
         taste = payload.get("taste") if isinstance(payload.get("taste"), dict) else {}
         proposal_id = taste.get("proposal_id")

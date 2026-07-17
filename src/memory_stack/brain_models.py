@@ -20,6 +20,7 @@ class RememberRequest(BaseModel):
     input_type: str = "auto"
     dry_run: bool = False
     run_in_background: bool = False
+    idempotency_key: str | None = None
     context: dict[str, Any] = Field(default_factory=dict)
 
 

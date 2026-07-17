@@ -96,6 +96,7 @@ Selected user-facing HTTP endpoints include:
 - `POST /delete_datasource`
 - `DELETE /delete_datasource/{datasource}`
 - `POST /memory/remember`
+- `GET /memory/ingestion_status/{ingestion_run_id}`
 - `POST /memory/ingest_source`
 - `POST /memory/recall`
 - `POST /memory/profile_entity`
@@ -109,6 +110,7 @@ Public ChatGPT App surface:
 
 - `brain_session`
 - `brain_remember`
+- `brain_ingestion_status`
 - `brain_profile_context_remember`
 - `brain_profile_context_list`
 - `brain_profile_context_forget`
@@ -134,6 +136,7 @@ Internal admin surface:
 - `brain_session`
 - `brain_app_open_review_panel`
 - `brain_remember`
+- `brain_ingestion_status`
 - `brain_ingest_source`
 - `brain_recall`
 - `brain_profile_entity`
@@ -208,6 +211,7 @@ The ChatGPT App surface intentionally lists only user-safe tools:
 
 - `brain_session`
 - `brain_remember`
+- `brain_ingestion_status`
 - `brain_profile_context_remember`
 - `brain_profile_context_list`
 - `brain_profile_context_forget`
@@ -793,5 +797,5 @@ shared token sink path for production. The renderer omits OpenAI API-key env
 aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
-<!-- brain-doc-source-hash: a75c619070a5278064c384c8717db48af337ecedb0d3d9fea6a8fb703d49795c -->
-<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->
+<!-- brain-doc-source-hash: 9e15f51112588d295e01f558acbdae7ec4410bd7ab794213bbe7ea85ec35455b -->
+<!-- brain-doc-source-commit: a22498b7ed4b8d4b37b221395186ba5e3b7ae41d -->

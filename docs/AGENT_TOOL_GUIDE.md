@@ -84,7 +84,8 @@ Most agents should use these tools rather than lower-level storage details.
 | `brain_bias_context_remember` | Store stable response-style preference context. Internal or admin only. |
 | `brain_bias_context_list` | List response-style preference context. Internal or admin only. |
 | `brain_bias_context_forget` | Remove one stable response-style preference item. Internal or admin only. |
-| `brain_remember` | Store a durable memory, fact, preference, decision, open question, research question, or short note. High-confidence palate memories may route to Brain Palate automatically. Do not use this for read-only palate describe/enrich requests; use `brain_palate_describe_item` instead. |
+| `brain_remember` | Durably queue a memory, fact, preference, decision, open question, research question, or short note and return its receipt immediately. Exact retries reuse the same receipt. High-confidence palate memories may route to Brain Palate automatically. Do not use it for read-only palate describe/enrich requests. |
+| `brain_ingestion_status` | Poll one `brain_remember` receipt until it is synced, completed, or failed. |
 | `brain_ingest_source` | Store longer source material and optionally extract memories. |
 | `brain_recall` | Answer a memory query with evidence. |
 | `brain_profile_entity` | Build a profile for a person, project, place, or other entity. |
@@ -99,6 +100,11 @@ Most agents should use these tools rather than lower-level storage details.
 | external chat-continuity workflow | Bridge the active user's Cognee session into their dedicated chat-continuity dataset. Available on ChatGPT app and internal or admin surfaces; internal or admin can also manage cleanup. |
 | external chat-continuity recall | Search the active user's dedicated chat-continuity dataset. Available on ChatGPT app and internal or admin surfaces. |
 | external chat-continuity cleanup | Clear that dataset after explicit confirmation. Internal or admin only. |
+
+`brain_remember` uses durable background ingestion by default. Keep the returned
+`ingestion_run_id`; call `brain_ingestion_status` when later work depends on
+Cognee synchronization. Supply a stable `idempotency_key` for caller-managed
+retries, or let Brain derive one from the complete request.
 
 Maintenance tools:
 
@@ -749,5 +755,5 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: 645b04db6d5e06003f0b0114d4627b236cd99c49012c5da1c9f736c715a23390 -->
-<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->
+<!-- brain-doc-source-hash: 969640c2fce8324bb7881e757972008d544185a9d28d99351e1df4f34abb99e5 -->
+<!-- brain-doc-source-commit: a22498b7ed4b8d4b37b221395186ba5e3b7ae41d -->

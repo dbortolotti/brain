@@ -12,6 +12,10 @@
 - `mcp_server.py` is the public/admin HTTP and MCP surface; keep public, app, and admin tool exposure intentionally separated.
 - `brain_service.py` coordinates durable writes, ingestion, recall, and Cognee calls; do not bypass service-level policy for user-facing writes.
 - `brain_store.py` and migrations own canonical control records, receipts, confirmations, user scope, profile context, and audit state.
+- MCP `brain_remember` durably queues an external receipt before Cognee work,
+  reuses that receipt for idempotent retries and completion status, and resumes
+  pending queue records on service startup. Keep queued input private and remove
+  it from the receipt metadata after successful processing.
 - `cfg.py` owns settings loading and path normalization; new settings must stay aligned with `cfg/`, scripts, docs, and workflows.
 - Auth, OAuth, session, and request logging code must avoid leaking tokens, cookies, passwords, raw provider payloads, or request bodies beyond configured safe limits.
 - JSON-RPC notifications are requests without an `id` key: execute them without a response, omit them from batch responses, and return an empty HTTP `202` when a POST produces no JSON-RPC response; an explicit null `id` remains a request id.
