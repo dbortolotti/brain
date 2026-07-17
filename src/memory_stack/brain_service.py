@@ -50,6 +50,31 @@ _LOGGER = logging.getLogger(__name__)
 _INGEST_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brain-ingest")
 
 
+def _submit_background_remember(
+    receipt_id: str,
+    settings: Settings,
+    *,
+    llm_client: LLMClient | None = None,
+) -> Future[IngestionReceipt]:
+    future = _INGEST_EXECUTOR.submit(
+        _process_queued_remember,
+        receipt_id,
+        settings,
+        llm_client=llm_client,
+    )
+    future.add_done_callback(_log_background_remember_result)
+    return future
+
+
+def _log_background_remember_result(future: Future[IngestionReceipt]) -> None:
+    try:
+        receipt = future.result()
+    except Exception:
+        _LOGGER.exception("Background remember ingestion failed.")
+        return
+    _LOGGER.info("Background remember ingestion completed: %s", receipt.ingestion_run_id)
+
+
 def _submit_background_ingest(
     request: IngestSourceRequest,
     settings: Settings,
@@ -123,6 +148,200 @@ def _raw_classification(request: RememberRequest) -> str:
     return request.input_type if request.input_type != "auto" else "direct_memory"
 
 
+def _remember_request_hash(request: RememberRequest) -> str:
+    return content_hash(
+        "brain_remember",
+        request.input,
+        request.input_type,
+        request.context,
+    )
+
+
+def _remember_idempotency_key(request: RememberRequest) -> str:
+    supplied = str(request.idempotency_key or "").strip()
+    return supplied or _remember_request_hash(request)
+
+
+def _queued_remember_receipt(receipt: dict[str, Any]) -> IngestionReceipt:
+    metadata = receipt.get("metadata_json")
+    metadata = metadata if isinstance(metadata, dict) else {}
+    status = str(receipt.get("status") or "queued")
+    downstream = metadata.get("downstream_receipt")
+    if status == "completed" and isinstance(downstream, dict):
+        sync_status = str(downstream.get("cognee_sync_status") or status)
+        dry_run = bool(downstream.get("dry_run", False))
+    else:
+        sync_status = status
+        dry_run = False
+    return IngestionReceipt(
+        ingestion_run_id=str(receipt["id"]),
+        classification=str(metadata.get("classification") or "direct_memory"),
+        cognee_sync_status=sync_status,
+        dry_run=dry_run,
+    )
+
+
+def _queue_remember(
+    request: RememberRequest,
+    settings: Settings,
+    *,
+    llm_client: LLMClient | None = None,
+) -> IngestionReceipt:
+    store = BrainStore(settings)
+    classification = _raw_classification(request)
+    surface = surface_from_context(request.context)
+    request_hash = _remember_request_hash(request)
+    idempotency_key = _remember_idempotency_key(request)
+    receipt_id = store.make_external_id("rcpt", "brain_remember", idempotency_key)
+    queued_request = request.model_copy(
+        update={"run_in_background": False}
+    ).model_dump(mode="json")
+    queue_metadata = {
+        "classification": classification,
+        "context": request.context,
+        "semantic_compiler": "cognee",
+        "brain_db_semantic_rows_written": False,
+        "idempotency_key": idempotency_key,
+        "request_hash": request_hash,
+        "queued_request": queued_request,
+    }
+    receipt, created = store.get_or_create_external_receipt(
+        receipt_id=receipt_id,
+        surface=surface,
+        tool_name="brain_remember",
+        action="remember",
+        status="queued",
+        summary=f"Queued {classification} for Cognee ingestion.",
+        cognee_dataset=_cognee_dataset_for_raw_write(settings),
+        metadata_json=queue_metadata,
+    )
+    existing_metadata = receipt.get("metadata_json")
+    existing_metadata = existing_metadata if isinstance(existing_metadata, dict) else {}
+    if (
+        not created
+        and existing_metadata.get("request_hash") not in {None, request_hash}
+    ):
+        raise ValueError("idempotency_key was already used for a different Brain remember request.")
+
+    should_submit = created
+    if not created and receipt.get("status") == "failed":
+        receipt = store.update_external_receipt(
+            receipt_id,
+            status="queued",
+            summary=f"Requeued {classification} for Cognee ingestion.",
+            warnings_json=[],
+            metadata_json=queue_metadata,
+        ) or receipt
+        should_submit = True
+    if should_submit:
+        _submit_background_remember(
+            receipt_id,
+            settings,
+            llm_client=llm_client,
+        )
+    return _queued_remember_receipt(receipt)
+
+
+def _process_queued_remember(
+    receipt_id: str,
+    settings: Settings,
+    *,
+    llm_client: LLMClient | None = None,
+) -> IngestionReceipt:
+    store = BrainStore(settings)
+    claimed = store.claim_external_receipt(receipt_id)
+    if claimed is None:
+        existing = store.get_external_receipt(receipt_id)
+        if existing is None:
+            raise RuntimeError(f"Queued Brain receipt not found: {receipt_id}")
+        return _queued_remember_receipt(existing)
+
+    metadata = claimed.get("metadata_json")
+    metadata = metadata if isinstance(metadata, dict) else {}
+    queued_request = metadata.get("queued_request")
+    if not isinstance(queued_request, dict):
+        store.update_external_receipt(
+            receipt_id,
+            status="failed",
+            summary="Queued Brain remember request is missing its durable payload.",
+            warnings_json=["Missing queued_request metadata."],
+        )
+        raise RuntimeError(f"Queued Brain receipt is missing request metadata: {receipt_id}")
+
+    request = RememberRequest.model_validate(queued_request).model_copy(
+        update={"run_in_background": False}
+    )
+    try:
+        result = remember(
+            request,
+            settings,
+            llm_client=llm_client,
+            _receipt_id=receipt_id,
+        )
+    except Exception as exc:
+        current = store.get_external_receipt(receipt_id)
+        if current is not None and current.get("status") != "failed":
+            store.update_external_receipt(
+                receipt_id,
+                status="failed",
+                summary=f"Background Brain remember failed for {metadata.get('classification', 'memory')}.",
+                warnings_json=[str(exc)],
+            )
+        raise
+
+    if result.ingestion_run_id != receipt_id:
+        completed_metadata = {
+            key: value
+            for key, value in metadata.items()
+            if key != "queued_request"
+        }
+        completed_metadata.update(
+            {
+                "classification": result.classification,
+                "downstream_receipt": result.model_dump(mode="json"),
+            }
+        )
+        store.update_external_receipt(
+            receipt_id,
+            status="completed",
+            summary=f"Background Brain remember completed as {result.classification}.",
+            warnings_json=[],
+            metadata_json=completed_metadata,
+        )
+        return IngestionReceipt(
+            ingestion_run_id=receipt_id,
+            classification=result.classification,
+            entities=result.entities,
+            conflicts=result.conflicts,
+            taste=result.taste,
+            cognee_sync_status=result.cognee_sync_status,
+            dry_run=result.dry_run,
+        )
+    return result
+
+
+def resume_queued_remembers(settings: Settings) -> int:
+    store = BrainStore(settings)
+    resumable = [
+        *store.list_external_receipts(status="queued", action="remember"),
+        *store.list_external_receipts(status="running", action="remember"),
+    ]
+    resumed = 0
+    for receipt in resumable:
+        metadata = receipt.get("metadata_json")
+        if not isinstance(metadata, dict) or not isinstance(
+            metadata.get("queued_request"), dict
+        ):
+            continue
+        if receipt.get("status") == "running":
+            store.update_external_receipt(receipt["id"], status="queued")
+        _submit_background_remember(receipt["id"], settings)
+        resumed += 1
+    if resumed:
+        _LOGGER.info("Resumed %s durable Brain remember job(s).", resumed)
+    return resumed
+
+
 def _cognee_dataset_for_raw_write(settings: Settings) -> str:
     return settings.brain_cognee_memory_dataset
 
@@ -167,6 +386,7 @@ def _write_raw_to_cognee(
     *,
     request: RememberRequest,
     settings: Settings,
+    receipt_id: str | None = None,
 ) -> IngestionReceipt:
     store = BrainStore(settings)
     profile_name = profile_name_from_context(request.context, settings)
@@ -190,6 +410,14 @@ def _write_raw_to_cognee(
     )
     cognee_results: list[dict[str, Any]] = []
     datasets: list[str] = []
+    queued_metadata: dict[str, Any] = {}
+    if receipt_id is not None:
+        queued_receipt = store.get_external_receipt(receipt_id)
+        if queued_receipt is None:
+            raise RuntimeError(f"Queued Brain receipt not found: {receipt_id}")
+        raw_metadata = queued_receipt.get("metadata_json")
+        if isinstance(raw_metadata, dict):
+            queued_metadata = raw_metadata
 
     try:
         content_hash_value = content_hash("cognee_remember", request.input)
@@ -214,51 +442,85 @@ def _write_raw_to_cognee(
             }
         )
     except Exception as exc:
-        failure_receipt = store.create_external_receipt(
-            surface=surface,
-            tool_name=tool_name,
-            action=action,
-            status="failed",
-            summary=f"Cognee write failed for {classification}.",
-            cognee_dataset=",".join(sorted(set(datasets))) if datasets else None,
-            cognee_reference=_combined_cognee_reference(cognee_results),
-            cognee_result_json={
+        failure_metadata = {
+            **queued_metadata,
+            "classification": classification,
+            "context": request.context,
+            "semantic_compiler": "cognee",
+            "brain_db_semantic_rows_written": False,
+        }
+        failure_values = {
+            "status": "failed",
+            "summary": f"Cognee write failed for {classification}.",
+            "cognee_result_json": {
                 "session_map": session_map,
                 "objects": cognee_results,
             },
-            warnings_json=[str(exc)],
-            metadata_json={
-                "classification": classification,
-                "context": request.context,
-                "semantic_compiler": "cognee",
-                "brain_db_semantic_rows_written": False,
-            },
-        )
+            "warnings_json": [str(exc)],
+            "metadata_json": failure_metadata,
+        }
+        dataset_summary = ",".join(sorted(set(datasets))) if datasets else None
+        cognee_reference = _combined_cognee_reference(cognee_results)
+        if receipt_id is None:
+            failure_receipt = store.create_external_receipt(
+                surface=surface,
+                tool_name=tool_name,
+                action=action,
+                cognee_dataset=dataset_summary,
+                cognee_reference=cognee_reference,
+                **failure_values,
+            )
+        else:
+            failure_receipt = store.update_external_receipt(
+                receipt_id,
+                cognee_dataset=dataset_summary,
+                cognee_reference=cognee_reference,
+                **failure_values,
+            )
+            if failure_receipt is None:
+                raise RuntimeError(f"Queued Brain receipt disappeared: {receipt_id}") from exc
         raise RuntimeError(
             "Cognee durable write failed; Brain semantic fallback is disabled "
             f"(receipt_id={failure_receipt['id']}): {exc}"
         ) from exc
 
     status = "synced" if cognee_results else "not_applicable"
-    receipt = store.create_external_receipt(
-        surface=surface,
-        tool_name=tool_name,
-        action=action,
-        status=status,
-        summary=f"Stored raw text once in Cognee dataset: {', '.join(sorted(set(datasets))) or 'none'}.",
-        cognee_dataset=",".join(sorted(set(datasets))) if datasets else None,
-        cognee_reference=_combined_cognee_reference(cognee_results),
-        cognee_result_json={
-            "session_map": session_map,
-            "objects": cognee_results,
-        },
-        metadata_json={
+    completion_metadata = {
+        key: value
+        for key, value in queued_metadata.items()
+        if key != "queued_request"
+    }
+    completion_metadata.update(
+        {
             "classification": classification,
             "context": request.context,
             "semantic_compiler": "cognee",
             "brain_db_semantic_rows_written": False,
-        },
+        }
     )
+    receipt_values = {
+        "status": status,
+        "summary": f"Stored raw text once in Cognee dataset: {', '.join(sorted(set(datasets))) or 'none'}.",
+        "cognee_dataset": ",".join(sorted(set(datasets))) if datasets else None,
+        "cognee_reference": _combined_cognee_reference(cognee_results),
+        "cognee_result_json": {
+            "session_map": session_map,
+            "objects": cognee_results,
+        },
+        "warnings_json": [],
+        "metadata_json": completion_metadata,
+    }
+    if receipt_id is None:
+        receipt = store.create_external_receipt(
+            surface=surface,
+            tool_name=tool_name,
+            action=action,
+            **receipt_values,
+        )
+    else:
+        receipt = store.update_external_receipt(receipt_id, **receipt_values)
+        if receipt is None:
+            raise RuntimeError(f"Queued Brain receipt disappeared: {receipt_id}")
     return IngestionReceipt(
         ingestion_run_id=receipt["id"],
         classification=classification,
@@ -366,7 +628,15 @@ def remember(
     settings: Settings,
     *,
     llm_client: LLMClient | None = None,
+    _receipt_id: str | None = None,
 ) -> IngestionReceipt:
+    if request.run_in_background and not request.dry_run:
+        return _queue_remember(
+            request,
+            settings,
+            llm_client=llm_client,
+        )
+
     if settings.brain_taste_enabled and not request.context.get("taste_skip"):
         if request.context.get("palate") is True:
             active_llm_client = llm_client or build_llm_client(settings)
@@ -449,6 +719,7 @@ def remember(
     return _write_raw_to_cognee(
         request=request,
         settings=settings,
+        receipt_id=_receipt_id,
     )
 
 
@@ -748,7 +1019,10 @@ def review_recent(
     limit: int = 20,
 ) -> dict[str, Any]:
     store = BrainStore(settings)
-    receipts = store.list_external_receipts(since=since, limit=limit)
+    receipts = [
+        _review_safe_external_receipt(receipt)
+        for receipt in store.list_external_receipts(since=since, limit=limit)
+    ]
     pending_confirmations = store.list_pending_confirmations(status=None, limit=limit)
     context_records = [
         *store.list_context_records(kind="profile", limit=limit),
@@ -760,6 +1034,48 @@ def review_recent(
         "context_records": context_records,
         "conflicts": [],
     }
+
+
+def ingestion_status(
+    settings: Settings,
+    *,
+    ingestion_run_id: str,
+) -> dict[str, Any]:
+    receipt = BrainStore(settings).get_external_receipt(ingestion_run_id)
+    if receipt is None:
+        return {
+            "ingestion_run_id": ingestion_run_id,
+            "status": "not_found",
+            "classification": None,
+            "cognee_sync_status": "not_applicable",
+            "summary": None,
+        }
+    metadata = receipt.get("metadata_json")
+    metadata = metadata if isinstance(metadata, dict) else {}
+    downstream = metadata.get("downstream_receipt")
+    if receipt.get("status") == "completed" and isinstance(downstream, dict):
+        sync_status = str(downstream.get("cognee_sync_status") or "completed")
+    else:
+        sync_status = str(receipt.get("status") or "unknown")
+    return {
+        "ingestion_run_id": receipt["id"],
+        "status": receipt.get("status"),
+        "classification": metadata.get("classification"),
+        "cognee_sync_status": sync_status,
+        "summary": receipt.get("summary"),
+    }
+
+
+def _review_safe_external_receipt(receipt: dict[str, Any]) -> dict[str, Any]:
+    safe_receipt = dict(receipt)
+    metadata = safe_receipt.get("metadata_json")
+    if isinstance(metadata, dict):
+        safe_receipt["metadata_json"] = {
+            key: value
+            for key, value in metadata.items()
+            if key not in {"queued_request", "idempotency_key"}
+        }
+    return safe_receipt
 
 
 def undo_last(

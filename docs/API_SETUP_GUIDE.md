@@ -94,6 +94,7 @@ Core memory endpoints:
 
 ```text
 POST /memory/remember
+GET  /memory/ingestion_status/{ingestion_run_id}
 POST /memory/ingest_source
 POST /memory/recall
 POST /memory/profile_entity
@@ -204,6 +205,7 @@ The curated app tool set is:
 brain_session
 brain_recall
 brain_remember
+brain_ingestion_status
 brain_ingest_source
 brain_profile_entity
 brain_list_open_loops
@@ -344,7 +346,6 @@ curl -s http://127.0.0.1:8000/mcp -H "Content-Type: application/json" -d '{
     "arguments": {
       "input": "Brain DB is the source of truth.",
       "input_type": "fact",
-      "source_policy": "memory_only",
       "dry_run": true
     }
   }
@@ -403,6 +404,8 @@ brain_bias_context_remember
 brain_bias_context_list
 brain_bias_context_forget
 brain_profile_context_sync
+brain_remember
+brain_ingestion_status
 brain_ingest_source
 brain_recall
 brain_profile_entity
@@ -427,10 +430,18 @@ Use `brain_remember` for short durable statements:
 {
   "input": "Maya prefers written briefs before vendor calls.",
   "input_type": "auto",
-  "source_policy": "memory_only",
+  "run_in_background": true,
+  "idempotency_key": "maya-written-briefs-v1",
   "context": {"confirmed_by_user": true}
 }
 ```
+
+MCP `brain_remember` defaults to durable background ingestion. It commits a
+queued receipt first, returns its `ingestion_run_id`, and updates that same
+receipt after Cognee processing. Use `brain_ingestion_status` to poll the
+receipt. Exact retries reuse the derived request key; callers may provide an
+explicit stable `idempotency_key`. Set `run_in_background` to `false` only when
+the caller must wait synchronously.
 
 Use `brain_ingest_source` for longer source material:
 
@@ -594,5 +605,5 @@ Cognee is required for durable memory/source writes. Restore Cognee before retry
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: 01c111294a461f203b249dad4141ff249ca61c77107d93fd149625c4ca9d0974 -->
-<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->
+<!-- brain-doc-source-hash: a126798c1f943bb59dc042d5d9a49723c28d8f24f7f0c1391e60d2b7d8b52689 -->
+<!-- brain-doc-source-commit: a22498b7ed4b8d4b37b221395186ba5e3b7ae41d -->

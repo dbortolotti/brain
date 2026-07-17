@@ -360,6 +360,7 @@ class BrainStore:
     def create_external_receipt(
         self,
         *,
+        receipt_id: str | None = None,
         surface: str,
         tool_name: str,
         action: str,
@@ -371,7 +372,7 @@ class BrainStore:
         warnings_json: list[Any] | None = None,
         metadata_json: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        receipt_id = self._scoped_id(
+        receipt_id = receipt_id or self._scoped_id(
             "rcpt",
             surface,
             tool_name,
@@ -406,6 +407,45 @@ class BrainStore:
             ).one()
         return row_dict(row)
 
+    def get_or_create_external_receipt(
+        self,
+        *,
+        receipt_id: str,
+        surface: str,
+        tool_name: str,
+        action: str,
+        status: str,
+        summary: str | None = None,
+        cognee_dataset: str | None = None,
+        cognee_reference: str | None = None,
+        cognee_result_json: dict[str, Any] | list[Any] | None = None,
+        warnings_json: list[Any] | None = None,
+        metadata_json: dict[str, Any] | None = None,
+    ) -> tuple[dict[str, Any], bool]:
+        existing = self.get_external_receipt(receipt_id)
+        if existing is not None:
+            return existing, False
+        try:
+            receipt = self.create_external_receipt(
+                receipt_id=receipt_id,
+                surface=surface,
+                tool_name=tool_name,
+                action=action,
+                status=status,
+                summary=summary,
+                cognee_dataset=cognee_dataset,
+                cognee_reference=cognee_reference,
+                cognee_result_json=cognee_result_json,
+                warnings_json=warnings_json,
+                metadata_json=metadata_json,
+            )
+        except IntegrityError:
+            receipt = self.get_external_receipt(receipt_id)
+            if receipt is None:
+                raise
+            return receipt, False
+        return receipt, True
+
     def get_external_receipt(self, receipt_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
@@ -424,6 +464,8 @@ class BrainStore:
         *,
         status: str | None = None,
         summary: str | None = None,
+        cognee_dataset: str | None = None,
+        cognee_reference: str | None = None,
         cognee_result_json: dict[str, Any] | list[Any] | None = None,
         warnings_json: list[Any] | None = None,
         metadata_json: dict[str, Any] | None = None,
@@ -433,6 +475,10 @@ class BrainStore:
             values["status"] = status
         if summary is not None:
             values["summary"] = summary
+        if cognee_dataset is not None:
+            values["cognee_dataset"] = cognee_dataset
+        if cognee_reference is not None:
+            values["cognee_reference"] = cognee_reference
         if cognee_result_json is not None:
             values["cognee_result_json"] = jsonable(cognee_result_json)
         if warnings_json is not None:
@@ -461,6 +507,37 @@ class BrainStore:
                 )
             ).first()
         return row_dict(row) if row is not None else None
+
+    def claim_external_receipt(
+        self,
+        receipt_id: str,
+        *,
+        expected_statuses: tuple[str, ...] = ("queued",),
+        claimed_status: str = "running",
+    ) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.brain_external_receipts)
+                .where(
+                    and_(
+                        schema.brain_external_receipts.c.id == receipt_id,
+                        self._user_filter(schema.brain_external_receipts),
+                        schema.brain_external_receipts.c.status.in_(expected_statuses),
+                    )
+                )
+                .values(status=claimed_status)
+            )
+            if result.rowcount != 1:
+                return None
+            row = conn.execute(
+                select(schema.brain_external_receipts).where(
+                    and_(
+                        schema.brain_external_receipts.c.id == receipt_id,
+                        self._user_filter(schema.brain_external_receipts),
+                    )
+                )
+            ).one()
+        return row_dict(row)
 
     def list_external_receipts(
         self,

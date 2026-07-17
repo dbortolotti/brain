@@ -276,7 +276,12 @@ Load my preferences from Brain before answering.
 
 Use `brain_profile_context_remember` for stable answer-tailoring context. Use `brain_bias_context_remember` on surfaces that expose it when you need response-style preferences.
 
-Internal or admin surfaces also expose tools such as `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_profile_context_sync`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_review_recent`, `brain_undo_last`, `brain_forget`, `brain_bias_context_remember`, `brain_bias_context_list`, `brain_bias_context_forget`, `cognee_improve`, `brain_palate_describe_item`, `brain_palate_remember`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_log_decision`, `brain_palate_confirm`, `brain_palate_cancel`, `brain_palate_correct_proposal`, and `brain_palate_refresh_enrichment`.
+`brain_remember` normally returns a durable queued receipt immediately. Keep its
+`ingestion_run_id` and use `brain_ingestion_status` when later work depends on
+the semantic write finishing. Retrying the same complete request does not create
+a second memory.
+
+Internal or admin surfaces also expose tools such as `brain_profile_context_remember`, `brain_profile_context_list`, `brain_profile_context_forget`, `brain_profile_context_sync`, `brain_ingestion_status`, `brain_ingest_source`, `brain_recall`, `brain_profile_entity`, `brain_review_recent`, `brain_undo_last`, `brain_forget`, `brain_bias_context_remember`, `brain_bias_context_list`, `brain_bias_context_forget`, `cognee_improve`, `brain_palate_describe_item`, `brain_palate_remember`, `brain_palate_query`, `brain_palate_evaluate_options`, `brain_palate_log_decision`, `brain_palate_confirm`, `brain_palate_cancel`, `brain_palate_correct_proposal`, and `brain_palate_refresh_enrichment`.
 
 ## Using Palate
 
@@ -639,5 +644,5 @@ Use brain_palate_describe_item to describe Chateau Musar 2016 as a wine. Do not 
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret handling.
 
-<!-- brain-doc-source-hash: 479487fe344ee10c375603a2b7b5b11132aab8797f8b8bbf2170a57967d05210 -->
-<!-- brain-doc-source-commit: afc6049e0dfb1e0c07f9a8baf6a3c614ea598132 -->
+<!-- brain-doc-source-hash: 132fbb183795e280c6058e25b233059eefa7a91c81695c0eb7e9c9df0913d1c7 -->
+<!-- brain-doc-source-commit: a22498b7ed4b8d4b37b221395186ba5e3b7ae41d -->

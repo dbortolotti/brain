@@ -27,6 +27,197 @@ def test_family_fact_is_sent_to_cognee_as_raw_text_without_legacy_rows(
     assert_legacy_semantic_counts(settings)
 
 
+def test_background_remember_persists_idempotent_receipt_before_submit(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    submitted: list[str] = []
+
+    def fake_submit(receipt_id, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is settings
+        queued = BrainStore(settings).get_external_receipt(receipt_id)
+        assert queued["status"] == "queued"
+        assert queued["metadata_json"]["queued_request"]["input"] == "Remember this once."
+        submitted.append(receipt_id)
+        return None
+
+    monkeypatch.setattr(brain_service, "_submit_background_remember", fake_submit)
+    request = RememberRequest(
+        input="Remember this once.",
+        run_in_background=True,
+        idempotency_key="stable-retry-key",
+        context={"taste_skip": True},
+    )
+
+    first = remember(request, settings)
+    second = remember(request, settings)
+
+    assert first.ingestion_run_id == second.ingestion_run_id
+    assert first.cognee_sync_status == "queued"
+    assert submitted == [first.ingestion_run_id]
+    assert (
+        brain_service.ingestion_status(
+            settings,
+            ingestion_run_id=first.ingestion_run_id,
+        )["status"]
+        == "queued"
+    )
+    reviewed = brain_service.review_recent(settings)["external_receipts"][0]
+    assert "queued_request" not in reviewed["metadata_json"]
+    assert "idempotency_key" not in reviewed["metadata_json"]
+
+
+def test_background_remember_rejects_idempotency_key_reuse_for_other_input(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        lambda *args, **kwargs: None,
+    )
+    remember(
+        RememberRequest(
+            input="First payload.",
+            run_in_background=True,
+            idempotency_key="same-key",
+        ),
+        settings,
+    )
+
+    try:
+        remember(
+            RememberRequest(
+                input="Different payload.",
+                run_in_background=True,
+                idempotency_key="same-key",
+            ),
+            settings,
+        )
+    except ValueError as exc:
+        assert "different Brain remember request" in str(exc)
+    else:
+        raise AssertionError("Expected an idempotency-key collision to be rejected.")
+
+
+def test_background_remember_updates_the_same_receipt_after_cognee_sync(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fake_cognee(calls))
+    queued = remember(
+        RememberRequest(
+            input="Process this durable queue entry.",
+            run_in_background=True,
+            context={"taste_skip": True},
+        ),
+        settings,
+    )
+
+    completed = brain_service._process_queued_remember(
+        queued.ingestion_run_id,
+        settings,
+    )
+
+    assert completed.ingestion_run_id == queued.ingestion_run_id
+    assert completed.cognee_sync_status == "synced"
+    assert calls[0]["text"] == "Process this durable queue entry."
+    receipts = BrainStore(settings).list_external_receipts()
+    assert [receipt["id"] for receipt in receipts] == [queued.ingestion_run_id]
+    assert receipts[0]["status"] == "synced"
+    assert "queued_request" not in receipts[0]["metadata_json"]
+
+
+def test_failed_background_remember_can_be_retried_with_the_same_receipt(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        lambda *args, **kwargs: None,
+    )
+    request = RememberRequest(
+        input="Retry this after a transient Cognee failure.",
+        run_in_background=True,
+        idempotency_key="retry-after-failure",
+    )
+    queued = remember(request, settings)
+
+    def fail_cognee(*args, **kwargs):
+        raise RuntimeError("temporary failure")
+
+    monkeypatch.setattr(brain_service, "_cognee_remember_text", fail_cognee)
+    try:
+        brain_service._process_queued_remember(queued.ingestion_run_id, settings)
+    except RuntimeError as exc:
+        assert "temporary failure" in str(exc)
+    else:
+        raise AssertionError("Expected the background write to fail.")
+
+    failed = BrainStore(settings).get_external_receipt(queued.ingestion_run_id)
+    assert failed["status"] == "failed"
+    assert failed["metadata_json"]["queued_request"]["input"] == request.input
+    submitted: list[str] = []
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        lambda receipt_id, active_settings, **kwargs: submitted.append(receipt_id),
+    )
+
+    retried = remember(request, settings)
+
+    assert retried.ingestion_run_id == queued.ingestion_run_id
+    assert retried.cognee_sync_status == "queued"
+    assert submitted == [queued.ingestion_run_id]
+
+
+def test_resume_queued_remembers_resets_interrupted_running_receipts(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    settings = brain_test_settings(tmp_path)
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        lambda *args, **kwargs: None,
+    )
+    queued = remember(
+        RememberRequest(input="Resume me.", run_in_background=True),
+        settings,
+    )
+    BrainStore(settings).update_external_receipt(
+        queued.ingestion_run_id,
+        status="running",
+    )
+    submitted: list[str] = []
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        lambda receipt_id, active_settings, **kwargs: submitted.append(receipt_id),
+    )
+
+    resumed = brain_service.resume_queued_remembers(settings)
+
+    assert resumed == 1
+    assert submitted == [queued.ingestion_run_id]
+    assert (
+        BrainStore(settings).get_external_receipt(queued.ingestion_run_id)["status"]
+        == "queued"
+    )
+
+
 def test_ingest_source_request_writes_raw_source_text_to_cognee(
     tmp_path,
     monkeypatch,

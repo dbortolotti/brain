@@ -242,6 +242,7 @@ def test_datasource_tools_are_listed() -> None:
         "brain_bias_context_forget",
         "brain_profile_context_sync",
         "brain_remember",
+        "brain_ingestion_status",
         "brain_ingest_source",
         "brain_recall",
         "brain_profile_entity",
@@ -373,6 +374,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain_bias_context_list",
         "brain_bias_context_forget",
         "brain_remember",
+        "brain_ingestion_status",
         "brain_recall",
         "brain_profile_entity",
         "brain_forget",
@@ -395,6 +397,8 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
     remember_properties = tools["brain_remember"]["inputSchema"]["properties"]
     assert "input" in remember_properties
+    assert remember_properties["run_in_background"]["default"] is True
+    assert "idempotency_key" in remember_properties
     assert "source_policy" not in remember_properties
     assert "dataset_name" not in remember_properties
     assert "node_set" not in remember_properties
@@ -823,6 +827,7 @@ def test_high_level_brain_remember_mcp_tool_returns_cognee_receipt(
                     "name": "brain_remember",
                     "arguments": {
                         "input": "Sam from Goldman mentioned that he likes Bill Evans.",
+                        "run_in_background": False,
                     },
                 },
             },
@@ -838,6 +843,79 @@ def test_high_level_brain_remember_mcp_tool_returns_cognee_receipt(
     assert remember_payload["cognee_sync_status"] == "synced"
     assert calls[0]["dataset_name"] == "memory"
     assert calls[0]["text"] == "Sam from Goldman mentioned that he likes Bill Evans."
+
+
+def test_brain_remember_mcp_queues_by_default_and_reports_status(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_taste_enabled=False,
+    )
+    submitted: list[str] = []
+
+    def fake_submit(receipt_id, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is mcp_server.settings
+        submitted.append(receipt_id)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_remember",
+        fake_submit,
+    )
+    try:
+        client = TestClient(app)
+        remember_response = client.post(
+            "/admin/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_remember",
+                    "arguments": {
+                        "input": "Queue this memory once.",
+                        "idempotency_key": "mcp-retry-key",
+                    },
+                },
+            },
+        )
+        remember_payload = remember_response.json()["result"]["structuredContent"]
+        status_response = client.post(
+            "/admin/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_ingestion_status",
+                    "arguments": {
+                        "ingestion_run_id": remember_payload["ingestion_run_id"],
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert remember_response.status_code == 200
+    assert remember_payload["cognee_sync_status"] == "queued"
+    assert "Queued Brain remember receipt" in (
+        remember_response.json()["result"]["content"][0]["text"]
+    )
+    assert submitted == [remember_payload["ingestion_run_id"]]
+    status_payload = status_response.json()["result"]["structuredContent"]
+    assert status_payload == {
+        "ingestion_run_id": remember_payload["ingestion_run_id"],
+        "status": "queued",
+        "classification": "direct_memory",
+        "cognee_sync_status": "queued",
+        "summary": "Queued direct_memory for Cognee ingestion.",
+    }
 
 
 def test_brain_ingest_source_mcp_tool_returns_cognee_receipt(
