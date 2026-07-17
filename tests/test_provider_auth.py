@@ -4,6 +4,7 @@ import base64
 import json
 import threading
 import time
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +19,7 @@ from memory_stack.provider_auth import (
     OpenAICodexCredential,
     ProviderAuthError,
     build_openai_codex_authorize_url,
+    exchange_authorization_code,
     generate_pkce_pair,
     get_codex_cli_access_token,
     get_openai_codex_profile,
@@ -36,26 +38,106 @@ runner = CliRunner()
 def test_pkce_generation_and_authorize_url() -> None:
     pkce = generate_pkce_pair()
     url = build_openai_codex_authorize_url(state="state-1", challenge=pkce.challenge)
+    parsed = urllib.parse.urlparse(url)
+    query = urllib.parse.parse_qs(parsed.query)
 
     assert pkce.verifier
     assert pkce.challenge
-    assert "client_id=app_EMoamEEZ73f0CkXaXp7hrann" in url
-    assert "code_challenge_method=S256" in url
-    assert "state=state-1" in url
+    assert (parsed.scheme, parsed.netloc, parsed.path) == (
+        "https",
+        "auth.openai.com",
+        "/oauth/authorize",
+    )
+    assert query == {
+        "response_type": ["code"],
+        "client_id": ["app_EMoamEEZ73f0CkXaXp7hrann"],
+        "redirect_uri": ["http://localhost:1455/auth/callback"],
+        "scope": [
+            "openid profile email offline_access "
+            "api.connectors.read api.connectors.invoke"
+        ],
+        "code_challenge": [pkce.challenge],
+        "code_challenge_method": ["S256"],
+        "id_token_add_organizations": ["true"],
+        "codex_cli_simplified_flow": ["true"],
+        "originator": ["codex_cli_rs"],
+        "state": ["state-1"],
+    }
 
 
 def test_parse_authorization_response_validates_state() -> None:
     code = parse_authorization_response(
-        "http://127.0.0.1:1455/auth/callback?code=abc&state=expected",
+        "http://localhost:1455/auth/callback?code=abc&state=expected",
         expected_state="expected",
     )
 
     assert code == "abc"
     with pytest.raises(ProviderAuthError, match="state mismatch"):
         parse_authorization_response(
-            "http://127.0.0.1:1455/auth/callback?code=abc&state=wrong",
+            "http://localhost:1455/auth/callback?code=abc&state=wrong",
             expected_state="expected",
         )
+
+
+def test_exchange_authorization_code_uses_selected_redirect(monkeypatch) -> None:
+    request: dict[str, Any] = {}
+
+    def fake_post(url: str, *, data: dict[str, str], timeout: int):
+        request.update(url=url, data=data, timeout=timeout)
+        return provider_auth.httpx.Response(
+            200,
+            json={
+                "access_token": "access-token",
+                "refresh_token": "refresh-token",
+                "expires_in": 3600,
+            },
+        )
+
+    monkeypatch.setattr(provider_auth.httpx, "post", fake_post)
+
+    credential = exchange_authorization_code(
+        "authorization-code",
+        "verifier",
+        redirect_uri="http://localhost:1457/auth/callback",
+    )
+
+    assert credential.access == "access-token"
+    assert request["url"] == provider_auth.OPENAI_CODEX_TOKEN_URL
+    assert request["timeout"] == 60
+    assert request["data"]["redirect_uri"] == "http://localhost:1457/auth/callback"
+
+
+def test_local_browser_callback_falls_back_to_allowlisted_port(monkeypatch) -> None:
+    attempted_ports: list[int] = []
+    opened_urls: list[str] = []
+
+    class FakeServer:
+        def handle_request(self) -> None:
+            return
+
+        def server_close(self) -> None:
+            return
+
+    def fake_server(address: tuple[str, int], _handler):
+        attempted_ports.append(address[1])
+        if address[1] == 1455:
+            raise OSError("port in use")
+        return FakeServer()
+
+    monkeypatch.setattr(provider_auth.http.server, "ThreadingHTTPServer", fake_server)
+    monkeypatch.setattr(provider_auth.webbrowser, "open", opened_urls.append)
+
+    code, redirect_uri = provider_auth.try_local_browser_callback(
+        expected_state="state-1",
+        challenge="challenge-1",
+        timeout_seconds=0,
+    )
+
+    assert code is None
+    assert redirect_uri == "http://localhost:1457/auth/callback"
+    assert attempted_ports == [1455, 1457]
+    query = urllib.parse.parse_qs(urllib.parse.urlparse(opened_urls[0]).query)
+    assert query["redirect_uri"] == ["http://localhost:1457/auth/callback"]
 
 
 def test_auth_store_round_trips_profile(tmp_path: Path) -> None:

@@ -781,6 +781,18 @@ OPENAI_AUTH_MODE=oauth
 OPENAI_CODEX_AUTH_PROFILE=default
 ```
 
+Create or refresh a local/QA profile with:
+
+```bash
+brain models auth login --provider openai-codex --env-file /path/to/brain.env
+```
+
+Brain mirrors the current Codex OAuth callback contract: it registers
+`http://localhost:1455/auth/callback`, falls back to the allow-listed port
+`1457` when `1455` is occupied, and reuses the selected redirect URI during the
+token exchange. Keep provider-auth profiles lane-local; do not copy refresh
+tokens between local, QA, staging, or production environments.
+
 Production on srv1 uses the shared Hal token sink:
 
 ```env
@@ -798,4 +810,4 @@ aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
 <!-- brain-doc-source-hash: 9e15f51112588d295e01f558acbdae7ec4410bd7ab794213bbe7ea85ec35455b -->
-<!-- brain-doc-source-commit: a22498b7ed4b8d4b37b221395186ba5e3b7ae41d -->
+<!-- brain-doc-source-commit: 4f28a9985ddef40b272471d86b746e07bcb6b58b -->
