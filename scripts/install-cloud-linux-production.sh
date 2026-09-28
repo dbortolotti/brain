@@ -326,7 +326,7 @@ prepare_env() {
   set_env_var PROFILE openai
   ensure_env_var BRAIN_LLM_ENABLED true
   ensure_env_var LLM_PROVIDER openai
-  ensure_env_var LLM_MODEL gpt-5.4-mini
+  ensure_env_var LLM_MODEL gpt-5.5
   set_env_var OPENAI_AUTH_MODE oauth
   set_env_var OPENAI_CODEX_AUTH_PROFILE default
   set_env_var OPENAI_CODEX_BASE_URL http://127.0.0.1:11434/v1

@@ -14,7 +14,7 @@ def test_cfg_defaults_to_dev() -> None:
 
     assert package_cfg.active_env() == "dev"
     assert values["CONFIG_ENV"] == "dev"
-    assert cfg.get("LLM_MODEL") == "gpt-5.4-mini"
+    assert cfg.get("LLM_MODEL") == "gpt-5.5"
     assert cfg.get("BRAIN_TASTE_LLM_MODEL") == "gpt-5.5"
     assert cfg.get("BRAIN_TASTE_LLM_REASONING_EFFORT") == "medium"
     assert cfg.get("BRAIN_OWNER_FULL_NAME") == "Daniele Bortolotti"

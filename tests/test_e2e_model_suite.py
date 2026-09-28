@@ -78,7 +78,7 @@ def test_live_e2e_model_suite_runs_configured_model_front_to_back(tmp_path) -> N
 
     result = run_e2e_model_suite(settings)
 
-    assert result["model"] == "openai:gpt-5.4-mini"
+    assert result["model"] == "openai:gpt-5.5"
     assert result["record_count"] == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES)
     assert {record["role"] for record in result["records"]} == set(EXPECTED_E2E_ROLES)
     assert result["fail_count"] == 0
