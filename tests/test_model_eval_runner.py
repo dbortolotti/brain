@@ -169,7 +169,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.4-mini",
+        llm_model="gpt-5.5",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
         embedding_dimensions=3072,
@@ -182,7 +182,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
     )
 
     assert [candidate.ref for candidate in candidates] == [
-        "openai:gpt-5.4-mini",
+        "openai:gpt-5.5",
         "openai:text-embedding-3-large",
     ]
 
@@ -2102,7 +2102,7 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
     assert items
-    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-5.4-mini:llm"}
+    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-5.5:llm"}
 
 
 def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:

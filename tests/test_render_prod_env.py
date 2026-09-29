@@ -90,7 +90,7 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "OPENAI_CODEX_BASE_URL=http://127.0.0.1:11434/v1" in rendered
     assert "OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token" in rendered
     assert "LLM_PROVIDER=openai" in rendered
-    assert "LLM_MODEL=gpt-5.4-mini" in rendered
+    assert "LLM_MODEL=gpt-5.5" in rendered
     assert "BRAIN_COGNEE_RECALL_ENABLED=true" in rendered
     assert "BRAIN_COGNEE_RECALL_TOP_K=10" in rendered
     assert "BRAIN_COGNEE_MEMORY_DATASET=memory" in rendered
@@ -224,7 +224,7 @@ def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> No
     assert values["BRAIN_COGNEE_DATA_DATASET"] == "data"
     assert values["BRAIN_COGNEE_PALATE_DATASET"] == "palate"
     assert values["BRAIN_COGNEE_RECALL_TOP_K"] == "10"
-    assert values["LLM_MODEL"] == "gpt-5.4-mini"
+    assert values["LLM_MODEL"] == "gpt-5.5"
     assert values["LLM_TEMPERATURE"] == "0.0"
     assert values["LLM_MAX_TOKENS"] == "8192"
     assert values["EMBEDDING_MODEL"] == "text-embedding-3-large"
