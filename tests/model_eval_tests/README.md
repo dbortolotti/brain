@@ -36,9 +36,9 @@ Example:
 
 ```bash
 uv run python tests/model_eval_tests/run_model_eval.py \
-  --judge-model gpt-5.5 \
+  --judge-model gpt-6.1-sol \
   --remember-model gpt-5.4-mini \
-  --recall-model gpt-5.5
+  --recall-model gpt-6-luna
 ```
 
 Each run writes a timestamped folder under `tests/model_eval_tests/runs/` with:
