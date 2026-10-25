@@ -8,6 +8,7 @@ from typing import Any
 from uuid import UUID
 
 from memory_stack.cfg import Settings, apply_runtime_environment
+from memory_stack.cognee.logging import tame_cognee_logging
 from memory_stack.cognee.oauth_compat import prepare_cognee_oauth_runtime
 
 
@@ -50,6 +51,10 @@ def import_cognee() -> Any:
         raise CogneeUnavailableError(
             "Cognee is not importable. Run `uv sync --all-extras` first."
         ) from exc
+    # Importing cognee installs its structlog console handler; strip the
+    # rich-with-locals exception rendering that parks the event loop
+    # (memory_stack.cognee.logging). Idempotent, runs on every import.
+    tame_cognee_logging()
     return cognee
 
 
