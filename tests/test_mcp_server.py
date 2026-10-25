@@ -1917,3 +1917,72 @@ def issue_test_oauth_token(
     )
     assert token_response.status_code == 200
     return token_response.json()["access_token"]
+
+
+def test_tool_dispatch_offloads_synchronous_palate_calls_to_a_worker_thread(monkeypatch) -> None:
+    """2026-10-25 v2.0.31: the dispatcher called TasteService.describe_item inline
+    on the event loop; a single enrichment (LLM + web search) parked the whole
+    server and every other client timed out. The call must run where no loop
+    is running, i.e. on a worker thread."""
+    import asyncio
+    import threading
+
+    from memory_stack import mcp_server
+
+    seen: dict[str, object] = {}
+
+    class FakeTasteService:
+        def __init__(self, settings) -> None:
+            del settings
+
+        def describe_item(self, request) -> dict[str, object]:
+            seen["thread"] = threading.current_thread().name
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                seen["loop_running"] = False
+            else:
+                seen["loop_running"] = True
+            return {"enriched": {"canonical_name": request.item_text}, "llm_used": True}
+
+    monkeypatch.setattr(mcp_server, "TasteService", FakeTasteService)
+
+    async def dispatch() -> dict[str, object]:
+        loop_thread = threading.current_thread().name
+        result = await mcp_server.call_tool_dispatch(
+            {
+                "name": "brain_palate_describe_item",
+                "arguments": {"item_text": "Chateau Musar 2016", "entity_type": "wine"},
+            },
+            request_context=mcp_server.McpRequestContext(
+                auth=mcp_server.McpAuthContext(
+                    authenticated=True,
+                    user_id=mcp_server.settings.brain_user_id,
+                )
+            ),
+        )
+        seen["loop_thread"] = loop_thread
+        return result
+
+    result = asyncio.run(dispatch())
+
+    assert seen["loop_running"] is False
+    assert seen["thread"] != seen["loop_thread"]
+    assert "Chateau Musar 2016" in json.dumps(result)
+
+
+def test_brain_http_endpoints_are_synchronous_so_fastapi_threads_them() -> None:
+    import inspect
+
+    from memory_stack import mcp_server
+
+    for name in (
+        "brain_remember_endpoint",
+        "brain_ingest_source_endpoint",
+        "brain_recall_endpoint",
+        "brain_profile_entity_endpoint",
+        "brain_forget_endpoint",
+        "brain_review_recent_endpoint",
+        "brain_undo_last_endpoint",
+    ):
+        assert not inspect.iscoroutinefunction(getattr(mcp_server, name)), name
