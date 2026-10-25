@@ -57,7 +57,7 @@ def test_taste_describe_uses_llm_enrichment_when_attributes_are_missing(tmp_path
     assert llm_client.calls[0]["schema"]["properties"]["attributes"]["required"] == (
         attribute_keys_for_type("wine")
     )
-    assert llm_client.calls[0]["kwargs"]["model"] == "gpt-5.5"
+    assert llm_client.calls[0]["kwargs"]["model"] == "gpt-6.1-sol"
     assert llm_client.calls[0]["kwargs"]["reasoning_effort"] == "medium"
 
 
@@ -177,7 +177,7 @@ def test_restaurant_llm_enrichment_uses_web_search_schema(tmp_path) -> None:
 
     call = llm_client.calls[0]
     assert result["server_llm_used"]["enrichment"] is True
-    assert call["kwargs"]["model"] == "gpt-5.5"
+    assert call["kwargs"]["model"] == "gpt-6.1-sol"
     assert call["kwargs"]["reasoning_effort"] == "medium"
     assert call["kwargs"]["tools"][0]["type"] == "web_search"
     assert call["kwargs"]["schema_name"] == "brain_restaurant_web_enrichment"

@@ -203,13 +203,20 @@ def _openai_reasoning_effort(model: str, configured: Any = None) -> str:
     configured = configured or os.environ.get("COGNEE_OPENAI_REASONING_EFFORT")
     if configured in {"minimal", "low", "medium", "high"}:
         return configured
-    if model.startswith(("gpt-5.4", "gpt-5.5")):
+    if model.startswith(_LOW_EFFORT_MODEL_PREFIXES):
         return "low"
     return "minimal"
 
 
+# Models that reject reasoning effort "minimal" on the Codex ChatGPT backend
+# (2026-10-25: gpt-6-luna / gpt-6.1-sol / gpt-5.6-* answer HTTP 400
+# "Unsupported value: 'minimal'", supported values low..max). "low" is the
+# cheapest level every current model accepts.
+_LOW_EFFORT_MODEL_PREFIXES = ("gpt-5.4", "gpt-5.5", "gpt-5.6", "gpt-6", "gpt-daybreak")
+
+
 def _openai_supports_reasoning(model: str) -> bool:
-    return model.startswith(("gpt-5", "o1", "o3", "o4"))
+    return model.startswith(("gpt-5", "gpt-6", "gpt-daybreak", "o1", "o3", "o4"))
 
 
 def _openai_stream_response_text(response: httpx.Response) -> str | None:

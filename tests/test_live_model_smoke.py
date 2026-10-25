@@ -51,7 +51,7 @@ def test_active_scope_selects_configured_llm_and_embedding(
         profile="openai",
         openai_auth_mode="api_key",
         llm_provider="openai",
-        llm_model="openai/gpt-5.5",
+        llm_model="openai/gpt-6-luna",
         openai_api_key="sk-provider",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
@@ -61,7 +61,7 @@ def test_active_scope_selects_configured_llm_and_embedding(
     probes = live_model_smoke.active_probes(settings)
 
     assert [(probe.kind, probe.provider, probe.model) for probe in probes] == [
-        ("llm", "openai", "gpt-5.5"),
+        ("llm", "openai", "gpt-6-luna"),
         ("embedding", "openai", "text-embedding-3-large"),
     ]
 
@@ -100,7 +100,7 @@ def test_fastembed_embedding_probe_runs_locally(
 def test_explicit_smoke_models_are_parsed_without_registry() -> None:
     parser = live_model_smoke.build_parser()
     args = live_model_smoke.normalize_args(
-        parser.parse_args(["--models", "openai:gpt-5.5,fastembed:intfloat/multilingual-e5-large"])
+        parser.parse_args(["--models", "openai:gpt-6-luna,fastembed:intfloat/multilingual-e5-large"])
     )
     probes = live_model_smoke.select_probes(
         Settings(),
@@ -110,7 +110,7 @@ def test_explicit_smoke_models_are_parsed_without_registry() -> None:
 
     actual = {(probe.kind, probe.provider, probe.model) for probe in probes}
     assert actual == {
-        ("llm", "openai", "gpt-5.5"),
+        ("llm", "openai", "gpt-6-luna"),
         ("embedding", "fastembed", "intfloat/multilingual-e5-large"),
     }
 
@@ -123,7 +123,7 @@ def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
         profile="openai",
         openai_auth_mode="api_key",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model="gpt-6-luna",
         openai_api_key="sk-provider-secret",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
@@ -203,9 +203,9 @@ def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
         settings,
         live_model_smoke.Probe(
             provider="openai",
-            model="gpt-5.5",
+            model="gpt-6-luna",
             kind="llm",
-            label="openai:gpt-5.5",
+            label="openai:gpt-6-luna",
         ),
     ) == "OpenAI OAuth credentials are missing. Run `brain models auth login --provider openai-codex`."
     assert live_model_smoke.missing_credential(
@@ -236,7 +236,7 @@ def test_openai_oauth_text_smoke_accepts_codex_cli_token_without_brain_profile(
         profile="openai",
         openai_auth_mode="oauth",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model="gpt-6-luna",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
         embedding_dimensions=3072,
@@ -249,9 +249,9 @@ def test_openai_oauth_text_smoke_accepts_codex_cli_token_without_brain_profile(
             settings,
             live_model_smoke.Probe(
                 provider="openai",
-                model="gpt-5.5",
+                model="gpt-6-luna",
                 kind="llm",
-                label="openai:gpt-5.5",
+                label="openai:gpt-6-luna",
             ),
         )
         is None
@@ -270,7 +270,7 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
         profile="openai",
         openai_auth_mode="oauth",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model="gpt-6-luna",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
         embedding_dimensions=3072,
@@ -290,9 +290,9 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
             settings,
             live_model_smoke.Probe(
                 provider="openai",
-                model="gpt-5.5",
+                model="gpt-6-luna",
                 kind="llm",
-                label="openai:gpt-5.5",
+                label="openai:gpt-6-luna",
             ),
         )
         is None
@@ -314,9 +314,9 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
         [
             live_model_smoke.Probe(
                 provider="openai",
-                model="gpt-5.5",
+                model="gpt-6-luna",
                 kind="llm",
-                label="openai:gpt-5.5",
+                label="openai:gpt-6-luna",
             )
         ],
         client=client,
@@ -331,7 +331,7 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
         )
     ]
     assert len(seen_json) == 1
-    assert seen_json[0]["model"] == "gpt-5.5"
+    assert seen_json[0]["model"] == "gpt-6-luna"
     assert seen_json[0]["instructions"].startswith("Return only one JSON object")
     assert seen_json[0]["store"] is False
     assert seen_json[0]["stream"] is True
@@ -346,7 +346,7 @@ def test_openrouter_probe_uses_api_model_and_quantization(
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model="gpt-6-luna",
         openai_api_key="sk-provider",
         openrouter_api_key="sk-or-provider",
         embedding_provider="openai",
@@ -402,7 +402,7 @@ def test_google_probe_uses_api_model_and_thinking_level(
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model="gpt-6-luna",
         openai_api_key="sk-provider",
         gemini_api_key="AIza-provider",
         embedding_provider="openai",

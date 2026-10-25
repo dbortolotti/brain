@@ -80,7 +80,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def settings_for_model(model: str, dataset: str) -> Settings:
     os.environ["LLM_PROVIDER"] = "openai"
-    os.environ["LLM_MODEL"] = "gpt-5.5"
+    os.environ["LLM_MODEL"] = "gpt-6-luna"
     base = load_settings()
     storage_root = (ROOT / eval_storage_root(dataset)).resolve()
     return base.model_copy(
@@ -703,7 +703,7 @@ def parse_args() -> argparse.Namespace:
             "recall all 200 questions, and judge every answer."
         )
     )
-    parser.add_argument("--judge-model", required=True, help="Judge model, e.g. gpt-5.5.")
+    parser.add_argument("--judge-model", required=True, help="Judge model, e.g. gpt-6.1-sol.")
     parser.add_argument(
         "--judge-reasoning-effort",
         choices=["minimal", "low", "medium", "high"],

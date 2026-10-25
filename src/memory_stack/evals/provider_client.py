@@ -545,8 +545,13 @@ def parse_json_object(raw_text: str) -> dict[str, Any]:
     return payload
 
 
+# Mirrors memory_stack.cognee.oauth_compat._LOW_EFFORT_MODEL_PREFIXES: the
+# Codex ChatGPT backend rejects effort "minimal" for every current model.
+LOW_EFFORT_MODEL_PREFIXES = ("gpt-5.4", "gpt-5.5", "gpt-5.6", "gpt-6", "gpt-daybreak")
+
+
 def openai_reasoning_effort(model: str) -> str:
-    if model.startswith(("gpt-5.4", "gpt-5.5")):
+    if model.startswith(LOW_EFFORT_MODEL_PREFIXES):
         return "low"
     return "minimal"
 

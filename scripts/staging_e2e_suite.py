@@ -499,7 +499,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--test-display-name", default="Brain E2E Test User")
     parser.add_argument("--test-password-file", type=Path, default=DEFAULT_TEST_PASSWORD_FILE)
     parser.add_argument("--judge-env-file", type=Path, default=Path(os.getenv("ENV_FILE", DEFAULT_JUDGE_ENV_FILE)))
-    parser.add_argument("--judge-model", default="gpt-5.5")
+    parser.add_argument("--judge-model", default="gpt-6.1-sol")
     parser.add_argument("--judge-reasoning-effort", default="high")
     parser.add_argument("--run-id", default=datetime.now(UTC).strftime("e2e_%Y%m%d_%H%M%S"))
     parser.add_argument(

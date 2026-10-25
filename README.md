@@ -511,7 +511,7 @@ make targeted-fine-grained-eval
 For full end-to-end model checks, use the E2E model suite. It creates a fresh SQLite Brain database, seeds it through the app service layer, retrieves runtime facts and evidence, and calls the live configured model against the same shared role contracts used by runtime. The suite covers every checked-in fine-grained role spec, plus recall synthesis cases that use real runtime recall payloads.
 
 ```bash
-uv run brain eval e2e-models --model openai:gpt-5.5 --output-json eval_runs/e2e_model/results.json
+uv run brain eval e2e-models --model openai:gpt-6-luna --output-json eval_runs/e2e_model/results.json
 ```
 
 The pytest live E2E gate is opt-in because it makes provider calls:
@@ -520,7 +520,7 @@ The pytest live E2E gate is opt-in because it makes provider calls:
 BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 ```
 
-For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie and CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-5.5` high reasoning.
+For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie and CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-6-luna` high reasoning.
 
 ```bash
 ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env uv run python scripts/staging_e2e_suite.py
@@ -696,7 +696,7 @@ LLM compiler settings are disabled by default. When enabled, it uses the same fi
 
 Taste and palate input enrichment uses its own model setting so it can stay on a stronger model without changing Cognee projection defaults:
 
-- `BRAIN_TASTE_LLM_MODEL=gpt-5.5`
+- `BRAIN_TASTE_LLM_MODEL=gpt-6.1-sol`
 - `BRAIN_TASTE_LLM_REASONING_EFFORT=medium`
 
 Cognee projection settings:
@@ -810,4 +810,4 @@ aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
 <!-- brain-doc-source-hash: 9e15f51112588d295e01f558acbdae7ec4410bd7ab794213bbe7ea85ec35455b -->
-<!-- brain-doc-source-commit: 4f28a9985ddef40b272471d86b746e07bcb6b58b -->
+<!-- brain-doc-source-commit: 188a1f2911246b75289fcbb96d564fbef0490be1 -->
