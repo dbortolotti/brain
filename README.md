@@ -8,7 +8,7 @@ Brain is a local personal memory control plane exposed through a small MCP surfa
 - [Agent Tool Guide](docs/AGENT_TOOL_GUIDE.md) - advanced MCP tool usage, tool-selection rules, and agent-facing examples.
 - [API Setup Guide](docs/API_SETUP_GUIDE.md) - HTTP, MCP, auth, client setup, and integration examples.
 - [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification, Google Drive replication, and restore outline.
-- [Production Secrets](docs/production-secrets.md) - staging, prod, and release flow, secret handling, and config conflict rules.
+- [Production Secrets](docs/production-secrets.md) - prod release flow, secret handling, and config conflict rules.
 - [ChatGPT App Hardening](docs/chatgpt-app-hardening.md) - app review hardening model and post-merge production verification checklist.
 - [OpenAI Submission Checklist](docs/openai-submission.md) - remaining non-code checklist for ChatGPT App review.
 - [Proposed Brain/Cognee Flow](docs/proposed_brain_cognee_flow.md) - proposed thinner Brain facade with Cognee as the semantic memory substrate.
@@ -263,22 +263,26 @@ Slack is no longer a supported Brain surface. The legacy adapter code remains do
 
 ## Deployment and Release Model
 
-Brain deploys in three tiers, plus local dev:
+Brain deploys in two tiers:
 
-- `dev`: local developer runs.
-- `qa`: every push to `main` deploys through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain` as `oric`, with read-only repository permissions and the `qa-<12-char-sha>` build version. QA has no version input and derives its build version from the pushed commit SHA. Manual `workflow_dispatch` QA runs support only `force_config_override` for intentional re-baselines.
-- `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain` as `oric_staging`. The workflow requires a `vX.Y.Z` or prerelease tag, refreshes generated docs, writes `docs/generated/release.json` with that tag, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag.
-- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux user `brain`.
+- `dev`: local developer runs (`scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa|staging` still installs a local LaunchDaemon copy on a Mac for hands-on testing, but no workflow depends on it).
+- `prod`: the manual `Release` workflow (`.github/workflows/release.yml`) deploys `main` to the cloud Linux server at `159.195.79.79` over SSH as the Linux user `brain`.
 
-Production release is a GitHub Actions operation, not an operator SSH session on
-srv1. The normal path is: manually run `Deploy Local Staging` with a version tag,
-then manually run `.github/workflows/release.yml` with that same staged version.
-The release workflow runs on the self-hosted `brain-prod` runner, checks out the
-staged commit, validates it, renders production config from GitHub Secrets and
-Variables, reads the current production baseline from srv1, packages the staged
-checkout, uploads that package to `brain@159.195.79.79`, and invokes the Linux
-installer with sudo. srv1 does not need a persistent Brain repo checkout or a
-GitHub deploy key for normal production release.
+Production release is a GitHub Actions operation on a GitHub-hosted runner, not
+an operator SSH session on srv1 and not a job on any Mac (the local QA and
+staging tiers and the self-hosted `brain-prod` runner were retired on
+2026-10-25 after a Mac reboot left Colima down and blocked a release for a
+day). Run `Release` with a version like `v2.1.0` or `v2.1.0-rc.1`. The workflow
+checks out `main`, refreshes generated docs, writes `docs/generated/release.json`
+with the version, pushes that docs stamp to `main`, validates the stamped
+commit (`make docs-check`, ruff, pytest), installs the `BRAIN_PROD_SSH_KEY`
+deploy key with srv1's pinned host key, renders production config from GitHub
+Secrets and Variables against the live baseline read from srv1, packages the
+checkout, uploads it to `brain@159.195.79.79`, invokes the Linux installer with
+sudo, and finally creates the annotated git tag at the deployed SHA. A version
+whose tag already exists at a different SHA is refused. srv1 does not need a
+persistent Brain repo checkout; it needs the deploy key's public half in
+`/home/brain/.ssh/authorized_keys`.
 
 The cloud production layout on srv1 is:
 
@@ -308,9 +312,8 @@ deploy still needs the rendered production env and auth-password files produced
 by `scripts/render_prod_env.py`, or an already-correct `/etc/brain/brain.env` on
 srv1.
 
-The QA and staging workflows render each environment's `shared/secrets/brain.env` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`. Rendering and deploy run with passwordless `sudo` because deployed roots are owned by their runtime users. Staging runs as `oric_staging`; QA runs as `oric`. System LaunchDaemons are installed under `/Library/LaunchDaemons` so they can start at boot and wait for `/Volumes/xpg_usb4` to be mounted before launching.
-
-The release workflow renders production config the same way, then runs
+The release workflow renders production config with `scripts/render_prod_env.py`
+(the same renderer a local `BRAIN_DEPLOY_ENV=qa|staging` deploy uses), then runs
 `scripts/deploy-cloud-production.sh`. That uploader packages the workflow
 checkout, copies it to `brain@159.195.79.79`, and runs
 `scripts/install-cloud-linux-production.sh` with sudo on the server. The Linux
@@ -327,15 +330,13 @@ Production public HTTPS is direct DNS, not Cloudflare Tunnel:
 brain.dceb.net.  A  159.195.79.79
 ```
 
-Keep the Cloudflare record DNS-only while Caddy manages the origin certificate directly. QA and staging may continue to use the local Cloudflare Tunnel config.
+Keep the Cloudflare record DNS-only while Caddy manages the origin certificate directly. A local dev deploy may still use the Cloudflare Tunnel config.
 
-The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline. It is available only on workflow-dispatch runs for QA, staging, and release; push-based QA deploys do not use it.
+The workflow-dispatch-only `force_config_override` input bypasses config conflict checks and establishes a new baseline. Use it only for an intentional bootstrap or re-baseline.
 
 Workflow model:
 
-- `.github/workflows/deploy-local-qa.yml` triggers on `push` to `main` and on `workflow_dispatch`, and accepts only `force_config_override` for manual re-baselines.
-- `.github/workflows/deploy-local-staging.yml` triggers on `workflow_dispatch`, requires `version`, accepts `force_config_override`, updates generated docs, stamps docs with the tag, pushes that docs commit to `main`, and tags the stamped commit.
-- `.github/workflows/release.yml` is manual only, requires a previously staged `version`, and also accepts `force_config_override`.
+- `.github/workflows/release.yml` is manual only, runs on `ubuntu-latest`, requires `version`, accepts `force_config_override`, updates generated docs, stamps docs with the version, pushes that docs commit to `main`, deploys it to srv1, and tags the deployed commit.
 - `.github/workflows/validate.yml` runs on `pull_request` and `workflow_dispatch`.
 
 The Makefile exposes deploy helpers for operator recovery and local lane work:
@@ -395,9 +396,7 @@ BRAIN_RELEASE_VERSION
 
 These metadata keys are deployment metadata, not repository variables. The conflict checker ignores both metadata families.
 
-Normal pushes to `main` deploy QA with an automatic build version such as `qa-1a2b3c4d5e6f`. To create a promotable release, manually run the staging workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. That workflow refreshes generated docs, records the tag in `docs/generated/release.json`, pushes any docs stamp commit back to `main`, deploys that stamped commit to staging, records `BRAIN_RELEASE_VERSION` as the tag, and creates the annotated git tag at the staged SHA. If the tag already exists at a different SHA, the staging run fails instead of retagging.
-
-Production promotion does not mint a new version. The release workflow reads staging `shared/release.json`, verifies the requested version is the active staged version, verifies the git tag already exists at that exact SHA, checks that the staging `current` symlink points at the same commit, and then deploys production with the same `BRAIN_RELEASE_VERSION` and staged SHA.
+To release, manually run the `Release` workflow with a version like `v2.1.0` or `v2.1.0-rc.1`. It refreshes generated docs, records the version in `docs/generated/release.json`, pushes any docs stamp commit back to `main`, deploys that stamped commit to srv1 with `BRAIN_RELEASE_VERSION` set to the version, and creates the annotated git tag at the deployed SHA. If the tag already exists at a different SHA, the run fails instead of retagging.
 
 ## Conflict Rule
 
@@ -405,8 +404,8 @@ The renderer compares three files:
 
 ```text
 proposed: newly rendered GitHub Secrets/Vars config
-live:     /Volumes/xpg_usb4/{qa|staging}/brain/shared/secrets/brain.env or /etc/brain/brain.env
-base:     /Volumes/xpg_usb4/{qa|staging}/brain/shared/secrets/brain.env.last-deployed or the rendered production baseline
+live:     /etc/brain/brain.env on srv1 (or a local deploy's shared/secrets/brain.env)
+base:     /etc/brain/brain.env.last-deployed on srv1 (or the local deploy's brain.env.last-deployed)
 ```
 
 For each non-metadata key:
@@ -494,7 +493,7 @@ make llm-docs       # alias used by the pre-commit hook
 make docs-hash      # refresh source hashes after manual doc review
 ```
 
-The validate workflow and the QA deploy workflow run `make docs-check`. The staging workflow runs `make docs-generate`, stamps `docs/generated/release.json` with the requested tag, commits those generated docs to `main` when they changed, and then runs `make docs-check`. The local pre-commit hook runs `make llm-docs`, so commits require the configured LLM documentation environment.
+The validate workflow runs `make docs-check`. The release workflow runs `make docs-generate`, stamps `docs/generated/release.json` with the requested version, commits those generated docs to `main` when they changed, and then runs `make docs-check`. The local pre-commit hook runs `make llm-docs`, so commits require the configured LLM documentation environment.
 
 For statistical model-role evals, use the Brain eval Make targets. The default target writes `eval_runs/brain-golden.json`:
 
@@ -756,9 +755,8 @@ Environment examples differ by local setup:
 
 - `.env.example` mirrors `cfg/common.yaml`: Postgres Cognee metadata, pgvector vectors, and the default graph provider.
 - `.env.openai.example` is a smaller local/OpenAI-oriented example using Neo4j, LanceDB, and SQLite.
-- `cfg/qa.yaml` is the QA override deployed automatically from `main`.
-- `cfg/staging.yaml` is the staging override deployed by the manual tagged staging workflow.
-- `cfg/prod.yaml` is the production override promoted by the release workflow. Promotable releases are versioned in staging first; production verifies and keeps that staged `BRAIN_RELEASE_VERSION` instead of creating a new one at promotion time.
+- `cfg/qa.yaml` and `cfg/staging.yaml` are the overrides for a local `BRAIN_DEPLOY_ENV=qa|staging` deploy; no workflow deploys them.
+- `cfg/prod.yaml` is the production override deployed by the release workflow, which sets `BRAIN_RELEASE_VERSION` to the requested version.
 
 Provider API keys for non-runtime providers and explicit eval/smoke experiments can be stored once and reused across every model for that provider:
 
@@ -809,5 +807,5 @@ shared token sink path for production. The renderer omits OpenAI API-key env
 aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
-<!-- brain-doc-source-hash: 9e15f51112588d295e01f558acbdae7ec4410bd7ab794213bbe7ea85ec35455b -->
-<!-- brain-doc-source-commit: 188a1f2911246b75289fcbb96d564fbef0490be1 -->
+<!-- brain-doc-source-hash: e799a12dcd9a21ae94ef07f2fceb39b27df23e0bca90d5f616514bf084accd6e -->
+<!-- brain-doc-source-commit: d1176b3cb7f647308fdef3456d2f1bc3fe28f555 -->

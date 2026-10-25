@@ -91,7 +91,7 @@ Default section order:
 
 ## Child DOX Index
 
-- `.github/AGENTS.md` - GitHub Actions validation, staging, QA, and release workflows.
+- `.github/AGENTS.md` - GitHub Actions validation and production release workflows.
 - `cfg/AGENTS.md` - non-secret YAML configuration profiles and environment defaults.
 - `deployment/AGENTS.md` - deployment templates for Caddy, Cloudflare, Docker, launchd, systemd, MCP clients, logs, and Postgres initialization.
 - `docs/AGENTS.md` - user, operator, API, submission, generated documentation, diagrams, and doc-source manifests.

@@ -9,9 +9,21 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     assert "push:" not in workflow
     assert "workflow_dispatch:" in workflow
     assert "version:" in workflow
+    # GitHub-hosted: no self-hosted runner, no local staging gate, nothing on a Mac.
+    assert "runs-on: ubuntu-latest" in workflow
+    assert "self-hosted" not in workflow
+    assert "/Volumes/" not in workflow
+    assert "staging" not in workflow.lower()
+    assert "contents: write" in workflow
+    assert "ref: main" in workflow
+    assert "make docs-generate" in workflow
+    assert '"environment": "prod"' in workflow
     assert "uv sync --all-extras" in workflow
+    assert "make docs-check" in workflow
     assert "uv run ruff check src tests scripts" in workflow
     assert "uv run pytest" in workflow
+    assert "secrets.BRAIN_PROD_SSH_KEY" in workflow
+    assert "known_hosts" in workflow
     assert "Render production config from GitHub Secrets" in workflow
     assert "scripts/render_prod_env.py --env prod" in workflow
     assert "force_config_override" in workflow
@@ -32,11 +44,20 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     assert "brain.env.last-deployed" in renderer
     assert "BRAIN_CONFIG_RENDER_SHA" in renderer
     assert "BRAIN_PROVIDER_AUTH_PROFILES_PATH" in renderer
-    assert workflow.index("Validate staged revision") < workflow.index(
+    assert workflow.index("Stamp docs with release version") < workflow.index(
+        "Validate release revision"
+    )
+    assert workflow.index("Validate release revision") < workflow.index(
+        "Install the srv1 deploy key"
+    )
+    assert workflow.index("Install the srv1 deploy key") < workflow.index(
         "Render production config from GitHub Secrets"
     )
     assert workflow.index("Render production config from GitHub Secrets") < workflow.index(
-        "Promote staging revision to production"
+        "Promote release revision to production"
+    )
+    assert workflow.index("Promote release revision to production") < workflow.index(
+        "Tag released revision"
     )
     assert "sudo -n" in workflow
     assert "BRAIN_DEPLOY_ENV=prod" in workflow
@@ -46,109 +67,10 @@ def test_release_action_validates_before_deploying_to_prod() -> None:
     assert '--source-root "$PWD"' in workflow
     assert "--rendered-env" in workflow
     assert "--rendered-auth-password" in workflow
+    assert 'git tag -a "$VERSION" "$RELEASE_SHA"' in workflow
     assert not Path(".github/workflows/deploy-local-production.yml").exists()
-
-
-def test_github_qa_action_deploys_main_to_qa() -> None:
-    workflow = Path(".github/workflows/deploy-local-qa.yml").read_text(encoding="utf-8")
-
-    assert "push:" in workflow
-    assert "main" in workflow
-    assert "group: brain-qa" in workflow
-    assert "contents: read" in workflow
-    assert "uv sync --all-extras" in workflow
-    assert "uv run ruff check src tests scripts" in workflow
-    assert "uv run pytest" in workflow
-    assert "Render QA config from GitHub Secrets" in workflow
-    assert "Resolve QA version" in workflow
-    assert "BRAIN_RELEASE_VERSION" in workflow
-    assert "BRAIN_DEPLOY_ENV: qa" in workflow
-    assert "BRAIN_PUBLIC_BASE_URL: https://brain-qa.dceb.net" in workflow
-    assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
-    assert "scripts/render_prod_env.py --env qa" in workflow
-    assert "sudo -n" in workflow
-    assert "BRAIN_DEPLOY_ENV=qa" in workflow
-    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
-    assert '--source-root "$PWD"' in workflow
-    assert "--rendered-env" in workflow
-    assert "--rendered-auth-password" in workflow
-    assert workflow.index("Validate repository") < workflow.index(
-        "Render QA config from GitHub Secrets"
-    )
-    assert workflow.index("Render QA config from GitHub Secrets") < workflow.index(
-        "Deploy to local QA LaunchDaemons"
-    )
-
-
-def test_github_staging_action_deploys_tagged_main_to_staging() -> None:
-    workflow = Path(".github/workflows/deploy-local-staging.yml").read_text(encoding="utf-8")
-
-    assert "push:" not in workflow
-    assert "workflow_dispatch:" in workflow
-    assert "main" in workflow
-    assert "group: brain-staging" in workflow
-    assert "contents: write" in workflow
-    assert "uv sync --all-extras" in workflow
-    assert "uv run ruff check src tests scripts" in workflow
-    assert "uv run pytest" in workflow
-    assert "Render staging config from GitHub Secrets" in workflow
-    assert "Resolve staging version" in workflow
-    assert "Stamp docs with staged version" in workflow
-    assert "make docs-generate" in workflow
-    assert "docs/generated/release.json" in workflow
-    assert 'git commit -m "Stamp docs for $VERSION"' in workflow
-    assert "git push origin HEAD:main" in workflow
-    assert "BRAIN_RELEASE_VERSION" in workflow
-    assert "Tag staged release" in workflow
-    assert "BRAIN_DEPLOY_ENV: staging" in workflow
-    assert "BRAIN_PUBLIC_BASE_URL: https://brain-staging.dceb.net" in workflow
-    assert 'BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED: "false"' in workflow
-    assert "scripts/render_prod_env.py --env staging" in workflow
-    assert "sudo -n" in workflow
-    assert "BRAIN_DEPLOY_ENV=staging" in workflow
-    assert "/Volumes/xpg_usb4/sandbox/git/brain/scripts/deploy-local-production.sh" in workflow
-    assert '--source-root "$PWD"' in workflow
-    assert "--rendered-env" in workflow
-    assert "--rendered-auth-password" in workflow
-    assert workflow.index("Stamp docs with staged version") < workflow.index(
-        "Validate repository"
-    )
-    assert workflow.index("Validate repository") < workflow.index(
-        "Render staging config from GitHub Secrets"
-    )
-    assert workflow.index("Render staging config from GitHub Secrets") < workflow.index(
-        "Deploy to local staging LaunchDaemons"
-    )
-
-
-def test_release_action_promotes_staging_sha_to_prod_and_tags() -> None:
-    workflow = Path(".github/workflows/release.yml").read_text(encoding="utf-8")
-
-    assert "workflow_dispatch:" in workflow
-    assert "version:" in workflow
-    assert "contents: read" in workflow
-    assert "/Volumes/xpg_usb4/staging/brain/current" in workflow
-    assert "/Volumes/xpg_usb4/staging/brain/shared/release.json" in workflow
-    assert 'readlink "$STAGING_CURRENT"' in workflow
-    assert "requested version $TAG is not the staged version" in workflow
-    assert "tag $TAG does not exist; deploy it to staging first" in workflow
-    assert 'git checkout "$STAGING_SHA"' in workflow
-    assert "BRAIN_RELEASE_VERSION" in workflow
-    assert "scripts/render_prod_env.py --env prod" in workflow
-    assert "BRAIN_DEPLOY_ENV=prod" in workflow
-    assert '"$PWD/scripts/deploy-cloud-production.sh"' in workflow
-    assert "brain@159.195.79.79" in workflow
-    assert "/etc/brain/$name" in workflow
-    assert "git tag -a" not in workflow
-    assert "git push origin" not in workflow
-    assert "Verify promoted release tag" in workflow
-    assert workflow.index("Resolve staging release") < workflow.index("Validate staged revision")
-    assert workflow.index("Validate staged revision") < workflow.index(
-        "Render production config from GitHub Secrets"
-    )
-    assert workflow.index("Promote staging revision to production") < workflow.index(
-        "Verify promoted release tag"
-    )
+    assert not Path(".github/workflows/deploy-local-staging.yml").exists()
+    assert not Path(".github/workflows/deploy-local-qa.yml").exists()
 
 
 def test_validation_workflow_runs_without_production_secrets() -> None:

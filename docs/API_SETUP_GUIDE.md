@@ -605,5 +605,5 @@ Cognee is required for durable memory/source writes. Restore Cognee before retry
 - [Backup Scheme](BACKUP_SCHEME.md) covers backup and restore behavior.
 - [Production Secrets](production-secrets.md) covers production secret handling.
 
-<!-- brain-doc-source-hash: a126798c1f943bb59dc042d5d9a49723c28d8f24f7f0c1391e60d2b7d8b52689 -->
-<!-- brain-doc-source-commit: 188a1f2911246b75289fcbb96d564fbef0490be1 -->
+<!-- brain-doc-source-hash: f9ebb64d5049d247255c0aed68d1774f2b6d48c5d18e9854636673e64fb6fed6 -->
+<!-- brain-doc-source-commit: d1176b3cb7f647308fdef3456d2f1bc3fe28f555 -->
