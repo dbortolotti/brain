@@ -25,8 +25,7 @@ The current verified production release should be recorded from the deployed env
 Workflow reference:
 
 - `Validate` runs on `pull_request` and `workflow_dispatch`.
-- `Deploy Local QA` runs on `push` and `workflow_dispatch`; manual dispatch accepts `force_config_override`.
-- `Deploy Local Staging` runs on `workflow_dispatch`; manual dispatch requires `version` and accepts `force_config_override`.
+- `Release` runs on `workflow_dispatch`; it requires `version` and accepts `force_config_override`.
 - `Release` runs on `workflow_dispatch`; manual dispatch accepts `version` and `force_config_override`.
 
 Run these checks after promoting the staged release:
@@ -186,25 +185,17 @@ Explain these points in the submission:
 
 ## Operator Checklist
 
-After every merge or push to `main`:
-
-1. Watch the `Deploy Local QA` GitHub Actions run to completion.
-   - The workflow triggers on `push` and `workflow_dispatch`.
-   - Manual dispatch accepts `force_config_override`.
-2. Verify the deployed release metadata matches the expected pushed release.
-3. Keep your normal backup checks in the promotion path if they are part of your environment.
+After every merge or push to `main`, the `Validate` checks on the pull request are the gate; nothing deploys automatically.
 
 For a production release:
 
-1. Run the manual `Deploy Local Staging` workflow with the desired `vX.Y.Z` tag.
-   - The workflow triggers on `workflow_dispatch`.
+1. Run the manual `Release` GitHub Actions workflow with the desired `vX.Y.Z` version.
+   - The workflow triggers on `workflow_dispatch` and runs on a GitHub-hosted runner.
    - Manual dispatch requires `version` and accepts `force_config_override`.
-2. Run the manual `Release` GitHub Actions workflow with the same staged tag.
-   - The workflow triggers on `workflow_dispatch`.
-   - Manual dispatch accepts `version` and `force_config_override` inputs.
-3. Watch production deployment and verification finish successfully.
-4. Run `make public-check` and the public app MCP verification against `https://brain.dceb.net/mcp` with the production environment loaded.
+   - It stamps the release docs on `main`, validates that commit, deploys it to srv1, and creates the tag at the deployed SHA.
+2. Watch production deployment and verification finish successfully.
+3. Run `make public-check` and the public app MCP verification against `https://brain.dceb.net/mcp` with the production environment loaded.
    - This verification checks direct DNS and TLS for the hostname; the public dashboard, privacy, terms, and support pages; and the public app MCP surface. When auth is enabled, also check the authenticated public app MCP surface and confirm it remains text-only.
-5. Keep confirmation and normal backup checks enabled in the promotion path.
+4. Keep confirmation and normal backup checks enabled in the release path.
 
 <!-- brain-doc-source-hash: 6906023f1f625f972c4b0b53f7792b22c9907273aa14d9ef6fad1ff93c58bf40 -->

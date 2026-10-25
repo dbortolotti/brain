@@ -375,10 +375,10 @@ Key reminders:
 - `BRAIN_AUTH_ACCESS_TOKEN_SECONDS`, `BRAIN_AUTH_REFRESH_TOKEN_SECONDS`, `BRAIN_AUTH_PASSWORD_FILE`, `BRAIN_AUTH_USERS_FILE`, `BRAIN_AUTH_STATE_PATH`, `BRAIN_AUTH_SCOPES`, `BRAIN_AUTH_REQUIRE_PKCE`, `BRAIN_AUTH_TOKEN`, and `BRAIN_AUTH_SUPERUSER_IDS` control auth and session behavior. `BRAIN_AUTH_SUPERUSER_IDS` is relevant in prod, staging, and QA.
 - The `BRAIN_COGNEE_*_DATASET` settings separate memory, data, sources, and palate datasets. `BRAIN_COGNEE_RECALL_ENABLED`, `BRAIN_COGNEE_RECALL_TOP_K`, `BRAIN_COGNEE_SYNC_ON_INGEST`, and `BRAIN_COGNEE_SYNC_ON_INGEST_SWEEP_LIMIT` control Cognee availability, recall, and ingest synchronization.
 - `BRAIN_BACKUP_DIR` and Google Drive backup settings control backups.
-- `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the QA, staging, release, and validation workflows, `deploy-local-qa.yml`, `deploy-local-staging.yml`, `release.yml`, and `validate.yml` intentionally when validating or promoting changes.
+- `BRAIN_RELEASE_ENV`, `BRAIN_RELEASE_SHA`, and `BRAIN_RELEASE_VERSION` identify the release; use the release and validation workflows, `release.yml` and `validate.yml`, intentionally when validating or releasing changes.
 - `BRAIN_CONFIG_RENDER_SHA`, `BRAIN_CONFIG_RENDERED_AT`, and `BRAIN_CONFIG_RENDER_SOURCE` may appear in rendered config.
 - In dev, qa, staging, and prod, `BRAIN_LOG_LEVEL` and `BRAIN_UI_ENABLED` are also available.
-- The deploy and promotion workflows are `deploy-local-qa.yml`, `deploy-local-staging.yml`, `release.yml`, and `validate.yml`.
+- The workflows are `release.yml` (production deploy to srv1 from a GitHub-hosted runner) and `validate.yml`.
 
 Never store secrets, passwords, API keys, OAuth tokens, or credentials in Brain.
 
@@ -755,5 +755,5 @@ Log decisions after recommendations.
 Review and clean up when memory quality drifts.
 ```
 
-<!-- brain-doc-source-hash: 969640c2fce8324bb7881e757972008d544185a9d28d99351e1df4f34abb99e5 -->
-<!-- brain-doc-source-commit: 188a1f2911246b75289fcbb96d564fbef0490be1 -->
+<!-- brain-doc-source-hash: 2aa7d5f84d8f05f32f90826fd12a76a8a8732ac5b0b7039e91392e7cb7418042 -->
+<!-- brain-doc-source-commit: d1176b3cb7f647308fdef3456d2f1bc3fe28f555 -->

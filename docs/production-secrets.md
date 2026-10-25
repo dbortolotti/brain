@@ -1,26 +1,30 @@
 # Production Secrets
 
-The QA, staging, production, and release workflows run on the self-hosted `brain-prod` runner. The deployment model has three deployed environments, plus local dev:
+The release workflow runs on a GitHub-hosted `ubuntu-latest` runner. The deployment model has one deployed environment, plus local dev:
 
-- `dev`: local developer runs.
-- `qa`: pushes and merges to `main` deploy through `.github/workflows/deploy-local-qa.yml` to `/Volumes/xpg_usb4/qa/brain`. QA runs as `oric`, uses read-only repository permissions, and records a `qa-<12-char-sha>` build version. `workflow_dispatch` on QA supports `force_config_override`; it has no version input.
-- `staging`: manual versioned staging runs through `.github/workflows/deploy-local-staging.yml` to `/Volumes/xpg_usb4/staging/brain`. The workflow requires a `vX.Y.Z` or prerelease tag such as `vX.Y.Z-rc.1`, refreshes generated docs, writes `docs/generated/release.json` with the staged environment, version, and timestamp, pushes the docs stamp to `main`, deploys the stamped commit, and creates the annotated git tag at the staged SHA.
-- `prod`: manual release promotion runs through `.github/workflows/release.yml` and deploys the currently staged release version to the cloud Linux server at `159.195.79.79` over SSH as the Linux service user `brain`.
-
-The QA and staging workflows render each environment's `shared/secrets/brain.env` and `shared/secrets/brain-auth-password` from GitHub Secrets and GitHub Variables with `scripts/render_prod_env.py`, then run `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa` or `staging`.
+- `dev`: local developer runs. `scripts/deploy-local-production.sh` with `BRAIN_DEPLOY_ENV=qa|staging` still installs a local LaunchDaemon copy on a Mac for hands-on testing, but no workflow depends on it (the local QA and staging tiers and the self-hosted `brain-prod` runner were retired on 2026-10-25).
+- `prod`: the manual `Release` workflow (`.github/workflows/release.yml`) deploys `main` to the cloud Linux server at `159.195.79.79` over SSH as the Linux service user `brain`.
 
 Production release is a GitHub Actions operation, not an operator SSH session on
-srv1. The normal path is to manually run the `Deploy Local Staging` workflow with
-a version tag, then manually run the `Release` workflow with that same staged
-version. The release workflow renders production config the same way, checks out
-the staged commit, validates it, reads the current production config baseline
-from srv1, then runs `scripts/deploy-cloud-production.sh`. That script packages
-the workflow checkout, uploads it to `brain@159.195.79.79`, and runs
-`scripts/install-cloud-linux-production.sh` with sudo on the server. srv1 does
-not need a persistent Brain repo checkout or a GitHub deploy key for normal
-production release.
+srv1. Run `Release` with a `vX.Y.Z` or prerelease version such as `vX.Y.Z-rc.1`.
+The workflow checks out `main`, refreshes generated docs, writes
+`docs/generated/release.json` with the environment, version, and timestamp,
+pushes the docs stamp to `main`, validates the stamped commit, installs the
+deploy key, renders production config from GitHub Secrets and Variables against
+the current baseline read from srv1, then runs `scripts/deploy-cloud-production.sh`.
+That script packages the workflow checkout, uploads it to `brain@159.195.79.79`,
+and runs `scripts/install-cloud-linux-production.sh` with sudo on the server.
+After a successful install the workflow creates the annotated git tag at the
+deployed SHA; a version whose tag already exists at a different SHA is refused.
 
-The rendered config and QA/staging deploy steps run with passwordless `sudo` on the local self-hosted runner. Staging is owned and run by `oric_staging`; QA is owned and run by `oric`. `scripts/setup-macos-service-users.sh` creates the hidden staging service user on a new Mac. QA and staging deploys install system LaunchDaemons in `/Library/LaunchDaemons`, not per-user LaunchAgents, so services start at boot and wait for `/Volumes/xpg_usb4/{qa|staging}/brain/current` before launching. Each LaunchDaemon uses `SessionCreate` with its service user and starts from `/var/db/brain-{staging|qa}`.
+Two things are required outside GitHub Secrets/Variables for the renderer:
+
+- `BRAIN_PROD_SSH_KEY` (GitHub Secret): the private half of an ed25519 deploy
+  key whose public half is in `/home/brain/.ssh/authorized_keys` on srv1. The
+  `brain` user has passwordless sudo there; the workflow verifies `sudo -n true`
+  over SSH before rendering.
+- srv1's ed25519 host key is pinned in the workflow's `known_hosts` line;
+  update it if the host is rebuilt.
 
 Cloud production uses standard Linux paths and systemd:
 
@@ -435,5 +439,5 @@ Before moving secrets into GitHub, keep a local gitignored backup under `local-s
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 5b02d18c69c0a97a1fcc100d516ccf848895c26e073a9aebf1cc68001a775458 -->
-<!-- brain-doc-source-commit: 188a1f2911246b75289fcbb96d564fbef0490be1 -->
+<!-- brain-doc-source-hash: 5851025145229b7e928dbd882f3e4a611fb1571c6bab51efa2d4e2caaee5ed41 -->
+<!-- brain-doc-source-commit: d1176b3cb7f647308fdef3456d2f1bc3fe28f555 -->

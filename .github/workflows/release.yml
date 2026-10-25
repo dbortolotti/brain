@@ -1,10 +1,17 @@
 name: Release
 
+# Production release to srv1 (brain@159.195.79.79) from a GitHub-hosted
+# runner, with no dependency on any developer machine or intermediate tier:
+# the workflow stamps the release docs on main, validates that commit, renders
+# the production config from GitHub Secrets/Variables against the live
+# baseline read from srv1, packages the checkout, uploads it and runs the
+# Linux installer with sudo, then tags the deployed commit.
+
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Previously staged release version to promote, for example v2.1.0"
+        description: "Release version to deploy from main, for example v2.1.0"
         required: true
         type: string
       force_config_override:
@@ -18,84 +25,108 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  promote:
-    runs-on:
-      - self-hosted
-      - macOS
-      - ARM64
-      - brain-prod
+  release:
+    runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: main
           fetch-depth: 0
 
-      - name: Resolve staging release
-        id: staging
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Resolve release version
+        id: version
         run: |
           set -euo pipefail
-          TAG="${{ inputs.version }}"
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+          VERSION="${{ inputs.version }}"
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
             echo "version must look like v2.1.0 or v2.1.0-rc.1" >&2
             exit 2
           fi
-          STAGING_CURRENT="/Volumes/xpg_usb4/staging/brain/current"
-          STAGING_METADATA="/Volumes/xpg_usb4/staging/brain/shared/release.json"
-          if [[ ! -L "$STAGING_CURRENT" ]]; then
-            echo "staging current symlink is missing: $STAGING_CURRENT" >&2
-            exit 2
-          fi
-          if [[ ! -f "$STAGING_METADATA" ]]; then
-            echo "staging release metadata is missing: $STAGING_METADATA" >&2
-            exit 2
-          fi
-          STAGING_RELEASE="$(readlink "$STAGING_CURRENT")"
-          STAGING_SHA="$(basename "$STAGING_RELEASE")"
-          if ! [[ "$STAGING_SHA" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "staging current does not point at a 40-char git SHA: $STAGING_RELEASE" >&2
-            exit 2
-          fi
-          STAGED_VERSION="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("version", ""))' "$STAGING_METADATA")"
-          STAGED_SHA="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("sha", ""))' "$STAGING_METADATA")"
-          if [[ "$STAGED_VERSION" != "$TAG" ]]; then
-            echo "requested version $TAG is not the staged version $STAGED_VERSION" >&2
-            exit 2
-          fi
-          if [[ "$STAGED_SHA" != "$STAGING_SHA" ]]; then
-            echo "staging metadata sha $STAGED_SHA does not match current symlink $STAGING_SHA" >&2
-            exit 2
-          fi
-          git fetch --tags origin
-          if ! git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-            echo "tag $TAG does not exist; deploy it to staging first" >&2
-            exit 2
-          fi
-          TAG_SHA="$(git rev-list -n 1 "$TAG")"
-          if [[ "$TAG_SHA" != "$STAGING_SHA" ]]; then
-            echo "tag $TAG points at $TAG_SHA, not staged sha $STAGING_SHA" >&2
-            exit 2
-          fi
-          git cat-file -e "$STAGING_SHA^{commit}"
-          git checkout "$STAGING_SHA"
-          echo "sha=$STAGING_SHA" >>"$GITHUB_OUTPUT"
-          echo "tag=$TAG" >>"$GITHUB_OUTPUT"
+          echo "version=$VERSION" >>"$GITHUB_OUTPUT"
 
-      - name: Validate staged revision
+      - name: Stamp docs with release version
+        id: docs
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          uv sync --all-extras
+          make docs-generate
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          payload = {
+              "environment": "prod",
+              "version": os.environ["VERSION"],
+              "stamped_at": datetime.now(UTC).isoformat(timespec="seconds"),
+          }
+          path = Path("docs/generated/release.json")
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          git add docs/generated/facts.json docs/generated/facts.sha256 docs/generated/release.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Stamp docs for $VERSION"
+            git push origin HEAD:main
+          fi
+          RELEASE_SHA="$(git rev-parse HEAD)"
+          git fetch --tags origin
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            TAG_SHA="$(git rev-list -n 1 "$VERSION")"
+            if [[ "$TAG_SHA" != "$RELEASE_SHA" ]]; then
+              echo "tag $VERSION already points at $TAG_SHA, not $RELEASE_SHA; pick a new version" >&2
+              exit 2
+            fi
+          fi
+          echo "sha=$RELEASE_SHA" >>"$GITHUB_OUTPUT"
+
+      - name: Validate release revision
         run: |
           uv sync --all-extras
           make docs-check
           uv run ruff check src tests scripts
           uv run pytest
 
+      - name: Install the srv1 deploy key
+        env:
+          BRAIN_PROD_SSH_KEY: ${{ secrets.BRAIN_PROD_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$BRAIN_PROD_SSH_KEY" ]]; then
+            echo "secret BRAIN_PROD_SSH_KEY is not set (private key authorized for brain@159.195.79.79)" >&2
+            exit 2
+          fi
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$BRAIN_PROD_SSH_KEY" >~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # srv1 host key, pinned (public; re-pin here if the host is rebuilt).
+          printf '%s\n' "159.195.79.79 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBxOJFc69r8sRtF0ICRnVB1JXn1s88fhtiyo0v6+F7V5" >~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=10 brain@159.195.79.79 'sudo -n true' \
+            || { echo "cannot reach brain@159.195.79.79 with the deploy key" >&2; exit 2; }
+
       - name: Render production config from GitHub Secrets
         id: render-config
         env:
-          GITHUB_SHA: ${{ steps.staging.outputs.sha }}
+          GITHUB_SHA: ${{ steps.docs.outputs.sha }}
           BRAIN_DEPLOY_ENV: prod
           BRAIN_RELEASE_ENV: prod
-          BRAIN_RELEASE_SHA: ${{ steps.staging.outputs.sha }}
-          BRAIN_RELEASE_VERSION: ${{ steps.staging.outputs.tag }}
+          BRAIN_RELEASE_SHA: ${{ steps.docs.outputs.sha }}
+          BRAIN_RELEASE_VERSION: ${{ steps.version.outputs.version }}
           PROFILE: ${{ vars.PROFILE }}
           BRAIN_LLM_ENABLED: ${{ vars.BRAIN_LLM_ENABLED }}
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
@@ -184,23 +215,31 @@ jobs:
           echo "env_file=$render_dir/brain.env" >>"$GITHUB_OUTPUT"
           echo "auth_password_file=$render_dir/brain-auth-password" >>"$GITHUB_OUTPUT"
 
-      - name: Promote staging revision to production
+      - name: Promote release revision to production
         run: |
           BRAIN_DEPLOY_ENV=prod \
             BRAIN_RELEASE_ENV=prod \
-            BRAIN_RELEASE_SHA="${{ steps.staging.outputs.sha }}" \
-            BRAIN_RELEASE_VERSION="${{ steps.staging.outputs.tag }}" \
-            GITHUB_SHA="${{ steps.staging.outputs.sha }}" \
+            BRAIN_RELEASE_SHA="${{ steps.docs.outputs.sha }}" \
+            BRAIN_RELEASE_VERSION="${{ steps.version.outputs.version }}" \
+            GITHUB_SHA="${{ steps.docs.outputs.sha }}" \
             "$PWD/scripts/deploy-cloud-production.sh" \
             --source-root "$PWD" \
             --rendered-env "${{ steps.render-config.outputs.env_file }}" \
             --rendered-auth-password "${{ steps.render-config.outputs.auth_password_file }}"
 
-      - name: Verify promoted release tag
+      - name: Tag released revision
         run: |
           set -euo pipefail
-          TAG_SHA="$(git rev-list -n 1 "${{ steps.staging.outputs.tag }}")"
-          if [[ "$TAG_SHA" != "${{ steps.staging.outputs.sha }}" ]]; then
-            echo "tag moved during release: $TAG_SHA" >&2
-            exit 2
+          VERSION="${{ steps.version.outputs.version }}"
+          RELEASE_SHA="${{ steps.docs.outputs.sha }}"
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            TAG_SHA="$(git rev-list -n 1 "$VERSION")"
+            if [[ "$TAG_SHA" != "$RELEASE_SHA" ]]; then
+              echo "tag moved during release: $TAG_SHA" >&2
+              exit 2
+            fi
+            echo "tag $VERSION already at $TAG_SHA"
+            exit 0
           fi
+          git tag -a "$VERSION" "$RELEASE_SHA" -m "Release $VERSION"
+          git push origin "$VERSION"
