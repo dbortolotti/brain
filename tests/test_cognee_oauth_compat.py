@@ -444,3 +444,49 @@ def auth_settings(tmp_path, **kwargs: Any) -> Settings:
 
 def json_dumps(value: Any) -> str:
     return json.dumps(value, separators=(",", ":"))
+
+
+def test_run_coroutine_blocking_works_with_and_without_a_running_loop() -> None:
+    async def produce(value: int) -> int:
+        await asyncio.sleep(0)
+        return value * 2
+
+    # No loop running: plain asyncio.run semantics.
+    assert oauth_compat.run_coroutine_blocking(produce(21)) == 42
+
+    # A loop already running in this thread (the MCP server case): the
+    # coroutine must still complete instead of raising
+    # "asyncio.run() cannot be called from a running event loop".
+    async def from_inside_a_loop() -> int:
+        return oauth_compat.run_coroutine_blocking(produce(4))
+
+    assert asyncio.run(from_inside_a_loop()) == 8
+
+
+def test_cognee_oauth_adapter_sync_bridge_runs_inside_event_loop(tmp_path, monkeypatch) -> None:
+    """Palate enrichment calls `create_structured_output` synchronously from
+    inside the running MCP loop. Prod 2026-10-15..25: every live enrichment
+    failed with "asyncio.run() cannot be called from a running event loop"
+    and `brain_palate_describe_item` reported `llm_used: false`."""
+    adapter = oauth_compat.CogneeOAuthLLMAdapter(auth_settings(tmp_path))
+    seen: dict[str, Any] = {}
+
+    async def fake_acreate(**kwargs: Any) -> str:
+        seen.update(kwargs)
+        await asyncio.sleep(0)
+        return '{"attributes": {}}'
+
+    monkeypatch.setattr(adapter, "acreate_structured_output", fake_acreate)
+
+    async def enrichment_inside_server_loop() -> str:
+        return adapter.create_structured_output(
+            text_input="Brat restaurant in Shoreditch",
+            system_prompt="Return only one JSON object.",
+            response_model=str,
+            model="gpt-6.1-sol",
+            reasoning_effort="medium",
+        )
+
+    assert asyncio.run(enrichment_inside_server_loop()) == '{"attributes": {}}'
+    assert seen["model"] == "gpt-6.1-sol"
+    assert seen["reasoning_effort"] == "medium"

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import asyncio
+import concurrent.futures
 import importlib
 import json
 import os
 import random
-from typing import Any
+from typing import Any, Coroutine, TypeVar
 
 import httpx
 from pydantic import BaseModel
@@ -16,6 +17,8 @@ from memory_stack.provider_auth import (
     openai_responses_base_url,
     resolve_openai_text_bearer,
 )
+
+T = TypeVar("T")
 
 
 JSON_OBJECT_RE = r"\{.*\}"
@@ -149,14 +152,24 @@ class CogneeOAuthLLMAdapter:
         response_model: type[BaseModel] | type[str],
         **kwargs: Any,
     ) -> BaseModel | str:
-        return asyncio.run(
-            self.acreate_structured_output(
-                text_input=text_input,
-                system_prompt=system_prompt,
-                response_model=response_model,
-                **kwargs,
-            )
+        """Synchronous bridge for callers that are not coroutines.
+
+        Palate enrichment (`ConfiguredLLMClient.complete_json`) is synchronous
+        but runs inside the MCP server's event loop. `asyncio.run` refuses to
+        start a loop from a running one, so the coroutine was created and never
+        awaited and every live enrichment failed with "asyncio.run() cannot be
+        called from a running event loop" (prod journal, 2026-10-15 onwards;
+        `brain_palate_describe_item` returned `enrichment: null`). When a loop
+        is already running in this thread, run the coroutine to completion on
+        a private loop in a worker thread instead.
+        """
+        coroutine = self.acreate_structured_output(
+            text_input=text_input,
+            system_prompt=system_prompt,
+            response_model=response_model,
+            **kwargs,
         )
+        return run_coroutine_blocking(coroutine)
 
     async def create_transcript(self, input: Any, **kwargs: Any) -> Any:
         del input, kwargs
@@ -165,6 +178,22 @@ class CogneeOAuthLLMAdapter:
     async def transcribe_image(self, input: Any, **kwargs: Any) -> Any:
         del input, kwargs
         raise CogneeOAuthCompatError("Cognee OAuth compatibility layer does not support image transcription.")
+
+
+def run_coroutine_blocking(coroutine: Coroutine[Any, Any, T]) -> T:
+    """Run `coroutine` to completion from synchronous code.
+
+    Outside any event loop this is plain `asyncio.run`. Inside a running loop
+    (the MCP server, a notebook) it hands the coroutine to a one-off worker
+    thread with its own loop and blocks on the result, so synchronous callers
+    behave the same wherever they are invoked from.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coroutine)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+        return pool.submit(asyncio.run, coroutine).result()
 
 
 def _parse_json_object(raw_text: str) -> dict[str, Any]:
