@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -1524,8 +1525,11 @@ async def delete_datasource_endpoint(
     return {"datasource": await delete_datasource_or_404(datasource)}
 
 
+# The brain_* HTTP endpoints below are plain `def`, not `async def`: FastAPI
+# runs synchronous endpoints on its thread pool, so a long remember/recall/
+# ingest call no longer parks the event loop (see `offload` for the MCP side).
 @app.post("/memory/remember")
-async def brain_remember_endpoint(
+def brain_remember_endpoint(
     payload: RememberRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1536,7 +1540,7 @@ async def brain_remember_endpoint(
 
 
 @app.get("/memory/ingestion_status/{ingestion_run_id}")
-async def brain_ingestion_status_endpoint(
+def brain_ingestion_status_endpoint(
     ingestion_run_id: str,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1550,7 +1554,7 @@ async def brain_ingestion_status_endpoint(
 
 
 @app.post("/memory/ingest_source")
-async def brain_ingest_source_endpoint(
+def brain_ingest_source_endpoint(
     payload: IngestSourceRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1561,7 +1565,7 @@ async def brain_ingest_source_endpoint(
 
 
 @app.post("/memory/recall")
-async def brain_recall_endpoint(
+def brain_recall_endpoint(
     payload: RecallRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1572,7 +1576,7 @@ async def brain_recall_endpoint(
 
 
 @app.post("/memory/profile_entity")
-async def brain_profile_entity_endpoint(
+def brain_profile_entity_endpoint(
     payload: ProfileEntityRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1589,7 +1593,7 @@ async def brain_profile_entity_endpoint(
 
 
 @app.post("/memory/forget")
-async def brain_forget_endpoint(
+def brain_forget_endpoint(
     payload: ForgetRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1606,7 +1610,7 @@ async def brain_forget_endpoint(
 
 
 @app.post("/memory/review_recent")
-async def brain_review_recent_endpoint(
+def brain_review_recent_endpoint(
     payload: ReviewRecentRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -1621,7 +1625,7 @@ async def brain_review_recent_endpoint(
 
 
 @app.post("/memory/undo_last")
-async def brain_undo_last_endpoint(
+def brain_undo_last_endpoint(
     payload: UndoLastRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -2154,6 +2158,23 @@ async def call_tool(
     )
 
 
+async def offload(func: Any, /, *args: Any, **kwargs: Any) -> Any:
+    """Run a synchronous service call on a worker thread.
+
+    The tool dispatcher and the HTTP endpoints are coroutines, but the Brain
+    and Palate services are synchronous and spend seconds to minutes in LLM,
+    web-enrichment and Cognee calls. Calling them inline parked the whole
+    server on one request: after 2026-10-25's v2.0.31 (which made the
+    Palate OAuth bridge actually wait for its LLM call) every other client
+    timed out and the async Neo4j driver reported defunct connections
+    because the loop never ran its I/O. Background ingestion already runs
+    on a thread pool; this puts the request-time calls on the same footing.
+    Inside the worker there is no running loop, so the services' own
+    `asyncio.run` bridges work as written.
+    """
+    return await asyncio.to_thread(func, *args, **kwargs)
+
+
 async def call_tool_dispatch(
     params: dict[str, Any],
     *,
@@ -2185,7 +2206,7 @@ async def call_tool_dispatch(
                 "context": arguments.get("context") or {},
             }
         )
-        payload = brain_remember(request, settings).model_dump(mode="json")
+        payload = (await offload(brain_remember, request, settings)).model_dump(mode="json")
         return json_tool_response(payload, summary=remember_summary(payload))
 
     if name == "brain_ingestion_status":
@@ -2280,7 +2301,7 @@ async def call_tool_dispatch(
                 "context": arguments.get("context") or {},
             }
         )
-        receipt = brain_ingest_source(request, settings).model_dump(mode="json")
+        receipt = (await offload(brain_ingest_source, request, settings)).model_dump(mode="json")
         payload = ingest_source_tool_payload(receipt, arguments)
         return json_tool_response(
             payload,
@@ -2297,27 +2318,27 @@ async def call_tool_dispatch(
                 "limit": int(arguments.get("limit", 20)),
             }
         )
-        payload = brain_recall(request, settings).model_dump(mode="json")
+        payload = (await offload(brain_recall, request, settings)).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
 
     if name == "brain_profile_entity":
         entity_type = arguments.get("entity_type")
         if entity_type == "auto":
             entity_type = None
-        payload = brain_profile_entity(
+        payload = (await offload(brain_profile_entity,
             settings,
             name=str(arguments["name"]),
             entity_type=entity_type,
             include_superseded=bool(arguments.get("include_superseded", False)),
             include_conflicts=bool(arguments.get("include_conflicts", True)),
-        ).model_dump(mode="json")
+        )).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Profile complete."))
 
     if name == "brain_forget":
         hard = bool(arguments.get("hard", False))
         if hard and not bool(arguments.get("confirm", False)):
             raise ValueError("brain_forget requires confirm=true for hard deletes.")
-        payload = brain_forget(
+        payload = await offload(brain_forget,
             settings,
             object_type=str(arguments["object_type"]),
             object_id=str(arguments["object_id"]),
@@ -2329,7 +2350,7 @@ async def call_tool_dispatch(
         return json_tool_response(payload, summary=f"Forget result: {payload['status']}.")
 
     if name == "brain_review_recent":
-        payload = brain_review_recent(
+        payload = await offload(brain_review_recent,
             settings,
             since=parse_optional_datetime(arguments.get("since")),
             limit=bounded_int(arguments.get("limit", 20), minimum=1, maximum=100),
@@ -2343,7 +2364,7 @@ async def call_tool_dispatch(
         )
 
     if name == "brain_undo_last":
-        payload = brain_undo_last(
+        payload = await offload(brain_undo_last,
             settings,
             ingestion_run_id=arguments.get("ingestion_run_id"),
         )
@@ -2371,7 +2392,7 @@ async def call_tool_dispatch(
         return json_tool_response(payload, summary=f"Cognee improve queued for {dataset}.")
 
     if name == "brain_palate_describe_item":
-        payload = TasteService(settings).describe_item(
+        payload = await offload(TasteService(settings).describe_item,
             TasteDescribeRequest.model_validate(
                 {
                     "item_text": arguments["item_text"],
@@ -2393,7 +2414,7 @@ async def call_tool_dispatch(
         return json_tool_response(payload, summary="Palate item described without storing.")
 
     if name == "brain_palate_remember":
-        payload = TasteService(settings).remember(
+        payload = await offload(TasteService(settings).remember,
             TasteRememberRequest.model_validate(
                 {
                     "id": arguments.get("id"),
@@ -2437,11 +2458,11 @@ async def call_tool_dispatch(
         )
 
     if name == "brain_palate_query":
-        payload = TasteService(settings).query(TasteQueryRequest.model_validate(arguments))
+        payload = await offload(TasteService(settings).query, TasteQueryRequest.model_validate(arguments))
         return json_tool_response(payload, summary=payload.get("answer", "Palate query complete."))
 
     if name == "brain_palate_evaluate_options":
-        payload = TasteService(settings).evaluate_options(
+        payload = await offload(TasteService(settings).evaluate_options,
             TasteQueryRequest.model_validate(arguments)
         )
         return json_tool_response(
@@ -2450,7 +2471,7 @@ async def call_tool_dispatch(
         )
 
     if name == "brain_palate_log_decision":
-        payload = TasteService(settings).log_decision(
+        payload = await offload(TasteService(settings).log_decision,
             TasteLogDecisionRequest.model_validate(arguments)
         )
         return json_tool_response(
@@ -2459,7 +2480,7 @@ async def call_tool_dispatch(
         )
 
     if name == "brain_palate_forget":
-        payload = TasteService(settings).forget(TasteForgetRequest.model_validate(arguments))
+        payload = await offload(TasteService(settings).forget, TasteForgetRequest.model_validate(arguments))
         return json_tool_response(
             payload,
             summary=(
@@ -2470,28 +2491,28 @@ async def call_tool_dispatch(
         )
 
     if name == "brain_palate_confirm":
-        payload = TasteService(settings).confirm(str(arguments["proposal_id"]))
+        payload = await offload(TasteService(settings).confirm, str(arguments["proposal_id"]))
         return json_tool_response(
             payload,
             summary="Palate proposal confirmed." if payload.get("confirmed") else "Palate proposal not confirmed.",
         )
 
     if name == "brain_palate_cancel":
-        payload = TasteService(settings).cancel(str(arguments["proposal_id"]))
+        payload = await offload(TasteService(settings).cancel, str(arguments["proposal_id"]))
         return json_tool_response(
             payload,
             summary="Palate proposal cancelled." if payload.get("cancelled") else "Palate proposal not cancelled.",
         )
 
     if name == "brain_palate_correct_proposal":
-        payload = TasteService(settings).correct_proposal(
+        payload = await offload(TasteService(settings).correct_proposal,
             str(arguments["proposal_id"]),
             str(arguments["correction"]),
         )
         return json_tool_response(payload, summary="Palate proposal corrected.")
 
     if name == "brain_palate_refresh_enrichment":
-        payload = TasteService(settings).refresh_enrichment(
+        payload = await offload(TasteService(settings).refresh_enrichment,
             TasteRefreshRequest.model_validate(arguments)
         )
         return json_tool_response(
