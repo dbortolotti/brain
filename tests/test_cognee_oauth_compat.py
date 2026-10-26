@@ -490,3 +490,45 @@ def test_cognee_oauth_adapter_sync_bridge_runs_inside_event_loop(tmp_path, monke
     assert asyncio.run(enrichment_inside_server_loop()) == '{"attributes": {}}'
     assert seen["model"] == "gpt-6.1-sol"
     assert seen["reasoning_effort"] == "medium"
+
+
+def test_bare_array_is_wrapped_into_single_list_field_models() -> None:
+    from pydantic import BaseModel as _BM
+
+    class Ev(_BM):
+        name: str
+
+    class EventList(_BM):
+        events: list[Ev]
+
+    class Classification(_BM):
+        label: str
+        tags: list[str] = []
+
+    payload = oauth_compat.coerce_payload_for_model([{"name": "deploy"}], EventList)
+    assert payload == {"events": [{"name": "deploy"}]}
+    assert EventList.model_validate(payload).events[0].name == "deploy"
+
+    # A dict passes through untouched.
+    assert oauth_compat.coerce_payload_for_model({"events": []}, EventList) == {"events": []}
+
+    # A model with another required field is not a list wrapper: hard error.
+    with pytest.raises(oauth_compat.CogneeOAuthCompatError):
+        oauth_compat.coerce_payload_for_model(["a"], Classification)
+
+
+def test_parse_json_value_accepts_arrays_in_prose() -> None:
+    assert oauth_compat._parse_json_value('Here you go:\n[{"a": 1}]\nThanks') == [{"a": 1}]
+    assert oauth_compat._parse_json_value('{"a": 1}') == {"a": 1}
+    with pytest.raises(oauth_compat.CogneeOAuthCompatError):
+        oauth_compat._parse_json_value("no json here")
+
+
+def test_prompt_names_top_level_keys() -> None:
+    from pydantic import BaseModel as _BM
+
+    class EventList(_BM):
+        events: list[str]
+
+    prompt = oauth_compat._prompt_for_response_model("text", EventList)
+    assert "top-level value must be an object with the key(s): events" in prompt

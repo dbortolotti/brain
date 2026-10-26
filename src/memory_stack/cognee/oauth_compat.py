@@ -22,6 +22,8 @@ T = TypeVar("T")
 
 
 JSON_OBJECT_RE = r"\{.*\}"
+# One JSON value embedded in prose: an object or an array.
+JSON_VALUE_RE = r"[\{\[].*[\}\]]"
 
 
 class CogneeOAuthCompatError(RuntimeError):
@@ -143,7 +145,8 @@ class CogneeOAuthLLMAdapter:
             raise CogneeOAuthCompatError("OpenAI OAuth response did not include text.")
         if response_model is str:
             return text.strip()
-        return response_model.model_validate(_parse_json_object(text))
+        payload = coerce_payload_for_model(_parse_json_value(text), response_model)
+        return response_model.model_validate(payload)
 
     def create_structured_output(
         self,
@@ -196,19 +199,64 @@ def run_coroutine_blocking(coroutine: Coroutine[Any, Any, T]) -> T:
         return pool.submit(asyncio.run, coroutine).result()
 
 
-def _parse_json_object(raw_text: str) -> dict[str, Any]:
+def _parse_json_value(raw_text: str) -> Any:
+    """Parse the model's reply as JSON, tolerating prose around one value."""
     try:
-        payload = json.loads(raw_text)
+        return json.loads(raw_text)
     except ValueError:
         import re
 
-        match = re.search(JSON_OBJECT_RE, raw_text, re.DOTALL)
+        match = re.search(JSON_VALUE_RE, raw_text, re.DOTALL)
         if not match:
             raise CogneeOAuthCompatError("Model output did not contain a JSON object.")
-        payload = json.loads(match.group(0))
+        return json.loads(match.group(0))
+
+
+def _parse_json_object(raw_text: str) -> dict[str, Any]:
+    payload = _parse_json_value(raw_text)
     if not isinstance(payload, dict):
         raise CogneeOAuthCompatError("Model output JSON was not an object.")
     return payload
+
+
+def _list_fields(response_model: type[BaseModel]) -> list[str]:
+    import typing
+
+    names: list[str] = []
+    for name, field in response_model.model_fields.items():
+        annotation = field.annotation
+        origin = typing.get_origin(annotation)
+        if origin is list or annotation is list:
+            names.append(name)
+            continue
+        if origin is typing.Union or str(origin) == "types.UnionType":
+            if any(typing.get_origin(a) is list or a is list for a in typing.get_args(annotation)):
+                names.append(name)
+    return names
+
+
+def coerce_payload_for_model(payload: Any, response_model: type[BaseModel]) -> dict[str, Any]:
+    """Accept a bare JSON array for a model that is just a wrapper around one list.
+
+    Cognee asks for ``EventList`` / ``EventEntityList`` (``{"events": [...]}``)
+    and gpt-6.1-sol regularly answers with the array itself, which failed
+    every temporal extraction task on 2026-10-26 ("Model output JSON was
+    not an object"). When the model has exactly one list-typed field and
+    every other field is optional, the array is that field. Anything else
+    stays a hard error so a genuinely wrong shape is not papered over.
+    """
+    if isinstance(payload, dict):
+        return payload
+    if isinstance(payload, list):
+        list_fields = _list_fields(response_model)
+        others = [
+            name
+            for name, field in response_model.model_fields.items()
+            if name not in list_fields and field.is_required()
+        ]
+        if len(list_fields) == 1 and not others:
+            return {list_fields[0]: payload}
+    raise CogneeOAuthCompatError("Model output JSON was not an object.")
 
 
 def _prompt_for_response_model(
@@ -218,10 +266,12 @@ def _prompt_for_response_model(
     if response_model is str:
         return text_input
     schema = response_model.model_json_schema()
+    top_level = ", ".join(response_model.model_fields) or "(none)"
     return "\n".join(
         [
             text_input,
             "Return only one JSON object. Do not wrap it in Markdown.",
+            f"The top-level value must be an object with the key(s): {top_level}.",
             "JSON schema:",
             json.dumps(schema, separators=(",", ":")),
         ]
