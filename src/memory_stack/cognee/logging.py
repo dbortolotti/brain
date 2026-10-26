@@ -39,9 +39,45 @@ def plain_console_renderer() -> Any:
     return renderer
 
 
+def install_plain_renderer_default() -> bool:
+    """Make every future ``ConsoleRenderer`` default to plain tracebacks.
+
+    Cognee calls ``setup_logging()`` again at runtime
+    (``cognee/shared/graph_model_utils.py`` does so from inside cognify) and
+    each call adds a fresh stream handler with a fresh renderer, so patching
+    the handlers present at import time is not enough: on 2026-10-26, after
+    the import-time patch shipped in v2.0.32, cognify errors were still
+    rendered with 98 locals panels per traceback. Wrapping the constructor
+    catches renderers created by any caller, however late. An explicit
+    ``exception_formatter`` passed by a caller is respected.
+
+    Returns True when the wrapper was installed by this call.
+    """
+    try:
+        import structlog
+    except Exception:
+        return False
+    renderer_cls = structlog.dev.ConsoleRenderer
+    original_init = renderer_cls.__init__
+    if getattr(original_init, PLAIN_MARKER, False):
+        return False
+
+    def plain_default_init(self: Any, *args: Any, **kwargs: Any) -> None:
+        if "exception_formatter" not in kwargs:
+            kwargs["exception_formatter"] = structlog.dev.plain_traceback
+            setattr(self, PLAIN_MARKER, True)
+        original_init(self, *args, **kwargs)
+
+    setattr(plain_default_init, PLAIN_MARKER, True)
+    renderer_cls.__init__ = plain_default_init  # type: ignore[method-assign]
+    return True
+
+
 def tame_cognee_logging(root: logging.Logger | None = None) -> int:
     """Replace rich-with-locals exception rendering on Cognee's handlers.
 
+    Patches the handlers already installed and makes every renderer created
+    afterwards plain by default (``install_plain_renderer_default``).
     Returns the number of handlers patched (0 when structlog is absent or
     nothing needed patching).
     """
@@ -49,6 +85,7 @@ def tame_cognee_logging(root: logging.Logger | None = None) -> int:
         import structlog
     except Exception:
         return 0
+    install_plain_renderer_default()
     logger = root if root is not None else logging.getLogger()
     patched = 0
     for handler in list(logger.handlers):

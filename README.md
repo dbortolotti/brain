@@ -808,4 +808,4 @@ aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
 <!-- brain-doc-source-hash: e799a12dcd9a21ae94ef07f2fceb39b27df23e0bca90d5f616514bf084accd6e -->
-<!-- brain-doc-source-commit: d1176b3cb7f647308fdef3456d2f1bc3fe28f555 -->
+<!-- brain-doc-source-commit: 47437c9e3ceca7a92c5a4c8923745851ba28e430 -->

@@ -64,3 +64,19 @@ def test_plain_tracebacks_omit_locals_and_render_fast() -> None:
     assert "Traceback" in rendered
     assert "SENTINEL-LOCAL" not in rendered, "locals must not be rendered"
     assert elapsed < 2.0, f"plain traceback took {elapsed:.1f}s"
+
+
+def test_renderers_created_after_taming_default_to_plain_tracebacks() -> None:
+    # Cognee re-runs setup_logging() from graph_model_utils during cognify and
+    # builds a brand-new ConsoleRenderer each time; those must come out plain.
+    tame_cognee_logging(logging.Logger("cognee-test-root-3"))
+    late = structlog.dev.ConsoleRenderer(colors=True, force_colors=True)
+    assert late._exception_formatter is structlog.dev.plain_traceback
+    assert getattr(late, PLAIN_MARKER, False) is True
+
+    def custom(sio, exc_info):  # noqa: ANN001 - structlog formatter signature
+        sio.write("custom")
+
+    explicit = structlog.dev.ConsoleRenderer(exception_formatter=custom)
+    assert explicit._exception_formatter is custom
+    assert getattr(explicit, PLAIN_MARKER, False) is False
