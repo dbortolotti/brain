@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Every `uv run` here uses --no-sync: the installer builds the shared venv
+# (/var/lib/brain/current-venv) before promoting a release, and a plain
+# `uv run` re-syncs that venv (editable memory_stack, rewritten dist-info)
+# while brain-mcp is starting from the very same venv. 2026-10-25/26 every
+# release logged one brain-mcp crash at first start (ImportError /
+# ModuleNotFoundError on memory_stack.*) one second before this script's
+# sync finished rewriting the package; systemd's Restart=always hid it.
 
 REPO_ROOT="${BRAIN_RELEASE_DIR:-$(pwd)}"
 ENV_FILE="${ENV_FILE:-/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env}"
@@ -51,7 +58,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 log "preparing Cognee frontend cache"
-uv run python - <<'PY'
+uv run --no-sync python - <<'PY'
 from cognee.api.v1.ui.ui import download_frontend_assets, find_frontend_path
 
 if not download_frontend_assets(force=False):
@@ -60,7 +67,7 @@ if find_frontend_path() is None:
     raise SystemExit("Cognee frontend cache was not found after download")
 PY
 
-FRONTEND_DIR="$(uv run python - <<'PY' | tail -n 1
+FRONTEND_DIR="$(uv run --no-sync python - <<'PY' | tail -n 1
 from cognee.api.v1.ui.ui import find_frontend_path
 
 path = find_frontend_path()
@@ -77,7 +84,7 @@ log "installing Cognee frontend dependencies"
 )
 
 log "starting Cognee backend on 127.0.0.1:$BRAIN_UI_BACKEND_PORT"
-uv run python -m uvicorn cognee.api.client:app \
+uv run --no-sync python -m uvicorn cognee.api.client:app \
   --host 127.0.0.1 \
   --port "$BRAIN_UI_BACKEND_PORT" &
 BACKEND_PID=$!
@@ -90,7 +97,7 @@ log "starting Cognee frontend on 127.0.0.1:$BRAIN_UI_FRONTEND_PORT"
 FRONTEND_PID=$!
 
 log "starting Brain UI proxy on $BRAIN_UI_HOST:$BRAIN_UI_PROXY_PORT"
-uv run python -m uvicorn memory_stack.ui_proxy:app \
+uv run --no-sync python -m uvicorn memory_stack.ui_proxy:app \
   --host "$BRAIN_UI_HOST" \
   --port "$BRAIN_UI_PROXY_PORT" &
 PROXY_PID=$!
