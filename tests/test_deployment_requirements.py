@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -606,3 +607,12 @@ def test_caddy_routes_prod_ui_before_mcp_catchall() -> None:
     assert "path /privacy*" in config
     assert "path /terms*" in config
     assert "path /support*" in config
+
+
+def test_ui_launcher_never_resyncs_the_shared_venv() -> None:
+    """The installer owns the venv; `uv run` without --no-sync rewrote
+    memory_stack inside /var/lib/brain/current-venv while brain-mcp was
+    starting from it (one crash per release, 2026-10-25/26)."""
+    script = Path("scripts/run-cognee-ui-production.sh").read_text(encoding="utf-8")
+    assert "uv run --no-sync python" in script
+    assert re.search(r"uv run (?!--no-sync)", script) is None
