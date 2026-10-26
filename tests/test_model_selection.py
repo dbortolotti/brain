@@ -25,4 +25,4 @@ def test_settings_default_to_single_prod_llm_and_embedding_models() -> None:
 
 def test_embedding_ref_classification_is_explicit() -> None:
     assert is_embedding_ref("fastembed:intfloat/multilingual-e5-large") is True
-    assert is_embedding_ref("openai:gpt-6-luna") is False
+    assert is_embedding_ref("openai:gpt-6.1-sol") is False

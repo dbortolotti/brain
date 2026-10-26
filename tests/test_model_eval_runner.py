@@ -152,13 +152,13 @@ class AlwaysFailClient(FakeEvalClient):
 def test_model_matrix_selects_explicit_models_without_registry() -> None:
     candidates = select_model_candidates(
         Settings(),
-        model_refs=["openai:gpt-6-luna", "fastembed:intfloat/multilingual-e5-large"],
+        model_refs=["openai:gpt-6.1-sol", "fastembed:intfloat/multilingual-e5-large"],
         roles={"intent_router", "embeddings"},
         fixture_roles={"intent_router", "embeddings"},
     )
 
     assert [(candidate.provider, candidate.model, candidate.kind) for candidate in candidates] == [
-        ("openai", "gpt-6-luna", "llm"),
+        ("openai", "gpt-6.1-sol", "llm"),
         ("fastembed", "intfloat/multilingual-e5-large", "embedding"),
     ]
     assert set(candidates[0].roles) == {"intent_router"}
@@ -169,7 +169,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-6-luna",
+        llm_model="gpt-6.1-sol",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
         embedding_dimensions=3072,
@@ -182,7 +182,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
     )
 
     assert [candidate.ref for candidate in candidates] == [
-        "openai:gpt-6-luna",
+        "openai:gpt-6.1-sol",
         "openai:text-embedding-3-large",
     ]
 
@@ -1799,8 +1799,8 @@ def test_non_deployable_report_suppresses_production_defaults() -> None:
 def test_openai_reasoning_effort_matches_model_family() -> None:
     assert openai_reasoning_effort("gpt-5-nano") == "minimal"
     assert openai_reasoning_effort("gpt-5.4-nano") == "low"
-    assert openai_reasoning_effort("gpt-6-luna") == "low"
     assert openai_reasoning_effort("gpt-6.1-sol") == "low"
+    assert openai_reasoning_effort("gpt-6-luna") == "low"
     assert openai_reasoning_effort("gpt-5.6-terra") == "low"
 
 
@@ -1828,16 +1828,16 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
     )
     candidate = ModelCandidate(
         provider="openai",
-        model="gpt-6-luna",
+        model="gpt-6.1-sol",
         kind="llm",
-        api_model="gpt-6-luna",
+        api_model="gpt-6.1-sol",
         reasoning_effort="xhigh",
     )
 
     client.complete_json(candidate, prompt="test", schema={})
 
     assert http_client.last_json is not None
-    assert http_client.last_json["model"] == "gpt-6-luna"
+    assert http_client.last_json["model"] == "gpt-6.1-sol"
     assert "instructions" in http_client.last_json
     assert http_client.last_json["input"][0]["role"] == "user"
     assert http_client.last_json["store"] is False
@@ -1885,7 +1885,7 @@ def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path, monk
     )
     http_client = RecordingClient()
     client = LiveProviderClient(settings, http_client=http_client)
-    candidate = ModelCandidate(provider="openai", model="gpt-6-luna", kind="llm")
+    candidate = ModelCandidate(provider="openai", model="gpt-6.1-sol", kind="llm")
 
     client.complete_json(candidate, prompt="test", schema={})
 
@@ -1930,7 +1930,7 @@ def test_live_provider_client_uses_token_sink_for_openai_oauth(
     )
 
     llm_result = client.complete_json(
-        ModelCandidate(provider="openai", model="gpt-6-luna", kind="llm"),
+        ModelCandidate(provider="openai", model="gpt-6.1-sol", kind="llm"),
         prompt="test",
         schema={"type": "object"},
     )
@@ -2051,7 +2051,7 @@ def test_model_eval_runner_caps_concurrency_per_shared_endpoint(tmp_path) -> Non
     config = ModelEvalRunConfig(
         fixture_set="brain-model-test-v2",
         roles={"eval_judge"},
-        model_refs=["openai:gpt-6-luna", "openai:gpt-6-luna-high"],
+        model_refs=["openai:gpt-6.1-sol", "openai:gpt-6.1-sol-high"],
         include_judge=True,
         repeat_runs=2,
         bootstrap_samples=0,
@@ -2062,14 +2062,14 @@ def test_model_eval_runner_caps_concurrency_per_shared_endpoint(tmp_path) -> Non
     client = ConcurrencyTrackingClient()
     run_model_evals(Settings(), config, client=client)
 
-    assert client.max_active_by_endpoint["openai:gpt-6-luna:llm"] <= 3
-    assert client.max_active_by_endpoint["openai:gpt-6-luna:llm"] > 1
+    assert client.max_active_by_endpoint["openai:gpt-6.1-sol:llm"] <= 3
+    assert client.max_active_by_endpoint["openai:gpt-6.1-sol:llm"] > 1
 
 
 def test_build_work_items_makes_repeat_the_outer_loop() -> None:
     candidates = select_model_candidates(
         Settings(),
-        model_refs=["openai:gpt-6-luna"],
+        model_refs=["openai:gpt-6.1-sol"],
         roles={"memory_intake"},
         fixture_roles={"memory_intake"},
     )
@@ -2104,7 +2104,7 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
     assert items
-    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-6-luna:llm"}
+    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-6.1-sol:llm"}
 
 
 def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:
@@ -2135,7 +2135,7 @@ def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_p
 def test_raw_and_parsed_artifacts_are_role_scoped_for_same_fixture_id(tmp_path) -> None:
     candidate = select_model_candidates(
         Settings(),
-        model_refs=["openai:gpt-6-luna"],
+        model_refs=["openai:gpt-6.1-sol"],
         roles={"intent_router", "source_classifier"},
         fixture_roles={"intent_router", "source_classifier"},
     )[0]

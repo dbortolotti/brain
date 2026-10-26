@@ -510,7 +510,7 @@ make targeted-fine-grained-eval
 For full end-to-end model checks, use the E2E model suite. It creates a fresh SQLite Brain database, seeds it through the app service layer, retrieves runtime facts and evidence, and calls the live configured model against the same shared role contracts used by runtime. The suite covers every checked-in fine-grained role spec, plus recall synthesis cases that use real runtime recall payloads.
 
 ```bash
-uv run brain eval e2e-models --model openai:gpt-6-luna --output-json eval_runs/e2e_model/results.json
+uv run brain eval e2e-models --model openai:gpt-6.1-sol --output-json eval_runs/e2e_model/results.json
 ```
 
 The pytest live E2E gate is opt-in because it makes provider calls:
@@ -519,7 +519,7 @@ The pytest live E2E gate is opt-in because it makes provider calls:
 BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 ```
 
-For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie and CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-6-luna` high reasoning.
+For live staging acceptance, use the staging E2E suite. It creates or updates the dedicated `brain-e2e` user, signs in through the cookie and CSRF UI auth path, primes staging organically through MCP tool calls, confirms Palate proposals, checks user isolation, and scores usage results with `gpt-6.1-sol` high reasoning.
 
 ```bash
 ENV_FILE=/Volumes/xpg_usb4/staging/brain/shared/secrets/brain.env uv run python scripts/staging_e2e_suite.py
@@ -808,4 +808,4 @@ aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
 <!-- brain-doc-source-hash: e799a12dcd9a21ae94ef07f2fceb39b27df23e0bca90d5f616514bf084accd6e -->
-<!-- brain-doc-source-commit: 47437c9e3ceca7a92c5a4c8923745851ba28e430 -->
+<!-- brain-doc-source-commit: f3e6d252c1acc8d023da0fb647078ff523745fb8 -->

@@ -38,7 +38,7 @@ Example:
 uv run python tests/model_eval_tests/run_model_eval.py \
   --judge-model gpt-6.1-sol \
   --remember-model gpt-5.4-mini \
-  --recall-model gpt-6-luna
+  --recall-model gpt-6.1-sol
 ```
 
 Each run writes a timestamped folder under `tests/model_eval_tests/runs/` with:

@@ -190,12 +190,12 @@ def test_cognee_oauth_adapter_honors_model_and_reasoning_overrides(tmp_path, mon
             text_input="question",
             system_prompt="system",
             response_model=SampleResponse,
-            model="gpt-6-luna",
+            model="gpt-6.1-sol",
             reasoning_effort="medium",
         )
     )
 
-    assert requests[0]["model"] == "gpt-6-luna"
+    assert requests[0]["model"] == "gpt-6.1-sol"
     assert requests[0]["reasoning"] == {"effort": "medium"}
 
 

@@ -80,7 +80,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def settings_for_model(model: str, dataset: str) -> Settings:
     os.environ["LLM_PROVIDER"] = "openai"
-    os.environ["LLM_MODEL"] = "gpt-6-luna"
+    os.environ["LLM_MODEL"] = "gpt-6.1-sol"
     base = load_settings()
     storage_root = (ROOT / eval_storage_root(dataset)).resolve()
     return base.model_copy(
