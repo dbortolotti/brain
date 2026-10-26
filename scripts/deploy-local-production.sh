@@ -891,7 +891,7 @@ if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
 PROFILE=openai
 BRAIN_LLM_ENABLED=true
 LLM_PROVIDER=openai
-LLM_MODEL=gpt-6-luna
+LLM_MODEL=gpt-6.1-sol
 LLM_TEMPERATURE=0.0
 LLM_MAX_TOKENS=8192
 OPENAI_AUTH_MODE=oauth

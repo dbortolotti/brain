@@ -210,7 +210,7 @@ def test_local_production_deploy_manages_mcp_and_ui_services() -> None:
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
     assert "BRAIN_AUTH_USERS_FILE=$SECRETS_DIR/brain-auth-users.json" in script
     assert "BRAIN_AUTH_SUPERUSER_IDS=default" in script
-    assert "LLM_MODEL=gpt-6-luna" in script
+    assert "LLM_MODEL=gpt-6.1-sol" in script
     assert "LLM_TEMPERATURE=0.0" in script
     assert "LLM_MAX_TOKENS=8192" in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script
