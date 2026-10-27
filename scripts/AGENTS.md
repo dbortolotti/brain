@@ -7,6 +7,7 @@
 - Python scripts in this folder are repo-local CLIs and automation helpers.
 - Shell scripts in this folder bootstrap or run deployment and production services.
 - `production_check_utils.py` is shared utility code for production verification scripts.
+- `requeue_failed_receipts.py` replays `brain_remember` receipts whose Cognee write failed, from the request stored on each receipt (`metadata_json.queued_request`), one at a time in its own process; receipts without a stored payload are reported and skipped. Run on the host as the service user with the service env after an LLM outage; `--dry-run` first.
 
 ## Local Contracts
 
