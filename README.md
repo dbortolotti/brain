@@ -799,7 +799,7 @@ OPENAI_CODEX_BASE_URL=http://127.0.0.1:11434/v1
 OPENAI_TOKEN_SINK_CLIENT_TOKEN_FILE=/etc/hermes/token-sink/client_token
 ```
 
-When the token-sink client file is configured, Brain sends the local client token to the loopback proxy; the sink swaps it for the refreshed OpenAI OAuth bearer. Embeddings use the same proxy. API-key mode is only for explicit local eval/smoke experiments.
+When the token-sink client file is configured, Brain sends the local client token to the loopback proxy; the sink swaps it for the refreshed OpenAI OAuth bearer. The ChatGPT OAuth bearer does not serve embeddings, so set `OPENAI_EMBEDDING_API_KEY_FILE` to a root-provisioned file holding an OpenAI platform API key (mode `0640`, readable by the service user); embeddings then go straight to `https://api.openai.com/v1` with that key while text generation stays on OAuth. Without it, embeddings use the same proxy. API-key mode is only for explicit local eval/smoke experiments.
 
 Production Brain must not use OpenAI API-key mode. `cfg/prod.yaml`,
 `scripts/render_prod_env.py`, and the Linux installer all force OAuth plus the
@@ -807,5 +807,5 @@ shared token sink path for production. The renderer omits OpenAI API-key env
 aliases in OAuth mode, and the Linux installer removes legacy `OPENAI_API_KEY`,
 `LLM_API_KEY`, and `EMBEDDING_API_KEY` entries from `/etc/brain/brain.env`.
 
-<!-- brain-doc-source-hash: e799a12dcd9a21ae94ef07f2fceb39b27df23e0bca90d5f616514bf084accd6e -->
-<!-- brain-doc-source-commit: 3701ccae4048f08e88e8b6a8e32ffc9227a786b6 -->
+<!-- brain-doc-source-hash: c596a5bb806c9434b167de5dae03c6094bbfa3cf8358d486ffc372574015eae0 -->
+<!-- brain-doc-source-commit: 63521e834046c6ab609f98b65a79d0c571a01ab6 -->

@@ -18,6 +18,7 @@ from memory_stack.evals.model_matrix import ModelCandidate
 from memory_stack.local_embeddings import fastembed_vector
 from memory_stack.provider_auth import (
     ProviderAuthError,
+    get_openai_embedding_api_key,
     openai_embeddings_base_url,
     openai_responses_base_url,
     resolve_openai_text_bearer,
@@ -455,13 +456,15 @@ class LiveProviderClient:
                 if self.settings.openai_auth_mode == "oauth"
                 else "https://api.openai.com/v1"
             )
+            bearer = (
+                get_openai_embedding_api_key(self.settings)
+                or resolve_openai_text_bearer(self.settings)
+                if self.settings.openai_auth_mode == "oauth"
+                else self.settings.configured_provider_api_key("openai")
+            )
             response = self.client.post(
                 f"{base_url}/embeddings",
-                headers={
-                    "Authorization": f"Bearer {resolve_openai_text_bearer(self.settings)}"
-                    if self.settings.openai_auth_mode == "oauth"
-                    else f"Bearer {self.settings.configured_provider_api_key('openai')}"
-                },
+                headers={"Authorization": f"Bearer {bearer}"},
                 json={"model": candidate.api_model or candidate.model, "input": text},
             )
             payload = checked_json(response)

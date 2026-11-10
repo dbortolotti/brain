@@ -249,9 +249,34 @@ def openai_responses_base_url(settings: Settings) -> str:
 
 
 def openai_embeddings_base_url(settings: Settings) -> str:
-    if openai_uses_token_sink(settings):
+    if openai_uses_token_sink(settings) and not openai_embedding_api_key_file(settings):
         return openai_responses_base_url(settings)
     return "https://api.openai.com/v1"
+
+
+def get_openai_embedding_api_key(settings: Settings) -> str | None:
+    """Platform API key for OpenAI embeddings, when one is configured.
+
+    The ChatGPT OAuth bearer behind the token sink serves Responses but not
+    embeddings, so `OPENAI_EMBEDDING_API_KEY_FILE` lets embeddings go straight
+    to api.openai.com with a platform API key while text stays on OAuth.
+    Returns None when unset; callers then use the text bearer.
+    """
+    path_value = openai_embedding_api_key_file(settings)
+    if not path_value:
+        return None
+    path = Path(path_value).expanduser()
+    try:
+        key = path.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ProviderAuthError(f"OpenAI embedding API key file is unreadable: {path}") from exc
+    if not key:
+        raise ProviderAuthError(f"OpenAI embedding API key file is empty: {path}")
+    return key
+
+
+def openai_embedding_api_key_file(settings: Settings) -> str | None:
+    return string_value(getattr(settings, "openai_embedding_api_key_file", None))
 
 
 def openai_uses_token_sink(settings: Settings) -> bool:
