@@ -373,5 +373,5 @@ ENV_FILE=/etc/brain/brain.env make prod-check
 - Keep at least one verified off-device copy when Google Drive backup is enabled.
 - Resolve manifest blockers before considering a backup usable.
 
-<!-- brain-doc-source-hash: 915f243128ee668185c3f9eacbb4c3f5ea1f6263c61ff172ad5bad47b31e7776 -->
-<!-- brain-doc-source-commit: 3701ccae4048f08e88e8b6a8e32ffc9227a786b6 -->
+<!-- brain-doc-source-hash: 37bf4aab244dc1efd4371a6cad26ca2d64aacd77c4baca0e44cdfe6f89063708 -->
+<!-- brain-doc-source-commit: f4bd9f18a378545a9910565ea1b9d6a970aeda57 -->

@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from memory_stack.cfg import Settings
 from memory_stack.provider_auth import (
+    get_openai_embedding_api_key,
     openai_embeddings_base_url,
     openai_responses_base_url,
     resolve_openai_text_bearer,
@@ -51,7 +52,7 @@ def configure_cognee_oauth_environment(settings: Settings) -> dict[str, str]:
                 "EMBEDDING_PROVIDER": "openai",
                 "EMBEDDING_MODEL": f"openai/{settings.embedding_model}",
                 "EMBEDDING_DIMENSIONS": str(settings.embedding_dimensions),
-                "EMBEDDING_API_KEY": bearer,
+                "EMBEDDING_API_KEY": get_openai_embedding_api_key(settings) or bearer,
                 "EMBEDDING_ENDPOINT": openai_embeddings_base_url(settings),
             }
         )

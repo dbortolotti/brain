@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from memory_stack.cognee import oauth_compat
 from memory_stack.cognee_adapter import add_text, remember_text
 from memory_stack.cfg import Settings
+from memory_stack.provider_auth import ProviderAuthError
 
 
 class SampleResponse(BaseModel):
@@ -75,6 +76,45 @@ def test_cognee_oauth_environment_points_embeddings_at_token_sink(
     assert values["LLM_ENDPOINT"] == "http://127.0.0.1:11434/v1"
     assert values["EMBEDDING_API_KEY"] == "sink-token"
     assert values["EMBEDDING_ENDPOINT"] == "http://127.0.0.1:11434/v1"
+
+
+def test_cognee_oauth_environment_sends_embeddings_direct_with_key_file(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "sink-token")
+    key_file = tmp_path / "openai_embedding_api_key"
+    key_file.write_text("sk-embed\n", encoding="utf-8")
+    settings = auth_settings(
+        tmp_path,
+        openai_codex_base_url="http://127.0.0.1:11434/v1",
+        openai_token_sink_client_token_file="/etc/hermes/token-sink/client_token",
+        openai_embedding_api_key_file=str(key_file),
+    )
+
+    values = oauth_compat.configure_cognee_oauth_environment(settings)
+
+    assert values["LLM_API_KEY"] == "sink-token"
+    assert values["LLM_ENDPOINT"] == "http://127.0.0.1:11434/v1"
+    assert values["EMBEDDING_API_KEY"] == "sk-embed"
+    assert values["EMBEDDING_ENDPOINT"] == "https://api.openai.com/v1"
+
+
+def test_cognee_oauth_environment_rejects_empty_embedding_key_file(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "sink-token")
+    key_file = tmp_path / "openai_embedding_api_key"
+    key_file.write_text("\n", encoding="utf-8")
+    settings = auth_settings(
+        tmp_path,
+        openai_token_sink_client_token_file="/etc/hermes/token-sink/client_token",
+        openai_embedding_api_key_file=str(key_file),
+    )
+
+    with pytest.raises(ProviderAuthError, match="empty"):
+        oauth_compat.configure_cognee_oauth_environment(settings)
 
 
 def test_cognee_oauth_adapter_calls_codex_responses_endpoint(tmp_path, monkeypatch) -> None:
