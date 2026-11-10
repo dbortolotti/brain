@@ -254,11 +254,12 @@ production service user must be able to read
 `/etc/hermes/token-sink/client_token`; the installer adds `brain` to
 `hermes-agents` when that group exists.
 
-The ChatGPT OAuth bearer behind the token sink does not serve OpenAI
-embeddings. Production embeddings use a platform API key read from the file
-named by `OPENAI_EMBEDDING_API_KEY_FILE` (for example
-`/etc/brain/openai_embedding_api_key`, owner `root`, group `brain`, mode
-`0640`). With it set, embeddings go to `https://api.openai.com/v1` with that
+The ChatGPT OAuth bearer behind the token sink is not a reliable credential
+for OpenAI embeddings (Cognee saw sustained HTTP 401s through it). Production
+embeddings use a platform API key read from the file named by
+`OPENAI_EMBEDDING_API_KEY_FILE`; `cfg/prod.yaml` sets it to
+`/etc/brain/openai_embedding_api_key`, and the installer normalizes files in
+`/etc/brain` to `brain:brain` mode `0600`. With it set, embeddings go to `https://api.openai.com/v1` with that
 key and text generation stays on the token sink. The key lives only in that
 file, never in `/etc/brain/brain.env` or tracked config; provision the file
 before deploying a config that names it, because an unreadable or empty file
@@ -450,5 +451,5 @@ Before moving secrets into GitHub, keep a local gitignored backup under `local-s
 gh secret set -f local-secrets/latest/github-secrets.env
 ```
 
-<!-- brain-doc-source-hash: 6d96f41cfe47558ced3ec3e90bd27fe670f5287724ccbe81386728b14bcec044 -->
-<!-- brain-doc-source-commit: 63521e834046c6ab609f98b65a79d0c571a01ab6 -->
+<!-- brain-doc-source-hash: b86c726a5a6a752ed288472b9586310643b609df663861692fc989ec266029ab -->
+<!-- brain-doc-source-commit: f4bd9f18a378545a9910565ea1b9d6a970aeda57 -->

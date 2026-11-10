@@ -257,8 +257,8 @@ def openai_embeddings_base_url(settings: Settings) -> str:
 def get_openai_embedding_api_key(settings: Settings) -> str | None:
     """Platform API key for OpenAI embeddings, when one is configured.
 
-    The ChatGPT OAuth bearer behind the token sink serves Responses but not
-    embeddings, so `OPENAI_EMBEDDING_API_KEY_FILE` lets embeddings go straight
+    The ChatGPT OAuth bearer behind the token sink serves Responses but is not
+    a reliable embeddings credential (sustained 401s in prod), so `OPENAI_EMBEDDING_API_KEY_FILE` lets embeddings go straight
     to api.openai.com with a platform API key while text stays on OAuth.
     Returns None when unset; callers then use the text bearer.
     """

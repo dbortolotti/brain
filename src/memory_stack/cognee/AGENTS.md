@@ -12,7 +12,7 @@
 
 - Cognee data can be rebuilt from Brain control records; do not make Cognee-only writes the canonical source for Brain control state.
 - Preserve user, profile, surface, and session scoping in datapoints.
-- OAuth compat sends text generation through the OpenAI token sink; embeddings use the platform key from `OPENAI_EMBEDDING_API_KEY_FILE` against `https://api.openai.com/v1` when set (the OAuth bearer does not serve embeddings), else the same bearer and endpoint as text.
+- OAuth compat sends text generation through the OpenAI token sink; embeddings use the platform key from `OPENAI_EMBEDDING_API_KEY_FILE` against `https://api.openai.com/v1` when set (the OAuth bearer is not a reliable embeddings credential), else the same bearer and endpoint as text.
 - Probe code must avoid persisting private payloads beyond its explicit test or diagnostic purpose.
 
 ## Work Guidance
